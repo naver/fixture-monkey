@@ -10,6 +10,7 @@ docs:
 ## Fixture Monkey
 
 Fixture Monkey is a Java & Kotlin library designed to generate controllable arbitrary test objects.
+Its most distinctive feature is the ability to freely access and configure any nested fields through path-based expressions.
 
 It focuses on simplifying test writing, by facilitating the generation of necessary test fixtures.
 Whether you're dealing with basic or complex test fixtures, Fixture Monkey helps you to effortlessly create the test objects you need and easily customize them to match your desired configurations.
@@ -18,35 +19,146 @@ Make your JVM tests more concise and safe with Fixture Monkey.
 
 ---------
 
+## Quick Start
+
+Add Fixture Monkey to your project:
+
+{{< tabpane >}}
+{{< tab header="Java" >}}
+dependencies {
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:{{< param "version" >}}'
+}
+{{< /tab >}}
+{{< tab header="Kotlin" >}}
+dependencies {
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:{{< param "version" >}}")
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+Create your first test object:
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+
+// Basic type generation
+String randomString = fixtureMonkey.giveMeOne(String.class);
+Integer randomNumber = fixtureMonkey.giveMeOne(Integer.class);
+
+// Collection generation
+List<String> randomStrings = fixtureMonkey.giveMe(String.class, 3);
+Set<Integer> randomNumbers = fixtureMonkey.giveMe(Set.class, Integer.class, 5);
+
+// Complex object generation
+class User {
+    String name;
+    int age;
+    List<Address> addresses;
+}
+
+class Address {
+    String city;
+    String street;
+}
+
+// Single object generation
+User user = fixtureMonkey.giveMeOne(User.class);
+
+// Multiple objects generation
+List<User> users = fixtureMonkey.giveMe(User.class, 3);
+
+// Nested object generation
+User userWithAddresses = fixtureMonkey.giveMeBuilder(User.class)
+    .size("addresses", 2)
+    .sample();
+```
+
 ## Why use Fixture Monkey?
-### 1. Simplicity
+### 1. One-Line Test Object Generation
 ```java
-Product actual = fixtureMonkey.giveMeOne(Product.class);
-```
-Fixture Monkey makes test object generation remarkably easy. With just one line of code, you can effortlessly generate any kind of test object you desire.
-It simplifies the given section of the test, enabling you to write tests faster and more easily. You also don't need to change the production code or test environment.
+// Before: Manual object creation
+Product product = new Product();
+product.setId(1L);
+product.setName("Test Product");
+product.setPrice(1000);
+product.setCreatedAt(LocalDateTime.now());
 
-### 2. Reusability
+// After: With Fixture Monkey
+Product product = fixtureMonkey.giveMeOne(Product.class);
+```
+Stop writing boilerplate code for test object creation. Fixture Monkey generates any test object with a single line of code.
+Transform your test preparation from a tedious chore into a simple, elegant solution. No changes to production code or test environment required.
+
+### 2. Intuitive Path-Based Configuration
 ```java
-ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("id", 1000L)
-    .set("productName", "Book");
+class Order {
+    List<OrderItem> items;
+    Customer customer;
+    Address shippingAddress;
+}
+
+class OrderItem {
+    Product product;
+    int quantity;
+}
+
+class Product {
+    String name;
+    List<Review> reviews;
+}
+
+// Set all product names to "Special Product"
+ArbitraryBuilder<Order> orderBuilder = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("items[*].product.name", "Special Product");
+
+// Set all review ratings to 5 stars
+ArbitraryBuilder<Order> orderWithGoodReviews = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("items[*].product.reviews[*].rating", 5);
+
+// Set all quantities to 2
+ArbitraryBuilder<Order> orderWithFixedQuantity = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("items[*].quantity", 2);
 ```
-Fixture Monkey allows you to reuse configurations of instances across multiple tests, saving you time and effort.
-Complex specifications only need to be defined once within your builder and can then be reused to obtain instances.
+Bid farewell to endless getter/setter chains. Fixture Monkey's path expressions let you configure any nested field with a single line.
+The `[*]` wildcard operator empowers you to manipulate entire collections effortlessly, dramatically reducing boilerplate code and enhancing test maintainability.
 
-Furthermore, there are additional features that boost reusability. For more details on these features, refer to the sections on 'Registering Default ArbitraryBuilder' and 'InnerSpec'.
-
-### 3. Randomness
+### 3. Reusable Test Specifications
 ```java
-ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class);
+// Define a reusable builder
+ArbitraryBuilder<Product> productBuilder = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("category", "Book")
+    .set("price", 1000);
 
-then(actual.sample()).isNotEqualTo(actual.sample());
+// Reuse in different tests
+@Test
+void testProductCreation() {
+    Product product = productBuilder.sample();
+    assertThat(product.getCategory()).isEqualTo("Book");
+    assertThat(product.getPrice()).isEqualTo(1000);
+}
+
+@Test
+void testProductWithReviews() {
+    Product product = productBuilder
+        .size("reviews", 3)
+        .sample();
+    assertThat(product.getReviews()).hasSize(3);
+}
+
+@Test
+void testProductWithSpecificReview() {
+    Product product = productBuilder
+        .set("reviews[0].rating", 5)
+        .set("reviews[0].comment", "Excellent!")
+        .sample();
+    assertThat(product.getReviews().get(0).getRating()).isEqualTo(5);
+    assertThat(product.getReviews().get(0).getComment()).isEqualTo("Excellent!");
+}
 ```
-Fixture Monkey helps tests become more dynamic by generating test objects with random values.
-This leads to uncovering edge cases that might remain hidden when using static data.
+Eliminate test code duplication. Define complex object specifications once and reuse them across your test suite.
+ArbitraryBuilder's lazy evaluation ensures objects are only created when needed, optimizing your test performance.
 
-### 4. Versatility
+### 4. Universal Object Generation
 ```java
 // inheritance
 class Foo {
@@ -63,7 +175,6 @@ Bar bar = FixtureMonkey.create().giveMeOne(Bar.class);
 // circular-reference
 class Foo {
     String value;
-
     Foo foo;
 }
 
@@ -80,16 +191,42 @@ class Bar {
 
 Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
 ```
+From simple POJOs to complex object graphs, Fixture Monkey handles it all. Generate lists, nested collections, enums, generic types, and even objects with inheritance relationships or circular references.
+No object structure is too complex for Fixture Monkey.
 
-Fixture Monkey is capable to create any kind of object you can imagine. It supports generating basic objects such as lists, nested collections, enums and generic types.
-It also handles more advanced scenarios, including objects with inheritance relationships, circular-referenced objects, and anonymous objects that implement interfaces.
+### 5. Dynamic Test Data
+```java
+ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class);
 
----------
+then(actual.sample()).isNotEqualTo(actual.sample());
+```
+Move beyond static test data. Fixture Monkey's random value generation helps you discover edge cases that static data might miss.
+Make your tests more robust by testing with varied data in every run.
 
-## Proven Effectiveness
-Fixture Monkey was originally developed as an in-house library at [Naver](https://www.navercorp.com/en) and played a crucial role in simplifying test object generation for the Plasma project.
-The Plasma project aimed to revolutionize Naver Pay's architecture, which is the most used mobile payment service in South Korea with a daily active user count of 261,400.
+## Real Test Example
+```java
+@Test
+void testOrderProcessing() {
+    // Given
+    Order order = fixtureMonkey.giveMeBuilder(Order.class)
+        .set("items[*].quantity", 2)
+        .set("items[*].product.price", 1000)
+        .sample();
+    
+    OrderProcessor processor = new OrderProcessor();
+    
+    // When
+    OrderResult result = processor.process(order);
+    
+    // Then
+    assertThat(result.getTotalAmount()).isEqualTo(4000); // 2 items * 2 quantity * 1000 price
+    assertThat(result.getStatus()).isEqualTo(OrderStatus.COMPLETED);
+}
+```
 
-The project required thorough testing of complex business requirements, and with Fixture Monkey's assistance, the team efficiently wrote over 10,000 tests, uncovering critical edge cases and ensuring the system's reliability.
-Now available as an open-source library, developers worldwide can take advantage of Fixture Monkey to simplify their test codes and build robust applications with confidence.
+--------
 
+## Battle-Tested in Production
+Originally developed at [Naver](https://www.navercorp.com/en), Fixture Monkey played a pivotal role in the Plasma project, revolutionizing Naver Pay's architecture.
+Supporting over 10,000 tests for South Korea's leading mobile payment service, Fixture Monkey has proven its reliability in handling complex business requirements at scale.
+Now available as open-source, bring this battle-tested solution to your projects and write more reliable tests with confidence.

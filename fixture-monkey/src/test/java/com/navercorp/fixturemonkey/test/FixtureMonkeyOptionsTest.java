@@ -700,7 +700,7 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).hasSizeBetween(1, 3);
 		then(actual2).hasSizeLessThan(5);
-		then(actual3).isEqualTo(RegisterGroup.FIXED_INT_VALUE);
+		then(actual3.getIntValue()).isEqualTo(RegisterGroup.FIXED_INT_VALUE.getIntValue());
 	}
 
 	@Property
@@ -717,7 +717,7 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).hasSizeBetween(1, 3);
 		then(actual2).hasSizeLessThan(5);
-		then(actual3).isEqualTo(ChildBuilderGroup.FIXED_INT_VALUE);
+		then(actual3.getIntValue()).isEqualTo(ChildBuilderGroup.FIXED_INT_VALUE.getIntValue());
 	}
 
 	@Property

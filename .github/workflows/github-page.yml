@@ -7,7 +7,7 @@ on:
       - 'docs/**'
 jobs:
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
@@ -21,13 +21,13 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: 'latest'
+          hugo-version: '0.107.0'
           extended: true
 
       - name: Build
         working-directory: docs
         run: |
-          npm install postcss postcss-cli autoprefixer
+          npm install postcss postcss-cli autoprefixer mermaid
           hugo --minify
 
       - name: Deploy

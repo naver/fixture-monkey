@@ -28,5 +28,10 @@ import org.apiguardian.api.API.Status;
  **/
 @API(since = "1.1.2", status = Status.INTERNAL)
 public interface ArbitraryBuilderContextProvider {
-	ArbitraryBuilderContext getContext();
+	/**
+	 * Get the current context of {@link com.navercorp.fixturemonkey.ArbitraryBuilder}
+	 *
+	 * @return the current context of {@link com.navercorp.fixturemonkey.ArbitraryBuilder}
+	 */
+	ArbitraryBuilderContext getActiveContext();
 }

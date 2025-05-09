@@ -600,5 +600,6 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
 
 class InternalKotlinTypeDefaultArbitraryBuilder<T>(delegate: ArbitraryBuilder<T>) :
     KotlinTypeDefaultArbitraryBuilder<T>(delegate), ArbitraryBuilderContextProvider, ObjectBuilder<T> {
-    override fun getContext(): ArbitraryBuilderContext = (delegate as ArbitraryBuilderContextProvider).context
+    override fun getActiveContext(): ArbitraryBuilderContext =
+        (delegate as ArbitraryBuilderContextProvider).activeContext
 }

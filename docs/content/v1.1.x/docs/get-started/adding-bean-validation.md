@@ -1,6 +1,6 @@
 ---
 title: "Adding Bean Validation"
-weight: 24
+weight: 25
 menu:
 docs:
   parent: "get-started"
@@ -8,38 +8,9 @@ docs:
 ---
 
 Sometimes, you might want to create a valid test object that adheres to the constraints specified by the Bean Validation annotations on your class.
+Fixture Monkey makes this easy with support for `jakarta.validation.constraints` and `javax.validation.constraints` packages.
 
-Fixture Monkey supports constraint annotations from the `jakarta.validation.constraints` and `javax.validation.constraints` packages.
-
-To enable this feature, you need to add the `fixture-monkey-jakarta-validation` dependency (or `fixture-monkey-javax-validation` if you are using javax.validation.constraints) to your project as follows:
-
-##### Gradle
-```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:{{< fixture-monkey-version >}}")
-```
-
-##### Maven
-```xml
-<dependency>
-  <groupId>com.navercorp.fixturemonkey</groupId>
-  <artifactId>fixture-monkey-jakarta-validation</artifactId>
-  <version>{{< fixture-monkey-version >}}</version>
-  <scope>test</scope>
-</dependency>
-```
-
-Fixture Monkey provides additional features as plugins.
-
-To generate objects based on Bean Validation annotations, you need to add the `JakartaValidationPlugin` (or `JavaxValidationPlugin` if you are using `javax.validation.constraints`) option to FixtureMonkey as shown below.
-If you've added the fixture-monkey-starter dependency, it's already in place.
-
-```java
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .plugin(new JakartaValidationPlugin()) // or new JavaxValidationPlugin()
-    .build();
-```
-
-Let's assume that we have added several validation annotations to the previous `Product` class.
+For example, consider a Product class with validation constraints:
 
 ```java
 @Value
@@ -61,9 +32,34 @@ public class Product {
 }
 ```
 
-With the FixtureMonkey instance we created earlier, we can now generate valid objects:
+To generate objects that satisfy these constraints, first add the appropriate dependency:
 
+##### Gradle
+```groovy
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:{{< fixture-monkey-version >}}")
 ```
+
+##### Maven
+```xml
+<dependency>
+  <groupId>com.navercorp.fixturemonkey</groupId>
+  <artifactId>fixture-monkey-jakarta-validation</artifactId>
+  <version>{{< fixture-monkey-version >}}</version>
+  <scope>test</scope>
+</dependency>
+```
+
+Then, add the validation plugin to your FixtureMonkey configuration:
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JakartaValidationPlugin()) // or new JavaxValidationPlugin()
+    .build();
+```
+Note: If you're using `fixture-monkey-starter`, the validation plugin is already included.
+
+Now you can generate valid objects that satisfy all constraints:
+
+```java
 @Test
 void test() {
     // given
@@ -86,4 +82,19 @@ void test() {
 }
 ```
 
-From the assertions, it's clear that the object created with FixtureMonkey meets all the validation annotation requirements.
+When you run this code, Fixture Monkey will generate a Product instance that satisfies all validation constraints.
+Below is just an example, and the actual values will be different each time:
+
+```java
+Product(
+    id=42,                   // Satisfies @Min(1)
+    productName="product-1", // Satisfies @NotBlank
+    price=75000,            // Satisfies @Max(100000)
+    options=[               // Satisfies @Size(min = 3)
+        "option1",          // Each string satisfies @NotBlank
+        "option2",
+        "option3"
+    ],
+    createdAt=2024-03-20T10:15:30Z  // Satisfies @Past
+)
+```

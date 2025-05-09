@@ -67,5 +67,8 @@
   },
   "otherDependencies": {
     "hugo": "0.107.0"
+  },
+  "dependencies": {
+    "mermaid": "^11.6.0"
   }
 }

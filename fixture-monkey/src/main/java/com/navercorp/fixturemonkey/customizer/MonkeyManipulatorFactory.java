@@ -39,7 +39,6 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -51,7 +50,6 @@ import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
-import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
@@ -150,9 +148,9 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
-		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
+		List<MatcherOperator<ArbitraryBuilderContext>> registeredArbitraryBuilders,
 		Map<Property, List<ObjectNode>> nodesByType,
-		List<String> selectNames
+    List<String> selectNames
 	) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 
@@ -160,16 +158,15 @@ public final class MonkeyManipulatorFactory {
 			Property property = nodeByType.getKey();
 			List<ObjectNode> objectNodes = nodeByType.getValue();
 
-			ArbitraryBuilderContextProvider registeredArbitraryBuilder = findRegisteredArbitraryBuilder(
+			ArbitraryBuilderContextProvider activeContext = findRegisteredArbitraryBuilder(
 				registeredArbitraryBuilders, property, selectNames
 			);
 
-			if (registeredArbitraryBuilder == null) {
+			if (activeContext == null) {
 				continue;
 			}
 
-			ArbitraryBuilderContext context = registeredArbitraryBuilder.getContext();
-			List<ArbitraryManipulator> arbitraryManipulators = context.getManipulators().stream()
+			List<ArbitraryManipulator> arbitraryManipulators = activeContext.getManipulators().stream()
 				.map(
 					it -> new ArbitraryManipulator(
 						new CompositeNodeResolver(new StaticNodeResolver(objectNodes), it.getNodeResolver()),
@@ -183,7 +180,7 @@ public final class MonkeyManipulatorFactory {
 		return manipulators;
 	}
 
-	private ArbitraryBuilderContextProvider findRegisteredArbitraryBuilder(
+	private ArbitraryBuilderContext findRegisteredArbitraryBuilder(
 		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
 		Property property,
 		List<String> selectNames
@@ -218,7 +215,6 @@ public final class MonkeyManipulatorFactory {
 		return highestPriorityOperators.stream()
 			.findFirst()
 			.map(MatcherOperator::getOperator)
-			.map(ArbitraryBuilderContextProvider.class::cast)
 			.orElse(null);
 	}
 

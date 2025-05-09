@@ -355,7 +355,7 @@ public final class JavaTypeDefaultTypeArbitraryBuilder<T>
 	}
 
 	@Override
-	public ArbitraryBuilderContext getContext() {
-		return ((ArbitraryBuilderContextProvider)delegate).getContext();
+	public ArbitraryBuilderContext getActiveContext() {
+		return ((ArbitraryBuilderContextProvider)delegate).getActiveContext();
 	}
 }
