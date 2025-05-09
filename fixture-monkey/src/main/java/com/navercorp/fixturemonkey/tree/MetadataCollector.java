@@ -54,6 +54,7 @@ final class MetadataCollector {
 			collect(child);
 		}
 		return new ObjectTreeMetadata(
+			rootNode,
 			Collections.unmodifiableMap(nodesByProperty),
 			Collections.unmodifiableSet(annotations)
 		);

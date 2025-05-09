@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -89,13 +90,19 @@ public final class FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		TreeRootProperty rootProperty = new RootProperty(new TypeParameterProperty(type.getAnnotatedType()));
 
-		ArbitraryBuilderContext builderContext = monkeyContext.getRegisteredArbitraryBuilders().stream()
-			.filter(it -> it.match(rootProperty))
-			.map(MatcherOperator::getOperator)
-			.findAny()
-			.map(ArbitraryBuilderContextProvider.class::cast)
-			.map(ArbitraryBuilderContextProvider::getContext)
-			.orElse(ArbitraryBuilderContext.newBuilderContext(monkeyContext));
+		List<MatcherOperator<ArbitraryBuilderContext>> standByContexts =
+			monkeyContext.getRegisteredArbitraryBuilders().stream()
+				.filter(it -> it.match(rootProperty))
+				.map(it ->
+					new MatcherOperator<>(
+						it.getMatcher(),
+						((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
+					)
+				)
+				.collect(toList());
+
+		ArbitraryBuilderContext newActiveBuilderContext =
+			ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
 		return new DefaultArbitraryBuilder<>(
 			rootProperty,
@@ -106,18 +113,19 @@ public final class FixtureMonkey {
 			),
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
-			builderContext.copy(),
+			newActiveBuilderContext,
+			standByContexts,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		ArbitraryBuilderContext context = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
+		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(monkeyExpressionFactory.from("$").toNodeResolver(), value);
-		context.addManipulator(arbitraryManipulator);
+		newActiveBuilderContext.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
 			new RootProperty(new TypeParameterProperty(new LazyAnnotatedType<>(() -> value))),
@@ -128,7 +136,8 @@ public final class FixtureMonkey {
 			),
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
-			context,
+			newActiveBuilderContext,
+			Collections.emptyList(),
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);

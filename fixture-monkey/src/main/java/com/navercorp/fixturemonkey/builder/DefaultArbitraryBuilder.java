@@ -58,6 +58,7 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -87,7 +88,19 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final ArbitraryResolver resolver;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
-	private final ArbitraryBuilderContext context;
+	/**
+	 * It is actual active context for the builder.
+	 * It has the actual applied manipulators.
+	 */
+	private final ArbitraryBuilderContext activeContext;
+	/**
+	 * List of matcher operators that have been registered but not yet activated.
+	 * Manipulators in {@link #activeContext} are always applied, while manipulators in these standby contexts
+	 * are evaluated and applied lazily only if their match conditions are satisfied during object building.
+	 * Keeping them separate prevents stack overflow that can occur from nested {@code thenApply} calls
+	 * during registration.
+	 */
+	private final List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 
@@ -97,21 +110,23 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		MonkeyExpressionFactory monkeyExpressionFactory,
 		ArbitraryBuilderContext context,
+		List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor
 	) {
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
-		this.context = context;
+		this.activeContext = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.monkeyExpressionFactory = monkeyExpressionFactory;
 		this.monkeyContext = monkeyContext;
+		this.standbyContexts = standbyContexts;
 		this.instantiatorProcessor = instantiatorProcessor;
 	}
 
 	@Override
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
-		this.context.setCustomizedValidOnly(validOnly);
+		this.activeContext.setCustomizedValidOnly(validOnly);
 		return this;
 	}
 
@@ -145,7 +160,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		} else {
 			ArbitraryManipulator arbitraryManipulator =
 				monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, value, limit);
-			this.context.addManipulator(arbitraryManipulator);
+			this.activeContext.addManipulator(arbitraryManipulator);
 		}
 		return this;
 	}
@@ -170,7 +185,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		NodeResolver nodeResolver = toMonkeyExpression(propertySelector).toNodeResolver();
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, supplier, limit);
-		this.context.addManipulator(arbitraryManipulator);
+		this.activeContext.addManipulator(arbitraryManipulator);
 		return this;
 	}
 
@@ -185,8 +200,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		List<ArbitraryManipulator> arbitraryManipulators = manipulatorSet.getArbitraryManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorSet.getContainerInfoManipulators();
 
-		this.context.addManipulators(arbitraryManipulators);
-		this.context.addContainerInfoManipulators(containerInfoManipulators);
+		this.activeContext.addManipulators(arbitraryManipulators);
+		this.activeContext.addContainerInfoManipulators(containerInfoManipulators);
 		return this;
 	}
 
@@ -239,22 +254,22 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				minSize,
 				maxSize
 			);
-		this.context.addContainerInfoManipulator(containerInfoManipulator);
+		this.activeContext.addContainerInfoManipulator(containerInfoManipulator);
 
 		return this;
 	}
 
 	@Override
 	public ArbitraryBuilder<T> fixed() {
-		this.context.getContainerInfoManipulators().forEach(TreeNodeManipulator::fixed);
+		this.activeContext.getContainerInfoManipulators().forEach(TreeNodeManipulator::fixed);
 
-		this.context.markFixed();
+		this.activeContext.markFixed();
 		return this;
 	}
 
 	@Override
 	public ArbitraryBuilder<T> thenApply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer) {
-		this.context.getContainerInfoManipulators().forEach(TreeNodeManipulator::fixed);
+		this.activeContext.getContainerInfoManipulators().forEach(TreeNodeManipulator::fixed);
 
 		ArbitraryBuilder<T> appliedBuilder = this.copy();
 
@@ -270,7 +285,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		NodeResolver nodeResolver = monkeyExpressionFactory.from("$").toNodeResolver();
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, lazyArbitrary);
-		this.context.addManipulator(arbitraryManipulator);
+		this.activeContext.addManipulator(arbitraryManipulator);
 		return this;
 	}
 
@@ -296,7 +311,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		NodeResolver nodeResolver = toMonkeyExpression(propertySelector).toNodeResolver();
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, null);
-		this.context.addManipulator(arbitraryManipulator);
+		this.activeContext.addManipulator(arbitraryManipulator);
 		return this;
 	}
 
@@ -312,7 +327,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, NOT_NULL);
 
-		this.context.addManipulator(arbitraryManipulator);
+		this.activeContext.addManipulator(arbitraryManipulator);
 		return this;
 	}
 
@@ -351,7 +366,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		NodeResolver nodeResolver = toMonkeyExpression(propertySelector).toNodeResolver();
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, type, predicate, limit);
-		this.context.addManipulator(arbitraryManipulator);
+		this.activeContext.addManipulator(arbitraryManipulator);
 		return this;
 	}
 
@@ -456,8 +471,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		InstantiatorProcessResult result = instantiatorProcessor.process(typeReference, instantiator);
 
 		Class<?> type = Types.getActualType(typeReference.getType());
-		context.putArbitraryIntrospector(type, result.getIntrospector());
-		context.putPropertyConfigurer(type, result.getProperties());
+		activeContext.putArbitraryIntrospector(type, result.getIntrospector());
+		activeContext.putPropertyConfigurer(type, result.getProperties());
 		return this;
 	}
 
@@ -467,7 +482,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
 	) {
 		NodeResolver nodeResolver = toMonkeyExpression(propertySelector).toNodeResolver();
-		context.addManipulator(
+		activeContext.addManipulator(
 			monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, combinableArbitraryCustomizer)
 		);
 		return this;
@@ -476,7 +491,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
-		ArbitraryBuilderContext buildContext = context.copy();
+		ArbitraryBuilderContext buildContext = activeContext.copy();
 
 		return Arbitraries.ofSuppliers(() -> (T)resolveArbitrary(buildContext).combined());
 	}
@@ -484,7 +499,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	@SuppressWarnings("unchecked")
 	@Override
 	public T sample() {
-		return (T)resolveArbitrary(context).combined();
+		return (T)resolveArbitrary(activeContext).combined();
 	}
 
 	@Override
@@ -504,36 +519,39 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			resolver,
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
-			context.copy(),
+			activeContext.copy(),
+			standbyContexts,
 			monkeyContext,
 			instantiatorProcessor
 		);
 	}
 
 	@Override
-	public ArbitraryBuilderContext getContext() {
-		return this.context;
+	public ArbitraryBuilderContext getActiveContext() {
+		return this.activeContext;
 	}
 
-	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext context) {
-		if (context.isFixed()) {
-			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
+	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext activeContext) {
+		if (activeContext.isFixed()) {
+			if (activeContext.getFixedCombinableArbitrary() == null || activeContext.fixedExpired()) {
 				Object fixed = resolver.resolve(
 						rootProperty,
-						context
+						activeContext,
+						standbyContexts
 					)
 					.combined();
 
 				NodeResolver nodeResolver = monkeyExpressionFactory.from("$").toNodeResolver();
-				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, fixed));
-				context.renewFixed(CombinableArbitrary.from(fixed));
+				activeContext.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, fixed));
+				activeContext.renewFixed(CombinableArbitrary.from(fixed));
 			}
-			return context.getFixedCombinableArbitrary();
+			return activeContext.getFixedCombinableArbitrary();
 		}
 
 		return resolver.resolve(
 			rootProperty,
-			context
+			activeContext,
+			standbyContexts
 		);
 	}
 
@@ -551,6 +569,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			context,
+			standbyContexts,
 			monkeyContext,
 			instantiatorProcessor
 		);
