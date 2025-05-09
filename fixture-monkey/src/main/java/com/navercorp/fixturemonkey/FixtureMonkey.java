@@ -101,6 +101,9 @@ public final class FixtureMonkey {
 				)
 				.collect(toList());
 
+		ArbitraryBuilderContext newActiveBuilderContext =
+			ArbitraryBuilderContext.newBuilderContext(monkeyContext);
+
 		return new DefaultArbitraryBuilder<>(
 			rootProperty,
 			new ArbitraryResolver(
@@ -110,7 +113,7 @@ public final class FixtureMonkey {
 			),
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
-			ArbitraryBuilderContext.newBuilderContext(monkeyContext),
+			newActiveBuilderContext,
 			possibleContexts,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
@@ -118,11 +121,11 @@ public final class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		ArbitraryBuilderContext context = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
+		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(monkeyExpressionFactory.from("$").toNodeResolver(), value);
-		context.addManipulator(arbitraryManipulator);
+		newActiveBuilderContext.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
 			new RootProperty(new TypeParameterProperty(new LazyAnnotatedType<>(() -> value))),
@@ -133,7 +136,7 @@ public final class FixtureMonkey {
 			),
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
-			context,
+			newActiveBuilderContext,
 			Collections.emptyList(),
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
