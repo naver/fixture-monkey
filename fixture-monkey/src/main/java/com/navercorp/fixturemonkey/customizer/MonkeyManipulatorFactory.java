@@ -142,7 +142,8 @@ public final class MonkeyManipulatorFactory {
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
 		List<MatcherOperator<ArbitraryBuilderContext>> registeredArbitraryBuilders,
-		Map<Property, List<ObjectNode>> nodesByType
+		Map<Property, List<ObjectNode>> nodesByType,
+		List<String> selectNames
 	) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 
