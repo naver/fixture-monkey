@@ -197,7 +197,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ExperimentalArbitraryBuilder<T> selectName(String... names) {
-		ArbitraryBuilderContext builderContext = context.copy();
+		ArbitraryBuilderContext builderContext = activeContext.copy();
 		builderContext.addSelectedNames(Arrays.asList(names));
 
 		return new DefaultArbitraryBuilder<>(
@@ -205,7 +205,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			this.resolver,
 			this.monkeyManipulatorFactory,
 			this.monkeyExpressionFactory,
-			builderContext,
+			activeContext,
+			standbyContexts,
 			this.monkeyContext,
 			this.instantiatorProcessor
 		);
