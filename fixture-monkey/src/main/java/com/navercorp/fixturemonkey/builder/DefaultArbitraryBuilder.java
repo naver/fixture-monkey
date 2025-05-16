@@ -59,7 +59,7 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -101,7 +101,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	 * Keeping them separate prevents stack overflow that can occur from nested {@code thenApply} calls
 	 * during registration.
 	 */
-	private final List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts;
+	private final List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 
@@ -111,7 +111,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		MonkeyExpressionFactory monkeyExpressionFactory,
 		ArbitraryBuilderContext context,
-		List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts,
+		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor
 	) {

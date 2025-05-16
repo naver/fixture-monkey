@@ -401,6 +401,7 @@ public final class FixtureMonkeyBuilder {
 					if (arbitraryBuilderGroup.isAnnotationPresent(Order.class)) {
 						Order order = arbitraryBuilderGroup.getAnnotation(Order.class);
 						this.register(actualType, registerArbitraryBuilder, order.value());
+						continue;
 					}
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (Exception ex) {

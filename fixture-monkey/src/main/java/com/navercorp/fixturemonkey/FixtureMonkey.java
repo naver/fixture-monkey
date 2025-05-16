@@ -33,7 +33,6 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
@@ -97,13 +96,14 @@ public final class FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		TreeRootProperty rootProperty = new RootProperty(new TypeParameterProperty(type.getAnnotatedType()));
 
-		List<MatcherOperator<ArbitraryBuilderContext>> standByContexts =
+		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standByContexts =
 			monkeyContext.getRegisteredArbitraryBuilders().stream()
 				.filter(it -> it.match(rootProperty))
 				.map(it ->
-					new MatcherOperator<>(
+					new PriorityMatcherOperator<>(
 						it.getMatcher(),
-						((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
+						((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext(),
+						it.getPriority()
 					)
 				)
 				.collect(toList());
@@ -125,20 +125,6 @@ public final class FixtureMonkey {
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
-	}
-
-	private List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> getHighestPriorityOperators(
-		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> priorityOperators
-	) {
-		if (priorityOperators.isEmpty()) {
-			return priorityOperators;
-		}
-
-		int highestPriority = priorityOperators.get(0).getPriority();
-
-		return priorityOperators.stream()
-			.filter(it -> it.getPriority() == highestPriority)
-			.collect(toList());
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
