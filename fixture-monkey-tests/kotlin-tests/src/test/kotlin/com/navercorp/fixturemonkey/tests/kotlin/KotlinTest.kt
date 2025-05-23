@@ -70,8 +70,11 @@ import com.navercorp.fixturemonkey.kotlin.sizeExpGetter
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import com.navercorp.fixturemonkey.tests.kotlin.BuilderJavaTestSpecs.BuilderObjectCustomBuildName
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.ArrayObject
+import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.JavaStringObject
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.NestedArrayObject
+import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.RootJavaStringObject
 import com.navercorp.fixturemonkey.tests.kotlin.JavaConstructorTestSpecs.JavaTypeObject
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
 import org.assertj.core.api.BDDAssertions.thenThrownBy
@@ -1380,6 +1383,115 @@ class KotlinTest {
         val actual: KotlinObject = SUT.giveMeOne()
 
         then(actual).isInstanceOf(KotlinObject::class.java)
+    }
+
+    @Test
+    fun typedKotlinPropertySelector(){
+        // given
+        class StringObject(val string: String)
+
+        val expected = "test"
+
+        // when
+        val actual = SUT.giveMeKotlinBuilder<StringObject>()
+            .customizeProperty(StringObject::string){
+                it.map { _ -> expected }
+            }
+            .sample()
+            .string
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun typedNestedKotlinPropertySelector(){
+        // given
+        class StringObject(val string: String)
+
+        class NestedStringObject(val obj: StringObject)
+
+        val expected = "test"
+
+        // when
+        val actual = SUT.giveMeKotlinBuilder<NestedStringObject>()
+            .customizeProperty(NestedStringObject::obj into StringObject::string){
+                it.map { _ -> expected }
+            }
+            .sample()
+            .obj
+            .string
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun typedJavaPropertySelector(){
+        // given
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .build();
+
+        // when
+        val actual = sut.giveMeKotlinBuilder<JavaStringObject>()
+            .customizeProperty(JavaStringObject::getString){
+                it.map { _ -> expected }
+            }
+            .sample()
+            .string
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun typedRootIsKotlinNestedJavaPropertySelector(){
+        // given
+        class RootJavaStringObject(val obj: JavaStringObject)
+
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .pushExactTypeArbitraryIntrospector<JavaStringObject>(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .build();
+
+        // when
+        val actual = sut.giveMeKotlinBuilder<RootJavaStringObject>()
+            .customizeProperty(RootJavaStringObject::obj intoGetter JavaStringObject::getString){
+                it.map { _ -> expected }
+            }
+            .sample()
+            .obj
+            .string
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun typedRootIsJavaNestedJavaPropertySelector(){
+        // given
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .build();
+
+        // when
+        val actual = sut.giveMeKotlinBuilder<RootJavaStringObject>()
+            .customizeProperty(RootJavaStringObject::getObj intoGetter JavaStringObject::getString){
+                it.map { _ -> expected }
+            }
+            .sample()
+            .obj
+            .string
+
+        // then
+        then(actual).isEqualTo(expected)
     }
 
     companion object {

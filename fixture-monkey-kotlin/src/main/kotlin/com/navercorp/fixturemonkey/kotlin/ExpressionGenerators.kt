@@ -3,6 +3,7 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
+import com.navercorp.fixturemonkey.api.expression.TypedPropertySelector
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
 import com.navercorp.fixturemonkey.kotlin.type.actualType
@@ -259,10 +260,10 @@ infix operator fun <T, E : Any> JoinableExpressionGenerator<T, Array<Array<E>>>.
     )
 
 // ExpressionGenerator factory
-fun <R, E> propertyExpressionGenerator(property: KProperty1<R, E?>): ExpressionGenerator =
+fun <R, E> propertyExpressionGenerator(property: KProperty1<R, E?>): PropertyExpressionGenerator<R, E?> =
     PropertyExpressionGenerator(KotlinProperty(property))
 
-fun <R, E> propertyExpressionGenerator(function: KFunction1<R, E?>): ExpressionGenerator =
+fun <R, E> propertyExpressionGenerator(function: KFunction1<R, E?>): PropertyExpressionGenerator<R, E?> =
     PropertyExpressionGenerator(KotlinGetterProperty(function))
 
 @JvmName("propertyIndexExpressionGenerator")
@@ -355,13 +356,13 @@ internal fun <T> allIndexExpressionGenerator(property: KFunction1<T, Class<T>>, 
         key
     )
 
-private class PropertyExpressionGenerator(private val property: Property) : ExpressionGenerator {
+class PropertyExpressionGenerator<F, T>(private val property: Property) : ExpressionGenerator, TypedPropertySelector<T> {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         propertyNameResolver.resolve(property)
 }
 
 // ExpressionGenerator
-interface JoinableExpressionGenerator<F, T> : ExpressionGenerator {
+interface JoinableExpressionGenerator<F, T> : ExpressionGenerator, TypedPropertySelector<T> {
     infix fun <R> into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R>
 
     infix fun <R> intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R>

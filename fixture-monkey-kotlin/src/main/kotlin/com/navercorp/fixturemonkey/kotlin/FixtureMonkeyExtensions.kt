@@ -592,6 +592,16 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
         supplier: Supplier<Any?>,
     ): KotlinTypeDefaultArbitraryBuilder<T> =
         this.setLazy(propertySelector, supplier)
+
+    fun <U> customizeProperty(
+        property: KProperty1<T, U?>,
+        combinableArbitraryCustomizer: Function<CombinableArbitrary<out U>, CombinableArbitrary<out U>>
+    ): ArbitraryBuilder<T> = this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
+
+    fun <U> customizeProperty(
+        property: KFunction1<T, U?>,
+        combinableArbitraryCustomizer: Function<CombinableArbitrary<out U>, CombinableArbitrary<out U>>
+    ): ArbitraryBuilder<T> = this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
 }
 
 class InternalKotlinTypeDefaultArbitraryBuilder<T>(delegate: ArbitraryBuilder<T>) :

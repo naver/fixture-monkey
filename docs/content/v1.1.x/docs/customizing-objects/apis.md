@@ -39,6 +39,7 @@ Here are some common scenarios where you can use Fixture Monkey APIs:
   - [limit - Setting Values Partially](#limit)
 - [Using Advanced APIs](#using-advanced-apis)
   - [thenApply() - Setting Related Values](#thenapply)
+  - [customizeProperty() - Fine-tune property generation behavior](#customizeproperty)
 - [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 
 ## API Summary
@@ -63,6 +64,7 @@ Here are some common scenarios where you can use Fixture Monkey APIs:
 | API | Description | Example Scenario |
 |-----|-------------|-----------------|
 | thenApply() | Set related values | Set order total as sum of item prices |
+| customizeProperty() | Fine-tune property generation behavior | Filter values, transform data, generate unique values |
 
 ## Using Basic APIs
 
@@ -355,6 +357,227 @@ val order = fixtureMonkey.giveMeBuilder<Order>()
 {{< /tab >}}
 {{< /tabpane>}}
 
+### customizeProperty()
+`customizeProperty()` is used when you want to fine-tune how Fixture Monkey generates values for specific properties.
+This is an advanced feature that gives you more control than `set()` by allowing transformations and filtering.
+
+#### When do you need customizeProperty()?
+
+You'll find `customizeProperty()` useful when:
+- **You want to transform generated values**: "Make all names start with 'Mr.'"
+- **You need conditional filtering**: "Only positive numbers"
+- **You want unique values in collections**: "No duplicate items in a list"
+
+{{< alert icon="⚠️" text="customizeProperty requires TypedPropertySelector. This is more complex than basic APIs, so make sure you're comfortable with set(), size(), and other basic APIs first." />}}
+
+#### Simple Property Customization
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// You need to import the property selector
+import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
+
+// Transform a property value
+String expected = "transformed";
+String actual = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getName), arb -> arb.map(name -> expected))
+    .sample()
+    .getName();
+
+// Filter values to meet conditions  
+Member adult = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getAge), arb -> arb.filter(age -> age >= 18))
+    .sample();
+
+// Combine filtering and transformation
+Member vipMember = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getEmail), arb -> 
+        arb.filter(email -> email.contains("@"))
+           .map(email -> "vip-" + email))
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// Kotlin can use property references directly
+class StringObject(val string: String)
+
+val expected = "test"
+val actual = fixtureMonkey.giveMeKotlinBuilder<StringObject>()
+    .customizeProperty(StringObject::string) {
+        it.map { _ -> expected }
+    }
+    .sample()
+    .string
+
+// Filter values to meet conditions
+class Member(val name: String, val age: Int)
+
+val adult = fixtureMonkey.giveMeKotlinBuilder<Member>()
+    .customizeProperty(Member::age) { arb -> 
+        arb.filter { age -> age >= 18 }
+    }
+    .sample()
+
+// Combine filtering and transformation  
+val vipMember = fixtureMonkey.giveMeKotlinBuilder<Member>()
+    .customizeProperty(Member::name) { arb ->
+        arb.filter { name -> name.isNotBlank() }
+           .map { name -> "VIP-$name" }
+    }
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### Working with Nested Properties
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// Customize nested object properties
+String nestedValue = fixtureMonkey.giveMeBuilder(Order.class)
+    .customizeProperty(
+        javaGetter(Order::getCustomer).into(Customer::getName),
+        arb -> arb.map(name -> "Mr. " + name)
+    )
+    .sample()
+    .getCustomer()
+    .getName();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// Customize nested object properties
+class Customer(val name: String)
+class Order(val customer: Customer)
+
+val nestedValue = fixtureMonkey.giveMeKotlinBuilder<Order>()
+    .customizeProperty(Order::customer into Customer::name) {
+        it.map { name -> "Mr. $name" }
+    }
+    .sample()
+    .customer
+    .name
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### Working with Collections
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// Customize individual elements in a collection
+String firstItem = fixtureMonkey.giveMeBuilder(Cart.class)
+    .size("items", 3)
+    .customizeProperty(
+        javaGetter(Cart::getItems).index(String.class, 0),
+        arb -> arb.map(item -> "ITEM-" + item)
+    )
+    .sample()
+    .getItems()
+    .get(0);
+
+// Make a list unique (requires experimental API)
+import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot;
+
+List<Integer> uniqueList = fixtureMonkey.giveMeExperimentalBuilder(new TypeReference<List<Integer>>() {})
+    .<List<Integer>>customizeProperty(typedRoot(), CombinableArbitrary::unique)
+    .size("$", 10)
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// Customize individual elements in a collection  
+class Cart(val items: List<String>)
+
+val firstItem = fixtureMonkey.giveMeKotlinBuilder<Cart>()
+    .size(Cart::items, 3)
+    .customizeProperty(Cart::items[0]) {
+        it.map { item -> "ITEM-$item" }
+    }
+    .sample()
+    .items[0]
+
+// Make a list unique (requires experimental API)
+import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
+
+val uniqueList = fixtureMonkey.giveMeExperimentalBuilder<List<Int>>()
+    .customizeProperty(typedRoot<List<Int>>()) { 
+        it.unique() 
+    }
+    .size(List<Int>::root, 10)
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### Real-World Testing Scenarios
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// Testing user registration with business rules
+Member validUser = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getEmail), arb ->
+        arb.filter(email -> email.contains("@") && email.contains("."))
+           .map(email -> email.toLowerCase()))
+    .customizeProperty(javaGetter(Member::getAge), arb ->
+        arb.filter(age -> age >= 18 && age <= 120))
+    .sample();
+
+// Testing orders with minimum amounts
+Order validOrder = fixtureMonkey.giveMeBuilder(Order.class)
+    .customizeProperty(javaGetter(Order::getTotalAmount), arb ->
+        arb.filter(amount -> amount.compareTo(BigDecimal.valueOf(10)) >= 0))
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// Testing user registration with business rules
+class User(val email: String, val age: Int, val name: String)
+
+val validUser = fixtureMonkey.giveMeKotlinBuilder<User>()
+    .customizeProperty(User::email) { arb ->
+        arb.filter { email -> email.contains("@") && email.contains(".") }
+           .map { email -> email.lowercase() }
+    }
+    .customizeProperty(User::age) { arb ->
+        arb.filter { age -> age in 18..120 }
+    }
+    .sample()
+
+// Testing orders with minimum amounts  
+class Order(val totalAmount: BigDecimal)
+
+val validOrder = fixtureMonkey.giveMeKotlinBuilder<Order>()
+    .customizeProperty(Order::totalAmount) { arb ->
+        arb.filter { amount -> amount >= BigDecimal.valueOf(10) }
+    }
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### Important Things to Remember
+
+1. **Learn basic APIs first**: Make sure you understand `set()`, `size()`, `setNull()` before using `customizeProperty()`
+
+2. **Import required classes**:
+   ```java
+   // For Java
+   import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
+   
+   // For experimental features
+   import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot;
+   ```
+
+3. **Order matters**: `set()` will override `customizeProperty()`
+   ```java
+   // This won't work as expected
+   .customizeProperty(javaGetter(Member::getName), arb -> arb.map(name -> "Mr. " + name))
+   .set("name", "John")  // This overwrites the customization above
+   ```
+
+4. **Keep filters reasonable**: Too strict filters can cause generation to fail
+   ```java
+   // Too strict - might fail
+   .customizeProperty(javaGetter(Member::getAge), arb -> arb.filter(age -> age == 25))
+   
+   // Better - more flexible range
+   .customizeProperty(javaGetter(Member::getAge), arb -> arb.filter(age -> age >= 20 && age <= 30))
+   ```
+
+5. **Use for complex transformations**: If you just need a specific value, use `set()` instead
+
 ## Frequently Asked Questions (FAQ)
 
 ### Q: Which APIs should I learn first?
@@ -389,6 +612,42 @@ You can use `setPostCondition()` to specify value ranges or conditions:
 // Age must be between 1-100
 Member member = fixtureMonkey.giveMeBuilder(Member.class)
     .setPostCondition("age", Integer.class, age -> age >= 1 && age <= 100)
+    .sample();
+```
+
+### Q: What's the difference between set() and customizeProperty()?
+
+- `set()` directly assigns a specific value to a property
+- `customizeProperty()` modifies how the property value is generated, allowing for filtering, transformation, and conditional logic
+
+Use `set()` when you know exactly what value you want. Use `customizeProperty()` when you need to apply transformations or filters to generated values:
+
+```java
+// Direct assignment with set()
+Member member = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("email", "john@test.com")
+    .sample();
+
+// Transformation with customizeProperty()  
+Member memberWithCustomEmail = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty("email", arb -> arb.map(email -> "vip-" + email))
+    .sample();
+```
+
+### Q: Can I use customizeProperty() with collections?
+
+Yes! You can customize individual elements or the entire collection:
+
+```java
+// Customize all elements in a list
+List<String> customizedList = fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {})
+    .customizeProperty("$[*]", arb -> arb.map(str -> "PREFIX-" + str))
+    .sample();
+
+// Make the list unique
+List<Integer> uniqueList = fixtureMonkey.giveMeBuilder(new TypeReference<List<Integer>>() {})
+    .<List<Integer>>customizeProperty(typedRoot(), CombinableArbitrary::unique)
+    .size("$", 10)
     .sample();
 ```
 

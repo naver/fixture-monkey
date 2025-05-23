@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 
 @API(since = "1.0.0", status = Status.EXPERIMENTAL)
-interface JavaGetterPropertySelector<T, U> extends PropertySelector, ExpressionGenerator {
+interface JavaGetterPropertySelector<T, U> extends PropertySelector, ExpressionGenerator, TypedPropertySelector<U> {
 	default <R> JoinJavaGetterPropertySelector<U, R> into(JavaGetterMethodReference<U, R> methodReference) {
 		JavaGetterMethodPropertySelector<U, R> next =
 			JavaGetterPropertySelectors.resolvePropertySelector(methodReference);

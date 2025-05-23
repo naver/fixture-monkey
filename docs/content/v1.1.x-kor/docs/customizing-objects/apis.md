@@ -39,6 +39,7 @@ docs:
   - [limit - 일부만 값 설정하기](#limit)
 - [고급 API 활용하기](#고급-api-활용하기)
   - [thenApply() - 연관된 값 설정하기](#thenapply)
+  - [customizeProperty() - 속성 생성 방식 세밀하게 조정하기](#customizeproperty)
 - [자주 묻는 질문 (FAQ)](#자주-묻는-질문-faq)
 
 ## API 요약 표
@@ -63,6 +64,7 @@ docs:
 | API | 설명 | 예시 상황 |
 |-----|------|----------|
 | thenApply() | 연관된 값 설정하기 | 주문 총액을 주문 상품 가격의 합으로 설정 |
+| customizeProperty() | 속성 생성 방식 세밀하게 조정하기 | 속성 생성 방식을 세밀하게 조정 |
 
 ## 기본 API 사용하기
 
@@ -355,6 +357,227 @@ val order = fixtureMonkey.giveMeBuilder<Order>()
 {{< /tab >}}
 {{< /tabpane>}}
 
+### customizeProperty()
+`customizeProperty()`는 Fixture Monkey가 특정 속성에 대해 값을 생성하는 방식을 세밀하게 조정할 때 사용합니다.
+이는 `set()`보다 더 고급 기능으로, 변환과 필터링을 통해 더 많은 제어권을 제공합니다.
+
+#### 언제 customizeProperty()가 필요한가요?
+
+다음과 같은 상황에서 `customizeProperty()`가 유용합니다:
+- **생성된 값을 변환하고 싶을 때**: "모든 이름 앞에 '님' 붙이기"
+- **조건부 필터링이 필요할 때**: "양수만 허용하기"
+- **컬렉션에서 유니크한 값을 원할 때**: "리스트에 중복 항목 없애기"
+
+{{< alert icon="⚠️" text="customizeProperty는 TypedPropertySelector가 필요합니다. 기본 API인 set(), size() 등에 익숙해진 후 사용하세요." />}}
+
+#### 간단한 속성 커스터마이징
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// 속성 선택자를 import 해야 합니다
+import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
+
+// 속성 값 변환하기
+String expected = "변환된값";
+String actual = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getName), arb -> arb.map(name -> expected))
+    .sample()
+    .getName();
+
+// 조건에 맞는 값만 필터링
+Member adult = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getAge), arb -> arb.filter(age -> age >= 18))
+    .sample();
+
+// 필터링과 변환 함께 사용
+Member vipMember = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getEmail), arb -> 
+        arb.filter(email -> email.contains("@"))
+           .map(email -> "vip-" + email))
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// 코틀린에서는 속성 참조를 직접 사용할 수 있습니다
+class StringObject(val string: String)
+
+val expected = "테스트"
+val actual = fixtureMonkey.giveMeKotlinBuilder<StringObject>()
+    .customizeProperty(StringObject::string) {
+        it.map { _ -> expected }
+    }
+    .sample()
+    .string
+
+// 조건에 맞는 값만 필터링
+class Member(val name: String, val age: Int)
+
+val adult = fixtureMonkey.giveMeKotlinBuilder<Member>()
+    .customizeProperty(Member::age) { arb -> 
+        arb.filter { age -> age >= 18 }
+    }
+    .sample()
+
+// 필터링과 변환 함께 사용
+val vipMember = fixtureMonkey.giveMeKotlinBuilder<Member>()
+    .customizeProperty(Member::name) { arb ->
+        arb.filter { name -> name.isNotBlank() }
+           .map { name -> "VIP-$name" }
+    }
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### 중첩 속성 다루기
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// 중첩된 객체의 속성 커스터마이징
+String nestedValue = fixtureMonkey.giveMeBuilder(Order.class)
+    .customizeProperty(
+        javaGetter(Order::getCustomer).into(Customer::getName),
+        arb -> arb.map(name -> "님 " + name)
+    )
+    .sample()
+    .getCustomer()
+    .getName();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// 중첩된 객체의 속성 커스터마이징
+class Customer(val name: String)
+class Order(val customer: Customer)
+
+val nestedValue = fixtureMonkey.giveMeKotlinBuilder<Order>()
+    .customizeProperty(Order::customer into Customer::name) {
+        it.map { name -> "님 $name" }
+    }
+    .sample()
+    .customer
+    .name
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### 컬렉션과 함께 사용하기
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// 컬렉션의 개별 요소 커스터마이징
+String firstItem = fixtureMonkey.giveMeBuilder(Cart.class)
+    .size("items", 3)
+    .customizeProperty(
+        javaGetter(Cart::getItems).index(String.class, 0),
+        arb -> arb.map(item -> "상품-" + item)
+    )
+    .sample()
+    .getItems()
+    .get(0);
+
+// 리스트를 유니크하게 만들기 (실험적 API 필요)
+import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot;
+
+List<Integer> uniqueList = fixtureMonkey.giveMeExperimentalBuilder(new TypeReference<List<Integer>>() {})
+    .<List<Integer>>customizeProperty(typedRoot(), CombinableArbitrary::unique)
+    .size("$", 10)
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// 컬렉션의 개별 요소 커스터마이징
+class Cart(val items: List<String>)
+
+val firstItem = fixtureMonkey.giveMeKotlinBuilder<Cart>()
+    .size(Cart::items, 3)
+    .customizeProperty(Cart::items[0]) {
+        it.map { item -> "상품-$item" }
+    }
+    .sample()
+    .items[0]
+
+// 리스트를 유니크하게 만들기 (실험적 API 필요)
+import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
+
+val uniqueList = fixtureMonkey.giveMeExperimentalBuilder<List<Int>>()
+    .customizeProperty(typedRoot<List<Int>>()) { 
+        it.unique() 
+    }
+    .size(List<Int>::root, 10)
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### 실제 테스트 시나리오
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// 회원가입 비즈니스 룰에 맞는 테스트 데이터
+Member validUser = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getEmail), arb ->
+        arb.filter(email -> email.contains("@") && email.contains("."))
+           .map(email -> email.toLowerCase()))
+    .customizeProperty(javaGetter(Member::getAge), arb ->
+        arb.filter(age -> age >= 18 && age <= 120))
+    .sample();
+
+// 최소 주문 금액이 있는 주문 테스트
+Order validOrder = fixtureMonkey.giveMeBuilder(Order.class)
+    .customizeProperty(javaGetter(Order::getTotalAmount), arb ->
+        arb.filter(amount -> amount.compareTo(BigDecimal.valueOf(10)) >= 0))
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// 회원가입 비즈니스 룰에 맞는 테스트 데이터
+class User(val email: String, val age: Int, val name: String)
+
+val validUser = fixtureMonkey.giveMeKotlinBuilder<User>()
+    .customizeProperty(User::email) { arb ->
+        arb.filter { email -> email.contains("@") && email.contains(".") }
+           .map { email -> email.lowercase() }
+    }
+    .customizeProperty(User::age) { arb ->
+        arb.filter { age -> age in 18..120 }
+    }
+    .sample()
+
+// 최소 주문 금액이 있는 주문 테스트
+class Order(val totalAmount: BigDecimal)
+
+val validOrder = fixtureMonkey.giveMeKotlinBuilder<Order>()
+    .customizeProperty(Order::totalAmount) { arb ->
+        arb.filter { amount -> amount >= BigDecimal.valueOf(10) }
+    }
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### 주의사항
+
+1. **기본 API를 먼저 익히세요**: `customizeProperty()`를 사용하기 전에 `set()`, `size()`, `setNull()` 등을 먼저 이해하세요
+
+2. **필요한 클래스를 import 하세요**:
+   ```java
+   // Java의 경우
+   import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
+   
+   // 실험적 기능의 경우
+   import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot;
+   ```
+
+3. **순서가 중요합니다**: `set()`은 `customizeProperty()`를 무시합니다
+   ```java
+   // 예상대로 동작하지 않음
+   .customizeProperty(javaGetter(Member::getName), arb -> arb.map(name -> "님 " + name))
+   .set("name", "홍길동")  // 위의 커스터마이징을 무시함
+   ```
+
+4. **필터 조건을 적절히 설정하세요**: 너무 까다로운 조건은 생성 실패를 일으킬 수 있습니다
+   ```java
+   // 너무 까다로움 - 실패할 수 있음
+   .customizeProperty(javaGetter(Member::getAge), arb -> arb.filter(age -> age == 25))
+   
+   // 더 나음 - 유연한 범위
+   .customizeProperty(javaGetter(Member::getAge), arb -> arb.filter(age -> age >= 20 && age <= 30))
+   ```
+
+5. **복잡한 변환에만 사용하세요**: 단순히 특정 값이 필요하다면 `set()`을 사용하세요
+
 ## 자주 묻는 질문 (FAQ)
 
 ### Q: 어떤 API부터 배워야 하나요?
@@ -389,5 +612,26 @@ Member member2 = memberBuilder.sample(); // member1과 동일
 // 나이는 반드시 1-100 사이
 Member member = fixtureMonkey.giveMeBuilder(Member.class)
     .setPostCondition("age", Integer.class, age -> age >= 1 && age <= 100)
+    .sample();
+```
+
+### Q: set()와 customizeProperty()의 차이점은 무엇인가요?
+
+- `set()`은 특정 값을 직접 할당합니다
+- `customizeProperty()`는 속성 값이 생성되는 방식을 수정하여 필터링, 변환, 조건부 로직이 가능합니다
+
+정확한 값을 알고 있다면 `set()`을, 생성된 값에 변환이나 필터를 적용해야 한다면 `customizeProperty()`를 사용하세요:
+
+```java
+// 직접 할당 - set() 사용
+Member member = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("name", "홍길동")  // 정확히 "홍길동"으로 설정
+    .sample();
+
+// 변환/필터링 - customizeProperty() 사용  
+Member adultMember = fixtureMonkey.giveMeBuilder(Member.class)
+    .customizeProperty(javaGetter(Member::getAge), arb -> 
+        arb.filter(age -> age >= 18)  // 18세 이상만 허용
+           .map(age -> age + 10))     // 모든 나이에 10을 더함
     .sample();
 ```
