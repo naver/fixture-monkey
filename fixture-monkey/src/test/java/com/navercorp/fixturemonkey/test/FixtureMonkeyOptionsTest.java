@@ -866,7 +866,7 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).hasSizeBetween(4, 6);
 		then(actual2).hasSizeGreaterThan(4);
-		then(actual3).isEqualTo(RegisterGroupWithPriority.FIXED_INT_VALUE);
+		then(actual3.getIntValue()).isEqualTo(RegisterGroupWithPriority.FIXED_INT_VALUE.getIntValue());
 	}
 
 	@Property
