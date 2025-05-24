@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
@@ -39,7 +39,7 @@ public final class MonkeyContextBuilder {
 	private ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
 	private ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private ConcurrentLruCache<TreeRootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
-	private List<MatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders;
+	private List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders;
 	private int cacheSize = 2048;
 	private int generatorContextSize = 1000;
 
@@ -79,7 +79,7 @@ public final class MonkeyContextBuilder {
 	}
 
 	public MonkeyContextBuilder registeredObjectBuilder(
-		List<MatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders
+		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders
 	) {
 		this.registeredObjectBuilders = registeredObjectBuilders;
 		return this;
