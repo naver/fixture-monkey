@@ -31,5 +31,5 @@ import org.apiguardian.api.API;
 @Target({ElementType.TYPE})
 @API(since = "1.1.12", status = EXPERIMENTAL)
 public @interface Order {
-	int value() default 0;
+	int value() default Integer.MAX_VALUE;
 }
