@@ -205,7 +205,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			this.resolver,
 			this.monkeyManipulatorFactory,
 			this.monkeyExpressionFactory,
-			activeContext,
+			builderContext,
 			standbyContexts,
 			this.monkeyContext,
 			this.instantiatorProcessor
