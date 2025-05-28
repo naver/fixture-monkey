@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -240,6 +242,7 @@ public final class ArbitraryBuilderContext {
 		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeNodeManipulators =
 			monkeyContext.getRegisteredArbitraryBuilders()
 				.stream()
+				.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
 				.map(it -> new MatcherOperator<>(
 					it.getMatcher(),
 					((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
@@ -247,13 +250,16 @@ public final class ArbitraryBuilderContext {
 				))
 				.collect(Collectors.toList());
 
-		List<TreeNodeManipulator> registeredRootTreeManipulators = registeredTreeNodeManipulators.stream()
+		TreeNodeManipulator registeredRootTreeManipulator = registeredTreeNodeManipulators.stream()
 			.filter(it -> it.match(rootProperty))
 			.flatMap(it -> it.getOperator().stream())
-			.collect(Collectors.toList());
+			.findFirst()
+			.orElse(null);
 
-		List<TreeNodeManipulator> activeTreeNodeManipulators = new ArrayList<>(registeredRootTreeManipulators);
-		activeTreeNodeManipulators.addAll(this.getContainerInfoManipulators());
+		List<TreeNodeManipulator> activeTreeNodeManipulators = new ArrayList<>(this.getContainerInfoManipulators());
+		if (registeredRootTreeManipulator != null) {
+			activeTreeNodeManipulators.add(0, registeredRootTreeManipulator);
+		}
 
 		FixtureMonkeyOptions fixtureMonkeyOptions = this.monkeyContext.getFixtureMonkeyOptions();
 		return new TraverseContext(
