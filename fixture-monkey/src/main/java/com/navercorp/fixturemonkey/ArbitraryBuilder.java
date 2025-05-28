@@ -115,6 +115,14 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> set(@Nullable Object value);
 
 	/**
+	 * Set the {@link ArbitraryBuilder} sampling given {@code names}.
+	 *
+	 * @param names An array of names to select and register their corresponding ArbitraryBuilders.
+	 * @return an {@link ArbitraryBuilder} with the selected properties.
+	 */
+	ArbitraryBuilder<T> selectName(String... names);
+
+	/**
 	 * Apply one or more manipulations defined in {@link InnerSpec}.
 	 *
 	 * @param innerSpec a type-independent specification of manipulators
