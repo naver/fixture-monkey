@@ -86,4 +86,32 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 		monkey -> monkey.giveMeBuilder("second")
 	)
 	.build();
+// Both "foo" and "bar" are registered with the default priority of Integer.MAX_VALUE, so one is selected at random.
+```
+
+**Annotation**: You can specify the priority of a Group using the `@Order` annotation. If the value is not set, the default is `Integer.MAX_VALUE`.
+
+```java
+@Order(value = 1)
+public static class RegisterGroupWithPriority {
+	public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
+	public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
+		return fixtureMonkey.giveMeBuilder(String.class)
+			.set(Arbitraries.strings().numeric().ofMinLength(4).ofMaxLength(6));
+	}
+
+	public ArbitraryBuilder<List<String>> stringList(FixtureMonkey fixtureMonkey) {
+		return fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.setInner(
+				new InnerSpec()
+					.minSize(5)
+			);
+	}
+
+	public ArbitraryBuilder<ConcreteIntValue> concreteIntValue(FixtureMonkey fixtureMonkey) {
+		return fixtureMonkey.giveMeBuilder(FIXED_INT_VALUE);
+	}
+}
 ```

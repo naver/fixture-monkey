@@ -85,4 +85,32 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 		monkey -> monkey.giveMeBuilder("second")
 	)
 	.build();
+// "foo"와 "bar" 모두 우선순위가 기본값인 Integer.MAX_VALUE로 등록되어, 무작위로 선택됩니다.
+```
+
+**어노테이션**: `@Order` 어노테이션을 통해 Group에 우선순위를 지정할 수 있습니다. value 값을 설정하지 않으면 기본값은 `Integer.MAX_VALUE`입니다.
+
+```java
+@Order(value = 1)
+public static class RegisterGroupWithPriority {
+	public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
+	public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
+		return fixtureMonkey.giveMeBuilder(String.class)
+			.set(Arbitraries.strings().numeric().ofMinLength(4).ofMaxLength(6));
+	}
+
+	public ArbitraryBuilder<List<String>> stringList(FixtureMonkey fixtureMonkey) {
+		return fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.setInner(
+				new InnerSpec()
+					.minSize(5)
+			);
+	}
+
+	public ArbitraryBuilder<ConcreteIntValue> concreteIntValue(FixtureMonkey fixtureMonkey) {
+		return fixtureMonkey.giveMeBuilder(FIXED_INT_VALUE);
+	}
+}
 ```
