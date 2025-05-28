@@ -74,7 +74,7 @@ public final class ArbitraryResolver {
 				ObjectTree objectTree = new ObjectTree(
 					rootProperty,
 					activeContext.newGenerateFixtureContext(),
-					activeContext.newTraverseContext()
+					activeContext.newTraverseContext(rootProperty)
 				);
 
 				fixtureMonkeyOptions.getBuilderContextInitializers().stream()
