@@ -43,6 +43,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.tree.TraverseContext;
 import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -235,8 +236,8 @@ public final class ArbitraryBuilderContext {
 		return fixedCombinableArbitrary;
 	}
 
-	public TraverseContext newTraverseContext() {
-		List<MatcherOperator<List<TreeNodeManipulator>>> registeredContainerInfoManipulators =
+	public TraverseContext newTraverseContext(TreeRootProperty rootProperty) {
+		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeNodeManipulators =
 			monkeyContext.getRegisteredArbitraryBuilders()
 				.stream()
 				.map(it -> new MatcherOperator<>(
@@ -246,11 +247,20 @@ public final class ArbitraryBuilderContext {
 				))
 				.collect(Collectors.toList());
 
+		List<TreeNodeManipulator> registeredRootTreeManipulators = registeredTreeNodeManipulators.stream()
+			.filter(it -> it.match(rootProperty))
+			.flatMap(it -> it.getOperator().stream())
+			.collect(Collectors.toList());
+
+		List<TreeNodeManipulator> activeTreeNodeManipulators = new ArrayList<>(registeredRootTreeManipulators);
+		activeTreeNodeManipulators.addAll(this.getContainerInfoManipulators());
+
 		FixtureMonkeyOptions fixtureMonkeyOptions = this.monkeyContext.getFixtureMonkeyOptions();
 		return new TraverseContext(
+			rootProperty,
 			new ArrayList<>(),
-			this.getContainerInfoManipulators(),
-			registeredContainerInfoManipulators,
+			activeTreeNodeManipulators,
+			registeredTreeNodeManipulators,
 			this.getPropertyConfigurers(),
 			this.isValidOnly(),
 			initializeResolvedPropertyGenerator(
