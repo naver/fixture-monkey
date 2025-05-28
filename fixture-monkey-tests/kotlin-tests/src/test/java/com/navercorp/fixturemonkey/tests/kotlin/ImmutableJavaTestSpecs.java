@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.tests.kotlin;
 
+import java.beans.ConstructorProperties;
+
 class ImmutableJavaTestSpecs {
 	public static class ArrayObject {
 		private final String[] array;
@@ -43,4 +45,29 @@ class ImmutableJavaTestSpecs {
 		}
 	}
 
+	public static class JavaStringObject {
+		private final String string;
+
+		@ConstructorProperties("string")
+		public JavaStringObject(String string) {
+			this.string = string;
+		}
+
+		public String getString() {
+			return string;
+		}
+	}
+
+	public static class RootJavaStringObject {
+		private final JavaStringObject obj;
+
+		@ConstructorProperties("obj")
+		public RootJavaStringObject(JavaStringObject obj) {
+			this.obj = obj;
+		}
+
+		public JavaStringObject getObj() {
+			return obj;
+		}
+	}
 }

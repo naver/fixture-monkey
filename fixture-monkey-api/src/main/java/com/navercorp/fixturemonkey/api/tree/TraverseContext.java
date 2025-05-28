@@ -43,6 +43,7 @@ import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate.PropertyTraverseNodePredicate;
 
 @API(since = "1.0.4", status = Status.EXPERIMENTAL)
@@ -50,6 +51,7 @@ public final class TraverseContext {
 	private static final ConcurrentLruCache<Property, List<Property>> CANDIDATE_CONCRETE_PROPERTIES_BY_PROPERTY =
 		new ConcurrentLruCache<>(1024);
 
+	private final TreeRootProperty rootProperty;
 	private final List<TreeProperty> treeProperties;
 	private final List<TreeNodeManipulator> treeManipulators;
 	private final List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeManipulators;
@@ -68,6 +70,7 @@ public final class TraverseContext {
 	private final NullInjectGenerator defaultNullInjectGenerator;
 
 	public TraverseContext(
+		TreeRootProperty rootProperty,
 		List<TreeProperty> treeProperties,
 		List<TreeNodeManipulator> treeManipulators,
 		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeManipulators,
@@ -85,6 +88,7 @@ public final class TraverseContext {
 		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
 		NullInjectGenerator defaultNullInjectGenerator
 	) {
+		this.rootProperty = rootProperty;
 		this.treeProperties = treeProperties;
 		this.treeManipulators = treeManipulators;
 		this.registeredTreeManipulators = registeredTreeManipulators;
@@ -147,6 +151,7 @@ public final class TraverseContext {
 		concat.addAll(concatRegisteredContainerManipulator);
 		concat.addAll(treeManipulators);
 		return new TraverseContext(
+			rootProperty,
 			treeProperties,
 			concat,
 			this.registeredTreeManipulators,
@@ -194,6 +199,7 @@ public final class TraverseContext {
 		}
 
 		return new TraverseContext(
+			rootProperty,
 			newTreeProperties,
 			new ArrayList<>(this.treeManipulators),
 			this.registeredTreeManipulators,

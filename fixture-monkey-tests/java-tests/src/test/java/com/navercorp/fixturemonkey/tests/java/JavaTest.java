@@ -62,6 +62,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -1461,5 +1462,66 @@ class JavaTest {
 		)
 			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("should be interface");
+	}
+
+	@Test
+	void typedJavaGetter() {
+		String expected = "expected";
+
+		String actual = SUT.giveMeBuilder(JavaTypeObject.class)
+			.customizeProperty(javaGetter(JavaTypeObject::getString), arb -> arb.map(it -> expected))
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void nestedTypedJavaGetter() {
+		String expected = "expected";
+
+		String actual = SUT.giveMeBuilder(RootJavaTypeObject.class)
+			.customizeProperty(javaGetter(RootJavaTypeObject::getValue).into(JavaTypeObject::getString),
+				arb -> arb.map(it -> expected))
+			.sample()
+			.getValue()
+			.getString();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void indexTypedJavaGetter() {
+		String expected = "expected";
+
+		String actual = SUT.giveMeBuilder(ContainerObject.class)
+			.size("list", 1)
+			.customizeProperty(javaGetter(ContainerObject::getList).index(String.class, 0),
+				arb -> arb.map(it -> expected))
+			.sample()
+			.getList()
+			.get(0);
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void registerSizeLessThanThree() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				new MatcherOperator<>(
+					it -> it.getType().equals(new TypeReference<List<String>>() {
+					}.getType()),
+					fixture -> fixture.giveMeBuilder(new TypeReference<List<String>>() {
+						})
+						.maxSize("$", 2)
+				)
+			)
+			.build();
+
+		List<String> actual = sut.giveMeOne(new TypeReference<List<String>>() {
+		});
+
+		then(actual).hasSizeLessThan(3);
 	}
 }
