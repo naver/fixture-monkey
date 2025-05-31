@@ -27,6 +27,7 @@ import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Modifier;
 import java.time.Instant;
@@ -47,6 +48,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +63,7 @@ import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospect
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
@@ -1523,5 +1526,96 @@ class JavaTest {
 		});
 
 		then(actual).hasSizeLessThan(3);
+	}
+
+	@Test
+	void integerCombinableArbitraryIsJqwik() {
+		CombinableArbitrary<Integer> actual = CombinableArbitrary.integers();
+
+		then(actual).isInstanceOf(JqwikIntegerCombinableArbitrary.class);
+	}
+
+	@Test
+	void integerCombinableArbitraryInjectNull() {
+		Integer actual = CombinableArbitrary.integers().injectNull(1).combined();
+
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryFilter() {
+		Integer actual = CombinableArbitrary.integers().filter(it -> it > 10000).combined();
+
+		then(actual).isGreaterThan(10000);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryPositive() {
+		Integer actual = CombinableArbitrary.integers().positive().combined();
+
+		then(actual).isPositive();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryNegative() {
+		Integer actual = CombinableArbitrary.integers().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryWithRange() {
+		Integer actual = CombinableArbitrary.integers().withRange(10, 100).combined();
+
+		then(actual).isBetween(10, 100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryWithRangeAndFilter() {
+		Integer actual = CombinableArbitrary.integers().withRange(10, 100).filter(it -> 75 <= it).combined();
+
+		then(actual).isBetween(75, 100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryEven() {
+		Integer actual = CombinableArbitrary.integers().even().combined();
+
+		then(actual).isEven();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryOdd() {
+		Integer actual = CombinableArbitrary.integers().odd().combined();
+
+		then(actual).isOdd();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryMap() {
+		Integer actual = CombinableArbitrary.integers().filter(it -> -1000 < it & it < 0).map(it -> it + 1000).combined();
+
+		then(actual).isBetween(-1, 999);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void integerCombinableArbitraryLastOperationWins() {
+		assertAll(
+			() -> {
+				Integer actual = CombinableArbitrary.integers().positive().negative().combined();
+
+				then(actual).isNegative();
+			},
+			() -> {
+				Integer actual = CombinableArbitrary.integers().even().odd().combined();
+
+				then(actual).isOdd();
+			},
+			() -> {
+				Integer actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined();
+
+				then(actual).isBetween(100, 1000);
+			}
+		);
 	}
 }
