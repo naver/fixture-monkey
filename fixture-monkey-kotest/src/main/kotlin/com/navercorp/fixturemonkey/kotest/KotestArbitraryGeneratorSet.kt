@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.kotest
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet
+import com.navercorp.fixturemonkey.api.arbitrary.IntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import io.kotest.property.Arb
@@ -192,18 +193,17 @@ class KotestJavaArbitraryGeneratorSet(
         }
     }
 
-    override fun integers(context: ArbitraryGeneratorContext): CombinableArbitrary<Int> {
+    override fun integers(context: ArbitraryGeneratorContext): IntegerCombinableArbitrary {
         val integerConstraint = constraintGenerator.generateIntegerConstraint(context)
+        val combinableArbitrary = KotestIntegerCombinableArbitrary()
 
-        return CombinableArbitrary.from {
-            if (integerConstraint != null) {
-                val min = integerConstraint.min?.toInt() ?: Int.MIN_VALUE
-                val max = integerConstraint.max?.toInt() ?: Int.MAX_VALUE
+        return if (integerConstraint != null) {
+            val min = integerConstraint.min?.toInt() ?: Int.MIN_VALUE
+            val max = integerConstraint.max?.toInt() ?: Int.MAX_VALUE
 
-                Arb.int(min = min, max = max).single()
-            } else {
-                Arb.int().single()
-            }
+            combinableArbitrary.withRange(min, max)
+        } else {
+            combinableArbitrary
         }
     }
 
