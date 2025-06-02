@@ -944,6 +944,55 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void registerNestedSelectLatter() {
+		String expected = "string";
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerByName(
+				"simpleObject",
+				String.class,
+				monkey -> monkey.giveMeBuilder("simpleObject")
+			)
+			.registerByName(
+				"string",
+				String.class,
+				monkey -> monkey.giveMeBuilder(expected)
+			)
+			.build();
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("simpleObject", "string")
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void registerNestedSelectFormer() {
+		String expected = "simpleObject";
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerByName(
+				"simpleObject",
+				String.class,
+				monkey -> monkey.giveMeBuilder(expected)
+			)
+			.registerByName(
+				"string",
+				String.class,
+				monkey -> monkey.giveMeBuilder("string"),
+				1
+			)
+			.build();
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("string", "simpleObject")
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
 	void decomposeNewContainerByAddContainerType() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addContainerType(
