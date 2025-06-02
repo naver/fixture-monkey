@@ -23,12 +23,16 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.arbitraries.ListArbitrary;
 
 import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 
+@API(since = "1.1.12", status = Status.EXPERIMENTAL)
 public final class JqwikStringCombinableArbitrary implements StringCombinableArbitrary {
 	private final Arbitrary<Character> characterArbitrary;
 	@Nullable
