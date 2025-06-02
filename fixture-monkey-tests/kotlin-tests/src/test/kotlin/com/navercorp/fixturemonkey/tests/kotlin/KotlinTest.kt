@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.kotlin.maxSize
 import com.navercorp.fixturemonkey.kotlin.minSize
 import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.register
+import com.navercorp.fixturemonkey.kotlin.registerByName
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
@@ -700,6 +701,25 @@ class KotlinTest {
 
         // then
         then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun registerByName() {
+        // given
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .registerByName<String>("test") {
+                it.giveMeBuilder("test")
+            }
+            .build()
+
+        // when
+        val actual = sut.giveMeBuilder<String>()
+            .selectName("test")
+            .sample()
+
+        // then
+        then(actual).isEqualTo("test")
     }
 
     @RepeatedTest(TEST_COUNT)
