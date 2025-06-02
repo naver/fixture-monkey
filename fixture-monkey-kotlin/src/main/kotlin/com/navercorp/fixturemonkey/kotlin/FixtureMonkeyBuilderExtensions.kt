@@ -117,6 +117,11 @@ inline fun <reified T> FixtureMonkeyBuilder.register(
     noinline arbitraryBuilderGenerator: (fixtureMonkey: FixtureMonkey) -> ArbitraryBuilder<out T>
 ): FixtureMonkeyBuilder = this.register(T::class.java, arbitraryBuilderGenerator)
 
+inline fun <reified T> FixtureMonkeyBuilder.registerByName(
+    registeredName: String,
+    noinline arbitraryBuilderGenerator: (fixtureMonkey: FixtureMonkey) -> ArbitraryBuilder<out T>
+): FixtureMonkeyBuilder = this.registerByName(registeredName, T::class.java, arbitraryBuilderGenerator)
+
 inline fun <reified T> FixtureMonkeyBuilder.registerExactType(
     noinline arbitraryBuilderGenerator: (fixtureMonkey: FixtureMonkey) -> ArbitraryBuilder<out T>
 ): FixtureMonkeyBuilder = this.registerExactType(T::class.java, arbitraryBuilderGenerator)
