@@ -20,6 +20,13 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.function.Predicate;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+/**
+ * A combinable arbitrary for generating strings with various character sets and constraints.
+ */
+@API(since = "1.1.12", status = Status.EXPERIMENTAL)
 public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	int STRING_DEFAULT_MIN_LENGTH = 0;
 	int STRING_DEFAULT_MAX_LENGTH = 100;
@@ -30,12 +37,12 @@ public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	 * Generates a StringCombinableArbitrary which contains only alphabetic characters.
 	 * It conflicts with {@link #ascii()} and {@link #numeric()} and {@link #korean()}.
 	 * Calling this method will ignore any previously called character set methods.
-	 * 
+	 *
 	 * <p>Example:
 	 * <pre>{@code
 	 * // Only the last character set method (alphabetic) will be applied
 	 * stringArbitrary.numeric().alphabetic() // generates alphabetic characters only
-	 * 
+	 *
 	 * // Other configuration methods are also ignored when character set method is called
 	 * stringArbitrary.withMinLength(5).alphabetic() // withMinLength(5) is ignored
 	 * }</pre>
@@ -48,12 +55,12 @@ public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	 * Generates a StringCombinableArbitrary which contains only ASCII characters.
 	 * It conflicts with {@link #alphabetic()} and {@link #numeric()} and {@link #korean()}.
 	 * Calling this method will ignore any previously called character set methods.
-	 * 
+	 *
 	 * <p>Example:
 	 * <pre>{@code
 	 * // Only the last character set method (ascii) will be applied
 	 * stringArbitrary.korean().ascii() // generates ASCII characters only
-	 * 
+	 *
 	 * // Other configuration methods are also ignored when character set method is called
 	 * stringArbitrary.withMaxLength(10).ascii() // withMaxLength(10) is ignored
 	 * }</pre>
@@ -66,12 +73,12 @@ public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	 * Generates a StringCombinableArbitrary which contains only numeric characters.
 	 * It conflicts with {@link #alphabetic()} and {@link #ascii()} and {@link #korean()}.
 	 * Calling this method will ignore any previously called character set methods.
-	 * 
+	 *
 	 * <p>Example:
 	 * <pre>{@code
 	 * // Only the last character set method (numeric) will be applied
 	 * stringArbitrary.alphabetic().numeric() // generates numeric characters only
-	 * 
+	 *
 	 * // Other configuration methods are also ignored when character set method is called
 	 * stringArbitrary.withLength(3, 7).numeric() // withLength(3, 7) is ignored
 	 * }</pre>
@@ -84,12 +91,12 @@ public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	 * Generates a StringCombinableArbitrary which contains only Korean characters.
 	 * It conflicts with {@link #alphabetic()} and {@link #ascii()} and {@link #numeric()}.
 	 * Calling this method will ignore any previously called character set methods.
-	 * 
+	 *
 	 * <p>Example:
 	 * <pre>{@code
 	 * // Only the last character set method (korean) will be applied
 	 * stringArbitrary.ascii().korean() // generates Korean characters only
-	 * 
+	 *
 	 * // Other configuration methods are also ignored when character set method is called
 	 * stringArbitrary.withMinLength(5).korean() // withMinLength(5) is ignored
 	 * }</pre>

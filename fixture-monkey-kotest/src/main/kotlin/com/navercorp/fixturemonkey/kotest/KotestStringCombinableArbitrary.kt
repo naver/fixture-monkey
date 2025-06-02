@@ -26,8 +26,11 @@ import io.kotest.property.arbitrary.codepoints
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.single
 import io.kotest.property.arbitrary.string
+import org.apiguardian.api.API
+import org.apiguardian.api.API.Status.EXPERIMENTAL
 import java.util.function.Predicate
 
+@API(since = "1.1.12", status = EXPERIMENTAL)
 class KotestStringCombinableArbitrary(private val arb: Arb<String> = Arb.string()) : StringCombinableArbitrary {
     override fun combined(): String = arb.single()
 
