@@ -30,7 +30,7 @@ import java.util.function.Predicate
 class KotestIntegerCombinableArbitrary(private val arb: Arb<Int> = Arb.int()) : IntegerCombinableArbitrary {
     override fun combined(): Int = arb.single()
 
-    override fun rawValue(): Int = arb.single()
+    override fun rawValue(): IntegerCombinableArbitrary = KotestIntegerCombinableArbitrary(arb)
 
     override fun withRange(min: Int, max: Int): IntegerCombinableArbitrary =
         KotestIntegerCombinableArbitrary(Arb.int(min..max))

@@ -1533,7 +1533,7 @@ class JavaTest {
 		then(actual).isInstanceOf(JqwikIntegerCombinableArbitrary.class);
 	}
 
-	@Test
+	@RepeatedTest(TEST_COUNT)
 	void integerCombinableArbitraryInjectNull() {
 		Integer actual = CombinableArbitrary.integers().injectNull(1).combined();
 

@@ -20,12 +20,16 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.function.Predicate;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "1.1.12", status = Status.EXPERIMENTAL)
 public interface IntegerCombinableArbitrary extends CombinableArbitrary<Integer> {
 	@Override
 	Integer combined();
 
 	@Override
-	Integer rawValue();
+	IntegerCombinableArbitrary rawValue();
 
 	/**
 	 * Generates an IntegerCombinableArbitrary which produces integers within the specified range.
