@@ -979,8 +979,7 @@ class FixtureMonkeyOptionsTest {
 			.registerByName(
 				"string",
 				String.class,
-				monkey -> monkey.giveMeBuilder("string"),
-				1
+				monkey -> monkey.giveMeBuilder("string")
 			)
 			.build();
 
