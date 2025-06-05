@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.PriorityConstructorArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericObject;
-import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGenericObject;
-import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGenericObjectConstructorParameterOrderDiff;
-import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGenericObjectConstructorParameterOrderDiffNameDiff;
+import com.navercorp.fixturemonkey.tests.java.specs.GenericTypeSpecs.GenericObject;
+import com.navercorp.fixturemonkey.tests.java.specs.GenericTypeSpecs.TwoGenericObject;
+import com.navercorp.fixturemonkey.tests.java.specs.GenericTypeSpecs.TwoGenericObjectConstructorParameterOrderDiff;
+import com.navercorp.fixturemonkey.tests.java.specs.GenericTypeSpecs.TwoGenericObjectConstructorParameterOrderDiffNameDiff;
 
 class PriorityConstructorArbitraryIntrospectorTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()

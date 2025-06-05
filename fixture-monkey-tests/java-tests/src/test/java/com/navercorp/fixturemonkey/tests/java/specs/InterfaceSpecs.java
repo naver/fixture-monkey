@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import java.util.List;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-class InterfaceTestSpecs {
+public class InterfaceSpecs {
 	public interface InterfaceObject {
 		Object getObject();
 	}
@@ -63,7 +63,7 @@ class InterfaceTestSpecs {
 		InterfaceObject value;
 	}
 
-	abstract static class AbstractClassObject {
+	public abstract static class AbstractClassObject {
 		abstract Object getObject();
 	}
 

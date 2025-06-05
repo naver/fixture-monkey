@@ -20,26 +20,36 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
-import com.navercorp.fixturemonkey.kotlin.giveMeOne
-import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
-import com.navercorp.fixturemonkey.tests.kotlin.specs.CircularReferenceDefaultArgument
-import com.navercorp.fixturemonkey.tests.kotlin.specs.CircularReferenceValueNullable
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 
-class CircularReferenceTest {
-    @RepeatedTest(TEST_COUNT)
-    fun circularReferenceDefaultArgument() {
-        val actual = SUT.giveMeOne<CircularReferenceDefaultArgument>().value
+class ContainerTest {
+    @Test
+    fun setShrinkContainerNode() {
+        val expected = listOf("a")
 
-        then(actual).isNotNull()
+        val actual = SUT.giveMeKotlinBuilder<List<String>>()
+            .size("$", 3)
+            .set("$[0]", "a1")
+            .set("$[1]", "b")
+            .set("$[2]", "c")
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
-    fun circularReferenceNullable() {
-        val actual: CircularReferenceValueNullable = SUT.giveMeOne()
+    @Test
+    fun setExpandContainerNode() {
+        val expected = listOf("a", "b", "c")
 
-        then(actual).isNotNull()
+        val actual = SUT.giveMeKotlinBuilder<List<String>>()
+            .size("$", 1)
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
     }
 
     companion object {
@@ -47,4 +57,4 @@ class CircularReferenceTest {
             .plugin(KotlinPlugin())
             .build()
     }
-}
+} 

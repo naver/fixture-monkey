@@ -16,15 +16,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import lombok.Value;
 
-class ImmutableMixedIntrospectorsTypeSpecs {
+public class MixedIntrospectorsSpecs {
 	@Value
 	public static class MixedJavaTypeObject {
-		ImmutableJavaTestSpecs.JavaTypeObject object;
-		NoArgsConstructorJavaTestSpecs.JavaTypeObject object2;
-
+		ImmutableSpecs.JavaTypeObject object;
+		NoArgsConstructorSpecs.JavaTypeObject object2;
 	}
 }

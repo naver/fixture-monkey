@@ -20,11 +20,9 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
-import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
-import com.navercorp.fixturemonkey.kotlin.set
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
@@ -52,7 +50,7 @@ class ValueClassTest {
 
         val settingFoo = Foo("hello")
 
-        val actual: ValueClassObject = SUT.giveMeBuilder<ValueClassObject>()
+        val actual: ValueClassObject = SUT.giveMeKotlinBuilder<ValueClassObject>()
             .set(ValueClassObject::foo, settingFoo)
             .sample()
 
@@ -63,7 +61,7 @@ class ValueClassTest {
     fun valueClassPropertyFixed() {
         class ValueClassObject(val foo: Foo)
 
-        val actual: ValueClassObject = SUT.giveMeBuilder<ValueClassObject>()
+        val actual: ValueClassObject = SUT.giveMeKotlinBuilder<ValueClassObject>()
             .fixed()
             .sample()
 
@@ -85,7 +83,7 @@ class ValueClassTest {
     fun privateConstructorValueClassPropertyFixed() {
         class ValueClassObject(val foo: FooWithPrivateConstructor)
 
-        val actual: ValueClassObject = SUT.giveMeBuilder<ValueClassObject>()
+        val actual: ValueClassObject = SUT.giveMeKotlinBuilder<ValueClassObject>()
             .fixed()
             .sample()
 
@@ -105,9 +103,11 @@ class ValueClassTest {
     @Test
     fun factoryParameterWithTypeValueClass() {
         val actual = SUT.giveMeKotlinBuilder<ConcreteClass>()
-            .instantiateBy<ConcreteClass> { factory<ConcreteClass>("factory"){
-                parameter<Foo>("id")
-            } }
+            .instantiateBy<ConcreteClass> {
+                factory<ConcreteClass>("factory") {
+                    parameter<Foo>("id")
+                }
+            }
             .sample()
 
         then(actual).isNotNull

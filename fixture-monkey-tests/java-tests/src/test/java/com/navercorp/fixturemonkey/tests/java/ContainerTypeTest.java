@@ -1,83 +1,54 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+
+import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.tests.java.specs.ImmutableSpecs.ContainerObject;
 import com.navercorp.fixturemonkey.tests.java.specs.ImmutableSpecs.Enum;
 import com.navercorp.fixturemonkey.tests.java.specs.ImmutableSpecs.JavaTypeObject;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.ConstructorObject;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.JsonTypeInfoIdClass;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.JsonTypeInfoIdName;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.JsonTypeInfoList;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.JsonTypeInfoListInSetter;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.JsonTypeInfoListInSetterIncludeWrapperObject;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.JsonTypeInfoListIncludeWrapperObject;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.TypeWithAnnotationsIncludeWrapperObjectList;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.TypeWithAnnotationsList;
-import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.TypeWithAnnotationsValue;
 
-class JacksonTest {
+class ContainerTypeTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
-		.plugin(new JacksonPlugin())
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
 		.build();
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeInfoName() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoIdName.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeInfoList() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoList.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeInfoIdClass() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoIdClass.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeWithAnnotations() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsValue.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeWithAnnotationsList() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsList.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeInfoListInSetter() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoListInSetter.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeInfoListIncludeWrapperObject() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoListIncludeWrapperObject.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeInfoListInSetterIncludeWrapperObject() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoListInSetterIncludeWrapperObject.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void jsonTypeWithAnnotationsIncludeWrapperObjectList() {
-		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsIncludeWrapperObjectList.class));
-	}
 
 	@RepeatedTest(TEST_COUNT)
 	void sampleContainerType() {
@@ -210,22 +181,51 @@ class JacksonTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
-	void sampleEnumKeyMap() {
-		thenNoException()
-			.isThrownBy(() -> SUT.giveMeBuilder(
-						new TypeReference<List<Map<Enum, String>>>() {
-						}
-					)
-					.size("$", 2)
-					.sample()
-			);
+	@Test
+	void sampleUniqueSet() {
+		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
+			})
+			.size("$", 200)
+			.sample();
+
+		then(actual).hasSize(200);
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleConstructorObject() {
-		ConstructorObject actual = SUT.giveMeOne(ConstructorObject.class);
+	void setEnumSet() {
+		Set<Enum> set = new HashSet<>();
+		set.add(Enum.ONE);
+		set.add(Enum.TWO);
+		set.add(Enum.THREE);
 
-		then(actual).isNotNull();
+		Set<Enum> actual = SUT.giveMeBuilder(new TypeReference<Set<Enum>>() {
+			})
+			.set("$", set)
+			.sample();
+
+		then(actual).hasSize(3);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleUniqueList() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.size("$", 100)
+			.set(
+				"$[*]",
+				Values.just(CombinableArbitrary.from(LazyArbitrary.lazy(() -> Arbitraries.strings().sample())).unique())
+			)
+			.sample();
+
+		Set<String> expected = new HashSet<>(actual);
+		then(actual).hasSameSizeAs(expected);
+	}
+
+	@Test
+	void collectionNotThrows() {
+		thenNoException().isThrownBy(
+			() -> SUT.giveMeOne(new TypeReference<Collection<String>>() {
+			})
+		);
 	}
 }

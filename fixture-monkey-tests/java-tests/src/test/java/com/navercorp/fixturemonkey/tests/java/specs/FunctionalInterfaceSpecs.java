@@ -16,29 +16,21 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
-import java.util.List;
-import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import lombok.Value;
 
-class ImmutableRecursiveTypeSpecs {
+public class FunctionalInterfaceSpecs {
 	@Value
-	public static class SelfRecursiveObject {
-		String value;
-		SelfRecursiveObject selfRecursiveObject;
+	public static class FunctionObject {
+		Function<Integer, String> value;
 	}
 
 	@Value
-	public static class SelfRecursiveListObject {
-		String value;
-		List<SelfRecursiveListObject> selfRecursiveListObjects;
-	}
-
-	@Value
-	public static class SelfRecursiveMapObject {
-		String value;
-		Map<String, SelfRecursiveMapObject> selfRecursiveMap;
+	public static class SupplierObject {
+		Supplier<String> value;
 	}
 }

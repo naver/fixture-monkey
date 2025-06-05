@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
@@ -149,7 +150,7 @@ class SimpleValueJqwikPluginTest {
             .plugin(SimpleValueJqwikPlugin())
             .build()
 
-        val setObject = sut.giveMeBuilder(SetObject::class.java)
+        val setObject = sut.giveMeKotlinBuilder<SetObject>()
             .size("integers", 3)
             .sample()
 

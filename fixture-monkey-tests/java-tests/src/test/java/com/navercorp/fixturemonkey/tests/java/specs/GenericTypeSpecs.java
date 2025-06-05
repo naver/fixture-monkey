@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import lombok.Builder;
 import lombok.Value;
 
 @SuppressWarnings("unused")
-class ImmutableGenericTypeSpecs {
+public class GenericTypeSpecs {
 
 	public interface GenericInterface<T> {
 	}

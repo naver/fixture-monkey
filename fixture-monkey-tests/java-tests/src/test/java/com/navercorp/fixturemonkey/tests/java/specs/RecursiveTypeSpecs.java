@@ -16,26 +16,29 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.Value;
 
-class ImmutableDepthTestSpecs {
+public class RecursiveTypeSpecs {
 	@Value
-	public static class OneDepthStringValue {
+	public static class SelfRecursiveObject {
 		String value;
+		SelfRecursiveObject selfRecursiveObject;
 	}
 
 	@Value
-	public static class TwoDepthStringValue {
-		OneDepthStringValue value;
+	public static class SelfRecursiveListObject {
+		String value;
+		List<SelfRecursiveListObject> selfRecursiveListObjects;
 	}
 
 	@Value
-	public static class DepthStringValueList {
-		List<OneDepthStringValue> oneDepthList;
-		List<TwoDepthStringValue> twoDepthList;
+	public static class SelfRecursiveMapObject {
+		String value;
+		Map<String, SelfRecursiveMapObject> selfRecursiveMap;
 	}
 }

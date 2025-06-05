@@ -1,12 +1,10 @@
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import com.navercorp.fixturemonkey.tests.java.MutableJavaTestSpecs.Enum;
-
-class NoArgsConstructorJavaTestSpecs {
+public class NoArgsConstructorSpecs {
 	@NoArgsConstructor
 	@Getter
 	@Setter
