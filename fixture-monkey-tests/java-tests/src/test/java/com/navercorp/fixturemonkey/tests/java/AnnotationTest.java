@@ -26,8 +26,8 @@ import org.junit.jupiter.api.RepeatedTest;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
-import com.navercorp.fixturemonkey.tests.java.ValidationAnnotationTestSpecs.CustomAnnotationStringObject;
-import com.navercorp.fixturemonkey.tests.java.ValidationAnnotationTestSpecs.StringNotNullAnnotationObject;
+import com.navercorp.fixturemonkey.tests.java.specs.ValidationSpecs.CustomAnnotationStringObject;
+import com.navercorp.fixturemonkey.tests.java.specs.ValidationSpecs.StringNotNullAnnotationObject;
 
 class AnnotationTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()

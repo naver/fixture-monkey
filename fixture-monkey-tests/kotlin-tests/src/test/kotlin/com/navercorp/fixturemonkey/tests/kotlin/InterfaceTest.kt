@@ -19,16 +19,91 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
-import com.navercorp.fixturemonkey.tests.kotlin.SealedClassTest.SealedObjectClass.ConcreteSealedObjectClass
+import com.navercorp.fixturemonkey.tests.kotlin.InterfaceTest.SealedObjectClass.ConcreteSealedObjectClass
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
+import java.util.LinkedList
 
-@Suppress("unused")
-class SealedClassTest {
+class InterfaceTest {
+    @RepeatedTest(TEST_COUNT)
+    fun anonymousArbitraryIntrospector() {
+        // given
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(InterfacePlugin())
+            .build()
+
+        // when
+        val actual = sut.giveMeOne<Interface>().string()
+
+        // then
+        then(actual).isNotNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun notUseAnonymousArbitraryIntrospector() {
+        // given
+        val sut = FixtureMonkey.builder()
+            .plugin(InterfacePlugin().useAnonymousArbitraryIntrospector(false))
+            .build()
+
+        // when
+        val actual: Interface = sut.giveMeOne()
+
+        // then
+        then(actual).isNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sealedInterfaceApplySet() {
+        val actual = SUT.giveMeBuilder<SealedInterface>()
+            .thenApply { _, builder -> builder.set("stringObject.string", "expected") }
+            .sample()
+
+        then((actual as SealedInterfaceImplementation).stringObject.string).isEqualTo("expected")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun interfaceImplementsExtendsInterface() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .interfaceImplements(Collection::class.java, listOf(Set::class.java))
+            )
+            .build()
+
+        val actual: Collection<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(HashSet::class.java)
+    }
+
+    @Test
+    fun interfaceImplementsAssignableTypeGeneratesConcreteTypeNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .interfaceImplements(
+                        AssignableTypeMatcher(Collection::class.java),
+                        listOf(LinkedList::class.java)
+                    )
+
+            )
+            .build()
+
+        val actual: ArrayList<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(ArrayList::class.java)
+    }
+
     @RepeatedTest(TEST_COUNT)
     fun sampleSealedClass() {
         val actual = SUT.giveMeOne<SealedClass>()
@@ -62,15 +137,6 @@ class SealedClassTest {
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun sealedInterfaceApplySet() {
-        val actual = SUT.giveMeBuilder<SealedInterface>()
-            .thenApply { _, builder -> builder.set("stringObject.string", "expected") }
-            .sample()
-
-        then((actual as SealedInterfaceImplementation).stringObject.string).isEqualTo("expected")
-    }
-
-    @RepeatedTest(TEST_COUNT)
     fun sealedObject() {
         val actual: SealedObjectClass = SUT.giveMeOne()
 
@@ -85,6 +151,16 @@ class SealedClassTest {
 
         then(actual).isInstanceOf(ConcreteSealedObjectClass::class.java)
     }
+
+    interface Interface {
+        fun string(): String
+    }
+
+    sealed interface SealedInterface
+
+    class SealedInterfaceImplementation(val stringObject: StringObject) : SealedInterface
+
+    class StringObject(val string: String)
 
     sealed class SealedClass
 
@@ -103,19 +179,13 @@ class SealedClassTest {
 
     enum class Enum { ONE, TWO, THREE }
 
-    sealed interface SealedInterface
-
-    class SealedInterfaceImplementation(val stringObject: StringObject) : SealedInterface
-
-    class StringObject(val string: String)
-
     sealed class SealedObjectClass {
         object ConcreteSealedObjectClass : SealedObjectClass()
     }
 
     companion object {
-        val SUT: FixtureMonkey = FixtureMonkey.builder()
+        private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
             .build()
     }
-}
+} 

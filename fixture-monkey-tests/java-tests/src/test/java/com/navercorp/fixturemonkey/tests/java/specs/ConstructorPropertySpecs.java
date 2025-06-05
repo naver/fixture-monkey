@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import java.beans.ConstructorProperties;
 
-class ConstructorAndPropertyTestSpecs {
+public class ConstructorPropertySpecs {
 
 	public static class ConsturctorAndProperty {
 		private final String value;

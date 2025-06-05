@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 
-class AnonymousInstanceTestSpecs {
+public class AnonymousInstanceSpecs {
 	public interface Interface {
 		String string();
 
