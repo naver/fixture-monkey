@@ -31,6 +31,9 @@ public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	int STRING_DEFAULT_MIN_LENGTH = 0;
 	int STRING_DEFAULT_MAX_LENGTH = 100;
 
+	@Override
+	String rawValue();
+
 	StringCombinableArbitrary withLength(int min, int max);
 
 	/**
