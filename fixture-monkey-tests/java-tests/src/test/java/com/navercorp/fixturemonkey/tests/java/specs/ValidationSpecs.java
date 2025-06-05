@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Value;
 
 @SuppressWarnings("unused")
-class ValidationAnnotationTestSpecs {
+public class ValidationSpecs {
 
 	@Value
 	@NullOrLessThan5

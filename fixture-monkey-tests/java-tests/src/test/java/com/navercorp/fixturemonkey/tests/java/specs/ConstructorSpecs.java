@@ -1,4 +1,4 @@
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import java.beans.ConstructorProperties;
 import java.util.List;
@@ -17,9 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 
-import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.Enum;
-
-public class ConstructorTestSpecs {
+public class ConstructorSpecs {
 	@Value
 	public static class JavaTypeObject {
 		String string;

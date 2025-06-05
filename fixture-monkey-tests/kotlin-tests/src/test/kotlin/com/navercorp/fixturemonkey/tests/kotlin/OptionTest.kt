@@ -22,7 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator
 import com.navercorp.fixturemonkey.api.constraint.JavaDateTimeConstraint
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
-import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
+
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
@@ -115,38 +115,7 @@ class OptionTest {
         then(actual).isBetween(thisYearInstant, nextYearInstant)
     }
 
-    interface Interface {
-        fun string(): String
-    }
 
-    @RepeatedTest(TEST_COUNT)
-    fun anonymousArbitraryIntrospector() {
-        // given
-        val sut = FixtureMonkey.builder()
-            .plugin(KotlinPlugin())
-            .plugin(InterfacePlugin())
-            .build()
-
-        // when
-        val actual = sut.giveMeOne<Interface>().string()
-
-        // then
-        then(actual).isNotNull()
-    }
-
-    @RepeatedTest(TEST_COUNT)
-    fun notUseAnonymousArbitraryIntrospector() {
-        // given
-        val sut = FixtureMonkey.builder()
-            .plugin(InterfacePlugin().useAnonymousArbitraryIntrospector(false))
-            .build()
-
-        // when
-        val actual: Interface = sut.giveMeOne()
-
-        // then
-        then(actual).isNull()
-    }
 
     @RepeatedTest(TEST_COUNT)
     fun requiredPropertyGenerator() {

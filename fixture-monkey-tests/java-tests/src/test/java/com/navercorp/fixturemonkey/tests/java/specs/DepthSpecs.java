@@ -16,21 +16,26 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.List;
 
 import lombok.Value;
 
-class ImmutableFunctionalInterfaceSpecs {
+public class DepthSpecs {
 	@Value
-	public static class FunctionObject {
-		Function<Integer, String> value;
+	public static class OneDepthStringValue {
+		String value;
 	}
 
 	@Value
-	public static class SupplierObject {
-		Supplier<String> value;
+	public static class TwoDepthStringValue {
+		OneDepthStringValue value;
+	}
+
+	@Value
+	public static class DepthStringValueList {
+		List<OneDepthStringValue> oneDepthList;
+		List<TwoDepthStringValue> twoDepthList;
 	}
 }

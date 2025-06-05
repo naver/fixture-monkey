@@ -1,8 +1,8 @@
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import lombok.Value;
 
-class NestedClassTestSpecs {
+public class NestedClassSpecs {
 	@SuppressWarnings("InnerClassMayBeStatic")
 	@Value
 	public class Inner {

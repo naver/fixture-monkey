@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.tests.java.specs;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -43,7 +43,7 @@ import java.util.Set;
 
 import lombok.Data;
 
-class MutableJavaTestSpecs {
+public class MutableSpecs {
 	@Data
 	public static class JavaTypeObject {
 		private String string;
