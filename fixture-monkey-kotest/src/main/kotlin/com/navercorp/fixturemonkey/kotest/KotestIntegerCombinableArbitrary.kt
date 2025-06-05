@@ -25,12 +25,15 @@ import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.negativeInt
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.arbitrary.single
+import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
 import java.util.function.Predicate
 
+@API(since = "1.1.12", status = Status.EXPERIMENTAL)
 class KotestIntegerCombinableArbitrary(private val arb: Arb<Int> = Arb.int()) : IntegerCombinableArbitrary {
     override fun combined(): Int = arb.single()
 
-    override fun rawValue(): IntegerCombinableArbitrary = KotestIntegerCombinableArbitrary(arb)
+    override fun rawValue(): Int = this.combined()
 
     override fun withRange(min: Int, max: Int): IntegerCombinableArbitrary =
         KotestIntegerCombinableArbitrary(Arb.int(min..max))

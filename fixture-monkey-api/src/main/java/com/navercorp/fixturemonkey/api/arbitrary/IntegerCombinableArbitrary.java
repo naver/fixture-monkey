@@ -29,7 +29,7 @@ public interface IntegerCombinableArbitrary extends CombinableArbitrary<Integer>
 	Integer combined();
 
 	@Override
-	IntegerCombinableArbitrary rawValue();
+	Integer rawValue();
 
 	/**
 	 * Generates an IntegerCombinableArbitrary which produces integers within the specified range.

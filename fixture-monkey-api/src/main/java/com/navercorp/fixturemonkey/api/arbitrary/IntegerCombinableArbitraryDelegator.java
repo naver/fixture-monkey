@@ -31,8 +31,8 @@ final class IntegerCombinableArbitraryDelegator implements IntegerCombinableArbi
 	}
 
 	@Override
-	public IntegerCombinableArbitrary rawValue() {
-		return CombinableArbitrary.integers();
+	public Integer rawValue() {
+		return delegate.combined();
 	}
 
 	@Override

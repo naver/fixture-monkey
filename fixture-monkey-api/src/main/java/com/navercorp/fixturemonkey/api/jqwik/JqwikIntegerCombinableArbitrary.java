@@ -44,8 +44,8 @@ public final class JqwikIntegerCombinableArbitrary implements IntegerCombinableA
 	}
 
 	@Override
-	public IntegerCombinableArbitrary rawValue() {
-		return this;
+	public Integer rawValue() {
+		return this.combined();
 	}
 
 	@Override
