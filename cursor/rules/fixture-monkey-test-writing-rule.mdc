@@ -1,0 +1,253 @@
+---
+description: Guidelines for writing effective tests using Fixture Monkey
+globs: ["**/*Test.java", "**/*Test.kt"]
+alwaysApply: false
+---
+
+# Fixture Monkey Test Writing Guidelines
+
+## FixtureMonkey Instance Creation
+
+### Basic Setup
+```java
+// Basic setup with default options
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+
+// Kotlin setup with Kotlin plugin
+val fixtureMonkey = FixtureMonkey
+    .plugin(KotlinPlugin())
+    .build();
+```
+
+### Advanced Configuration
+```java
+// Common configuration pattern from JavaTest.java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+```
+
+## Choosing Generation Methods
+
+### When to use which method?
+
+1. `giveMeOne()` - For single instance with default random values
+   - Use when you only need basic object creation
+   - Perfect for simple null checks or when specific values don't matter
+   - Most efficient when you don't need customization
+   - Good for testing basic object instantiation
+```java
+Product product = fixtureMonkey.giveMeOne(Product.class);
+List<String> strList = fixtureMonkey.giveMeOne(new TypeReference<List<String>>() {});
+```
+
+2. `giveMe()` - For multiple instances
+   - Use when you need multiple test objects
+   - Ideal for testing collections or batch operations
+   - Good for generating test data sets
+   - Perfect for testing list/collection operations
+```java
+// Generate a stream of instances
+Stream<Product> productStream = fixtureMonkey.giveMe(Product.class);
+
+// Generate a list of specific size
+List<Product> productList = fixtureMonkey.giveMe(Product.class, 3);
+```
+
+3. `giveMeBuilder()` - When customization is needed
+   - Use when specific values are required for the test
+   - When you need to set up complex object relationships
+   - When validation rules need to be satisfied
+   - When testing specific business logic scenarios
+   - When you need to customize nested objects
+   - When working with collections that need specific sizes
+```java
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("price", 100.0)
+    .size("options", 3)
+    .sample();
+```
+
+## Best Practices
+
+### 1. Object Customization
+```java
+// Setting specific values
+fixtureMonkey.giveMeBuilder(Product.class)
+    .set("name", "Test Product")
+    .set("price", 100.0)
+    .sample();
+
+// Setting collection sizes - Always set size before customizing elements
+fixtureMonkey.giveMeBuilder(Order.class)
+    .size("items", 3)  // Set size first
+    .set("items[0].name", "Item 1")  // Then customize elements
+    .sample();
+
+// Using Arbitrary values
+fixtureMonkey.giveMeBuilder(Product.class)
+    .set("price", Arbitraries.longs().greaterThan(0))
+    .sample();
+```
+
+### 2. Generic Type Handling
+```java
+// Generic class instantiation
+fixtureMonkey.giveMeOne(new TypeReference<GenericObject<String>>() {});
+
+// Generic collections
+fixtureMonkey.giveMeOne(new TypeReference<List<GenericObject<String>>>() {});
+```
+
+### 3. Complex Object Customization
+```java
+// Nested object customization
+fixtureMonkey.giveMeBuilder(Order.class)
+    .set("customer.name", "John Doe")
+    .set("items[0].price", 100.0)
+    .sample();
+
+// Collection element customization
+fixtureMonkey.giveMeBuilder(Order.class)
+    .size("items", 2)  // Always set size first
+    .set("items[0].name", "Item 1")
+    .set("items[1].name", "Item 2")
+    .sample();
+```
+
+### 4. Validation Integration
+```java
+// With Javax Validation
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaxValidationPlugin())
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+```
+
+## Common Patterns
+
+### 1. Test Data Consistency
+```java
+// Using fixed() for consistent test data
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .fixed()
+    .sample();
+```
+
+### 2. Unique Values
+```java
+// Generating unique values in collections
+List<String> uniqueList = fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {})
+    .size("$", 3)
+    .set("$[*]", Values.unique(() -> Arbitraries.strings().sample()))
+    .sample();
+```
+
+### 3. Complex Object Graphs
+```java
+// Handling recursive objects
+fixtureMonkey.giveMeBuilder(SelfRecursiveObject.class)
+    .set("value", "test")
+    .sample();
+```
+
+## Anti-patterns to Avoid
+
+1. Manual object creation instead of using Fixture Monkey
+```java
+// Don't do this
+User user = new User();
+user.setName("Test User");
+user.setAge(25);
+
+// Do this instead
+User user = fixtureMonkey.giveMeBuilder(User.class)
+    .set("age", 25)
+    .sample();
+```
+
+2. Hardcoding test data without using Fixture Monkey's generation capabilities
+```java
+// Don't do this
+List<Product> products = Arrays.asList(
+    new Product("Product 1", 100.0),
+    new Product("Product 2", 200.0)
+);
+
+// Do this instead
+List<Product> products = fixtureMonkey.giveMe(Product.class, 2);
+```
+
+3. Not using appropriate customization methods
+```java
+// Don't do this
+Product product = fixtureMonkey.giveMeOne(Product.class);
+product.setPrice(100.0); // Modifying after generation
+
+// Do this instead
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("price", 100.0)
+    .sample();
+```
+
+4. Inefficient use of giveMeBuilder()
+```java
+// Inefficient: Setting all fields while only doing null checks
+Address address = fixtureMonkey.giveMeBuilder(Address.class)
+    .set("street", "123 Main St")
+    .set("city", "Seoul")
+    .set("district", "Gangnam")
+    .set("postalCode", "12345")
+    .set("country", "Korea")
+    .sample();
+
+// Efficient: Using giveMeOne() for simple null checks
+Address address = fixtureMonkey.giveMeOne(Address.class);
+```
+
+5. Not setting collection size before customizing elements
+```java
+// Don't do this - collection might be empty
+Order orderWrong = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("products[0].name", "Laptop")  // This might not work!
+    .sample();
+
+// Do this instead - set size first
+Order orderCorrect = fixtureMonkey.giveMeBuilder(Order.class)
+    .size("products", 1)                // Set size first!
+    .set("products[0].name", "Laptop")  // Now this works
+    .sample();
+```
+
+## Decision Tree
+
+1. What is the purpose of the test?
+   - Only null checks → Use `giveMeOne()`
+   - Specific value assertions → Go to 2
+   - Complex object setup → Go to 3
+
+2. Are you using specific values in assertions?
+   - Yes → Use `giveMeBuilder()` with only necessary fields
+   - No → Use `giveMeOne()`
+
+3. Do you need multiple instances?
+   - Yes → Use `giveMe()`
+   - No → Go to 4
+
+4. Do you need to customize the instance?
+   - Yes → Use `giveMeBuilder()` with only required customizations
+   - No → Use `giveMeOne()`
+
+5. Do you need to work with generic types?
+   - Yes → Use `TypeReference`
+   - No → Use direct class reference
+
+6. Do you need validation?
+   - Yes → Add appropriate validation plugin
+   - No → Use default configuration
+
+7. Are you working with collections?
+   - Yes → Always set size before customizing elements
+   - No → Proceed with customization
