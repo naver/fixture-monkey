@@ -31,17 +31,17 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.AnnotatedInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ContainerInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.GetterInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedInterfaceWithSameNameMethod;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedTwoInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.Interface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithConstant;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithParams;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.NestedInheritedInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.SimilarInterface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.AnnotatedInterface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.ContainerInterface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.GetterInterface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.InheritedInterface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.InheritedInterfaceWithSameNameMethod;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.InheritedTwoInterface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.Interface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.InterfaceWithConstant;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.InterfaceWithParams;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.NestedInheritedInterface;
+import com.navercorp.fixturemonkey.tests.java.specs.AnonymousInstanceSpecs.SimilarInterface;
 
 class AnonymousInstanceTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()

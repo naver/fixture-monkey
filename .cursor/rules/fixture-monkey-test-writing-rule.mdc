@@ -1,0 +1,444 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Fixture Monkey Test Writing Guidelines
+
+## Overview
+This rule provides comprehensive guidelines for writing effective tests using Fixture Monkey, helping developers choose the right patterns and avoid common pitfalls when generating test data.
+
+## When to Use Fixture Monkey
+
+### Use Fixture Monkey When:
+- Creating test objects with complex nested structures
+- Need random but valid test data for property-based testing
+- Want to reduce boilerplate test setup code
+- Testing with multiple variations of the same object type
+- Working with objects that have many optional fields
+
+### Don't Use Fixture Monkey When:
+- Testing specific edge cases that require exact values
+- Simple objects with only 1-2 fields
+- Testing null/empty scenarios specifically
+- Performance-critical test scenarios where object creation overhead matters
+
+## FixtureMonkey Instance Creation Patterns
+
+### Basic Setup (Java)
+```java
+// For simple cases - use default configuration
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+
+// For Lombok projects - use ConstructorProperties
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+
+// For complex scenarios - add plugins and customizations
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .plugin(new JavaxValidationPlugin())
+    .defaultNotNull(true)
+    .register(User.class, fm -> fm.giveMeBuilder(User.class)
+        .set("email", Arbitraries.strings().withCharset("@").ofMinLength(5)))
+    .build();
+```
+
+### Basic Setup (Kotlin)
+```kotlin
+// For Kotlin projects - always use KotlinPlugin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .build()
+
+// With additional customizations
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotestPlugin()) // If using Kotest
+    .defaultNotNull(true)
+    .build()
+```
+
+## Method Selection Guide
+
+### Use `giveMeOne()` When:
+- You need a single instance with random values
+- No customization required
+- Quick and simple object creation
+
+```java
+// Simple case
+User user = fixtureMonkey.giveMeOne(User.class);
+
+// With generic types
+List<String> tags = fixtureMonkey.giveMeOne(new TypeReference<List<String>>() {});
+```
+
+### Use `giveMeBuilder()` When:
+- You need to customize specific fields
+- Setting constraints or validations
+- Working with collections that need specific sizes
+- Most common pattern for test scenarios
+
+```java
+// Customizing specific fields
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("name", "Test Product")
+    .set("price", Arbitraries.longs().greaterThan(0))
+    .size("tags", 3)
+    .sample();
+
+// Complex nested customization
+Order order = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("customer.email", "test@example.com")
+    .set("items[0].quantity", 5)
+    .size("items", 2)
+    .sample();
+```
+
+### Use `giveMe()` When:
+- You need multiple instances
+- Batch testing scenarios
+- Property-based testing with multiple samples
+
+```java
+// Multiple instances
+List<User> users = fixtureMonkey.giveMe(User.class, 10);
+
+// With customization
+List<Product> products = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("category", "Electronics")
+    .sampleList(5);
+```
+
+## Common Patterns and Best Practices
+
+### 1. Field Customization Patterns
+```java
+// Setting simple values
+.set("fieldName", "specificValue")
+.set("fieldName", Arbitraries.strings().alpha().ofLength(10))
+
+// Setting nested fields
+.set("address.street", "123 Main St")
+.set("user.profile.bio", "Test bio")
+
+// Setting collection elements
+.set("tags[0]", "important")
+.set("items[*].status", "ACTIVE") // All elements
+
+// Setting collection sizes
+.size("items", 3)
+.size("tags", 1, 5) // Between 1 and 5
+```
+
+### 2. Working with Collections
+```java
+// List customization
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .size("reviews", 3)
+    .set("reviews[0].rating", 5)
+    .set("reviews[1].rating", 4)
+    .sample();
+
+// Map customization
+User user = fixtureMonkey.giveMeBuilder(User.class)
+    .size("preferences", 2)
+    .set("preferences.theme", "dark")
+    .sample();
+```
+
+### 3. Generic Types
+```java
+// Simple generic
+GenericContainer<String> container = fixtureMonkey.giveMeOne(
+    new TypeReference<GenericContainer<String>>() {}
+);
+
+// Complex generic with customization
+ResponseWrapper<List<Product>> response = fixtureMonkey.giveMeBuilder(
+    new TypeReference<ResponseWrapper<List<Product>>>() {}
+)
+    .set("data", fixtureMonkey.giveMe(Product.class, 3))
+    .set("status", "SUCCESS")
+    .sample();
+```
+
+### 4. Validation and Constraints
+```java
+// Using Arbitraries for constraints
+User user = fixtureMonkey.giveMeBuilder(User.class)
+    .set("age", Arbitraries.integers().between(18, 65))
+    .set("email", Arbitraries.strings()
+        .withCharset("abcdefghijklmnopqrstuvwxyz@.")
+        .ofMinLength(5))
+    .set("phone", Arbitraries.strings().numeric().ofLength(10))
+    .sample();
+
+// Post-conditions for complex validation
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .setPostCondition(p -> p.getPrice() > 0 && p.getName() != null)
+    .sample();
+```
+
+## Test Structure Patterns
+
+### 1. Single Test Method Pattern
+```java
+@Test
+void shouldCalculateDiscountCorrectly() {
+    // given
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .defaultNotNull(true)
+        .build();
+    
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .set("price", 1000L)
+        .set("category", "ELECTRONICS")
+        .sample();
+    
+    // when
+    double discount = discountService.calculateDiscount(product);
+    
+    // then
+    assertThat(discount).isEqualTo(100.0);
+}
+```
+
+### 2. Test Class with Shared FixtureMonkey
+```java
+class ProductServiceTest {
+    private static final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .defaultNotNull(true)
+        .register(Product.class, fm -> fm.giveMeBuilder(Product.class)
+            .set("price", Arbitraries.longs().greaterThan(0)))
+        .build();
+    
+    @Test
+    void shouldProcessValidProduct() {
+        // given
+        Product product = fixtureMonkey.giveMeBuilder(Product.class)
+            .set("status", "ACTIVE")
+            .sample();
+        
+        // when & then
+        assertThatNoException().isThrownBy(() -> 
+            productService.process(product));
+    }
+}
+```
+
+### 3. Property-Based Testing Pattern
+```java
+@RepeatedTest(100)
+void shouldAlwaysReturnPositivePrice() {
+    // given
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .set("basePrice", Arbitraries.doubles().greaterThan(0))
+        .sample();
+    
+    // when
+    double finalPrice = pricingService.calculateFinalPrice(product);
+    
+    // then
+    assertThat(finalPrice).isPositive();
+}
+```
+
+## Common Mistakes to Avoid
+
+### 1. Over-customization
+```java
+// ❌ Bad - too much manual setup defeats the purpose
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("id", 1L)
+    .set("name", "Test Product")
+    .set("description", "Test Description")
+    .set("price", 100L)
+    .set("category", "TEST")
+    .set("createdAt", Instant.now())
+    .sample();
+
+// ✅ Good - only customize what's necessary for the test
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("price", 100L) // Only what matters for this test
+    .sample();
+```
+
+### 2. Not Using Type References for Generics
+```java
+// ❌ Bad - loses generic type information
+List products = fixtureMonkey.giveMeOne(List.class);
+
+// ✅ Good - preserves type safety
+List<Product> products = fixtureMonkey.giveMeOne(new TypeReference<List<Product>>() {});
+```
+
+### 3. Creating FixtureMonkey in Every Test
+```java
+// ❌ Bad - repetitive and inefficient
+@Test
+void test1() {
+    FixtureMonkey fm = FixtureMonkey.create();
+    // test logic
+}
+
+@Test
+void test2() {
+    FixtureMonkey fm = FixtureMonkey.create();
+    // test logic
+}
+
+// ✅ Good - shared instance
+class MyTest {
+    private static final FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+    
+    @Test void test1() { /* use fixtureMonkey */ }
+    @Test void test2() { /* use fixtureMonkey */ }
+}
+```
+
+## Framework-Specific Patterns
+
+### Spring Boot Tests
+```java
+@SpringBootTest
+class UserServiceIntegrationTest {
+    private static final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .plugin(new JavaxValidationPlugin())
+        .defaultNotNull(true)
+        .build();
+    
+    @Autowired
+    private UserService userService;
+    
+    @Test
+    void shouldCreateUser() {
+        // given
+        CreateUserRequest request = fixtureMonkey.giveMeBuilder(CreateUserRequest.class)
+            .set("email", "test@example.com")
+            .sample();
+        
+        // when & then
+        assertThatNoException().isThrownBy(() -> userService.createUser(request));
+    }
+}
+```
+
+### JPA Entity Testing
+```java
+@DataJpaTest
+class UserRepositoryTest {
+    private static final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+        .defaultNotNull(true)
+        .build();
+    
+    @Test
+    void shouldSaveUser() {
+        // given
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+            .setNull("id") // Let JPA generate ID
+            .set("email", "unique@example.com")
+            .sample();
+        
+        // when
+        User saved = userRepository.save(user);
+        
+        // then
+        assertThat(saved.getId()).isNotNull();
+    }
+}
+```
+
+## Performance Considerations
+
+### 1. Reuse FixtureMonkey Instances
+```java
+// ✅ Good - static instance for reuse
+private static final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .build();
+```
+
+### 2. Use Appropriate Sample Sizes
+```java
+// ✅ Good - reasonable sample size for property testing
+@RepeatedTest(10) // Not 1000 unless necessary
+void propertyTest() {
+    Product product = fixtureMonkey.giveMeOne(Product.class);
+    // test logic
+}
+```
+
+### 3. Cache Complex Builders
+```java
+// ✅ Good - cache expensive builder configurations
+private static final ArbitraryBuilder<ComplexObject> COMPLEX_BUILDER = 
+    fixtureMonkey.giveMeBuilder(ComplexObject.class)
+        .set("field1", "value1")
+        .set("field2", Arbitraries.strings().alpha())
+        .size("collection", 5);
+
+@Test
+void test() {
+    ComplexObject obj = COMPLEX_BUILDER.sample();
+    // test logic
+}
+```
+
+## Troubleshooting Common Issues
+
+### 1. Null Values in Required Fields
+```java
+// Problem: Getting null values unexpectedly
+// Solution: Use defaultNotNull(true) or set specific fields
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .defaultNotNull(true)
+    .build();
+```
+
+### 2. Validation Errors
+```java
+// Problem: Generated objects fail validation
+// Solution: Use JavaxValidationPlugin and set constraints
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaxValidationPlugin())
+    .build();
+```
+
+### 3. Complex Object Creation Failures
+```java
+// Problem: Cannot create objects with complex constructors
+// Solution: Use appropriate introspector
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(new FailoverIntrospector(
+        ConstructorPropertiesArbitraryIntrospector.INSTANCE,
+        FieldReflectionArbitraryIntrospector.INSTANCE,
+        BeanArbitraryIntrospector.INSTANCE
+    ))
+    .build();
+```
+
+## Quick Reference
+
+### Method Cheat Sheet
+- `giveMeOne(Class)` → Single random instance
+- `giveMeBuilder(Class)` → Customizable builder
+- `giveMe(Class, count)` → Multiple instances
+- `.set(field, value)` → Set specific field
+- `.size(collection, size)` → Set collection size
+- `.setNull(field)` → Explicitly set null
+- `.sample()` → Generate final instance
+- `.sampleList(count)` → Generate multiple from builder
+
+### Common Arbitraries
+- `Arbitraries.strings().alpha().ofLength(10)` → Alphabetic strings
+- `Arbitraries.integers().between(1, 100)` → Bounded integers
+- `Arbitraries.doubles().greaterThan(0)` → Positive doubles
+- `Arbitraries.of("A", "B", "C")` → From specific values

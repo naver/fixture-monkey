@@ -276,6 +276,10 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
     fun set(property: KProperty1<T, Any?>, value: Any?): KotlinTypeDefaultArbitraryBuilder<T> =
         this.set(propertyExpressionGenerator(property), value)
 
+    @JvmName("setRoot")
+    fun set(property: KProperty1<T, Class<T>>, value: Any?): KotlinTypeDefaultArbitraryBuilder<T> =
+        this.set(value)
+
     fun setExp(property: KProperty1<T, Any?>, value: Any?, limit: Long): KotlinTypeDefaultArbitraryBuilder<T> =
         this.set(propertyExpressionGenerator(property), value, limit.toInt())
 
@@ -334,6 +338,13 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
             filter,
             limit.toInt(),
         )
+
+    @JvmName("setPostConditionRoot")
+    fun setPostCondition(
+        property: KProperty1<T, Class<T>>,
+        filter: (T) -> Boolean,
+    ): KotlinTypeDefaultArbitraryBuilder<T> =
+        this.setPostCondition(filter)
 
     inline fun <reified U> setPostCondition(
         property: KProperty1<T, *>,
@@ -474,8 +485,16 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
     fun setNotNullExpGetter(propertySelector: PropertySelector): KotlinTypeDefaultArbitraryBuilder<T> =
         this.setNotNull(propertySelector)
 
+    @JvmName("sizeRoot")
+    fun size(property: KProperty1<T, Class<T>>, size: Int): KotlinTypeDefaultArbitraryBuilder<T> =
+        this.size("$", size)
+
     fun size(property: KProperty1<T, *>, size: Int): KotlinTypeDefaultArbitraryBuilder<T> =
         this.size(propertyExpressionGenerator(property), size)
+
+    @JvmName("sizeRoot")
+    fun size(property: KProperty1<T, Class<T>>, min: Int, max: Int): KotlinTypeDefaultArbitraryBuilder<T> =
+        this.size("$", min, max)
 
     fun size(property: KProperty1<T, *>, min: Int, max: Int): KotlinTypeDefaultArbitraryBuilder<T> =
         this.size(propertyExpressionGenerator(property), min, max)
@@ -504,6 +523,10 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
     fun sizeExpGetter(propertySelector: PropertySelector, min: Int, max: Int): KotlinTypeDefaultArbitraryBuilder<T> =
         this.size(propertySelector, min, max)
 
+    @JvmName("minSizeRoot")
+    fun minSize(property: KProperty1<T, Class<T>>, min: Int): KotlinTypeDefaultArbitraryBuilder<T> =
+        this.minSize("$", min)
+
     fun minSize(property: KProperty1<T, *>, min: Int): KotlinTypeDefaultArbitraryBuilder<T> =
         this.minSize(propertyExpressionGenerator(property), min)
 
@@ -518,6 +541,10 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
 
     fun minSizeExpGetter(propertySelector: PropertySelector, min: Int): KotlinTypeDefaultArbitraryBuilder<T> =
         this.minSize(propertySelector, min)
+
+    @JvmName("maxSizeRoot")
+    fun maxSize(property: KProperty1<T, Class<T>>, max: Int): KotlinTypeDefaultArbitraryBuilder<T> =
+        this.maxSize("$", max)
 
     fun maxSize(property: KProperty1<T, *>, max: Int): KotlinTypeDefaultArbitraryBuilder<T> =
         this.maxSize(propertyExpressionGenerator(property), max)
@@ -540,6 +567,12 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
         limit: Long,
     ): KotlinTypeDefaultArbitraryBuilder<T> =
         this.setLazy(propertyExpressionGenerator(property), supplier, limit.toInt())
+
+    @JvmName("setLazyRoot")
+    fun setLazy(
+        property: KProperty1<T, Class<T>>,
+        supplier: Supplier<Any?>,
+    ): KotlinTypeDefaultArbitraryBuilder<T> = this.setLazy("$", supplier)
 
     fun setLazy(
         property: KProperty1<T, Any?>,
@@ -600,12 +633,14 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
     fun <U> customizeProperty(
         property: KProperty1<T, U?>,
         combinableArbitraryCustomizer: Function<CombinableArbitrary<out U>, CombinableArbitrary<out U>>
-    ): ArbitraryBuilder<T> = this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
+    ): ArbitraryBuilder<T> =
+        this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
 
     fun <U> customizeProperty(
         property: KFunction1<T, U?>,
         combinableArbitraryCustomizer: Function<CombinableArbitrary<out U>, CombinableArbitrary<out U>>
-    ): ArbitraryBuilder<T> = this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
+    ): ArbitraryBuilder<T> =
+        this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
 }
 
 class InternalKotlinTypeDefaultArbitraryBuilder<T>(delegate: ArbitraryBuilder<T>) :

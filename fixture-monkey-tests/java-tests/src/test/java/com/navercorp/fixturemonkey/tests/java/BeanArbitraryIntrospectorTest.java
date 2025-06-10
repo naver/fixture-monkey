@@ -7,9 +7,9 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
-import com.navercorp.fixturemonkey.tests.java.MutableJavaTestSpecs.ContainerObject;
-import com.navercorp.fixturemonkey.tests.java.MutableJavaTestSpecs.DateTimeObject;
-import com.navercorp.fixturemonkey.tests.java.MutableJavaTestSpecs.JavaTypeObject;
+import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.ContainerObject;
+import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.DateTimeObject;
+import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.JavaTypeObject;
 
 class BeanArbitraryIntrospectorTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
