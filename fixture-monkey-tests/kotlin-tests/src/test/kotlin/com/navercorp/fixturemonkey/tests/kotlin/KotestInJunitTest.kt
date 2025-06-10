@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.kotest.KotestStringCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.giveMeArb
 import com.navercorp.fixturemonkey.kotest.setArb
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
-import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.setPostCondition
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
@@ -837,7 +837,7 @@ class KotestInJunitTest {
     fun setPostConditionExtension() {
         class StringObject(val string: String)
 
-        val actual = SUT.giveMeBuilder<StringObject>()
+        val actual = SUT.giveMeKotlinBuilder<StringObject>()
             .setPostCondition<StringObject, String>("string") {
                 it.length < 5
             }

@@ -1,4 +1,4 @@
-package com.navercorp.fixturemonkey.tests.kotlin
+package com.navercorp.fixturemonkey.tests.kotlin.specs
 
 class CircularReferenceValueNullable(
     val value: CircularReferenceDefaultArgument? = null
