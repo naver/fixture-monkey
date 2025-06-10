@@ -19,9 +19,10 @@
 package com.navercorp.fixturemonkey.kotest
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
+import com.navercorp.fixturemonkey.api.arbitrary.IntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet
-import com.navercorp.fixturemonkey.api.arbitrary.IntegerCombinableArbitrary
+import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import io.kotest.property.Arb
@@ -44,11 +45,10 @@ import io.kotest.property.arbitrary.offsetDateTime
 import io.kotest.property.arbitrary.period
 import io.kotest.property.arbitrary.short
 import io.kotest.property.arbitrary.single
-import io.kotest.property.arbitrary.string
 import io.kotest.property.arbitrary.yearMonth
-import io.kotest.property.arbitrary.zonedDateTime
 import io.kotest.property.arbitrary.zoneId
 import io.kotest.property.arbitrary.zoneOffset
+import io.kotest.property.arbitrary.zonedDateTime
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.math.BigDecimal
@@ -79,17 +79,16 @@ import kotlin.time.toJavaDuration
 class KotestJavaArbitraryGeneratorSet(
     private val constraintGenerator: JavaConstraintGenerator,
 ) : JavaTypeArbitraryGeneratorSet {
-    override fun strings(context: ArbitraryGeneratorContext): CombinableArbitrary<String> {
+    override fun strings(context: ArbitraryGeneratorContext): StringCombinableArbitrary {
         val stringConstraint = constraintGenerator.generateStringConstraint(context)
 
-        return CombinableArbitrary.from {
-            if (stringConstraint != null) {
-                val minSize = stringConstraint.minSize?.toInt() ?: 0
-                val maxSize = stringConstraint.maxSize?.toInt() ?: 100
-                Arb.string(minSize = minSize, maxSize = maxSize).single()
-            } else {
-                Arb.string().single()
-            }
+        val combinableArbitrary = KotestStringCombinableArbitrary()
+        return if (stringConstraint != null) {
+            val minSize = stringConstraint.minSize?.toInt() ?: 0
+            val maxSize = stringConstraint.maxSize?.toInt() ?: 100
+            combinableArbitrary.withLength(minSize, maxSize)
+        } else {
+            combinableArbitrary
         }
     }
 
