@@ -27,7 +27,9 @@ import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
@@ -268,5 +270,83 @@ class SimpleValueJqwikPluginTest {
         val actual: Double = sut.giveMeOne()
 
         then(actual).isBetween(-5.0, 5.0)
+    }
+
+    @Test
+    fun simpleValueJqwikPluginOnlyGreaterThan() {
+        // given
+        val expected = 10001L
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minNumberValue(expected)
+            )
+            .build()
+
+        // when
+        val actual: Long = sut.giveMeOne()
+
+        // then
+        then(actual).isGreaterThanOrEqualTo(expected)
+    }
+
+    @Test
+    fun simpleValueJqwikPluginMinStringLengthGreaterThanDefault() {
+        // given
+        val expected = 10L
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minStringLength(expected)
+            )
+            .build()
+
+        // when
+        val actual: String = sut.giveMeOne()
+
+        // then
+        then(actual.length).isGreaterThanOrEqualTo(expected.toInt())
+    }
+
+    @Test
+    fun simpleValueJqwikPluginMinContainerSizeGreaterThanDefault() {
+        // given
+        val expected = 5
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minContainerSize(expected)
+            )
+            .build()
+
+        // when
+        val actual: List<String> = sut.giveMeOne<List<String>>()
+
+        // then
+        then(actual.size).isGreaterThanOrEqualTo(expected)
+    }
+
+    @Test
+    fun simpleValueJqwikPluginMinusDaysFromTodayGreaterThanDefault() {
+        // given
+        val expected = 400L
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minusDaysFromToday(expected)
+            )
+            .build()
+
+        // when
+        val actual: LocalDateTime = sut.giveMeOne()
+
+        // then
+        val expectedMinDate = LocalDateTime.now().minusDays(expected)
+        val expectedMaxDate = LocalDateTime.now().plusDays(expected + 30L)
+        then(actual).isBetween(expectedMinDate, expectedMaxDate)
     }
 }

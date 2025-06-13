@@ -39,6 +39,7 @@ import com.navercorp.fixturemonkey.api.constraint.JavaDateTimeConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaDecimalConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaIntegerConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
@@ -52,12 +53,16 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		new HashSet<>(Arrays.asList('.', '_', '-', '~'));
 	private static final long DEFAULT_MIN_STRING_LENGTH = 0L;
 	private static final long DEFAULT_MAX_STRING_LENGTH = 5L;
+	private static final long DEFAULT_STRING_BUFFER_LENGTH = 3L;
 	private static final long DEFAULT_MIN_NUMBER_VALUE = -10000L;
 	private static final long DEFAULT_MAX_NUMBER_VALUE = 10000L;
+	private static final long DEFAULT_NUMBER_BUFFER_VALUE = 100L;
 	private static final int DEFAULT_MIN_CONTAINER_SIZE = 0;
 	private static final int DEFAULT_MAX_CONTAINER_SIZE = 3;
+	private static final int DEFAULT_CONTAINER_BUFFER_SIZE = 2;
 	private static final long DEFAULT_MINUS_DAYS = 365;
 	private static final long DEFAULT_PLUS_DAYS = 365;
+	private static final long DEFAULT_DAYS_BUFFER = 30L;
 	private static final Predicate<Character> DEFAULT_CHARACTER_PREDICATE = character -> {
 		boolean isAlphabet = 48 <= character && character <= 57;
 		boolean isNumeric = 65 <= character && character <= 122;
@@ -69,12 +74,16 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	private long minStringLength = DEFAULT_MIN_STRING_LENGTH;
 	private long maxStringLength = DEFAULT_MAX_STRING_LENGTH;
+	private boolean setMaxStringLength = false;
 	private long minNumberValue = DEFAULT_MIN_NUMBER_VALUE;
 	private long maxNumberValue = DEFAULT_MAX_NUMBER_VALUE;
+	private boolean setMaxNumberValue = false;
 	private int minContainerSize = DEFAULT_MIN_CONTAINER_SIZE;
 	private int maxContainerSize = DEFAULT_MAX_CONTAINER_SIZE;
+	private boolean setMaxContainerSize = false;
 	private long minusDaysFromToday = DEFAULT_MINUS_DAYS;
 	private long plusDaysFromToday = DEFAULT_PLUS_DAYS;
+	private boolean setPlusDaysFromToday = false;
 	private Predicate<Character> characterPredicate = DEFAULT_CHARACTER_PREDICATE;
 
 	public SimpleValueJqwikPlugin minStringLength(long minStringLength) {
@@ -84,6 +93,7 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	public SimpleValueJqwikPlugin maxStringLength(long maxStringLength) {
 		this.maxStringLength = maxStringLength;
+		this.setMaxStringLength = true;
 		return this;
 	}
 
@@ -94,6 +104,7 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	public SimpleValueJqwikPlugin maxNumberValue(long maxNumberValue) {
 		this.maxNumberValue = maxNumberValue;
+		this.setMaxNumberValue = true;
 		return this;
 	}
 
@@ -104,6 +115,7 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	public SimpleValueJqwikPlugin maxContainerSize(int maxContainerSize) {
 		this.maxContainerSize = maxContainerSize;
+		this.setMaxContainerSize = true;
 		return this;
 	}
 
@@ -114,6 +126,7 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	public SimpleValueJqwikPlugin plusDaysFromToday(long plusDaysFromToday) {
 		this.plusDaysFromToday = plusDaysFromToday;
+		this.setPlusDaysFromToday = true;
 		return this;
 	}
 
@@ -124,21 +137,52 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	@Override
 	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
+		long maxStringLength = this.maxStringLength;
+		if (!setMaxStringLength) {
+			maxStringLength = Math.max(
+				DEFAULT_MAX_STRING_LENGTH,
+				minStringLength + DEFAULT_STRING_BUFFER_LENGTH
+			);
+		}
+
+		long maxNumberValue = this.maxNumberValue;
+		if (!setMaxNumberValue) {
+			maxNumberValue = Math.max(DEFAULT_MAX_NUMBER_VALUE, minNumberValue + DEFAULT_NUMBER_BUFFER_VALUE);
+		}
+
+		int maxContainerSize = this.maxContainerSize;
+		if (!setMaxContainerSize) {
+			maxContainerSize = Math.max(
+				DEFAULT_MAX_CONTAINER_SIZE,
+				minContainerSize + DEFAULT_CONTAINER_BUFFER_SIZE
+			);
+		}
+
+		long plusDaysFromToday = this.plusDaysFromToday;
+		if (!setPlusDaysFromToday) {
+			plusDaysFromToday = Math.max(
+				DEFAULT_PLUS_DAYS,
+				minusDaysFromToday + DEFAULT_DAYS_BUFFER
+			);
+		}
+
+		SimpleJavaConstraintGenerator simpleJavaConstraintGenerator = new SimpleJavaConstraintGenerator(
+			this.minStringLength,
+			maxStringLength,
+			this.minNumberValue,
+			maxNumberValue,
+			this.minContainerSize,
+			maxContainerSize,
+			this.minusDaysFromToday,
+			plusDaysFromToday
+		);
+
 		optionsBuilder.insertFirstJavaConstraintGeneratorCustomizer(
 				javaConstraintGenerator ->
 					new CompositeJavaConstraintGenerator(
 						Arrays.asList(
 							javaConstraintGenerator,
-							new SimpleJavaConstraintGenerator(
-								this.minStringLength,
-								this.maxStringLength,
-								this.minNumberValue,
-								this.maxNumberValue,
-								this.minContainerSize,
-								this.maxContainerSize,
-								this.minusDaysFromToday,
-								this.plusDaysFromToday
-							)
+							simpleJavaConstraintGenerator
 						)
 					)
 			)
@@ -153,6 +197,13 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 					},
 					new JqwikJavaArbitraryResolver(javaConstraintGenerator)
 				)
+			)
+			.defaultArbitraryContainerInfoGenerator(
+				containerType ->
+					new ArbitraryContainerInfo(
+						simpleJavaConstraintGenerator.minContainerSize,
+						simpleJavaConstraintGenerator.maxContainerSize
+					)
 			);
 	}
 

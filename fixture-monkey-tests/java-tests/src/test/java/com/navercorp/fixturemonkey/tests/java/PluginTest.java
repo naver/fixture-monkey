@@ -33,6 +33,8 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
+import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.specs.ConstructorSpecs.JavaxValidationObject;
 import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.AbstractClassObject;
@@ -55,10 +57,7 @@ class PluginTest {
 					Arrays.asList(
 						InterfaceStringObject.class,
 						InterfaceIntegerObject.class,
-						InterfaceListObject.class
-					)
-				)
-			)
+						InterfaceListObject.class)))
 			.build();
 
 		List<InterfaceObject> element = sut.giveMeOne(
@@ -96,8 +95,7 @@ class PluginTest {
 				new InterfacePlugin()
 					.abstractClassExtends(
 						AbstractClassObject.class,
-						Collections.singletonList(AbstractClassStringChildObject.class))
-			)
+						Collections.singletonList(AbstractClassStringChildObject.class)))
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 			.build();
 
@@ -114,10 +112,8 @@ class PluginTest {
 					new InterfacePlugin()
 						.abstractClassExtends(
 							InterfaceObject.class,
-							Collections.singletonList(InterfaceStringObject.class))
-				)
-				.build()
-		)
+							Collections.singletonList(InterfaceStringObject.class)))
+				.build())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("should be abstract class");
 	}
@@ -130,11 +126,75 @@ class PluginTest {
 					new InterfacePlugin()
 						.interfaceImplements(
 							AbstractClassObject.class,
-							Collections.singletonList(AbstractClassStringChildObject.class))
-				)
-				.build()
-		)
+							Collections.singletonList(AbstractClassStringChildObject.class)))
+				.build())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("should be interface");
+	}
+
+	@Test
+	void simpleValueJqwikPluginMinNumberValueGreaterThanDefault() {
+		// given
+		long expected = 10001L;
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new SimpleValueJqwikPlugin()
+				.minNumberValue(expected))
+			.build();
+
+		// when
+		long actual = sut.giveMeOne(Long.class);
+
+		then(actual).isGreaterThanOrEqualTo(expected);
+	}
+
+	@Test
+	void simpleValueJqwikPluginMinStringLengthGreaterThanDefault() {
+		// given
+		long expected = 10L;
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new SimpleValueJqwikPlugin()
+				.minStringLength(expected))
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(String.class);
+
+		// then
+		then(actual.length()).isGreaterThanOrEqualTo((int)expected);
+	}
+
+	@Test
+	void simpleValueJqwikPluginMinContainerSizeGreaterThanDefault() {
+		// given
+		int expected = 5;
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new SimpleValueJqwikPlugin()
+				.minContainerSize(expected))
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeOne(new TypeReference<List<String>>() {
+		});
+
+		// then
+		then(actual.size()).isGreaterThanOrEqualTo(expected);
+	}
+
+	@Test
+	void simpleValueJqwikPluginMinusDaysFromTodayGreaterThanDefault() {
+		// given
+		long expected = 400L;
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new SimpleValueJqwikPlugin()
+				.minusDaysFromToday(expected))
+			.build();
+
+		// when
+		java.time.LocalDateTime actual = sut.giveMeOne(java.time.LocalDateTime.class);
+
+		// then
+		java.time.LocalDateTime expectedMinDate = java.time.LocalDateTime.now().minusDays(expected);
+		java.time.LocalDateTime expectedMaxDate = java.time.LocalDateTime.now().plusDays(expected + 30L);
+		then(actual).isBetween(expectedMinDate, expectedMaxDate);
 	}
 }
