@@ -39,6 +39,18 @@ class InnerSpecTest {
         then(actual).containsKeys("key1", "key2")
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun setKotlinInnerByTrailingLambda() {
+        val actual = SUT.giveMeKotlinBuilder<Map<String, String>>()
+            .setKotlinInner {
+                keys("key1", "key2")
+                minSize(3)
+            }
+            .sample()
+
+        then(actual).containsKeys("key1", "key2")
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
