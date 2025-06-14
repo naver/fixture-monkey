@@ -30,6 +30,28 @@ fun <T> ArbitraryBuilder<T>.setInner(innerSpecConfigurer: ((InnerSpec) -> Unit))
     return this.setInner(InnerSpec().apply(innerSpecConfigurer))
 }
 
+/**
+ * Apply manipulation to [KotlinInnerSpec] using Kotlin DSL syntax
+ * and pass it to [setInner][com.navercorp.fixturemonkey.ArbitraryBuilder.setInner].
+ * This provides improved Kotlin interoperability with proper DSL pattern.
+ */
+fun <T> ArbitraryBuilder<T>.setKotlinInner(configure: KotlinInnerSpec.() -> Unit): ArbitraryBuilder<T> {
+    val kotlinSpec = KotlinInnerSpec()
+    kotlinSpec.configure()
+    return this.setInner(kotlinSpec.toInnerSpec())
+}
+
+/**
+ * Create a [KotlinInnerSpec] using Kotlin DSL syntax.
+ * This provides a fluent way to build [InnerSpec][com.navercorp.fixturemonkey.customizer.InnerSpec] configurations
+ * with improved type safety and readability.
+ */
+fun kotlinInnerSpec(configure: KotlinInnerSpec.() -> Unit): KotlinInnerSpec {
+    val kotlinSpec = KotlinInnerSpec()
+    kotlinSpec.configure()
+    return kotlinSpec
+}
+
 @Deprecated(
     message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostCondition(expression, predicate)")
