@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo
-import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.customizer.Values.NOT_NULL
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
@@ -649,7 +648,7 @@ class KotlinInnerSpecTest {
     fun allValueInner() {
         val expected = "test"
 
-        val actual = SUT.giveMeBuilder(MapObject::class.java)
+        val actual = SUT.giveMeBuilder<MapObject>()
             .setKotlinInner {
                 property("objectValueMap") {
                     allValue { property("str", expected) }
@@ -668,7 +667,7 @@ class KotlinInnerSpecTest {
         val expected = "test"
 
         // when
-        val actual = SUT.giveMeBuilder(object : TypeReference<List<String>>() {})
+        val actual = SUT.giveMeBuilder<List<String>>()
             .setKotlinInner {
                 allListElement(expected)
             }
@@ -682,7 +681,7 @@ class KotlinInnerSpecTest {
         val expected = "test"
 
         // when
-        val actual = SUT.giveMeBuilder(object : TypeReference<List<List<String>>>() {})
+        val actual = SUT.giveMeBuilder<List<List<String>>>()
             .setKotlinInner {
                 allListElement { allListElement(expected) }
             }
@@ -735,7 +734,7 @@ class KotlinInnerSpecTest {
     fun listElementInMaxSize() {
         val expected = "expected"
 
-        val actual = SUT.giveMeBuilder(object : TypeReference<List<String>>() {})
+        val actual = SUT.giveMeBuilder<List<String>>()
             .setKotlinInner {
                 maxSize(2)
                 listElement(0, expected)
@@ -748,7 +747,7 @@ class KotlinInnerSpecTest {
 
     @Property
     fun setAfterSizeReturnsSet() {
-        val actual = SUT.giveMeBuilder(ListStringObject::class.java)
+        val actual = SUT.giveMeBuilder<ListStringObject>()
             .setKotlinInner {
                 property("values") { size(2) }
                 property("values", ArrayList<String>())
@@ -849,7 +848,7 @@ class KotlinInnerSpecTest {
     fun valuesForCollection() {
         val valueList = listOf("value1", "value2", "value3")
 
-        val actual = SUT.giveMeBuilder(MapObject::class.java)
+        val actual = SUT.giveMeBuilder<MapObject>()
             .setKotlinInner {
                 property("strMap") {
                     values(valueList)
@@ -885,7 +884,7 @@ class KotlinInnerSpecTest {
         val expected = "test"
 
         // when
-        val actual = SUT.giveMeBuilder(object : TypeReference<Supplier<SimpleObject>>() {})
+        val actual = SUT.giveMeBuilder<Supplier<SimpleObject>>()
             .setKotlinInner {
                 property("str", expected)
             }
