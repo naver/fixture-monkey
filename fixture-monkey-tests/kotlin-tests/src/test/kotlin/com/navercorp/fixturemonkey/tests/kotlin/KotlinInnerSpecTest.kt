@@ -1,3 +1,5 @@
+package com.navercorp.fixturemonkey.tests.kotlin
+
 /*
  * Fixture Monkey
  *
@@ -25,15 +27,15 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.kotlinInnerSpec
 import com.navercorp.fixturemonkey.kotlin.setKotlinInner
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.ComplexObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.ComplexObjectObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.IntegerMapObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.ListStringObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.MapObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.NestedKeyMapObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.NestedListStringObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.SimpleObject
-import com.navercorp.fixturemonkey.kotlin.InnerSpecTestSpecs.SupplierStringObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.ComplexObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.ComplexObjectObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.IntegerMapObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.ListStringObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.MapObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.NestedKeyMapObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.NestedListStringObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.SimpleObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.SupplierStringObject
 
 import net.jqwik.api.Arbitraries
 import net.jqwik.api.Property
@@ -41,13 +43,9 @@ import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
 import java.util.function.Supplier
 import java.util.stream.Collectors
+import kotlin.jvm.java
 
 class KotlinInnerSpecTest {
-
-    private val SUT = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .defaultNotNull(true)
-        .build()
 
     @Property
     fun key() {
@@ -911,5 +909,12 @@ class KotlinInnerSpecTest {
             .value
 
         then(actual).isEqualTo(expected)
+    }
+
+    companion object {
+        val SUT = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultNotNull(true)
+            .build()
     }
 }

@@ -1,4 +1,4 @@
-package com.navercorp.fixturemonkey.kotlin
+package com.navercorp.fixturemonkey.tests.kotlin
 
 import java.util.function.Supplier
 
