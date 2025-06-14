@@ -34,10 +34,10 @@ import org.apiguardian.api.API.Status
  * Instances of this class can be reused to consistently and easily configure nested properties.
  * </p>
  *
- * @since 1.0.0
+ * @since 1.1.12
  */
 @Suppress("UnusedReturnValue", "TooManyFunctions")
-@API(since = "1.0.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.12", status = Status.EXPERIMENTAL)
 class KotlinInnerSpec {
 
     private val operations = mutableListOf<(InnerSpec) -> Unit>()
