@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
@@ -51,7 +50,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class FixtureMonkey {
+public class FixtureMonkey {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
@@ -61,7 +60,7 @@ public final class FixtureMonkey {
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
-		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
+		List<? extends MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		MonkeyExpressionFactory monkeyExpressionFactory
 	) {
@@ -196,15 +195,11 @@ public final class FixtureMonkey {
 	}
 
 	private void initializeRegisteredArbitraryBuilders(
-		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders
+		List<? extends MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders
 	) {
-		List<? extends MatcherOperator<? extends ObjectBuilder<?>>> generatedRegisteredArbitraryBuilder =
-			registeredArbitraryBuilders.stream()
-				.map(it -> new MatcherOperator<>(it.getMatcher(), (ObjectBuilder<?>)(it.getOperator().apply(this))))
-				.collect(toList());
 
-		for (int i = generatedRegisteredArbitraryBuilder.size() - 1; i >= 0; i--) {
-			monkeyContext.getRegisteredArbitraryBuilders().add(generatedRegisteredArbitraryBuilder.get(i));
+		for (int i = 0; i < registeredArbitraryBuilders.size(); i++) {
+			monkeyContext.getRegisteredArbitraryBuilders().add(registeredArbitraryBuilders.get(i));
 		}
 	}
 }

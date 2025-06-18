@@ -20,15 +20,18 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.tests.java.specs.RecursiveTypeSpecs.Node;
 import com.navercorp.fixturemonkey.tests.java.specs.RecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.specs.RecursiveTypeSpecs.SelfRecursiveMapObject;
 import com.navercorp.fixturemonkey.tests.java.specs.RecursiveTypeSpecs.SelfRecursiveObject;
@@ -144,5 +147,33 @@ class RecursiveTypeTest {
 			.getSelfRecursiveObject();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void registerRecursiveWithMap() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(Node.class, fm -> fm.giveMeBuilder(Node.class)
+				.map(o -> o)
+			)
+			.build();
+
+		// when, then
+		thenNoException()
+			.isThrownBy(() -> sut.giveMeOne(Node.class));
+	}
+
+	@Test
+	void registerRecursiveWithThenApply() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(Node.class, fm -> fm.giveMeBuilder(Node.class)
+				.thenApply((n,builder) -> {})
+			)
+			.build();
+
+		// when, then
+		thenNoException()
+			.isThrownBy(() -> sut.giveMeOne(Node.class));
 	}
 }

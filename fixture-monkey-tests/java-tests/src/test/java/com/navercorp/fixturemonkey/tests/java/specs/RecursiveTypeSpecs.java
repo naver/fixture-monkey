@@ -21,6 +21,10 @@ package com.navercorp.fixturemonkey.tests.java.specs;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.Value;
 
 public class RecursiveTypeSpecs {
@@ -40,5 +44,15 @@ public class RecursiveTypeSpecs {
 	public static class SelfRecursiveMapObject {
 		String value;
 		Map<String, SelfRecursiveMapObject> selfRecursiveMap;
+	}
+
+	@Value
+	public static class Node {
+		Edge edge;
+	}
+
+	@Value
+	public static class Edge {
+		Node node;
 	}
 }
