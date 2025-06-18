@@ -8,6 +8,17 @@ weight: 100
 
 ## v1.1.x
 
+### v1.1.12
+Fix size API within register that applies to root type
+
+Add compatibility with TypedPropertySelector and path expression DSL
+
+Fix bugs in SimpleValueJqwikPlugin if minSize is greater than default max size
+
+Implement InnerSpec Kotlin DSL to resolve parameter shadowing
+
+Add StringCombinableArbitrary, IntegerCombinableArbitrary for easy efficient customisation
+
 ### v1.1.11
 Add generating Kotlin sealed object type
 
