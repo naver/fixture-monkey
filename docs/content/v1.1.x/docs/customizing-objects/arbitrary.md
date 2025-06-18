@@ -230,6 +230,207 @@ You can then add this seed value to your `@Seed` annotation to consistently repr
 
 Use `Arbitrary` when you need more control over the generated values or when `setPostCondition()` is too slow because it has to discard many invalid values.
 
+## Advanced Arbitrary Types (Experimental)
+
+Since version 1.1.12, Fixture Monkey provides specialized arbitrary types for more control over value generation.
+
+### CombinableArbitrary.integers()
+
+The `CombinableArbitrary.integers()` method returns an `IntegerCombinableArbitrary` that provides specialized methods for integer generation:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// Generate integers with various constraints
+Member member = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("age", CombinableArbitrary.integers()
+        .withRange(18, 65)     // Age between 18-65
+        .positive())           // Only positive numbers
+    .set("score", CombinableArbitrary.integers()
+        .even()                // Only even numbers
+        .withRange(0, 100))    // Between 0-100
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// Generate integers with various constraints
+val member = fixtureMonkey.giveMeBuilder<Member>()
+    .setExp(Member::age, CombinableArbitrary.integers()
+        .withRange(18, 65)     // Age between 18-65
+        .positive())           // Only positive numbers
+    .setExp(Member::score, CombinableArbitrary.integers()
+        .even()                // Only even numbers
+        .withRange(0, 100))    // Between 0-100
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### IntegerCombinableArbitrary Methods
+
+| Method | Description | Example |
+|--------|-------------|---------|
+| `withRange(min, max)` | Generate integers between min and max (inclusive) | `integers().withRange(1, 100)` |
+| `positive()` | Generate only positive integers (≥ 1) | `integers().positive()` |
+| `negative()` | Generate only negative integers (≤ -1) | `integers().negative()` |
+| `even()` | Generate only even integers | `integers().even()` |
+| `odd()` | Generate only odd integers | `integers().odd()` |
+
+**Important Note:** When multiple constraint methods are chained, the **last method wins**. For example:
+```java
+// This will generate negative integers, ignoring the positive() call
+CombinableArbitrary.integers().positive().negative()
+
+// This will generate integers in range 10-50, ignoring the positive() call
+CombinableArbitrary.integers().positive().withRange(10, 50)
+```
+
+### CombinableArbitrary.strings()
+
+The `CombinableArbitrary.strings()` method returns a `StringCombinableArbitrary` that provides specialized methods for string generation:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// Generate strings with various character sets and constraints
+User user = fixtureMonkey.giveMeBuilder(User.class)
+    .set("username", CombinableArbitrary.strings()
+        .alphabetic()          // Only alphabetic characters
+        .withLength(5, 15))    // Length between 5-15
+    .set("password", CombinableArbitrary.strings()
+        .ascii()               // ASCII characters
+        .withMinLength(8))     // At least 8 characters
+    .set("phoneNumber", CombinableArbitrary.strings()
+        .numeric()             // Only numeric characters
+        .withLength(10, 11))   // 10 or 11 digits
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// Generate strings with various character sets and constraints
+val user = fixtureMonkey.giveMeBuilder<User>()
+    .setExp(User::username, CombinableArbitrary.strings()
+        .alphabetic()          // Only alphabetic characters
+        .withLength(5, 15))    // Length between 5-15
+    .setExp(User::password, CombinableArbitrary.strings()
+        .ascii()               // ASCII characters
+        .withMinLength(8))     // At least 8 characters
+    .setExp(User::phoneNumber, CombinableArbitrary.strings()
+        .numeric()             // Only numeric characters
+        .withLength(10, 11))   // 10 or 11 digits
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### StringCombinableArbitrary Methods
+
+| Method | Description | Example |
+|--------|-------------|---------|
+| `withLength(min, max)` | Generate strings with length between min and max | `strings().withLength(5, 10)` |
+| `withMinLength(min)` | Generate strings with minimum length | `strings().withMinLength(3)` |
+| `withMaxLength(max)` | Generate strings with maximum length | `strings().withMaxLength(20)` |
+| `alphabetic()` | Generate strings with only alphabetic characters (a-z, A-Z) | `strings().alphabetic()` |
+| `ascii()` | Generate strings with only ASCII characters | `strings().ascii()` |
+| `numeric()` | Generate strings with only numeric characters (0-9) | `strings().numeric()` |
+| `korean()` | Generate strings with only Korean characters (가-힣) | `strings().korean()` |
+| `filterCharacter(predicate)` | Filter individual characters in the string | `strings().filterCharacter(c -> c != 'x')` |
+
+**Important Notes:** 
+1. **Character set methods conflict with each other.** When multiple character set methods are chained, the **last method wins**:
+   ```java
+   // This will generate Korean characters only, ignoring alphabetic()
+   CombinableArbitrary.strings().alphabetic().korean()
+   ```
+
+2. **Character set methods ignore other configuration methods.** When a character set method is called, it creates a new instance that ignores previous configurations:
+   ```java
+   // The withLength(5, 10) is ignored when alphabetic() is called
+   CombinableArbitrary.strings().withLength(5, 10).alphabetic()
+   ```
+
+### Advanced Filtering
+
+Both `IntegerCombinableArbitrary` and `StringCombinableArbitrary` support advanced filtering:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// Filter integers with custom conditions
+Integer score = CombinableArbitrary.integers()
+    .withRange(0, 100)
+    .filter(n -> n % 5 == 0)  // Only multiples of 5
+    .combined();
+
+// Filter strings with custom character conditions
+String code = CombinableArbitrary.strings()
+    .withLength(6, 8)
+    .filterCharacter(c -> Character.isUpperCase(c) || Character.isDigit(c))  // Only uppercase letters and digits
+    .combined();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// Filter integers with custom conditions
+val score = CombinableArbitrary.integers()
+    .withRange(0, 100)
+    .filter { it % 5 == 0 }  // Only multiples of 5
+    .combined()
+
+// Filter strings with custom character conditions
+val code = CombinableArbitrary.strings()
+    .withLength(6, 8)
+    .filterCharacter { it.isUpperCase() || it.isDigit() }  // Only uppercase letters and digits
+    .combined()
+{{< /tab >}}
+{{< /tabpane>}}
+
+### Real-world Example: User Registration Validation
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void validateUserRegistrationWithVariousInputs() {
+    for (int i = 0; i < 100; i++) {
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+            .set("username", CombinableArbitrary.strings()
+                .alphabetic()
+                .withLength(3, 20))           // Valid username: 3-20 alphabetic chars
+            .set("email", CombinableArbitrary.strings()
+                .ascii()
+                .withLength(5, 50)
+                .filter(s -> s.contains("@"))) // Simple email validation
+            .set("age", CombinableArbitrary.integers()
+                .withRange(13, 120))          // Valid age range
+            .set("score", CombinableArbitrary.integers()
+                .withRange(0, 100)
+                .filter(n -> n % 10 == 0))    // Score in multiples of 10
+            .sample();
+            
+        // Test with various valid inputs
+        ValidationResult result = userService.validateRegistration(user);
+        assertThat(result.isValid()).isTrue();
+    }
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun validateUserRegistrationWithVariousInputs() {
+    repeat(100) {
+        val user = fixtureMonkey.giveMeBuilder<User>()
+            .setExp(User::username, CombinableArbitrary.strings()
+                .alphabetic()
+                .withLength(3, 20))           // Valid username: 3-20 alphabetic chars
+            .setExp(User::email, CombinableArbitrary.strings()
+                .ascii()
+                .withLength(5, 50)
+                .filter { it.contains("@") }) // Simple email validation
+            .setExp(User::age, CombinableArbitrary.integers()
+                .withRange(13, 120))          // Valid age range
+            .setExp(User::score, CombinableArbitrary.integers()
+                .withRange(0, 100)
+                .filter { it % 10 == 0 })     // Score in multiples of 10
+            .sample()
+            
+        // Test with various valid inputs
+        val result = userService.validateRegistration(user)
+        assertThat(result.isValid).isTrue()
+    }
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
 ## Additional Resources
 
 For more details about all available Arbitrary types and methods, see the [Jqwik User Guide](https://jqwik.net/docs/current/user-guide.html#static-arbitraries-methods)
