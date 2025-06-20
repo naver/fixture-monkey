@@ -36,4 +36,8 @@ public final class PropertyPredicate implements NextNodePredicate {
 	public boolean test(ObjectProperty currentObjectProperty) {
 		return property.equals(currentObjectProperty.getProperty());
 	}
+
+	public Property getProperty() {
+		return property;
+	}
 }

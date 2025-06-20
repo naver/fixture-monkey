@@ -53,8 +53,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	private final int sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
-	@Nullable
-	private final T value;
+	private final @Nullable T value;
 
 	public NodeSetDecomposedValueManipulator(
 		int sequence,
@@ -68,15 +67,27 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		this.value = value;
 	}
 
-	@SuppressWarnings("dereference.of.nullable")
+	public @Nullable T getValue() {
+		return value;
+	}
+
+	public DecomposedContainerValueFactory getDecomposedContainerValueFactory() {
+		return decomposedContainerValueFactory;
+	}
+
+	public int getSequence() {
+		return sequence;
+	}
+
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		Class<?> actualType = Types.getActualType(objectNode.getOriginalProperty().getType());
 		if (value != null && !isAssignable(value.getClass(), actualType)) {
-			String parentNodeLogMessage = objectNode.getResolvedParentProperty() != null
+			Property parentProperty = objectNode.getResolvedParentProperty();
+			String parentNodeLogMessage = parentProperty != null
 				? String.format(
 				"parent node type : %s",
-				objectNode.getResolvedParentProperty().getType().getTypeName()
+				parentProperty.getType().getTypeName()
 			)
 				: "";
 			throw new IllegalArgumentException(

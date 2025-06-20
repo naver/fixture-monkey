@@ -1,0 +1,68 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.navercorp.objectfarm.api.node;
+
+import java.util.Collections;
+import java.util.List;
+
+import com.navercorp.objectfarm.api.nodecandidate.JvmMapEntryNodeCandidate;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
+
+/**
+ * Promotes JvmMapEntryNodeCandidate to a JvmMapEntryNode.
+ * <p>
+ * This promoter creates a single JvmMapEntryNode that wraps key and value nodes,
+ * maintaining 1:1 mapping with the candidate.
+ */
+public final class JavaMapEntryNodePromoter implements JvmNodePromoter {
+	@Override
+	public boolean canPromote(JvmNodeCandidate node) {
+		return node instanceof JvmMapEntryNodeCandidate;
+	}
+
+	@Override
+	public List<JvmNode> promote(JvmNodeCandidate node, JvmNodeContext context) {
+		JvmMapEntryNodeCandidate mapEntryCandidate = (JvmMapEntryNodeCandidate)node;
+
+		JvmNode keyNode = new JavaNode(
+			mapEntryCandidate.getKey().getType(),
+			mapEntryCandidate.getKey().getName(),
+			null,
+			mapEntryCandidate.getKey().getCreationMethod()
+		);
+
+		JvmNode valueNode = new JavaNode(
+			mapEntryCandidate.getValue().getType(),
+			mapEntryCandidate.getValue().getName(),
+			null,
+			mapEntryCandidate.getValue().getCreationMethod()
+		);
+
+		JavaMapEntryNode mapEntryNode = new JavaMapEntryNode(
+			mapEntryCandidate.getType(),
+			mapEntryCandidate.getName(),
+			null,
+			keyNode,
+			valueNode,
+			mapEntryCandidate.getCreationMethod()
+		);
+
+		return Collections.singletonList(mapEntryNode);
+	}
+}

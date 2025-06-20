@@ -63,8 +63,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationConstraintGenerator implements JavaConstraintGenerator {
 	@Override
-	@Nullable
-	public JavaStringConstraint generateStringConstraint(ArbitraryGeneratorContext context) {
+	public @Nullable JavaStringConstraint generateStringConstraint(ArbitraryGeneratorContext context) {
 		BigInteger min = null;
 		BigInteger max = null;
 		boolean digits = false;

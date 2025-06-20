@@ -23,6 +23,8 @@ import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Represents a JVM type with complete type information, including generics and annotations.
  * <p>
@@ -46,15 +48,70 @@ import java.util.List;
  * </ul>
  */
 public interface JvmType {
+	/**
+	 * Returns the raw class type, stripping away all generic type information.
+	 *
+	 * @return the raw Class object representing this type
+	 */
 	Class<?> getRawType();
 
+	/**
+	 * Returns the type arguments for generic types.
+	 * For non-generic types, this returns an empty list.
+	 *
+	 * @return a list of type variables, or empty list for non-generic types
+	 */
 	default List<? extends JvmType> getTypeVariables() {
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Returns all annotations present on this type.
+	 *
+	 * @return a list of annotations associated with this type
+	 */
 	List<Annotation> getAnnotations();
 
-	// TODO: should remove
+	/**
+	 * Returns the component type if this is an array type.
+	 * <p>
+	 * For array types like {@code String[]}, returns the component type ({@code String}).
+	 * For generic array types like {@code GenericClass<String>[]}, returns the parameterized
+	 * component type ({@code GenericClass<String>}) with generic information preserved.
+	 * <p>
+	 * For non-array types, returns {@code null}.
+	 *
+	 * @return the component JvmType if this is an array, null otherwise
+	 */
+	@Nullable
+	default JvmType getComponentType() {
+		return null;
+	}
+
+	/**
+	 * Returns whether this type is nullable.
+	 * <p>
+	 * For most JVM types, nullability is unknown (returns {@code null}).
+	 * Language-specific implementations (e.g., Kotlin) may override this
+	 * to provide actual nullability information from their type system.
+	 *
+	 * @return {@code true} if nullable, {@code false} if non-nullable,
+	 *         or {@code null} if nullability is unknown
+	 */
+	@Nullable
+	default Boolean getNullable() {
+		return null;
+	}
+
+	/**
+	 * Returns the AnnotatedType representation of this JvmType.
+	 *
+	 * @deprecated This method is deprecated and will be removed in future versions.
+	 *             Use {@link #getRawType()} and {@link #getAnnotations()} instead.
+	 * @return the AnnotatedType representation
+	 * @throws UnsupportedOperationException as this method is not supported
+	 */
+	@Deprecated
 	default AnnotatedType getAnnotatedType() {
 		throw new UnsupportedOperationException("This method is not supported for JvmType");
 	}

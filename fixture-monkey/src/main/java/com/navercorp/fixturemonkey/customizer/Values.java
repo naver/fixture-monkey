@@ -61,15 +61,13 @@ public final class Values {
 	 * Elements of {@code items} would be "1", "2", "3".
 	 */
 	public static final class Just {
-		@Nullable
-		private final Object value;
+		private final @Nullable Object value;
 
 		private Just(@Nullable Object value) {
 			this.value = value;
 		}
 
-		@Nullable
-		public Object getValue() {
+		public @Nullable Object getValue() {
 			return value;
 		}
 	}

@@ -63,6 +63,7 @@ import com.navercorp.fixturemonkey.tree.StaticNodeResolver;
  */
 @API(since = "0.4.10", status = Status.INTERNAL)
 public final class MonkeyManipulatorFactory {
+
 	private final AtomicInteger sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
@@ -77,25 +78,12 @@ public final class MonkeyManipulatorFactory {
 		this.containerPropertyGenerators = containerPropertyGenerators;
 	}
 
-	public ArbitraryManipulator newArbitraryManipulator(
-		NodeResolver nodeResolver,
-		@Nullable Object value,
-		int limit
-	) {
-		return new ArbitraryManipulator(
-			nodeResolver,
-			convertToNodeManipulator(value, limit)
-		);
+	public ArbitraryManipulator newArbitraryManipulator(NodeResolver nodeResolver, @Nullable Object value, int limit) {
+		return new ArbitraryManipulator(nodeResolver, convertToNodeManipulator(value, limit));
 	}
 
-	public ArbitraryManipulator newArbitraryManipulator(
-		NodeResolver nodeResolver,
-		@Nullable Object value
-	) {
-		return new ArbitraryManipulator(
-			nodeResolver,
-			convertToNodeManipulator(sequence.getAndIncrement(), value)
-		);
+	public ArbitraryManipulator newArbitraryManipulator(NodeResolver nodeResolver, @Nullable Object value) {
+		return new ArbitraryManipulator(nodeResolver, convertToNodeManipulator(sequence.getAndIncrement(), value));
 	}
 
 	public <T> ArbitraryManipulator newArbitraryManipulator(
@@ -106,10 +94,7 @@ public final class MonkeyManipulatorFactory {
 	) {
 		return new ArbitraryManipulator(
 			nodeResolver,
-			new ApplyNodeCountManipulator(
-				new NodeFilterManipulator(type, filter),
-				limit
-			)
+			new ApplyNodeCountManipulator(new NodeFilterManipulator(type, filter), limit)
 		);
 	}
 
@@ -121,10 +106,7 @@ public final class MonkeyManipulatorFactory {
 			return newArbitraryManipulator(nodeResolver, (Object)null);
 		}
 
-		return new ArbitraryManipulator(
-			nodeResolver,
-			new NodeCustomizerManipulator<>(arbitraryCustomizer)
-		);
+		return new ArbitraryManipulator(nodeResolver, new NodeCustomizerManipulator<>(arbitraryCustomizer));
 	}
 
 	public ContainerInfoManipulator newContainerInfoManipulator(
@@ -134,14 +116,7 @@ public final class MonkeyManipulatorFactory {
 	) {
 		int newSequence = sequence.getAndIncrement();
 
-		return new ContainerInfoManipulator(
-			nextNodePredicates,
-			new ArbitraryContainerInfo(
-				min,
-				max
-			),
-			newSequence
-		);
+		return new ContainerInfoManipulator(nextNodePredicates, new ArbitraryContainerInfo(min, max), newSequence);
 	}
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators( // TODO: Fragmented registered
@@ -154,18 +129,17 @@ public final class MonkeyManipulatorFactory {
 			Property property = nodeByType.getKey();
 			List<ObjectNode> objectNodes = nodeByType.getValue();
 
-			ArbitraryBuilderContext activeContext = findRegisteredArbitraryBuilderContext(
-				standbyContexts,
-				property
-			);
+			ArbitraryBuilderContext activeContext = findRegisteredArbitraryBuilderContext(standbyContexts, property);
 
 			if (activeContext == null) {
 				continue;
 			}
 
-			List<ArbitraryManipulator> arbitraryManipulators = activeContext.getManipulators().stream()
-				.map(
-					it -> new ArbitraryManipulator(
+			List<ArbitraryManipulator> arbitraryManipulators = activeContext
+				.getManipulators()
+				.stream()
+				.map(it ->
+					new ArbitraryManipulator(
 						new CompositeNodeResolver(new StaticNodeResolver(objectNodes), it.getNodeResolver()),
 						it.getNodeManipulator()
 					)
@@ -187,17 +161,15 @@ public final class MonkeyManipulatorFactory {
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
 			.collect(toList());
 
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> highestPriorityOperators
-			= getHighestPriorityOperators(priorityOperators);
+		List<PriorityMatcherOperator<ArbitraryBuilderContext>> highestPriorityOperators = getHighestPriorityOperators(
+			priorityOperators
+		);
 
 		if (highestPriorityOperators.size() > 1) {
 			Collections.shuffle(highestPriorityOperators, Randoms.current());
 		}
 
-		return highestPriorityOperators.stream()
-			.findFirst()
-			.map(MatcherOperator::getOperator)
-			.orElse(null);
+		return highestPriorityOperators.stream().findFirst().map(MatcherOperator::getOperator).orElse(null);
 	}
 
 	private List<PriorityMatcherOperator<ArbitraryBuilderContext>> getHighestPriorityOperators(
@@ -209,7 +181,8 @@ public final class MonkeyManipulatorFactory {
 
 		int highestPriority = priorityOperators.get(0).getPriority();
 
-		return priorityOperators.stream()
+		return priorityOperators
+			.stream()
 			.filter(it -> it.getPriority() == highestPriority)
 			.collect(toList());
 	}
@@ -219,59 +192,58 @@ public final class MonkeyManipulatorFactory {
 
 		List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
 
-		List<ArbitraryManipulator> setArbitraryManipulators = manipulatorHolderSet.getNodeResolverObjectHolders()
+		List<ArbitraryManipulator> setArbitraryManipulators = manipulatorHolderSet
+			.getNodeResolverObjectHolders()
 			.stream()
-			.map(
-				it -> {
-					List<NodeResolver> nextNodeResolvers = it.getNextNodePredicates().stream()
-						.map(NodePredicateResolver::new)
-						.collect(toList());
+			.map(it -> {
+				List<NodeResolver> nextNodeResolvers = it
+					.getNextNodePredicates()
+					.stream()
+					.map(NodePredicateResolver::new)
+					.collect(toList());
 
-					CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
-					return new ArbitraryManipulator(
-						compositeNodeResolver,
-						convertToNodeManipulator(baseSequence + it.getSequence(), it.getValue())
-					);
-				}
-			)
+				CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
+				return new ArbitraryManipulator(
+					compositeNodeResolver,
+					convertToNodeManipulator(baseSequence + it.getSequence(), it.getValue())
+				);
+			})
 			.collect(toList());
 
-		List<ArbitraryManipulator> filterArbitraryManipulators = manipulatorHolderSet.getPostConditionManipulators()
+		List<ArbitraryManipulator> filterArbitraryManipulators = manipulatorHolderSet
+			.getPostConditionManipulators()
 			.stream()
-			.map(
-				it -> {
-					List<NodeResolver> nextNodeResolvers = it.getNextNodePredicates().stream()
-						.map(NodePredicateResolver::new)
-						.collect(toList());
+			.map(it -> {
+				List<NodeResolver> nextNodeResolvers = it
+					.getNextNodePredicates()
+					.stream()
+					.map(NodePredicateResolver::new)
+					.collect(toList());
 
-					CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
-					return new ArbitraryManipulator(
-						compositeNodeResolver,
-						new NodeFilterManipulator(it.getType(), it.getPredicate())
-					);
-				}
-			)
+				CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
+				return new ArbitraryManipulator(
+					compositeNodeResolver,
+					new NodeFilterManipulator(it.getType(), it.getPredicate())
+				);
+			})
 			.collect(toList());
 		arbitraryManipulators.addAll(setArbitraryManipulators);
 		arbitraryManipulators.addAll(filterArbitraryManipulators);
 
-		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorHolderSet.getContainerInfoManipulators()
+		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorHolderSet
+			.getContainerInfoManipulators()
 			.stream()
-			.map(it -> new ContainerInfoManipulator(
-				it.getNextNodePredicates(),
-				new ArbitraryContainerInfo(
-					it.getElementMinSize(),
-					it.getElementMaxSize()
-				),
-				baseSequence + it.getSequence()
-			))
+			.map(it ->
+				new ContainerInfoManipulator(
+					it.getNextNodePredicates(),
+					new ArbitraryContainerInfo(it.getElementMinSize(), it.getElementMaxSize()),
+					baseSequence + it.getSequence()
+				)
+			)
 			.collect(toList());
 
 		sequence.set(sequence.get() + containerInfoManipulators.size() + arbitraryManipulators.size());
-		return new ManipulatorSet(
-			arbitraryManipulators,
-			containerInfoManipulators
-		);
+		return new ManipulatorSet(arbitraryManipulators, containerInfoManipulators);
 	}
 
 	public MonkeyManipulatorFactory copy() {
@@ -289,9 +261,9 @@ public final class MonkeyManipulatorFactory {
 
 	private NodeManipulator convertToNodeManipulator(int sequence, @Nullable Object value) {
 		if (value == null) {
-			return new NodeNullityManipulator(true);
+			return new NodeNullityManipulator(sequence, true);
 		} else if (value == Values.NOT_NULL) {
-			return new NodeNullityManipulator(false);
+			return new NodeNullityManipulator(sequence, false);
 		} else if (value instanceof Just) {
 			return new NodeSetJustManipulator((Just)value);
 		} else if (value instanceof Arbitrary) {

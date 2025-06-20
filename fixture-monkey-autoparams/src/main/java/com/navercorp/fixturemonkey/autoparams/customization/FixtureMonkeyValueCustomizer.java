@@ -53,10 +53,12 @@ final class FixtureMonkeyValueCustomizer implements Customizer {
 		}
 	}
 
+	@SuppressWarnings("nullness")
 	private ObjectContainer generateNonGeneric(Class<?> type) {
 		return new ObjectContainer(this.fixtureMonkey.giveMeOne(type));
 	}
 
+	@SuppressWarnings("nullness")
 	private ObjectContainer generateGeneric(ParameterizedType parameterizedType) {
 		Class<?> type = (Class<?>) parameterizedType.getRawType();
 		if (this.isYieldType(type)) {

@@ -532,7 +532,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		return this.activeContext;
 	}
 
-	@SuppressWarnings("return")
 	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext activeContext) {
 		if (activeContext.isFixed()) {
 			if (activeContext.getFixedCombinableArbitrary() == null || activeContext.fixedExpired()) {
@@ -547,7 +546,11 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				activeContext.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, fixed));
 				activeContext.renewFixed(CombinableArbitrary.from(fixed));
 			}
-			return activeContext.getFixedCombinableArbitrary();
+			CombinableArbitrary<?> fixedArbitrary = activeContext.getFixedCombinableArbitrary();
+			if (fixedArbitrary == null) {
+				throw new IllegalStateException("Fixed arbitrary should not be null after renewal");
+			}
+			return fixedArbitrary;
 		}
 
 		return resolver.resolve(

@@ -43,4 +43,13 @@ public final class ApplyStrictModeResolver implements NodeResolver {
 		}
 		return selectedNodes;
 	}
+
+	/**
+	 * Returns the wrapped NodeResolver.
+	 *
+	 * @return the inner NodeResolver
+	 */
+	public NodeResolver getNodeResolver() {
+		return nodeResolver;
+	}
 }

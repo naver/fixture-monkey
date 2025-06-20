@@ -20,6 +20,8 @@ package com.navercorp.objectfarm.api.type;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,16 +32,17 @@ import org.jspecify.annotations.Nullable;
 
 public final class JavaType implements JvmType {
 	private final Class<?> rawType;
-	private final List<JavaType> typeVariables;
+	private final List<? extends JvmType> typeVariables;
 	private final List<Annotation> annotations;
 	@Nullable
 	private final AnnotatedType annotatedType;
+	private int cachedHashCode;
 
 	public JavaType(Class<?> rawType) {
 		this(rawType, Collections.emptyList(), Collections.emptyList(), null);
 	}
 
-	public JavaType(Class<?> rawType, List<JavaType> typeVariables, List<Annotation> annotations) {
+	public JavaType(Class<?> rawType, List<? extends JvmType> typeVariables, List<Annotation> annotations) {
 		this.rawType = rawType;
 		this.typeVariables = typeVariables;
 		this.annotations = annotations;
@@ -50,7 +53,7 @@ public final class JavaType implements JvmType {
 	@Deprecated
 	public JavaType(
 		Class<?> rawType,
-		List<JavaType> typeVariables,
+		List<JvmType> typeVariables,
 		List<Annotation> annotations,
 		@Nullable AnnotatedType annotatedType
 	) {
@@ -61,13 +64,29 @@ public final class JavaType implements JvmType {
 	}
 
 	public JavaType(ObjectTypeReference<?> typeReference) {
-		this.rawType = Types.getActualType(typeReference.getAnnotatedType());
-		this.typeVariables = Types.getGenericsTypes(typeReference.getAnnotatedType()).stream()
+		AnnotatedType originalType = typeReference.getAnnotatedType();
+		// Resolve wildcard types to their upper bound
+		AnnotatedType resolvedType = Types.resolveWildcardType(originalType);
+		this.rawType = resolveRawType(resolvedType);
+		this.typeVariables = Types.getGenericsTypes(resolvedType).stream()
 			.map(annotatedType -> new JavaType(Types.toTypeReference(annotatedType)))
 			.collect(Collectors.toList());
-		this.annotations = Arrays.stream(typeReference.getAnnotatedType().getAnnotations())
+		this.annotations = Arrays.stream(resolvedType.getAnnotations())
 			.collect(Collectors.toList());
-		this.annotatedType = typeReference.getAnnotatedType();
+		// Don't store the annotatedType if it contains wildcards in type arguments,
+		// so that JvmNodePropertyAdapter will build a new AnnotatedType from resolved components
+		this.annotatedType = Types.containsWildcardTypeArguments(resolvedType) ? null : resolvedType;
+	}
+
+	private static Class<?> resolveRawType(AnnotatedType annotatedType) {
+		Type type = annotatedType.getType();
+		if (type instanceof GenericArrayType) {
+			// For GenericArrayType, we need the array class, not the component class
+			GenericArrayType genericArrayType = (GenericArrayType)type;
+			Class<?> componentClass = Types.getActualType(genericArrayType.getGenericComponentType());
+			return java.lang.reflect.Array.newInstance(componentClass, 0).getClass();
+		}
+		return Types.getActualType(annotatedType);
 	}
 
 	@Override
@@ -76,7 +95,7 @@ public final class JavaType implements JvmType {
 	}
 
 	@Override
-	public List<JavaType> getTypeVariables() {
+	public List<? extends JvmType> getTypeVariables() {
 		return typeVariables;
 	}
 
@@ -97,6 +116,17 @@ public final class JavaType implements JvmType {
 	}
 
 	@Override
+	@Nullable
+	public JvmType getComponentType() {
+		if (!rawType.isArray()) {
+			return null;
+		}
+		Class<?> componentClass = rawType.getComponentType();
+		// For array types, typeVariables holds the component type's type variables
+		return new JavaType(componentClass, typeVariables, Collections.emptyList());
+	}
+
+	@Override
 	public boolean equals(@Nullable Object obj) {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
@@ -109,6 +139,14 @@ public final class JavaType implements JvmType {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(rawType, typeVariables, annotations);
+		int hash = cachedHashCode;
+		if (hash == 0) {
+			hash = Objects.hash(rawType, typeVariables, annotations);
+			if (hash == 0) {
+				hash = 1;
+			}
+			cachedHashCode = hash;
+		}
+		return hash;
 	}
 }
