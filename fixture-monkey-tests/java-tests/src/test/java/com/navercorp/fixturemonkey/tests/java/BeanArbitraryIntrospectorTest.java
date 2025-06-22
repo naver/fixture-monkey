@@ -10,6 +10,7 @@ import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.ContainerObject;
 import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.DateTimeObject;
 import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.JavaTypeObject;
+import com.navercorp.fixturemonkey.tests.java.specs.NoSetterSpecs;
 
 class BeanArbitraryIntrospectorTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -46,5 +47,12 @@ class BeanArbitraryIntrospectorTest {
 			.getString();
 
 		then(actual).hasSizeGreaterThan(5);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void objectGenerationShouldWorkWithoutSetter() {
+		NoSetterSpecs.JavaTypeObject actual = SUT.giveMeOne(NoSetterSpecs.JavaTypeObject.class);
+
+		then(actual).isNotNull();
 	}
 }
