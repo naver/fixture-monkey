@@ -51,7 +51,7 @@ class BeanArbitraryIntrospectorTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void objectGenerationShouldWorkWithoutSetter() {
-		NoSetterSpecs.JavaTypeObject actual = SUT.giveMeOne(NoSetterSpecs.JavaTypeObject.class);
+		NoSetterSpecs.StringObject actual = SUT.giveMeOne(NoSetterSpecs.StringObject.class);
 
 		then(actual).isNotNull();
 	}
