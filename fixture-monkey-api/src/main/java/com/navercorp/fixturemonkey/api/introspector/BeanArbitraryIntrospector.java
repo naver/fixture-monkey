@@ -118,7 +118,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 							value,
 							ex);
 					} catch (NullPointerException ex) {
-						LOGGER.warn("Invoke writeMethod is failed. The given property '{}' has no setter",
+						LOGGER.warn("The given property '{}' may not have a setter",
 							originPropertyName,
 							ex);
 					}
