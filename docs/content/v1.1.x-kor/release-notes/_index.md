@@ -8,6 +8,11 @@ weight: 100
 
 ## v1.1.x
 
+### v1.1.13
+Fix the issue where the instantiate API is not working within the register
+
+Fix BeanArbitraryIntrospector throw NPE when retrieving setter
+
 ### v1.1.12
 Fix size API within register that applies to root type
 
