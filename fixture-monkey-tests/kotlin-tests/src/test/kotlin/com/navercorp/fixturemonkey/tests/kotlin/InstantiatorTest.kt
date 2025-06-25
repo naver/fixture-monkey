@@ -498,6 +498,68 @@ class InstantiatorTest {
         then(actual).isEqualTo("default")
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByCompanionObjectFactoryMethodInRegister() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register(Foo::class.java) {
+                it.giveMeKotlinBuilder<Foo>()
+                    .instantiateBy {
+                        factory("build") {
+                            parameter<Int>()
+                        }
+                    }
+            }
+            .build()
+
+        val actual = sut.giveMeOne<Foo>().foo
+
+        then(actual).isEqualTo("factory")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByConstructorMethodInRegister() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register(Foo::class.java) {
+                it.giveMeKotlinBuilder<Foo>()
+                    .instantiateBy {
+                        constructor {
+                            parameter<String>()
+                        }
+                    }
+            }
+            .build()
+
+        val actual = sut.giveMeOne<Foo>().bar
+
+        then(actual).isEqualTo(1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByInRegisterLatterWins() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register(Foo::class.java) {
+                it.giveMeKotlinBuilder<Foo>()
+                    .instantiateBy {
+                        factory("build") {
+                            parameter<Int>()
+                        }
+                    }
+                    .instantiateBy {
+                        constructor {
+                            parameter<String>()
+                        }
+                    }
+            }
+            .build()
+
+        val actual = sut.giveMeOne<Foo>().bar
+
+        then(actual).isEqualTo(1)
+    }
+
     class Foo(val foo: String, val bar: Int) {
         constructor(foo: String) : this(foo, 1)
 
