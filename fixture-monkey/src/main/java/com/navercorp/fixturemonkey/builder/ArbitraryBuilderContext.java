@@ -219,7 +219,10 @@ public final class ArbitraryBuilderContext {
 		return fixedCombinableArbitrary;
 	}
 
-	public TraverseContext newTraverseContext(TreeRootProperty rootProperty) {
+	public TraverseContext newTraverseContext(
+		TreeRootProperty rootProperty,
+		Map<Class<?>, List<Property>> registeredPropertyConfigurer
+	) {
 		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeNodeManipulators =
 			monkeyContext.getRegisteredArbitraryBuilders()
 				.stream()
@@ -228,7 +231,7 @@ public final class ArbitraryBuilderContext {
 					((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
 						.getContainerInfoManipulators()
 				))
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()); // TODO: Fragmented registered
 
 		List<TreeNodeManipulator> registeredRootTreeManipulators = registeredTreeNodeManipulators.stream()
 			.filter(it -> it.match(rootProperty))
@@ -239,15 +242,19 @@ public final class ArbitraryBuilderContext {
 		activeTreeNodeManipulators.addAll(this.getContainerInfoManipulators());
 
 		FixtureMonkeyOptions fixtureMonkeyOptions = this.monkeyContext.getFixtureMonkeyOptions();
+		Map<Class<?>, List<Property>> concatPropertyConfigurer = new HashMap<>(this.getPropertyConfigurers());
+		concatPropertyConfigurer.putAll(registeredPropertyConfigurer);
+		concatPropertyConfigurer = Collections.unmodifiableMap(concatPropertyConfigurer);
+
 		return new TraverseContext(
 			rootProperty,
 			new ArrayList<>(),
 			activeTreeNodeManipulators,
 			registeredTreeNodeManipulators,
-			this.getPropertyConfigurers(),
+			concatPropertyConfigurer,
 			this.isValidOnly(),
 			initializeResolvedPropertyGenerator(
-				this.getPropertyConfigurers(),
+				concatPropertyConfigurer,
 				fixtureMonkeyOptions.getPropertyGenerators(),
 				fixtureMonkeyOptions.getDefaultArbitraryGenerator(),
 				fixtureMonkeyOptions.getDefaultPropertyGenerator()
@@ -265,9 +272,15 @@ public final class ArbitraryBuilderContext {
 		);
 	}
 
-	public GenerateFixtureContext newGenerateFixtureContext() {
+	public GenerateFixtureContext newGenerateFixtureContext(
+		Map<Class<?>, ArbitraryIntrospector> registeredArbitraryIntrospectorsByType
+	) {
+		Map<Class<?>, ArbitraryIntrospector> concat = new HashMap<>(arbitraryIntrospectorsByType);
+		concat.putAll(registeredArbitraryIntrospectorsByType);
+		concat = Collections.unmodifiableMap(concat);
+
 		return new GenerateFixtureContext(
-			arbitraryIntrospectorsByType,
+			concat,
 			this::isValidOnly,
 			monkeyContext
 		);

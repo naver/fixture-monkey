@@ -140,7 +140,7 @@ public final class MonkeyManipulatorFactory {
 		);
 	}
 
-	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
+	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators( // TODO: Fragmented registered
 		List<MatcherOperator<ArbitraryBuilderContext>> registeredArbitraryBuilders,
 		Map<Property, List<ObjectNode>> nodesByType
 	) {
