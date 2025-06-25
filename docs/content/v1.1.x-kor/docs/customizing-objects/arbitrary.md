@@ -230,6 +230,207 @@ Test Method [MembershipTest#성인_회원만_가능한_테스트] failed with se
 
 생성된 값에 대한 더 많은 제어가 필요하거나, `setPostCondition()`이 많은 유효하지 않은 값을 폐기해야 해서 너무 느릴 때는 `Arbitrary`를 사용하세요.
 
+## 고급 Arbitrary 타입 (실험적 기능)
+
+버전 1.1.12부터 Fixture Monkey는 값 생성을 더 세밀하게 제어할 수 있는 전용 arbitrary 타입을 제공합니다.
+
+### CombinableArbitrary.integers()
+
+`CombinableArbitrary.integers()` 메서드는 정수 생성을 위한 전용 메서드들을 제공하는 `IntegerCombinableArbitrary`를 반환합니다:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// 다양한 제약조건을 가진 정수 생성
+Member member = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("age", CombinableArbitrary.integers()
+        .withRange(18, 65)     // 18-65세 사이
+        .positive())           // 양수만
+    .set("score", CombinableArbitrary.integers()
+        .even()                // 짝수만
+        .withRange(0, 100))    // 0-100 사이
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// 다양한 제약조건을 가진 정수 생성
+val member = fixtureMonkey.giveMeBuilder<Member>()
+    .setExp(Member::age, CombinableArbitrary.integers()
+        .withRange(18, 65)     // 18-65세 사이
+        .positive())           // 양수만
+    .setExp(Member::score, CombinableArbitrary.integers()
+        .even()                // 짝수만
+        .withRange(0, 100))    // 0-100 사이
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### IntegerCombinableArbitrary 메서드
+
+| 메서드 | 설명 | 예시 |
+|--------|------|------|
+| `withRange(min, max)` | min과 max 사이의 정수 생성 (양 끝값 포함) | `integers().withRange(1, 100)` |
+| `positive()` | 양수만 생성 (≥ 1) | `integers().positive()` |
+| `negative()` | 음수만 생성 (≤ -1) | `integers().negative()` |
+| `even()` | 짝수만 생성 | `integers().even()` |
+| `odd()` | 홀수만 생성 | `integers().odd()` |
+
+**중요 참고사항:** 여러 제약조건 메서드를 연결할 때 **마지막 메서드가 우선**됩니다. 예를 들어:
+```java
+// positive() 호출을 무시하고 음수를 생성합니다
+CombinableArbitrary.integers().positive().negative()
+
+// positive() 호출을 무시하고 10-50 범위의 정수를 생성합니다
+CombinableArbitrary.integers().positive().withRange(10, 50)
+```
+
+### CombinableArbitrary.strings()
+
+`CombinableArbitrary.strings()` 메서드는 문자열 생성을 위한 전용 메서드들을 제공하는 `StringCombinableArbitrary`를 반환합니다:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// 다양한 문자 집합과 제약조건을 가진 문자열 생성
+User user = fixtureMonkey.giveMeBuilder(User.class)
+    .set("username", CombinableArbitrary.strings()
+        .alphabetic()          // 알파벳 문자만
+        .withLength(5, 15))    // 길이 5-15
+    .set("password", CombinableArbitrary.strings()
+        .ascii()               // ASCII 문자
+        .withMinLength(8))     // 최소 8자
+    .set("phoneNumber", CombinableArbitrary.strings()
+        .numeric()             // 숫자 문자만
+        .withLength(10, 11))   // 10자리 또는 11자리
+    .sample();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// 다양한 문자 집합과 제약조건을 가진 문자열 생성
+val user = fixtureMonkey.giveMeBuilder<User>()
+    .setExp(User::username, CombinableArbitrary.strings()
+        .alphabetic()          // 알파벳 문자만
+        .withLength(5, 15))    // 길이 5-15
+    .setExp(User::password, CombinableArbitrary.strings()
+        .ascii()               // ASCII 문자
+        .withMinLength(8))     // 최소 8자
+    .setExp(User::phoneNumber, CombinableArbitrary.strings()
+        .numeric()             // 숫자 문자만
+        .withLength(10, 11))   // 10자리 또는 11자리
+    .sample()
+{{< /tab >}}
+{{< /tabpane>}}
+
+#### StringCombinableArbitrary 메서드
+
+| 메서드 | 설명 | 예시 |
+|--------|------|------|
+| `withLength(min, max)` | min과 max 사이 길이의 문자열 생성 | `strings().withLength(5, 10)` |
+| `withMinLength(min)` | 최소 길이를 가진 문자열 생성 | `strings().withMinLength(3)` |
+| `withMaxLength(max)` | 최대 길이를 가진 문자열 생성 | `strings().withMaxLength(20)` |
+| `alphabetic()` | 알파벳 문자만 포함하는 문자열 생성 (a-z, A-Z) | `strings().alphabetic()` |
+| `ascii()` | ASCII 문자만 포함하는 문자열 생성 | `strings().ascii()` |
+| `numeric()` | 숫자 문자만 포함하는 문자열 생성 (0-9) | `strings().numeric()` |
+| `korean()` | 한글 문자만 포함하는 문자열 생성 (가-힣) | `strings().korean()` |
+| `filterCharacter(predicate)` | 문자열의 개별 문자를 필터링 | `strings().filterCharacter(c -> c != 'x')` |
+
+**중요 참고사항:** 
+1. **문자 집합 메서드들은 서로 충돌합니다.** 여러 문자 집합 메서드를 연결할 때 **마지막 메서드가 우선**됩니다:
+   ```java
+   // alphabetic()을 무시하고 한글 문자만 생성합니다
+   CombinableArbitrary.strings().alphabetic().korean()
+   ```
+
+2. **문자 집합 메서드는 다른 설정 메서드를 무시합니다.** 문자 집합 메서드가 호출되면 이전 설정을 무시하는 새 인스턴스가 생성됩니다:
+   ```java
+   // alphabetic()이 호출되면 withLength(5, 10)이 무시됩니다
+   CombinableArbitrary.strings().withLength(5, 10).alphabetic()
+   ```
+
+### 고급 필터링
+
+`IntegerCombinableArbitrary`와 `StringCombinableArbitrary` 모두 고급 필터링을 지원합니다:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+// 사용자 정의 조건으로 정수 필터링
+Integer score = CombinableArbitrary.integers()
+    .withRange(0, 100)
+    .filter(n -> n % 5 == 0)  // 5의 배수만
+    .combined();
+
+// 사용자 정의 문자 조건으로 문자열 필터링
+String code = CombinableArbitrary.strings()
+    .withLength(6, 8)
+    .filterCharacter(c -> Character.isUpperCase(c) || Character.isDigit(c))  // 대문자와 숫자만
+    .combined();
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+// 사용자 정의 조건으로 정수 필터링
+val score = CombinableArbitrary.integers()
+    .withRange(0, 100)
+    .filter { it % 5 == 0 }  // 5의 배수만
+    .combined()
+
+// 사용자 정의 문자 조건으로 문자열 필터링
+val code = CombinableArbitrary.strings()
+    .withLength(6, 8)
+    .filterCharacter { it.isUpperCase() || it.isDigit() }  // 대문자와 숫자만
+    .combined()
+{{< /tab >}}
+{{< /tabpane>}}
+
+### 실제 사례: 사용자 등록 검증
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void 다양한_입력으로_사용자_등록_검증() {
+    for (int i = 0; i < 100; i++) {
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+            .set("username", CombinableArbitrary.strings()
+                .alphabetic()
+                .withLength(3, 20))           // 유효한 사용자명: 3-20자 알파벳
+            .set("email", CombinableArbitrary.strings()
+                .ascii()
+                .withLength(5, 50)
+                .filter(s -> s.contains("@"))) // 간단한 이메일 검증
+            .set("age", CombinableArbitrary.integers()
+                .withRange(13, 120))          // 유효한 나이 범위
+            .set("score", CombinableArbitrary.integers()
+                .withRange(0, 100)
+                .filter(n -> n % 10 == 0))    // 10의 배수인 점수
+            .sample();
+            
+        // 다양한 유효한 입력으로 테스트
+        ValidationResult result = userService.validateRegistration(user);
+        assertThat(result.isValid()).isTrue();
+    }
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 다양한_입력으로_사용자_등록_검증() {
+    repeat(100) {
+        val user = fixtureMonkey.giveMeBuilder<User>()
+            .setExp(User::username, CombinableArbitrary.strings()
+                .alphabetic()
+                .withLength(3, 20))           // 유효한 사용자명: 3-20자 알파벳
+            .setExp(User::email, CombinableArbitrary.strings()
+                .ascii()
+                .withLength(5, 50)
+                .filter { it.contains("@") }) // 간단한 이메일 검증
+            .setExp(User::age, CombinableArbitrary.integers()
+                .withRange(13, 120))          // 유효한 나이 범위
+            .setExp(User::score, CombinableArbitrary.integers()
+                .withRange(0, 100)
+                .filter { it % 10 == 0 })     // 10의 배수인 점수
+            .sample()
+            
+        // 다양한 유효한 입력으로 테스트
+        val result = userService.validateRegistration(user)
+        assertThat(result.isValid).isTrue()
+    }
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
 ## 추가 자료
 
 모든 Arbitrary 유형과 메서드에 대한 자세한 내용은 [Jqwik 사용자 가이드](https://jqwik.net/docs/current/user-guide.html#static-arbitraries-methods)를 참조하세요.

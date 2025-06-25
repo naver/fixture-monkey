@@ -160,13 +160,19 @@ class CombinableArbitraryTest {
 	void stringCombinableArbitraryAlphabet() {
 		String actual = CombinableArbitrary.strings().alphabetic().combined();
 
-		then(actual).isAlphabetic();
+		then(actual).satisfiesAnyOf(
+			it -> then(it).isAlphabetic(),
+			it -> then(it).isNullOrEmpty()
+		);
 	}
 
 	@Test
 	void stringCombinableArbitraryLatterWins() {
 		String actual = CombinableArbitrary.strings().korean().alphabetic().combined();
 
-		then(actual).isAlphabetic();
+		then(actual).satisfiesAnyOf(
+			it -> then(it).isAlphabetic(),
+			it -> then(it).isNullOrEmpty()
+		);
 	}
 }

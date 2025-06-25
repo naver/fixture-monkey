@@ -30,6 +30,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.DefaultTreeMatcherMetadata;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
@@ -71,10 +72,28 @@ public final class ArbitraryResolver {
 		return new ResolvedCombinableArbitrary<>(
 			rootProperty,
 			() -> {
+				// TODO: Fragmented registered
+				Map<Class<?>, List<Property>> registeredPropertyConfigurer =
+					monkeyContext.getRegisteredArbitraryBuilders().stream()
+					.filter(it -> it.match(rootProperty))
+					.map(it -> ((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext())
+					.map(ArbitraryBuilderContext::getPropertyConfigurers)
+					.findFirst() // registered are stored in reverse order, so we take the first one
+					.orElse(Collections.emptyMap());
+
+				Map<Class<?>, ArbitraryIntrospector> registeredIntrospectors =
+					monkeyContext.getRegisteredArbitraryBuilders()
+					.stream()
+					.filter(it -> it.match(rootProperty))
+					.map(it -> ((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext())
+					.map(ArbitraryBuilderContext::getArbitraryIntrospectorsByType)
+					.findFirst() // registered are stored in reverse order, so we take the first one
+					.orElse(Collections.emptyMap());
+
 				ObjectTree objectTree = new ObjectTree(
 					rootProperty,
-					activeContext.newGenerateFixtureContext(),
-					activeContext.newTraverseContext(rootProperty)
+					activeContext.newGenerateFixtureContext(registeredIntrospectors),
+					activeContext.newTraverseContext(rootProperty, registeredPropertyConfigurer)
 				);
 
 				fixtureMonkeyOptions.getBuilderContextInitializers().stream()

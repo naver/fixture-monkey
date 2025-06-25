@@ -454,7 +454,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	@Override
-	public ExperimentalArbitraryBuilder<T> instantiate(Instantiator instantiator) {
+	public ArbitraryBuilder<T> instantiate(Instantiator instantiator) {
 		return instantiate(
 			new TypeReference<T>() {
 				@Override
@@ -473,7 +473,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public ExperimentalArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator) {
+	public ArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator) {
 		return instantiate(
 			new TypeReference(type) {
 			},
@@ -482,7 +482,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	@Override
-	public ExperimentalArbitraryBuilder<T> instantiate(
+	public ArbitraryBuilder<T> instantiate(
 		TypeReference<?> typeReference,
 		Instantiator instantiator
 	) {

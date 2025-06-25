@@ -159,6 +159,143 @@ Product(
 {{< /tab >}}
 {{< /tabpane >}}
 
+## Advanced Type-Safe Property Selection
+
+Fixture Monkey provides several type-safe ways to select and customize object properties, eliminating the need for string-based property paths and reducing runtime errors.
+
+### Java: Typed Getter Methods
+
+For Java classes, you can use typed getter methods with `javaGetter()` and `customizeProperty()`:
+
+{{< tabpane >}}
+{{< tab header="Java" >}}
+@Test
+void typedJavaGetter() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .customizeProperty(javaGetter(Product::getProductName), 
+            arb -> arb.map(name -> "Custom-" + name))
+        .sample();
+    
+    // productName will always start with "Custom-"
+    then(product.getProductName()).startsWith("Custom-");
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Java: Nested Property Selection
+
+For nested objects, chain property selectors with `.into()`:
+
+{{< tabpane >}}
+{{< tab header="Java" >}}
+@Test
+void nestedTypedJavaGetter() {
+    OrderInfo orderInfo = fixtureMonkey.giveMeBuilder(OrderInfo.class)
+        .customizeProperty(
+            javaGetter(OrderInfo::getProduct).into(Product::getProductName),
+            arb -> arb.map(name -> "Premium-" + name)
+        )
+        .sample();
+    
+    // Nested product name will start with "Premium-"
+    then(orderInfo.getProduct().getProductName()).startsWith("Premium-");
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Java: Collection Element Selection
+
+For collections and arrays, use `.index()` to select specific elements:
+
+{{< tabpane >}}
+{{< tab header="Java" >}}
+@Test
+void indexTypedJavaGetter() {
+    ProductCatalog catalog = fixtureMonkey.giveMeBuilder(ProductCatalog.class)
+        .size("products", 3)
+        .customizeProperty(
+            javaGetter(ProductCatalog::getProducts).index(Product.class, 0),
+            arb -> arb.map(product -> product.withPrice(9999L))
+        )
+        .sample();
+    
+    // First product will have price 9999
+    then(catalog.getProducts().get(0).getPrice()).isEqualTo(9999L);
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Kotlin: Property Reference Selection
+
+Kotlin provides even more concise syntax with property references:
+
+{{< tabpane >}}
+{{< tab header="Kotlin" >}}
+@Test
+fun typedKotlinPropertySelector() {
+    data class StringObject(val string: String)
+    
+    val result = fixtureMonkey.giveMeKotlinBuilder<StringObject>()
+        .customizeProperty(StringObject::string) {
+            it.map { _ -> "customized" }
+        }
+        .sample()
+    
+    then(result.string).isEqualTo("customized")
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Kotlin: Nested Property Selection
+
+Use `into` for nested properties in Kotlin:
+
+{{< tabpane >}}
+{{< tab header="Kotlin" >}}
+@Test
+fun typedNestedKotlinPropertySelector() {
+    data class StringObject(val string: String)
+    data class NestedStringObject(val obj: StringObject)
+    
+    val result = fixtureMonkey.giveMeKotlinBuilder<NestedStringObject>()
+        .customizeProperty(NestedStringObject::obj into StringObject::string) {
+            it.map { _ -> "nested-custom" }
+        }
+        .sample()
+    
+    then(result.obj.string).isEqualTo("nested-custom")
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Mixed Java-Kotlin Property Selection
+
+When working with mixed Java-Kotlin projects, you can combine different selector types:
+
+{{< tabpane >}}
+{{< tab header="Kotlin" >}}
+@Test
+fun typedRootIsKotlinNestedJavaPropertySelector() {
+    data class RootJavaStringObject(val obj: JavaStringObject)
+    
+    val result = fixtureMonkey.giveMeKotlinBuilder<RootJavaStringObject>()
+        .customizeProperty(RootJavaStringObject::obj intoGetter JavaStringObject::getString) {
+            it.map { _ -> "mixed-custom" }
+        }
+        .sample()
+    
+    then(result.obj.string).isEqualTo("mixed-custom")
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Benefits of Typed Property Selection
+
+1. **Compile-time Safety**: Catch property name errors at compile time rather than runtime
+2. **IDE Support**: Get auto-completion and refactoring support from your IDE
+3. **Type Safety**: Ensure the correct types are used for property values
+4. **Maintainability**: Changes to class structure are automatically reflected in tests
+
 2. **Collection Indexing**
    - Remember that list indices start at 0
    - Wrong: `set("options[3]", "red")` (for a list of size 3)

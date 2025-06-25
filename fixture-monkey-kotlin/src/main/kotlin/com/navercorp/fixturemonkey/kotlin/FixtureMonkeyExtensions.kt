@@ -267,6 +267,12 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
     fun setInner(innerSpecConfigurer: (InnerSpec.() -> InnerSpec)): KotlinTypeDefaultArbitraryBuilder<T> =
         this.apply { delegate.setInner(innerSpecConfigurer(InnerSpec())) }
 
+    fun setKotlinInner(configure: KotlinInnerSpec.() -> Unit): KotlinTypeDefaultArbitraryBuilder<T> {
+        val kotlinSpec = KotlinInnerSpec()
+        kotlinSpec.configure()
+        return this.setInner(kotlinSpec.toInnerSpec())
+    }
+
     /**
      * The following are the APIs use the [PropertySelector].
      */

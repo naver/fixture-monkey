@@ -27,7 +27,6 @@ import com.navercorp.fixturemonkey.api.property.PropertyUtils
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
-import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
@@ -128,7 +127,6 @@ class PluginTest {
 
         then(actual).isInstanceOf(TreeSet::class.java)
     }
-
 
 
     @Test

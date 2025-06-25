@@ -159,6 +159,143 @@ Product(
 {{< /tab >}}
 {{< /tabpane >}}
 
+## 고급 타입 안전 프로퍼티 선택
+
+Fixture Monkey는 객체 프로퍼티를 선택하고 커스터마이즈하는 여러 가지 타입 안전한 방법을 제공하여, 문자열 기반 프로퍼티 경로의 필요성을 없애고 런타임 오류를 줄입니다.
+
+### Java: 타입 안전한 Getter 메서드
+
+Java 클래스의 경우 `javaGetter()`와 `customizeProperty()`를 사용하여 타입 안전한 getter 메서드를 사용할 수 있습니다:
+
+{{< tabpane >}}
+{{< tab header="Java" >}}
+@Test
+void typedJavaGetter() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .customizeProperty(javaGetter(Product::getProductName), 
+            arb -> arb.map(name -> "Custom-" + name))
+        .sample();
+    
+    // productName은 항상 "Custom-"으로 시작합니다
+    then(product.getProductName()).startsWith("Custom-");
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Java: 중첩 프로퍼티 선택
+
+중첩 객체의 경우 `.into()`로 프로퍼티 선택자를 연결합니다:
+
+{{< tabpane >}}
+{{< tab header="Java" >}}
+@Test
+void nestedTypedJavaGetter() {
+    OrderInfo orderInfo = fixtureMonkey.giveMeBuilder(OrderInfo.class)
+        .customizeProperty(
+            javaGetter(OrderInfo::getProduct).into(Product::getProductName),
+            arb -> arb.map(name -> "Premium-" + name)
+        )
+        .sample();
+    
+    // 중첩된 상품명은 "Premium-"으로 시작합니다
+    then(orderInfo.getProduct().getProductName()).startsWith("Premium-");
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Java: 컬렉션 요소 선택
+
+컬렉션과 배열의 경우 `.index()`를 사용하여 특정 요소를 선택합니다:
+
+{{< tabpane >}}
+{{< tab header="Java" >}}
+@Test
+void indexTypedJavaGetter() {
+    ProductCatalog catalog = fixtureMonkey.giveMeBuilder(ProductCatalog.class)
+        .size("products", 3)
+        .customizeProperty(
+            javaGetter(ProductCatalog::getProducts).index(Product.class, 0),
+            arb -> arb.map(product -> product.withPrice(9999L))
+        )
+        .sample();
+    
+    // 첫 번째 상품의 가격은 9999가 됩니다
+    then(catalog.getProducts().get(0).getPrice()).isEqualTo(9999L);
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Kotlin: 프로퍼티 참조 선택
+
+Kotlin은 프로퍼티 참조를 사용하여 더욱 간결한 문법을 제공합니다:
+
+{{< tabpane >}}
+{{< tab header="Kotlin" >}}
+@Test
+fun typedKotlinPropertySelector() {
+    data class StringObject(val string: String)
+    
+    val result = fixtureMonkey.giveMeKotlinBuilder<StringObject>()
+        .customizeProperty(StringObject::string) {
+            it.map { _ -> "customized" }
+        }
+        .sample()
+    
+    then(result.string).isEqualTo("customized")
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Kotlin: 중첩 프로퍼티 선택
+
+Kotlin에서 중첩 프로퍼티에는 `into`를 사용합니다:
+
+{{< tabpane >}}
+{{< tab header="Kotlin" >}}
+@Test
+fun typedNestedKotlinPropertySelector() {
+    data class StringObject(val string: String)
+    data class NestedStringObject(val obj: StringObject)
+    
+    val result = fixtureMonkey.giveMeKotlinBuilder<NestedStringObject>()
+        .customizeProperty(NestedStringObject::obj into StringObject::string) {
+            it.map { _ -> "nested-custom" }
+        }
+        .sample()
+    
+    then(result.obj.string).isEqualTo("nested-custom")
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### Java-Kotlin 혼합 프로퍼티 선택
+
+Java-Kotlin 혼합 프로젝트에서는 다양한 선택자 타입을 조합할 수 있습니다:
+
+{{< tabpane >}}
+{{< tab header="Kotlin" >}}
+@Test
+fun typedRootIsKotlinNestedJavaPropertySelector() {
+    data class RootJavaStringObject(val obj: JavaStringObject)
+    
+    val result = fixtureMonkey.giveMeKotlinBuilder<RootJavaStringObject>()
+        .customizeProperty(RootJavaStringObject::obj intoGetter JavaStringObject::getString) {
+            it.map { _ -> "mixed-custom" }
+        }
+        .sample()
+    
+    then(result.obj.string).isEqualTo("mixed-custom")
+}
+{{< /tab >}}
+{{< /tabpane >}}
+
+### 타입 안전 프로퍼티 선택의 장점
+
+1. **컴파일 타임 안전성**: 런타임이 아닌 컴파일 타임에 프로퍼티 이름 오류를 잡아냅니다
+2. **IDE 지원**: IDE에서 자동 완성과 리팩토링 지원을 받을 수 있습니다
+3. **타입 안전성**: 프로퍼티 값에 올바른 타입이 사용되도록 보장합니다
+4. **유지보수성**: 클래스 구조 변경사항이 테스트에 자동으로 반영됩니다
+
 2. **컬렉션 인덱싱**
    - 리스트 인덱스는 0부터 시작한다는 것을 기억하세요
    - 잘못된 예: `set("options[3]", "red")` (크기가 3인 리스트의 경우)

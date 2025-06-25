@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "com.navercorp.fixturemonkey"
-    version = "1.1.12-SNAPSHOT"
+    version = "1.1.14-SNAPSHOT"
 }
 
 subprojects {
@@ -65,8 +65,8 @@ nexusPublishing {
             val ossrhUsernameToken: String = System.getenv("OSSRH_USERNAME_TOKEN") ?: ""
             val ossrhPasswordToken: String = System.getenv("OSSRH_PASSWORD_TOKEN") ?: ""
 
-            nexusUrl = uri("https://oss.sonatype.org/service/local/")
-            snapshotRepositoryUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+            nexusUrl = uri("https://ossrh-staging-api.central.sonatype.com/service/local/")
+            snapshotRepositoryUrl = uri("https://central.sonatype.com/repository/maven-snapshots/")
             username = ossrhUsernameToken
             password = ossrhPasswordToken
         }

@@ -1,0 +1,405 @@
+---
+description: Guidelines for writing effective tests using Fixture Monkey
+globs: ["**/*Test.java", "**/*Test.kt"]
+alwaysApply: false
+---
+
+# Fixture Monkey Test Writing Guidelines
+
+## FixtureMonkey Instance Creation
+
+### Basic Setup
+```java
+// Basic setup with default options
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+
+// Kotlin setup with Kotlin plugin
+val fixtureMonkey = FixtureMonkey
+    .plugin(KotlinPlugin())
+    .build();
+```
+
+### Advanced Configuration with Introspector Selection
+
+Choose the appropriate introspector based on your class characteristics:
+
+```java
+// For classes with constructor parameters matching field names
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+
+// For classes with public fields
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+
+// For classes with setter methods
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+
+// For classes implementing Builder pattern
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+
+// For fail-safe approach (tries multiple introspectors)
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(FailoverIntrospector.from(
+        ConstructorPropertiesArbitraryIntrospector.INSTANCE,
+        FieldReflectionArbitraryIntrospector.INSTANCE,
+        BeanArbitraryIntrospector.INSTANCE
+    ))
+    .defaultNotNull(true)
+    .build();
+```
+
+#### Introspector Selection Guide:
+- **ConstructorPropertiesArbitraryIntrospector**: Use when constructor parameters match field names (records, data classes)
+- **FieldReflectionArbitraryIntrospector**: Use when class has public fields
+- **BeanArbitraryIntrospector**: Use when class follows JavaBean conventions (getter/setter methods)
+- **BuilderArbitraryIntrospector**: Use when class implements Builder pattern
+- **FailoverIntrospector**: Use when you're unsure or need to support multiple class types
+
+## Choosing Generation Methods
+
+### When to use which method?
+
+1. `giveMeOne()` - For single instance with default random values
+   - Use when you only need basic object creation
+   - Perfect for simple null checks or when specific values don't matter
+   - Most efficient when you don't need customization
+   - Good for testing basic object instantiation
+```java
+Product product = fixtureMonkey.giveMeOne(Product.class);
+List<String> strList = fixtureMonkey.giveMeOne(new TypeReference<List<String>>() {});
+```
+
+2. `giveMe()` - For multiple instances
+   - Use when you need multiple test objects
+   - Ideal for testing collections or batch operations
+   - Good for generating test data sets
+   - Perfect for testing list/collection operations
+```java
+// Generate a stream of instances
+Stream<Product> productStream = fixtureMonkey.giveMe(Product.class);
+
+// Generate a list of specific size
+List<Product> productList = fixtureMonkey.giveMe(Product.class, 3);
+```
+
+3. `giveMeBuilder()` - When customization is needed
+   - Use when specific values are required for the test
+   - When you need to set up complex object relationships
+   - When validation rules need to be satisfied
+   - When testing specific business logic scenarios
+   - When you need to customize nested objects
+   - When working with collections that need specific sizes
+```java
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set(javaGetter(Product::getPrice), 100.0)
+    .size(javaGetter(Product::getOptions), 3)
+    .sample();
+```
+
+## Best Practices
+
+### 1. Type-Safe Object Customization
+
+**Java - Use javaGetter() for type-safe field selection:**
+```java
+// Setting specific values with type safety
+fixtureMonkey.giveMeBuilder(Product.class)
+    .set(javaGetter(Product::getName), "Test Product")
+    .set(javaGetter(Product::getPrice), 100.0)
+    .sample();
+
+// Setting collection sizes - Always set size before customizing elements
+fixtureMonkey.giveMeBuilder(Order.class)
+    .size(javaGetter(Order::getItems), 3)  // Set size first
+    .set(javaGetter(Order::getItems).index(0, Item::getName), "Item 1")  // Then customize elements
+    .sample();
+
+// Nested object customization
+fixtureMonkey.giveMeBuilder(Order.class)
+    .set(javaGetter(Order::getCustomer, Customer::getName), "John Doe")
+    .set(javaGetter(Order::getItems).index(0, Item::getPrice), 100.0)
+    .sample();
+
+// Using Arbitrary values
+fixtureMonkey.giveMeBuilder(Product.class)
+    .set(javaGetter(Product::getPrice), Arbitraries.longs().greaterThan(0))
+    .sample();
+```
+
+**Kotlin - Use Kotlin DSL Exp for type-safe field selection:**
+```kotlin
+// Setting specific values with type safety
+fixtureMonkey.giveMeBuilder<Product>()
+    .setExp(Product::name, "Test Product")
+    .setExp(Product::price, 100.0)
+    .sample()
+
+// Setting collection sizes - Always set size before customizing elements
+fixtureMonkey.giveMeBuilder<Order>()
+    .sizeExp(Order::items, 3)  // Set size first
+    .setExp(Order::items["0"] into Item::name, "Item 1")  // Then customize elements using Kotlin DSL
+    .sample()
+
+// Nested object customization
+fixtureMonkey.giveMeBuilder<Order>()
+    .setExp(Order::customer into Customer::name, "John Doe")
+    .setExp(Order::items["0"] into Item::price, 100.0)
+    .sample()
+
+// Using Arbitrary values
+fixtureMonkey.giveMeBuilder<Product>()
+    .setExp(Product::price, Arbitraries.longs().greaterThan(0))
+    .sample()
+```
+
+### 2. Generic Type Handling
+```java
+// Generic class instantiation
+fixtureMonkey.giveMeOne(new TypeReference<GenericObject<String>>() {});
+
+// Generic collections
+fixtureMonkey.giveMeOne(new TypeReference<List<GenericObject<String>>>() {});
+```
+
+### 3. Complex Object Customization
+```java
+// Collection element customization with type safety
+fixtureMonkey.giveMeBuilder(Order.class)
+    .size(javaGetter(Order::getItems), 2)  // Always set size first
+    .set(javaGetter(Order::getItems).index(0, Item::getName), "Item 1")
+    .set(javaGetter(Order::getItems).index(1, Item::getName), "Item 2")
+    .sample();
+```
+
+```kotlin
+// Kotlin version with Kotlin DSL
+fixtureMonkey.giveMeBuilder<Order>()
+    .sizeExp(Order::items, 2)  // Always set size first
+    .setExp(Order::items["0"] into Item::name, "Item 1")
+    .setExp(Order::items["1"] into Item::name, "Item 2")
+    .sample()
+```
+
+### 4. Validation Integration
+```java
+// With Javax Validation
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaxValidationPlugin())
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .defaultNotNull(true)
+    .build();
+```
+
+## Common Patterns
+
+### 1. Test Data Consistency
+```java
+// Using fixed() for consistent test data
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .fixed()
+    .sample();
+```
+
+### 2. Unique Values
+```kotlin
+// Generating unique values in collections with type safety
+List<String> uniqueList = fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {})
+    .sizeExp(root(), 3)
+    .setExp(anyOf(String.class), Values.unique(() -> Arbitraries.strings().sample()))
+    .sample();
+```
+
+### 3. Complex Object Graphs
+```java
+// Handling recursive objects
+fixtureMonkey.giveMeBuilder(SelfRecursiveObject.class)
+    .set(javaGetter(SelfRecursiveObject::getValue), "test")
+    .sample();
+```
+
+```kotlin
+// Kotlin version
+fixtureMonkey.giveMeBuilder<SelfRecursiveObject>()
+    .setExp(SelfRecursiveObject::value, "test")
+    .sample()
+```
+
+## Anti-patterns to Avoid
+
+1. **Using String path expressions instead of type-safe expressions**
+```java
+// Don't do this - String-based paths are error-prone
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("name", "Test Product")  // Not type-safe
+    .set("price", 100.0)
+    .sample();
+
+// Do this instead - Use javaGetter() for type safety
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set(javaGetter(Product::getName), "Test Product")  // Type-safe
+    .set(javaGetter(Product::getPrice), 100.0)
+    .sample();
+```
+
+```kotlin
+// Don't do this in Kotlin
+val product = fixtureMonkey.giveMeBuilder<Product>()
+    .set("name", "Test Product")  // Not type-safe
+    .set("price", 100.0)
+    .sample()
+
+// Do this instead - Use Kotlin DSL Exp
+val product = fixtureMonkey.giveMeBuilder<Product>()
+    .setExp(Product::name, "Test Product")  // Type-safe
+    .setExp(Product::price, 100.0)
+    .sample()
+```
+
+2. Manual object creation instead of using Fixture Monkey
+```java
+// Don't do this
+User user = new User();
+user.setName("Test User");
+user.setAge(25);
+
+// Do this instead
+User user = fixtureMonkey.giveMeBuilder(User.class)
+    .set(javaGetter(User::getAge), 25)
+    .sample();
+```
+
+```kotlin
+// Kotlin version
+val user = fixtureMonkey.giveMeBuilder<User>()
+    .setExp(User::age, 25)
+    .sample()
+```
+
+3. Hardcoding test data without using Fixture Monkey's generation capabilities
+```java
+// Don't do this
+List<Product> products = Arrays.asList(
+    new Product("Product 1", 100.0),
+    new Product("Product 2", 200.0)
+);
+
+// Do this instead
+List<Product> products = fixtureMonkey.giveMe(Product.class, 2);
+```
+
+4. Not using appropriate customization methods
+```java
+// Don't do this
+Product product = fixtureMonkey.giveMeOne(Product.class);
+product.setPrice(100.0); // Modifying after generation
+
+// Do this instead
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .set(javaGetter(Product::getPrice), 100.0)
+    .sample();
+```
+
+```kotlin
+// Kotlin version
+val product = fixtureMonkey.giveMeBuilder<Product>()
+    .setExp(Product::price, 100.0)
+    .sample()
+```
+
+5. Inefficient use of giveMeBuilder()
+```java
+// Inefficient: Setting all fields while only doing null checks
+Address address = fixtureMonkey.giveMeBuilder(Address.class)
+    .set(javaGetter(Address::getStreet), "123 Main St")
+    .set(javaGetter(Address::getCity), "Seoul")
+    .set(javaGetter(Address::getDistrict), "Gangnam")
+    .set(javaGetter(Address::getPostalCode), "12345")
+    .set(javaGetter(Address::getCountry), "Korea")
+    .sample();
+
+// Efficient: Using giveMeOne() for simple null checks
+Address address = fixtureMonkey.giveMeOne(Address.class);
+```
+
+6. Not setting collection size before customizing elements
+```java
+// Don't do this - collection might be empty
+Order orderWrong = fixtureMonkey.giveMeBuilder(Order.class)
+    .set(javaGetter(Order::getProducts).index(0, Product::getName), "Laptop")  // This might not work!
+    .sample();
+
+// Do this instead - set size first
+Order orderCorrect = fixtureMonkey.giveMeBuilder(Order.class)
+    .size(javaGetter(Order::getProducts), 1)                // Set size first!
+    .set(javaGetter(Order::getProducts).index(0, Product::getName), "Laptop")  // Now this works
+    .sample();
+```
+
+7. **Using wrong introspector for class type**
+```java
+// Don't do this - using wrong introspector
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(BeanArbitraryIntrospector.INSTANCE)  // Wrong for record classes
+    .build();
+
+// For record classes, use ConstructorPropertiesArbitraryIntrospector
+public record User(String name, int age) {}
+
+// Do this instead
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)  // Correct for records
+    .build();
+```
+
+## Decision Tree
+
+1. What type of class are you working with?
+   - Record/Data class → Use `ConstructorPropertiesArbitraryIntrospector`
+   - Public fields → Use `FieldReflectionArbitraryIntrospector`
+   - JavaBean (getter/setter) → Use `BeanArbitraryIntrospector`
+   - Builder pattern → Use `BuilderArbitraryIntrospector`
+   - Mixed or unsure → Use `FailoverIntrospector`
+
+2. What is the purpose of the test?
+   - Only null checks → Use `giveMeOne()`
+   - Specific value assertions → Go to 3
+   - Complex object setup → Go to 4
+
+3. Are you using specific values in assertions?
+   - Yes → Use `giveMeBuilder()` with type-safe expressions (javaGetter/exp) for only necessary fields
+   - No → Use `giveMeOne()`
+
+4. Do you need multiple instances?
+   - Yes → Use `giveMe()`
+   - No → Go to 5
+
+5. Do you need to customize the instance?
+   - Yes → Use `giveMeBuilder()` with type-safe expressions for only required customizations
+   - No → Use `giveMeOne()`
+
+6. Do you need to work with generic types?
+   - Yes → Use `TypeReference`
+   - No → Use direct class reference
+
+7. Do you need validation?
+   - Yes → Add appropriate validation plugin
+   - No → Use default configuration
+
+8. Are you working with collections?
+   - Yes → Always set size before customizing elements using type-safe expressions
+   - No → Proceed with customization using type-safe expressions
+
+9. Are you using Java or Kotlin?
+   - Java → Use `javaGetter()` for type-safe field selection
+   - Kotlin → Use Kotlin DSL with `setExp()`, `setExpGetter()`, `into`, `intoGetter` syntax
