@@ -92,10 +92,6 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
         delegate.set(value)
     }
 
-    override fun selectName(vararg names: String?): ArbitraryBuilder<T> = this.apply {
-        delegate.selectName(*names)
-    }
-
     override fun setInner(innerSpec: InnerSpec): KotlinTypeDefaultArbitraryBuilder<T> = this.apply {
         delegate.setInner(innerSpec)
     }

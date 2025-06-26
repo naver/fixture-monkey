@@ -86,12 +86,6 @@ public final class JavaTypeDefaultTypeArbitraryBuilder<T>
 	}
 
 	@Override
-	public ArbitraryBuilder<T> selectName(final String... names) {
-		delegate.selectName(names);
-		return this;
-	}
-
-	@Override
 	public JavaTypeArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
 		delegate.setInner(innerSpec);
 		return this;

@@ -736,7 +736,7 @@ class FixtureMonkeyOptionsTest {
 			)
 			.build();
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
+		String actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
 			.selectName("simpleObject", "string")
 			.sample()
 			.getStr();
@@ -754,11 +754,11 @@ class FixtureMonkeyOptionsTest {
 			)
 			.build();
 
-		SimpleObject actual = sut.giveMeBuilder(SimpleObject.class)
+		SimpleObject actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
 			.selectName("test")
 			.sample();
 
-		String actual2 = sut.giveMeBuilder(String.class)
+		String actual2 = sut.giveMeExperimentalBuilder(String.class)
 			.selectName("test")
 			.sample();
 
@@ -794,7 +794,7 @@ class FixtureMonkeyOptionsTest {
 			)
 			.build();
 
-		List<SimpleObject> actual = sut.giveMeBuilder(SimpleObject.class)
+		List<SimpleObject> actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
 			.selectName("test")
 			.sampleList(3);
 
@@ -959,7 +959,7 @@ class FixtureMonkeyOptionsTest {
 			)
 			.build();
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
+		String actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
 			.selectName("simpleObject", "string")
 			.sample()
 			.getStr();
@@ -983,7 +983,7 @@ class FixtureMonkeyOptionsTest {
 			)
 			.build();
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
+		String actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
 			.selectName("string", "simpleObject")
 			.sample()
 			.getStr();
