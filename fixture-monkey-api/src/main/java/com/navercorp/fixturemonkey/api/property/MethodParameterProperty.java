@@ -29,6 +29,9 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+
 /**
  * It is deprecated.
  * Use {@link TypeNameProperty} instead.
