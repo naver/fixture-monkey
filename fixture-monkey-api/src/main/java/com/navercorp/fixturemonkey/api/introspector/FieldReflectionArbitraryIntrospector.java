@@ -18,7 +18,7 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import static com.navercorp.fixturemonkey.api.exception.Exceptions.throwAsUnchecked;
-import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
+import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_METHOD_PROPERTY_GENERATOR;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -130,6 +130,6 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 
 	@Override
 	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
-		return FIELD_PROPERTY_GENERATOR;
+		return FIELD_METHOD_PROPERTY_GENERATOR;
 	}
 }

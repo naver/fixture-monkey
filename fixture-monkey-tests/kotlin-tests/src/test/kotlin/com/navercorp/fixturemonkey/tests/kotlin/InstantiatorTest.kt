@@ -3,9 +3,11 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
+import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
@@ -220,7 +222,7 @@ class InstantiatorTest {
                     parameter<Int>()
                 }
             }
-            .set("bar", 1)
+            .set("factoryBar", 1)
             .sample()
             .bar
 
@@ -560,11 +562,56 @@ class InstantiatorTest {
         then(actual).isEqualTo(1)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByPropertyInRegister() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register(Foo::class.java) {
+                it.giveMeKotlinBuilder<Foo>()
+                    .instantiateBy {
+                        factory("build") {
+                            parameter<Int>()
+                        }
+                    }
+            }
+            .build()
+
+        val actual = sut.giveMeOne<FooWrapper>().foo.foo
+
+        then(actual).isEqualTo("factory")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByPropertySetFactoryPropertyInRegister() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register(Foo::class.java) {
+                it.giveMeKotlinBuilder<Foo>()
+                    .instantiateBy {
+                        factory("build") {
+                            parameter<Int>()
+                        }
+                    }
+            }
+            .build()
+        val expected = 2
+
+        val actual = sut.giveMeBuilder<FooWrapper>()
+            .set("foo.factoryBar", expected)
+            .sample()
+            .foo
+            .bar
+
+        then(actual).isEqualTo(expected)
+    }
+
+    class FooWrapper(val foo: Foo)
+
     class Foo(val foo: String, val bar: Int) {
         constructor(foo: String) : this(foo, 1)
 
         companion object {
-            fun build(bar: Int): Foo = Foo("factory", bar)
+            fun build(factoryBar: Int): Foo = Foo("factory", factoryBar)
         }
     }
 

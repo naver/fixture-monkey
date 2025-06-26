@@ -18,10 +18,15 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,22 +78,26 @@ public final class ArbitraryResolver {
 			rootProperty,
 			() -> {
 				// TODO: Fragmented registered
+				Set<Property> inferredProperties = inferPossibleProperties(
+					rootProperty,
+					new CycleDetector()
+				);
+
 				Map<Class<?>, List<Property>> registeredPropertyConfigurer =
 					monkeyContext.getRegisteredArbitraryBuilders().stream()
-					.filter(it -> it.match(rootProperty))
-					.map(it -> ((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext())
-					.map(ArbitraryBuilderContext::getPropertyConfigurers)
-					.findFirst() // registered are stored in reverse order, so we take the first one
-					.orElse(Collections.emptyMap());
+						.filter(it -> inferredProperties.stream().anyMatch(it::match))
+						.map(it -> ((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext())
+						.map(ArbitraryBuilderContext::getPropertyConfigurers)
+						.findFirst() // registered are stored in reverse order, so we take the first one
+						.orElse(Collections.emptyMap());
 
 				Map<Class<?>, ArbitraryIntrospector> registeredIntrospectors =
-					monkeyContext.getRegisteredArbitraryBuilders()
-					.stream()
-					.filter(it -> it.match(rootProperty))
-					.map(it -> ((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext())
-					.map(ArbitraryBuilderContext::getArbitraryIntrospectorsByType)
-					.findFirst() // registered are stored in reverse order, so we take the first one
-					.orElse(Collections.emptyMap());
+					monkeyContext.getRegisteredArbitraryBuilders().stream()
+						.filter(it -> inferredProperties.stream().anyMatch(it::match))
+						.map(it -> ((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext())
+						.map(ArbitraryBuilderContext::getArbitraryIntrospectorsByType)
+						.findFirst() // registered are stored in reverse order, so we take the first one
+						.orElse(Collections.emptyMap());
 
 				ObjectTree objectTree = new ObjectTree(
 					rootProperty,
@@ -152,5 +161,59 @@ public final class ArbitraryResolver {
 			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
 			activeContext::isValidOnly
 		);
+	}
+
+	/**
+	 * Infers all possible properties from the given root property without cycles.
+	 *
+	 * <p>All properties means the nodes in the object tree that can be generated from the given root property.
+	 * This method specifically uses {@link com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator}
+	 * to generate field-based properties because regardless of how objects are created
+	 * (constructor, factory method, builder pattern, etc.), the ultimate goal is to populate
+	 * the fields of those objects with test data.
+	 *
+	 * <p>The generated properties by {@code fieldPropertyGenerator} are cached to avoid redundant generation
+	 * when creating {@link ObjectNode} instances, improving performance during object tree construction.
+	 */
+	private Set<Property> inferPossibleProperties(Property property, CycleDetector cycleDetector) {
+		Set<Property> collectedProperties = new HashSet<>();
+
+		cycleDetector.checkCycle(
+			property,
+			p -> {
+				collectedProperties.add(p);
+				Set<Property> leafChildProperties = FIELD_PROPERTY_GENERATOR.generateChildProperties(p)
+					.stream()
+					.flatMap(it -> inferPossibleProperties(it, cycleDetector).stream())
+					.collect(Collectors.toSet());
+				collectedProperties.addAll(leafChildProperties);
+			}
+		);
+
+		return collectedProperties;
+	}
+
+	private static final class CycleDetector {
+		private final Set<Property> properties;
+
+		public CycleDetector() {
+			this.properties = new HashSet<>();
+		}
+
+		private void checkCycle(
+			Property property,
+			Consumer<Property> action
+		) {
+			if (properties.contains(property)) {
+				return;
+			}
+
+			properties.add(property);
+			try {
+				action.accept(property);
+			} finally {
+				properties.remove(property);
+			}
+		}
 	}
 }
