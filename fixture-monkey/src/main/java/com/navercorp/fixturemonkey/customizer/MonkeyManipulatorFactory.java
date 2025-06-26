@@ -147,7 +147,7 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators( // TODO: Fragmented registered
-		List<MatcherOperator<ArbitraryBuilderContext>> registeredArbitraryBuilders,
+		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		Map<Property, List<ObjectNode>> nodesByType,
     List<String> selectNames
 	) {
