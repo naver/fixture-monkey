@@ -28,9 +28,9 @@ import org.apiguardian.api.API;
  * This class is intended for internal use only.
  *
  * @param <T> the type of the operator
- * @since 1.1.12
+ * @since 1.1.15
  */
-@API(since = "1.1.12", status = EXPERIMENTAL)
+@API(since = "1.1.15", status = EXPERIMENTAL)
 public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 	private final int priority;
 

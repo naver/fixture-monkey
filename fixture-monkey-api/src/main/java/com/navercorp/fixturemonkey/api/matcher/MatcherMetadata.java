@@ -23,10 +23,10 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import org.apiguardian.api.API;
 
 /**
- * It is for internal use as a marker interface in 1.1.12.
+ * It is for internal use as a marker interface in 1.1.15.
  * Please do not use it directly.
  */
-@API(since = "1.1.12", status = EXPERIMENTAL)
+@API(since = "1.1.15", status = EXPERIMENTAL)
 public interface MatcherMetadata {
 
 }

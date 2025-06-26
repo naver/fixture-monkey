@@ -29,7 +29,7 @@ import org.apiguardian.api.API;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@API(since = "1.1.12", status = EXPERIMENTAL)
+@API(since = "1.1.15", status = EXPERIMENTAL)
 public @interface Order {
 	int value() default Integer.MAX_VALUE;
 }

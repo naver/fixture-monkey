@@ -38,7 +38,7 @@ public interface Matcher {
 	 * @param matcherMetadata additional matching information
 	 * @return true if the property matches, otherwise false
 	 */
-	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
+	@API(since = "1.1.15", status = Status.EXPERIMENTAL)
 	default boolean match(Property property, MatcherMetadata matcherMetadata) {
 		return match(property);
 	}

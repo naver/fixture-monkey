@@ -24,7 +24,7 @@ import org.apiguardian.api.API;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "1.1.12", status = EXPERIMENTAL)
+@API(since = "1.1.15", status = EXPERIMENTAL)
 public final class NamedMatcher implements Matcher {
 	private final Matcher matcher;
 	private final String registeredName;
@@ -50,7 +50,7 @@ public final class NamedMatcher implements Matcher {
 		return new NamedMatcherMetadata(name);
 	}
 
-	@API(since = "1.1.12", status = EXPERIMENTAL)
+	@API(since = "1.1.15", status = EXPERIMENTAL)
 	public static final class NamedMatcherMetadata implements MatcherMetadata {
 		private final String name;
 
