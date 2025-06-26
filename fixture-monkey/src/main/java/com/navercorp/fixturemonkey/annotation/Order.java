@@ -16,21 +16,20 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
+package com.navercorp.fixturemonkey.annotation;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-
-@API(since = "0.6.12", status = Status.MAINTAINED)
-public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-
-	/**
-	 * Set the {@link ArbitraryBuilder} sampling given {@code names}.
-	 *
-	 * @param names An array of names to select and register their corresponding ArbitraryBuilders.
-	 * @return an {@link ArbitraryBuilder} with the selected properties.
-	 */
-	ArbitraryBuilder<T> selectName(String... names);
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@API(since = "1.1.15", status = EXPERIMENTAL)
+public @interface Order {
+	int value() default Integer.MAX_VALUE;
 }

@@ -16,21 +16,17 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
+package com.navercorp.fixturemonkey.api.matcher;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+/**
+ * It is for internal use as a marker interface in 1.1.15.
+ * Please do not use it directly.
+ */
+@API(since = "1.1.15", status = EXPERIMENTAL)
+public interface MatcherMetadata {
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
-public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-
-	/**
-	 * Set the {@link ArbitraryBuilder} sampling given {@code names}.
-	 *
-	 * @param names An array of names to select and register their corresponding ArbitraryBuilders.
-	 * @return an {@link ArbitraryBuilder} with the selected properties.
-	 */
-	ArbitraryBuilder<T> selectName(String... names);
 }

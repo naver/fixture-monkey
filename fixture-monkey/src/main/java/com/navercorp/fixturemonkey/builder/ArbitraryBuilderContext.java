@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -65,6 +67,7 @@ import com.navercorp.fixturemonkey.tree.ObjectTree;
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
+	private final List<String> selectNames;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 	private final MonkeyContext monkeyContext;
@@ -83,6 +86,7 @@ public final class ArbitraryBuilderContext {
 	private ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<String> selectNames,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		@Nullable FixedState fixedState,
@@ -91,6 +95,7 @@ public final class ArbitraryBuilderContext {
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
+		this.selectNames = selectNames;
 		this.propertyConfigurers = propertyConfigurers;
 		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
 		this.fixedState = fixedState;
@@ -105,6 +110,7 @@ public final class ArbitraryBuilderContext {
 	@Deprecated
 	public static ArbitraryBuilderContext newBuilderContext(MonkeyContext monkeyContext) {
 		return new ArbitraryBuilderContext(
+			new ArrayList<>(),
 			new ArrayList<>(),
 			new ArrayList<>(),
 			new HashMap<>(),
@@ -122,6 +128,7 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			copiedContainerInfoManipulators,
+			new ArrayList<>(this.selectNames),
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
 			fixedState,
@@ -152,6 +159,18 @@ public final class ArbitraryBuilderContext {
 
 	public List<TreeNodeManipulator> getContainerInfoManipulators() {
 		return Collections.unmodifiableList(containerInfoManipulators);
+	}
+
+	public void addSelectedNames(List<String> selectNames) {
+		for (String selectName : selectNames) {
+			if (!this.selectNames.contains(selectName)) {
+				this.selectNames.add(0, selectName);
+			}
+		}
+	}
+
+	public List<String> getSelectedNames() {
+		return this.selectNames;
 	}
 
 	public void putPropertyConfigurer(Class<?> type, List<Property> propertyConfigurer) {
@@ -226,6 +245,7 @@ public final class ArbitraryBuilderContext {
 		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeNodeManipulators =
 			monkeyContext.getRegisteredArbitraryBuilders()
 				.stream()
+				.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
 				.map(it -> new MatcherOperator<>(
 					it.getMatcher(),
 					((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
@@ -233,13 +253,16 @@ public final class ArbitraryBuilderContext {
 				))
 				.collect(Collectors.toList()); // TODO: Fragmented registered
 
-		List<TreeNodeManipulator> registeredRootTreeManipulators = registeredTreeNodeManipulators.stream()
+		TreeNodeManipulator registeredRootTreeManipulator = registeredTreeNodeManipulators.stream()
 			.filter(it -> it.match(rootProperty))
 			.flatMap(it -> it.getOperator().stream())
-			.collect(Collectors.toList());
+			.findFirst()
+			.orElse(null);
 
-		List<TreeNodeManipulator> activeTreeNodeManipulators = new ArrayList<>(registeredRootTreeManipulators);
-		activeTreeNodeManipulators.addAll(this.getContainerInfoManipulators());
+		List<TreeNodeManipulator> activeTreeNodeManipulators = new ArrayList<>(this.getContainerInfoManipulators());
+		if (registeredRootTreeManipulator != null) {
+			activeTreeNodeManipulators.add(0, registeredRootTreeManipulator);
+		}
 
 		FixtureMonkeyOptions fixtureMonkeyOptions = this.monkeyContext.getFixtureMonkeyOptions();
 		Map<Class<?>, List<Property>> concatPropertyConfigurer = new HashMap<>(this.getPropertyConfigurers());

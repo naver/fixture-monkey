@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.DefaultTreeMatcherMetadata;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -68,7 +68,7 @@ public final class ArbitraryResolver {
 	public CombinableArbitrary<?> resolve(
 		TreeRootProperty rootProperty,
 		ArbitraryBuilderContext activeContext,
-		List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts
+		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts
 	) {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
 
@@ -122,22 +122,25 @@ public final class ArbitraryResolver {
 				List<ArbitraryManipulator> registeredRootManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
 						standbyContexts,
-						rootNodesByProperty
+						rootNodesByProperty,
+						activeContext.getSelectedNames()
 					);
 
-				List<MatcherOperator<ArbitraryBuilderContext>> registeredPropertyArbitraryBuilderContexts =
+				List<PriorityMatcherOperator<ArbitraryBuilderContext>> registeredPropertyArbitraryBuilderContexts =
 					monkeyContext.getRegisteredArbitraryBuilders()
 						.stream()
-						.map(it -> new MatcherOperator<>(
+						.map(it -> new PriorityMatcherOperator<>(
 							it.getMatcher(),
-							((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
+							((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext(),
+							it.getPriority()
 						))
 						.collect(Collectors.toList());
 
 				List<ArbitraryManipulator> registeredPropertyManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
 						registeredPropertyArbitraryBuilderContexts,
-						objectTree.getMetadata().getNodesByProperty()
+						objectTree.getMetadata().getNodesByProperty(),
+						activeContext.getSelectedNames()
 					);
 
 				List<ArbitraryManipulator> registeredManipulators = new ArrayList<>();
