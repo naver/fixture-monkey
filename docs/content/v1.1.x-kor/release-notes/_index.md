@@ -8,6 +8,11 @@ weight: 100
 
 ## v1.1.x
 
+### v1.1.14
+Fix the property instantiation within the register option
+
+Add a new 'register' option with the priority
+
 ### v1.1.13
 Fix the issue where the instantiate API is not working within the register
 
