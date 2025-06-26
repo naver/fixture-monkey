@@ -519,8 +519,12 @@ public abstract class Types {
 	}
 
 	public static boolean isJavaType(Class<?> type) {
-		return type.isPrimitive()
-			|| (type.getPackage() != null && type.getPackage().getName().startsWith("java"));
+		return type.isPrimitive() || isJavaPackage(type);
+	}
+
+	private static boolean isJavaPackage(Class<?> type) {
+		return type.getPackage() != null
+			&& (type.getPackage().getName().startsWith("java") || type.getPackage().getName().startsWith("sun"));
 	}
 
 	public static boolean isAssignableTypes(Class<?>[] froms, Class<?>[] tos) {

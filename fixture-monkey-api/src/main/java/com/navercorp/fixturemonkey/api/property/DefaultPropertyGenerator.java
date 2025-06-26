@@ -28,16 +28,50 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 
 @API(since = "0.5.3", status = Status.MAINTAINED)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
-	public static final PropertyGenerator FIELD_PROPERTY_GENERATOR = new CompositePropertyGenerator(
+	/**
+	 * A cached field-based property generator that generates properties from fields.
+	 *
+	 * <p>This generator uses {@link LazyPropertyGenerator} with LRU caching to reduce
+	 * unnecessary duplicate property generation during object tree construction.
+	 * It includes all fields (no filtering) and all annotations.
+	 *
+	 * <p><strong>Note:</strong> The caching is based on property identity using a
+	 * concurrent LRU cache with a maximum size of 32 entries. If the same property
+	 * is accessed multiple times during object tree generation, the cached result
+	 * will be reused instead of regenerating the child properties, which improves
+	 * performance significantly especially for complex object hierarchies.
+	 */
+	public static final PropertyGenerator FIELD_PROPERTY_GENERATOR = new LazyPropertyGenerator(
+		new FieldPropertyGenerator(
+			it -> true,
+			it -> true
+		)
+	);
+
+	/**
+	 * A cached JavaBeans method-based property generator that generates properties from getter/setter pairs.
+	 *
+	 * <p>This generator uses {@link LazyPropertyGenerator} with LRU caching to reduce
+	 * unnecessary duplicate property generation during object tree construction.
+	 * It only includes properties that have both read and write methods (getter and setter).
+	 *
+	 * <p><strong>Note:</strong> The caching is based on property identity using a
+	 * concurrent LRU cache with a maximum size of 32 entries. If the same property
+	 * is accessed multiple times during object tree generation, the cached result
+	 * will be reused instead of regenerating the child properties, which improves
+	 * performance significantly especially for complex object hierarchies.
+	 */
+	public static final PropertyGenerator METHOD_PROPERTY_GENERATOR = new LazyPropertyGenerator(
+		new JavaBeansPropertyGenerator(
+			it -> it.getReadMethod() != null && it.getWriteMethod() != null,
+			it -> true
+		)
+	);
+
+	public static final PropertyGenerator FIELD_METHOD_PROPERTY_GENERATOR = new CompositePropertyGenerator(
 		Arrays.asList(
-			new FieldPropertyGenerator(
-				it -> true,
-				it -> true
-			),
-			new JavaBeansPropertyGenerator(
-				it -> it.getReadMethod() != null && it.getWriteMethod() != null,
-				it -> true
-			)
+			FIELD_PROPERTY_GENERATOR,
+			METHOD_PROPERTY_GENERATOR
 		)
 	);
 
@@ -45,7 +79,7 @@ public final class DefaultPropertyGenerator implements PropertyGenerator {
 		new CompositePropertyGenerator(
 			Arrays.asList(
 				ConstructorPropertiesArbitraryIntrospector.PROPERTY_GENERATOR,
-				FIELD_PROPERTY_GENERATOR
+				FIELD_METHOD_PROPERTY_GENERATOR
 			)
 		);
 
