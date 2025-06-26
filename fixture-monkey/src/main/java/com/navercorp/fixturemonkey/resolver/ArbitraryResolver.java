@@ -122,8 +122,7 @@ public final class ArbitraryResolver {
 				List<ArbitraryManipulator> registeredRootManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
 						standbyContexts,
-						rootNodesByProperty,
-						activeContext.getSelectedNames()
+						rootNodesByProperty
 					);
 
 				List<PriorityMatcherOperator<ArbitraryBuilderContext>> registeredPropertyArbitraryBuilderContexts =
@@ -139,8 +138,7 @@ public final class ArbitraryResolver {
 				List<ArbitraryManipulator> registeredPropertyManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
 						registeredPropertyArbitraryBuilderContexts,
-						objectTree.getMetadata().getNodesByProperty(),
-						activeContext.getSelectedNames()
+						objectTree.getMetadata().getNodesByProperty()
 					);
 
 				List<ArbitraryManipulator> registeredManipulators = new ArrayList<>();

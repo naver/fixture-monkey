@@ -97,7 +97,6 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairInterface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.RegisterGroup;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.RegisterGroupWithPriority;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveAbstractValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SimpleObjectChild;
@@ -721,88 +720,6 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registerSelectedNameOverridesPrevious() {
-		String expected = "string";
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerByName(
-				"simpleObject",
-				String.class,
-				monkey -> monkey.giveMeBuilder("simpleObject")
-			)
-			.registerByName(
-				"string",
-				String.class,
-				monkey -> monkey.giveMeBuilder(expected)
-			)
-			.build();
-
-		String actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
-			.selectName("simpleObject", "string")
-			.sample()
-			.getStr();
-
-		then(actual).isEqualTo(expected);
-	}
-
-	@Property
-	void registerByName() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerByName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test")
-			)
-			.build();
-
-		SimpleObject actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
-			.selectName("test")
-			.sample();
-
-		String actual2 = sut.giveMeExperimentalBuilder(String.class)
-			.selectName("test")
-			.sample();
-
-		then(actual.getStr()).isEqualTo("test");
-		then(actual2).isEqualTo("test");
-	}
-
-	@Property
-	void registerByNameWithSameRegisteredName() {
-		thenThrownBy(() -> FixtureMonkey.builder()
-			.registerByName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test")
-			)
-			.registerByName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test2")
-			)
-			.build()
-		).isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Duplicated ArbitraryBuilder name: test");
-	}
-
-	@Property
-	void generateSampleListWithRegisterByNames() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerByName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test")
-			)
-			.build();
-
-		List<SimpleObject> actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
-			.selectName("test")
-			.sampleList(3);
-
-		then(actual).hasSize(3);
-		then(actual).allMatch(it -> it.getStr().equals("test"));
-	}
-
-	@Property
 	void registerSetFirst() {
 		String expected = "test2";
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -827,46 +744,6 @@ class FixtureMonkeyOptionsTest {
 			.sample();
 
 		then(actual).isEqualTo("test");
-	}
-
-	@Property
-	void registerByNameWithPriority() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerByName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test"),
-				1
-			)
-			.registerByName(
-				"test2",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test2"),
-				2
-			)
-			.build();
-
-		String actual = sut.giveMeBuilder(String.class)
-			.sample();
-
-		then(actual).isEqualTo("test");
-	}
-
-	@Property
-	void registerGroupWithPriorityAnnotation() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(RegisterGroup.class, RegisterGroupWithPriority.class)
-			.build();
-
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
-		List<String> actual2 = sut.giveMeOne(new TypeReference<List<String>>() {
-		});
-		ConcreteIntValue actual3 = sut.giveMeOne(ConcreteIntValue.class);
-
-		then(actual).hasSizeBetween(4, 6);
-		then(actual2).hasSizeGreaterThan(4);
-		then(actual3.getIntValue()).isEqualTo(RegisterGroupWithPriority.FIXED_INT_VALUE.getIntValue());
 	}
 
 	@Property
@@ -941,54 +818,6 @@ class FixtureMonkeyOptionsTest {
 		Pair<String, String> actual2 = builder.sample();
 
 		then(actual1).isEqualTo(actual2);
-	}
-
-	@Property
-	void registerNestedSelectLatter() {
-		String expected = "string";
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerByName(
-				"simpleObject",
-				String.class,
-				monkey -> monkey.giveMeBuilder("simpleObject")
-			)
-			.registerByName(
-				"string",
-				String.class,
-				monkey -> monkey.giveMeBuilder(expected)
-			)
-			.build();
-
-		String actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
-			.selectName("simpleObject", "string")
-			.sample()
-			.getStr();
-
-		then(actual).isEqualTo(expected);
-	}
-
-	@Property
-	void registerNestedSelectFormer() {
-		String expected = "simpleObject";
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerByName(
-				"simpleObject",
-				String.class,
-				monkey -> monkey.giveMeBuilder(expected)
-			)
-			.registerByName(
-				"string",
-				String.class,
-				monkey -> monkey.giveMeBuilder("string")
-			)
-			.build();
-
-		String actual = sut.giveMeExperimentalBuilder(SimpleObject.class)
-			.selectName("string", "simpleObject")
-			.sample()
-			.getStr();
-
-		then(actual).isEqualTo(expected);
 	}
 
 	@Property
