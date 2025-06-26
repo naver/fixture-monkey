@@ -25,12 +25,4 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
 @API(since = "0.6.12", status = Status.MAINTAINED)
 public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-
-	/**
-	 * Set the {@link ArbitraryBuilder} sampling given {@code names}.
-	 *
-	 * @param names An array of names to select and register their corresponding ArbitraryBuilders.
-	 * @return an {@link ArbitraryBuilder} with the selected properties.
-	 */
-	ArbitraryBuilder<T> selectName(String... names);
 }

@@ -32,7 +32,6 @@ import java.util.function.UnaryOperator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.annotation.Order;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -398,11 +397,12 @@ public final class FixtureMonkeyBuilder {
 							}
 						};
 
-					if (arbitraryBuilderGroup.isAnnotationPresent(Order.class)) {
-						Order order = arbitraryBuilderGroup.getAnnotation(Order.class);
-						this.register(actualType, registerArbitraryBuilder, order.value());
-						continue;
-					}
+					// TODO: Support Order annotation
+					// if (arbitraryBuilderGroup.isAnnotationPresent(Order.class)) {
+					// 	Order order = arbitraryBuilderGroup.getAnnotation(Order.class);
+					// 	this.register(actualType, registerArbitraryBuilder, order.value());
+					// 	continue;
+					// }
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (Exception ex) {
 					// ignored
@@ -425,34 +425,6 @@ public final class FixtureMonkeyBuilder {
 				);
 			}
 		}
-		return this;
-	}
-
-	public FixtureMonkeyBuilder registerByName(
-		String registeredName,
-		Class<?> type,
-		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
-	) {
-		return this.registerByName(registeredName, type, arbitraryBuilder, DEFAULT_PRIORITY);
-	}
-
-	public FixtureMonkeyBuilder registerByName(
-		String registeredName,
-		Class<?> type,
-		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder,
-		int priority
-	) {
-		if (registeredPriorityMatchersByName.containsKey(registeredName)) {
-			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + registeredName);
-		}
-		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator =
-			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
-
-		this.registeredPriorityMatchersByName.put(
-			registeredName, new PriorityMatcherOperator<>(
-				matcherOperator.getMatcher(), matcherOperator.getOperator(), priority
-			)
-		);
 		return this;
 	}
 

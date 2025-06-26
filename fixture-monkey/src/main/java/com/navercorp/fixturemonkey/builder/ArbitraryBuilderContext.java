@@ -67,7 +67,6 @@ import com.navercorp.fixturemonkey.tree.ObjectTree;
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
-	private final List<String> selectNames;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 	private final MonkeyContext monkeyContext;
@@ -86,7 +85,6 @@ public final class ArbitraryBuilderContext {
 	private ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
-		List<String> selectNames,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		@Nullable FixedState fixedState,
@@ -95,7 +93,6 @@ public final class ArbitraryBuilderContext {
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
-		this.selectNames = selectNames;
 		this.propertyConfigurers = propertyConfigurers;
 		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
 		this.fixedState = fixedState;
@@ -110,7 +107,6 @@ public final class ArbitraryBuilderContext {
 	@Deprecated
 	public static ArbitraryBuilderContext newBuilderContext(MonkeyContext monkeyContext) {
 		return new ArbitraryBuilderContext(
-			new ArrayList<>(),
 			new ArrayList<>(),
 			new ArrayList<>(),
 			new HashMap<>(),
@@ -128,7 +124,6 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			copiedContainerInfoManipulators,
-			new ArrayList<>(this.selectNames),
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
 			fixedState,
@@ -159,18 +154,6 @@ public final class ArbitraryBuilderContext {
 
 	public List<TreeNodeManipulator> getContainerInfoManipulators() {
 		return Collections.unmodifiableList(containerInfoManipulators);
-	}
-
-	public void addSelectedNames(List<String> selectNames) {
-		for (String selectName : selectNames) {
-			if (!this.selectNames.contains(selectName)) {
-				this.selectNames.add(0, selectName);
-			}
-		}
-	}
-
-	public List<String> getSelectedNames() {
-		return this.selectNames;
 	}
 
 	public void putPropertyConfigurer(Class<?> type, List<Property> propertyConfigurer) {

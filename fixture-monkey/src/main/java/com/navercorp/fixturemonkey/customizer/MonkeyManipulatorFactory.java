@@ -44,7 +44,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
@@ -148,8 +147,7 @@ public final class MonkeyManipulatorFactory {
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators( // TODO: Fragmented registered
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
-		Map<Property, List<ObjectNode>> nodesByType,
-		List<String> selectNames
+		Map<Property, List<ObjectNode>> nodesByType
 	) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 
@@ -157,10 +155,9 @@ public final class MonkeyManipulatorFactory {
 			Property property = nodeByType.getKey();
 			List<ObjectNode> objectNodes = nodeByType.getValue();
 
-			ArbitraryBuilderContext activeContext = findRegisteredArbitraryBuilder(
+			ArbitraryBuilderContext activeContext = findRegisteredArbitraryBuilderContext(
 				standbyContexts,
-				property,
-				selectNames
+				property
 			);
 
 			if (activeContext == null) {
@@ -181,24 +178,10 @@ public final class MonkeyManipulatorFactory {
 		return manipulators;
 	}
 
-	private ArbitraryBuilderContext findRegisteredArbitraryBuilder(
+	private ArbitraryBuilderContext findRegisteredArbitraryBuilderContext(
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
-		Property property,
-		List<String> selectNames
+		Property property
 	) {
-		ArbitraryBuilderContext registeredArbitraryBuilder = selectNames
-			.stream()
-			.flatMap(name -> standbyContexts.stream()
-				.filter(it -> it.match(property, NamedMatcher.metadata(name)))
-			)
-			.findFirst()
-			.map(MatcherOperator::getOperator)
-			.orElse(null);
-
-		if (registeredArbitraryBuilder != null) {
-			return registeredArbitraryBuilder;
-		}
-
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> priorityOperators = standbyContexts
 			.stream()
 			.filter(it -> it.match(property))

@@ -36,7 +36,6 @@ import lombok.Setter;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.annotation.Order;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -94,29 +93,6 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 				.setInner(
 					new InnerSpec()
 						.maxSize(2)
-				);
-		}
-
-		public ArbitraryBuilder<ConcreteIntValue> concreteIntValue(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder(FIXED_INT_VALUE);
-		}
-	}
-
-	@Order(value = 1)
-	public static class RegisterGroupWithPriority {
-		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
-
-		public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder(String.class)
-				.set(Arbitraries.strings().numeric().ofMinLength(4).ofMaxLength(6));
-		}
-
-		public ArbitraryBuilder<List<String>> stringList(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {
-				})
-				.setInner(
-					new InnerSpec()
-						.minSize(5)
 				);
 		}
 

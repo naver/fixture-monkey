@@ -27,7 +27,6 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -193,23 +192,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	@Override
 	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier) {
 		return this.setLazy(propertySelector, supplier, MAX_MANIPULATION_COUNT);
-	}
-
-	@Override
-	public ExperimentalArbitraryBuilder<T> selectName(String... names) {
-		ArbitraryBuilderContext builderContext = activeContext.copy();
-		builderContext.addSelectedNames(Arrays.asList(names));
-
-		return new DefaultArbitraryBuilder<>(
-			this.rootProperty,
-			this.resolver,
-			this.monkeyManipulatorFactory,
-			this.monkeyExpressionFactory,
-			builderContext,
-			standbyContexts,
-			this.monkeyContext,
-			this.instantiatorProcessor
-		);
 	}
 
 	@Override
