@@ -1,5 +1,7 @@
 package com.navercorp.objectfarm.api.type;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,5 +14,12 @@ public interface JvmType {
 
 	default List<? extends JvmType> getTypeVariables() {
 		return Collections.emptyList();
+	}
+
+	List<Annotation> getAnnotations();
+
+	// TODO: should remove
+	default AnnotatedType getAnnotatedType() {
+		throw new UnsupportedOperationException("This method is not supported for JvmType");
 	}
 }

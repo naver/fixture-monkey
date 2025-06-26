@@ -21,12 +21,10 @@ package com.navercorp.fixturemonkey.api.generator;
 import static java.util.stream.Collectors.toMap;
 
 import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -62,9 +60,7 @@ public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements Pro
 					it.getAnnotatedReturnType(),
 					propertyNamesByGetter.getOrDefault(it, it.getName()),
 					it.getName(),
-					Arrays.asList(it.getAnnotations()),
-					Arrays.stream(it.getAnnotations())
-						.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1))
+					Arrays.asList(it.getAnnotations())
 				)
 			)
 			.collect(Collectors.toList());

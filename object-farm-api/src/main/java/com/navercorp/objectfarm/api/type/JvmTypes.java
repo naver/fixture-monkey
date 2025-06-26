@@ -1,5 +1,6 @@
 package com.navercorp.objectfarm.api.type;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 public abstract class JvmTypes {
-	public static JvmType resolveJvmType(JvmType parentType, Type type) {
+	public static JvmType resolveJvmType(JvmType parentType, Type type, List<Annotation> annotations) {
 		if (!Types.isGenericType(type)) {
 			return new JavaType(Types.getActualType(type));
 		}
@@ -29,7 +30,8 @@ public abstract class JvmTypes {
 
 		return new JavaType(
 			Types.getActualType(type),
-			actualTypeVariables
+			actualTypeVariables,
+			annotations
 		);
 	}
 

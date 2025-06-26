@@ -1,5 +1,7 @@
 package com.navercorp.objectfarm.api.nodecandidate;
 
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +20,10 @@ public final class JavaFieldNodeCandidateGenerator implements JvmNodeCandidateGe
 
 		return Reflections.findFields(rawType).stream()
 			.map(field -> {
-				JvmType javaType = JvmTypes.resolveJvmType(jvmType, field.getGenericType());
+				List<Annotation> annotations = Arrays.stream(field.getAnnotations())
+					.collect(Collectors.toList());
+
+				JvmType javaType = JvmTypes.resolveJvmType(jvmType, field.getGenericType(), annotations);
 
 				return new JavaNodeCandidate(
 					javaType,
