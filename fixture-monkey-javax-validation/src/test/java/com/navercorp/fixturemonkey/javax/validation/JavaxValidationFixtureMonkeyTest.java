@@ -51,6 +51,7 @@ import com.navercorp.fixturemonkey.javax.validation.spec.ByteIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.CharacterIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.ContainerAnnotationIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.DoubleIntrospectorSpec;
+import com.navercorp.fixturemonkey.javax.validation.spec.ElementAnnotationIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.FloatIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.IntIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.LongIntrospectorSpec;
@@ -471,6 +472,24 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getMaxSizeContainer()).hasSizeLessThanOrEqualTo(5);
 		then(actual.getNotEmptyContainer()).isNotEmpty();
 		then(actual.getNotEmptyAndMaxSizeContainer()).hasSizeBetween(1, 5);
+	}
+
+	@Property(tries = 100)
+	void sampleElementAnnotations() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new JavaxValidationPlugin())
+			.defaultNotNull(true)
+			.nullableContainer(true)
+			.nullableElement(true)
+			.build();
+
+		ElementAnnotationIntrospectorSpec actual = sut.giveMeOne(ElementAnnotationIntrospectorSpec.class);
+
+		then(actual.getSizeContainerAndNotBlankElement()).isNotEmpty();
+		then(actual.getSizeContainerAndNotBlankElement()).hasSizeBetween(1, 3);
+		then(actual.getSizeContainerAndNotBlankElement()).allSatisfy(it -> then(it).isNotBlank());
+		then(actual.getNotEmptyContainerAndNotBlankElement()).isNotEmpty();
+		then(actual.getNotEmptyContainerAndNotBlankElement()).allSatisfy(it -> then(it).isNotBlank());
 	}
 
 	@Property(tries = 1)

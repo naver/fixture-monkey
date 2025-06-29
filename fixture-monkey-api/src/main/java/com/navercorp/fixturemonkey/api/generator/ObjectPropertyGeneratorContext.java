@@ -76,4 +76,13 @@ public final class ObjectPropertyGeneratorContext {
 	public boolean isRootContext() {
 		return this.property instanceof TreeRootProperty;
 	}
+
+	@Nullable
+	public Property getOwnerElementProperty() {
+		if (this.ownerProperty == null) {
+			return null;
+		}
+		return this.ownerProperty.getObjectProperty().getProperty();
+	}
 }
+

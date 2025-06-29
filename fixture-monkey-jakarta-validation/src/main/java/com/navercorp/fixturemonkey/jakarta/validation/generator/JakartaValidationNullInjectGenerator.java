@@ -30,10 +30,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
@@ -73,8 +75,45 @@ public final class JakartaValidationNullInjectGenerator implements NullInjectGen
 			}
 		}
 
-		if (context.isContainer() && annotations.contains(NotEmpty.class)) {
-			return 0.0d;
+		if (context.isContainer()) {
+			if (annotations.contains(NotEmpty.class)) {
+				return 0.0d;
+			}
+
+			Size sizeAnnotation = context.getProperty().getAnnotation(Size.class).orElse(null);
+			if (sizeAnnotation != null && sizeAnnotation.min() > 0) {
+				return 0.0d;
+			}
+		}
+
+		if (context.getOwnerProperty() != null) {
+			Property elementProperty = context.getOwnerElementProperty();
+			if (elementProperty != null) {
+				Set<Class<? extends Annotation>> elementAnnotations = elementProperty.getAnnotations().stream()
+					.map(Annotation::annotationType)
+					.collect(toSet());
+
+				if (elementAnnotations.contains(NotNull.class)) {
+					return 0.0d;
+				}
+
+				if (Types.getActualType(elementProperty.getType()) == String.class) {
+					if (elementAnnotations.contains(NotBlank.class) || elementAnnotations.contains(NotEmpty.class)) {
+						return 0.0d;
+					}
+				}
+
+				if (context.getOwnerProperty().isContainer()) {
+					if (elementAnnotations.contains(NotEmpty.class)) {
+						return 0.0d;
+					}
+
+					Size elementSizeAnnotation = elementProperty.getAnnotation(Size.class).orElse(null);
+					if (elementSizeAnnotation != null && elementSizeAnnotation.min() > 0) {
+						return 0.0d;
+					}
+				}
+			}
 		}
 
 		return nullInject;
