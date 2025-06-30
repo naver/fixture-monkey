@@ -635,13 +635,13 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
     fun <U> customizeProperty(
         property: KProperty1<T, U?>,
         combinableArbitraryCustomizer: Function<CombinableArbitrary<out U>, CombinableArbitrary<out U>>
-    ): ArbitraryBuilder<T> =
+    ): KotlinTypeDefaultArbitraryBuilder<T> =
         this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
 
     fun <U> customizeProperty(
         property: KFunction1<T, U?>,
         combinableArbitraryCustomizer: Function<CombinableArbitrary<out U>, CombinableArbitrary<out U>>
-    ): ArbitraryBuilder<T> =
+    ): KotlinTypeDefaultArbitraryBuilder<T> =
         this.apply { delegate.customizeProperty(propertyExpressionGenerator(property), combinableArbitraryCustomizer) }
 }
 

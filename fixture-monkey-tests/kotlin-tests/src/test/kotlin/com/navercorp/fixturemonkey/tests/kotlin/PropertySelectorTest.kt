@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.JavaStrin
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.NestedArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.RootJavaStringObject
 import com.navercorp.fixturemonkey.tests.kotlin.JavaConstructorTestSpecs.JavaTypeObject
+import java.math.BigDecimal
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
 import org.junit.jupiter.api.RepeatedTest
@@ -384,6 +385,26 @@ class PropertySelectorTest {
     }
 
     @Test
+    fun typedKotlinPropertySelectorRecursively() {
+        // given
+        class StringObject(val string: String)
+
+        val expected = "test"
+
+        // when
+        val actual = SUT.giveMeKotlinBuilder<StringObject>()
+            .customizeProperty(StringObject::string) {
+                it.map { _ -> expected }
+            }.customizeProperty(StringObject::string) {
+                it.map { _ -> expected }
+            }
+            .sample()
+
+        // then
+        then(actual.string).isEqualTo(expected)
+    }
+
+    @Test
     fun typedNestedKotlinPropertySelector() {
         // given
         class StringObject(val string: String)
@@ -417,6 +438,29 @@ class PropertySelectorTest {
         // when
         val actual = sut.giveMeKotlinBuilder<JavaStringObject>()
             .customizeProperty(JavaStringObject::getString) {
+                it.map { _ -> expected }
+            }
+            .sample()
+            .string
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun typedJavaPropertySelectorRecursively() {
+        // given
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .build();
+
+        // when
+        val actual = sut.giveMeKotlinBuilder<JavaStringObject>()
+            .customizeProperty(JavaStringObject::getString) {
+                it.map { _ -> expected }
+            }.customizeProperty(JavaStringObject::getString) {
                 it.map { _ -> expected }
             }
             .sample()
