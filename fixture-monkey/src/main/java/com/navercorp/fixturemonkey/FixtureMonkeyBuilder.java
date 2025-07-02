@@ -81,7 +81,29 @@ public final class FixtureMonkeyBuilder {
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
-	private long seed = System.nanoTime();
+	private long seed = resolveInitialSeed();
+
+	private long resolveInitialSeed() {
+		Long fileSeed = loadSeedFromFile();
+		return fileSeed != null ? fileSeed : System.nanoTime();
+	}
+
+	private Long loadSeedFromFile() {
+		java.nio.file.Path path = java.nio.file.Paths.get(".fixture-monkey-seed");
+		if (!java.nio.file.Files.exists(path)) {
+			return null;
+		}
+		try (java.io.BufferedReader reader = java.nio.file.Files.newBufferedReader(path)) {
+			String content = reader.readLine();
+			if (content != null) {
+				return Long.parseLong(content.trim());
+			}
+		} catch (Exception e) {
+			// 파일이 없거나 파싱에 실패하면 null 반환
+			return null;
+		}
+		return null;
+	}
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
