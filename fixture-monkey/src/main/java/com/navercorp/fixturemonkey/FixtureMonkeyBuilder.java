@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import com.navercorp.fixturemonkey.seed.SeedFileLoader;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -81,7 +82,7 @@ public final class FixtureMonkeyBuilder {
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
-	private long seed = System.nanoTime();
+	private long seed = resolveInitialSeed();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -553,6 +554,11 @@ public final class FixtureMonkeyBuilder {
 			)
 		);
 		return this;
+	}
+
+	public long resolveInitialSeed() {
+		Long fileSeed = SeedFileLoader.loadSeedFromFile();
+		return fileSeed != null ? fileSeed : System.nanoTime();
 	}
 
 	/**
