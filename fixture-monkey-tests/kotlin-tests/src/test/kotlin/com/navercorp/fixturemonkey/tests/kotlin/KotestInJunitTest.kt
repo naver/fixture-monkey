@@ -22,7 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotest.KotestIntegerCombinableArbitrary
-import com.navercorp.fixturemonkey.kotest.KotestByteCombinableArbitrary
+import com.navercorp.fixturemonkey.kotest.KotestLongCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestPlugin
 import com.navercorp.fixturemonkey.kotest.KotestStringCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.giveMeArb
@@ -919,13 +919,6 @@ class KotestInJunitTest {
         then(actual).isBetween(10, 20)
     }
 
-    @Test
-    fun byteCombinableArbitrary() {
-        val actual = CombinableArbitrary.bytes()
-
-        then(actual).isInstanceOf(KotestByteCombinableArbitrary::class.java)
-    }
-
     @RepeatedTest(TEST_COUNT)
     fun byteCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.bytes().positive().combined()
@@ -967,6 +960,49 @@ class KotestInJunitTest {
 
         then(actual).isBetween(10.toByte(), 20.toByte())
     }
+
+    @Test
+    fun longCombinableArbitrary() {
+        val actual = CombinableArbitrary.longs()
+
+        then(actual).isInstanceOf(KotestLongCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryPositive() {
+        val actual = CombinableArbitrary.longs().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryNegative() {
+        val actual = CombinableArbitrary.longs().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryEven() {
+        val actual = CombinableArbitrary.longs().even().combined()
+
+        then(actual % 2).isEqualTo(0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryOdd() {
+        val actual = CombinableArbitrary.longs().odd().combined()
+
+        then(actual % 2 != 0.toLong()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.longs().withRange(10L, 20L).combined()
+
+        then(actual).isBetween(10L, 20L)
+    }
+
 
     @Test
     fun stringCombinableArbitrary() {
