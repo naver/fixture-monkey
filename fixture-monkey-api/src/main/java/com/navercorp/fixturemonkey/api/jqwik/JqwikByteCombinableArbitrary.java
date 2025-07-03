@@ -57,12 +57,12 @@ public final class JqwikByteCombinableArbitrary implements ByteCombinableArbitra
 
 	@Override
 	public ByteCombinableArbitrary positive() {
-		return new JqwikByteCombinableArbitrary(Arbitraries.bytes().greaterOrEqual((byte) 1));
+		return new JqwikByteCombinableArbitrary(Arbitraries.bytes().greaterOrEqual((byte)1));
 	}
 
 	@Override
 	public ByteCombinableArbitrary negative() {
-		return new JqwikByteCombinableArbitrary(Arbitraries.bytes().lessOrEqual((byte) -1));
+		return new JqwikByteCombinableArbitrary(Arbitraries.bytes().lessOrEqual((byte)-1));
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public final class JqwikByteCombinableArbitrary implements ByteCombinableArbitra
 
 	@Override
 	public ByteCombinableArbitrary ascii() {
-		return new JqwikByteCombinableArbitrary(Arbitraries.bytes().between((byte) 0, (byte) 127));
+		return new JqwikByteCombinableArbitrary(Arbitraries.bytes().between((byte)0, (byte)127));
 	}
 
 	@Override

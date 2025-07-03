@@ -19,13 +19,11 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
 
 class ByteCombinableArbitraryTest {
 	@Test
@@ -246,7 +244,9 @@ class ByteCombinableArbitraryTest {
 	void byteFilterWithMultipleOfFive() {
 		// when - 5의 배수만 필터링
 		boolean allMultipleOfFive = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bytes().withRange((byte) 0, (byte) 100).filter(b -> b % 5 == 0).combined())
+			.mapToObj(i -> CombinableArbitrary.bytes()
+					.withRange((byte) 0, (byte) 100)
+				.filter(b -> b % 5 == 0).combined())
 			.allMatch(b -> b % 5 == 0);
 
 		// then

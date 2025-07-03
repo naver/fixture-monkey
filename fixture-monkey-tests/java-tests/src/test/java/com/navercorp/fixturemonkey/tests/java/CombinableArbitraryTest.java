@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikByteCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 
 class CombinableArbitraryTest {
@@ -157,7 +157,7 @@ class CombinableArbitraryTest {
 	void byteCombinableArbitraryOdd() {
 		Byte actual = CombinableArbitrary.bytes().odd().combined();
 
-		then(actual % 2).isEqualTo(1);
+		then(actual % 2 != 0).isTrue();
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -178,7 +178,7 @@ class CombinableArbitraryTest {
 	void byteCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
 		Byte actual = CombinableArbitrary.bytes().even().odd().combined();
 
-		then(actual % 2).isEqualTo(1);
+		then(actual % 2 != 0).isTrue();
 	}
 
 	@RepeatedTest(TEST_COUNT)

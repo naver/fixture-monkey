@@ -20,7 +20,9 @@ package com.navercorp.fixturemonkey.kotest
 
 import com.navercorp.fixturemonkey.api.arbitrary.ByteCombinableArbitrary
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.*
+import io.kotest.property.arbitrary.byte
+import io.kotest.property.arbitrary.filter
+import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.util.function.Predicate
