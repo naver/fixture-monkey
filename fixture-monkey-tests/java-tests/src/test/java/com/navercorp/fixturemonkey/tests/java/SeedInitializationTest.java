@@ -30,24 +30,29 @@ class SeedInitializationTest {
 
 	@Test
 	void readsSeedFromFile() {
-		FixtureMonkey sut = FixtureMonkey.builder().build();
-		long actualSeed = Randoms.currentSeed();
-		then(actualSeed).isEqualTo(FILE_SEED);
-	}
+		// given
+		// seed file is created in setUp()
 
-	@Test
-	void fileSeedYieldsSameSeedOnMultipleInstances() {
-		FixtureMonkey sut1 = FixtureMonkey.builder()
-			.seed(1L)
-			.build();
+		// when
+		FixtureMonkey.builder().build();
 
-		System.out.println(sut1.giveMeOne(String.class)); // Ꝯӟ㲁ꌍ旺櫡닑猸荀쬚ㇶ讐䍿薝ؗ觞ჸ
+		// then
+		then(Randoms.currentSeed()).isEqualTo(FILE_SEED);
+
+		// TODO: Change to use .giveMeOne() method in future tests
 	}
 
 	@Test
 	void builderSeedOverridesFileSeed() {
-		FixtureMonkey sut = FixtureMonkey.builder().seed(BUILDER_SEED).build();
-		long actualSeed = Randoms.currentSeed();
-		then(actualSeed).isEqualTo(BUILDER_SEED);
+		// given
+		// seed file is created in setUp()
+
+		// when
+		FixtureMonkey.builder().seed(BUILDER_SEED).build();
+
+		// then
+		then(Randoms.currentSeed()).isEqualTo(BUILDER_SEED);
+
+		// TODO: Change to use .giveMeOne() method in future tests
 	}
 }
