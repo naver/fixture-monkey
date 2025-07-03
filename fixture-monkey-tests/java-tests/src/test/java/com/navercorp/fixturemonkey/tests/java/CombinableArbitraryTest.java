@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikByteCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 
 class CombinableArbitraryTest {
@@ -94,6 +95,97 @@ class CombinableArbitraryTest {
 		Integer actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined();
 
 		then(actual).isBetween(100, 1000);
+	}
+
+	@Test
+	void byteCombinableArbitraryIsJqwik() {
+		CombinableArbitrary<Byte> actual = CombinableArbitrary.bytes();
+
+		then(actual).isInstanceOf(JqwikByteCombinableArbitrary.class);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryInjectNull() {
+		Byte actual = CombinableArbitrary.bytes().injectNull(1).combined();
+
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryFilter() {
+		Byte actual = CombinableArbitrary.bytes().filter(it -> it > 50).combined();
+
+		then(actual).isGreaterThan((byte) 50);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryPositive() {
+		Byte actual = CombinableArbitrary.bytes().positive().combined();
+
+		then(actual).isPositive();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryNegative() {
+		Byte actual = CombinableArbitrary.bytes().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryWithRange() {
+		Byte actual = CombinableArbitrary.bytes().withRange((byte) 10, (byte) 100).combined();
+
+		then(actual).isBetween((byte) 10, (byte) 100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryWithRangeAndFilter() {
+		Byte actual = CombinableArbitrary.bytes().withRange((byte) 10, (byte) 100).filter(it -> 75 <= it).combined();
+
+		then(actual).isBetween((byte) 75, (byte) 100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryEven() {
+		Byte actual = CombinableArbitrary.bytes().even().combined();
+
+		then(actual % 2).isEqualTo(0);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryOdd() {
+		Byte actual = CombinableArbitrary.bytes().odd().combined();
+
+		then(actual % 2).isEqualTo(1);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryAscii() {
+		Byte actual = CombinableArbitrary.bytes().ascii().combined();
+
+		then(actual).isBetween((byte) 0, (byte) 127);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
+		Byte actual = CombinableArbitrary.bytes().positive().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
+		Byte actual = CombinableArbitrary.bytes().even().odd().combined();
+
+		then(actual % 2).isEqualTo(1);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
+		Byte actual = CombinableArbitrary.bytes().negative().withRange((byte) 100, (byte) 127).combined();
+
+		then(actual).isBetween((byte) 100, (byte) 127);
 	}
 
 	@Test
