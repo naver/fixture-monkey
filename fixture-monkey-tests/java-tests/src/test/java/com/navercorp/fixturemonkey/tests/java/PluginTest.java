@@ -18,32 +18,27 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
+import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.datafaker.plugin.DataFakerPlugin;
+import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
+import com.navercorp.fixturemonkey.tests.java.specs.ConstructorSpecs.JavaxValidationObject;
+import com.navercorp.fixturemonkey.tests.java.specs.DataFakerSpecs;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.*;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
-
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
-import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
-import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
-import com.navercorp.fixturemonkey.tests.java.specs.ConstructorSpecs.JavaxValidationObject;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.AbstractClassObject;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.AbstractClassStringChildObject;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceIntegerObject;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceListObject;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceObject;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceStringObject;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceWrapperObject;
+import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 class PluginTest {
 	@RepeatedTest(TEST_COUNT)
@@ -196,5 +191,34 @@ class PluginTest {
 		java.time.LocalDateTime expectedMinDate = java.time.LocalDateTime.now().minusDays(expected);
 		java.time.LocalDateTime expectedMaxDate = java.time.LocalDateTime.now().plusDays(expected + 30L);
 		then(actual).isBetween(expectedMinDate, expectedMaxDate);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void dataFakerPluginGeneratesUserFields() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new DataFakerPlugin())
+			.build();
+
+		DataFakerSpecs.User actual = sut.giveMeOne(DataFakerSpecs.User.class);
+
+		// then
+		then(actual.getFullName()).isNotBlank();
+		then(actual.getEmail()).contains("@");
+		then(actual.getHomeAddress()).isNotBlank();
+		then(actual.getPhoneNumber()).isNotBlank();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void dataFakerPluginGeneratesFinanceFields() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new DataFakerPlugin())
+			.build();
+
+		DataFakerSpecs.Finance actual = sut.giveMeOne(DataFakerSpecs.Finance.class);
+
+		// then
+		then(actual.getCreditCard()).isNotBlank();
 	}
 }
