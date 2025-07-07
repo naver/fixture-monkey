@@ -108,7 +108,7 @@ class ByteCombinableArbitraryTest {
 		byte min = -50;
 		byte max = -10;
 
-		// when - positive()를 무시하고 withRange()가 우선되어야 함
+		// when - positive().withRange() => withRange()
 		Byte actual = CombinableArbitrary.bytes().positive().withRange(min, max).combined();
 
 		// then
@@ -148,7 +148,7 @@ class ByteCombinableArbitraryTest {
 		// when
 		Byte actual = CombinableArbitrary.bytes()
 			.positive()
-			.filter(b -> b % 10 == 0)  // 10의 배수만
+			.filter(b -> b % 10 == 0)  // multiples of 10
 			.combined();
 
 		// then
@@ -183,11 +183,11 @@ class ByteCombinableArbitraryTest {
 
 	@Test
 	void byteCombinationWithMultipleOperations() {
-		// when - 여러 연산을 조합
+		// when - combine multiple operations
 		String actual = CombinableArbitrary.bytes()
 			.ascii()
 			.filter(b -> b >= 65 && b <= 90)  // A-Z ASCII 범위
-			.map(b -> "ascii:" + (char)b.byteValue())  // 문자로 변환
+			.map(b -> "ascii:" + (char)b.byteValue())  // convert to char
 			.combined();
 
 		// then
@@ -198,9 +198,9 @@ class ByteCombinableArbitraryTest {
 
 	@Test
 	void byteUniqueWithDifferentValues() {
-		// when - 서로 다른 값들에는 unique()가 정상 작동
+		// when - unique() works with different values
 		Byte actual = CombinableArbitrary.bytes()
-			.ascii()  // 충분히 넓은 범위
+			.ascii()  // wide range
 			.unique()
 			.combined();
 
@@ -219,7 +219,7 @@ class ByteCombinableArbitraryTest {
 
 	@Test
 	void lastMethodWinsRangeOverPositive() {
-		// when - positive()를 무시하고 withRange()가 우선되어야 함
+		// when - positive().withRange() => withRange()
 		boolean allInRange = IntStream.range(0, 30)
 			.mapToObj(i -> CombinableArbitrary.bytes().positive().withRange((byte)-10, (byte)-1).combined())
 			.allMatch(b -> b >= -10 && b <= -1);
@@ -230,7 +230,7 @@ class ByteCombinableArbitraryTest {
 
 	@Test
 	void lastMethodWinsOddOverEven() {
-		// when - even()을 무시하고 odd()가 우선되어야 함
+		// when - even().odd() => odd()
 		boolean allOdd = IntStream.range(0, 30)
 			.mapToObj(i -> CombinableArbitrary.bytes().even().odd().combined())
 			.allMatch(b -> b % 2 != 0);
@@ -241,7 +241,7 @@ class ByteCombinableArbitraryTest {
 
 	@Test
 	void byteFilterWithMultipleOfFive() {
-		// when - 5의 배수만 필터링
+		// when - filter multiples of 5
 		boolean allMultipleOfFive = IntStream.range(0, 30)
 			.mapToObj(i -> CombinableArbitrary.bytes()
 				.withRange((byte)0, (byte)100)
@@ -254,24 +254,24 @@ class ByteCombinableArbitraryTest {
 
 	@Test
 	void asciiWithOdd() {
-		// when
-		boolean allAsciiAndOdd = IntStream.range(0, 100)
+		// when - ascii().odd() => odd()
+		boolean allOdd = IntStream.range(0, 100)
 			.mapToObj(i -> CombinableArbitrary.bytes().ascii().odd().combined())
-			.allMatch(b -> b >= 0 && b <= 127 && b % 2 != 0);
+			.allMatch(b -> b % 2 != 0);
 
 		// then
-		then(allAsciiAndOdd).isTrue();
+		then(allOdd).isTrue();
 	}
 
 	@Test
 	void asciiWithEven() {
-		// when
-		boolean allAsciiAndEven = IntStream.range(0, 100)
+		// when - ascii().even() => even()
+		boolean allEven = IntStream.range(0, 100)
 			.mapToObj(i -> CombinableArbitrary.bytes().ascii().even().combined())
-			.allMatch(b -> b >= 0 && b <= 127 && b % 2 == 0);
+			.allMatch(b -> b % 2 == 0);
 
 		// then
-		then(allAsciiAndEven).isTrue();
+		then(allEven).isTrue();
 	}
 
 	@Test
@@ -331,13 +331,13 @@ class ByteCombinableArbitraryTest {
 
 	@Test
 	void complexApiCombination() {
-		// when - ascii().positive().odd()
-		boolean allMatch = IntStream.range(0, 100)
+		// when - ascii().positive().odd() => odd()
+		boolean allOdd = IntStream.range(0, 100)
 			.mapToObj(i -> CombinableArbitrary.bytes().ascii().positive().odd().combined())
-			.allMatch(b -> b >= 1 && b <= 127 && b % 2 != 0);
+			.allMatch(b -> b % 2 != 0);
 
 		// then
-		then(allMatch).isTrue();
+		then(allOdd).isTrue();
 	}
 
 	@Test
