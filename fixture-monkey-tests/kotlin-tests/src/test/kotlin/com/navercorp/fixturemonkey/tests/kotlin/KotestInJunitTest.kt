@@ -985,6 +985,94 @@ class KotestInJunitTest {
         )
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithPositiveAndNegative() {
+        // positive().negative() => negative()
+        val actual = CombinableArbitrary.bytes().positive().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithEvenAndOdd() {
+        // even().odd() => odd()
+        val actual = CombinableArbitrary.bytes().even().odd().combined()
+
+        then(actual % 2 != 0).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithNegativeAndRange() {
+        // negative().withRange() => withRange()
+        val actual = CombinableArbitrary.bytes().negative().withRange(100.toByte(), 127.toByte()).combined()
+
+        then(actual).isBetween(100.toByte(), 127.toByte())
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithAsciiAndPositive() {
+        // ascii().positive() => positive()
+        val actual = CombinableArbitrary.bytes().ascii().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithPositiveAndAscii() {
+        // positive().ascii() => ascii()
+        val actual = CombinableArbitrary.bytes().positive().ascii().combined()
+
+        then(actual).isBetween(0.toByte(), 127.toByte())
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithAsciiAndEven() {
+        // ascii().even() => even()
+        val actual = CombinableArbitrary.bytes().ascii().even().combined()
+
+        then(actual % 2).isEqualTo(0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithEvenAndAscii() {
+        // even().ascii() => ascii()
+        val actual = CombinableArbitrary.bytes().even().ascii().combined()
+
+        then(actual).isBetween(0.toByte(), 127.toByte())
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun byteCombinableArbitraryLastMethodWinsWithAsciiAndNegative() {
+        // ascii().negative() => negative()
+        val actual = CombinableArbitrary.bytes().ascii().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun integerCombinableArbitraryLastMethodWinsWithPositiveAndNegative() {
+        // positive().negative() => negative()
+        val actual = CombinableArbitrary.integers().positive().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun integerCombinableArbitraryLastMethodWinsWithEvenAndOdd() {
+        // even().odd() => odd()
+        val actual = CombinableArbitrary.integers().even().odd().combined()
+
+        then(actual).isOdd()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun integerCombinableArbitraryLastMethodWinsWithNegativeAndRange() {
+        // negative().withRange() => withRange()
+        val actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined()
+
+        then(actual).isBetween(100, 1000)
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(JavaxValidationPlugin())
