@@ -1,7 +1,7 @@
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
-import static org.assertj.core.api.BDDAssertions.then;
+import static com.navercorp.fixturemonkey.tests.TestEnvironment.*;
+import static org.assertj.core.api.BDDAssertions.*;
 
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -115,7 +115,7 @@ class CombinableArbitraryTest {
 	void byteCombinableArbitraryFilter() {
 		Byte actual = CombinableArbitrary.bytes().filter(it -> it > 50).combined();
 
-		then(actual).isGreaterThan((byte) 50);
+		then(actual).isGreaterThan((byte)50);
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -134,16 +134,16 @@ class CombinableArbitraryTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void byteCombinableArbitraryWithRange() {
-		Byte actual = CombinableArbitrary.bytes().withRange((byte) 10, (byte) 100).combined();
+		Byte actual = CombinableArbitrary.bytes().withRange((byte)10, (byte)100).combined();
 
-		then(actual).isBetween((byte) 10, (byte) 100);
+		then(actual).isBetween((byte)10, (byte)100);
 	}
 
 	@RepeatedTest(TEST_COUNT)
 	void byteCombinableArbitraryWithRangeAndFilter() {
-		Byte actual = CombinableArbitrary.bytes().withRange((byte) 10, (byte) 100).filter(it -> 75 <= it).combined();
+		Byte actual = CombinableArbitrary.bytes().withRange((byte)10, (byte)100).filter(it -> 75 <= it).combined();
 
-		then(actual).isBetween((byte) 75, (byte) 100);
+		then(actual).isBetween((byte)75, (byte)100);
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -164,11 +164,12 @@ class CombinableArbitraryTest {
 	void byteCombinableArbitraryAscii() {
 		Byte actual = CombinableArbitrary.bytes().ascii().combined();
 
-		then(actual).isBetween((byte) 0, (byte) 127);
+		then(actual).isBetween((byte)0, (byte)127);
 	}
 
 	@RepeatedTest(TEST_COUNT)
 	void byteCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
+		// positive().negative() => negative()
 		Byte actual = CombinableArbitrary.bytes().positive().negative().combined();
 
 		then(actual).isNegative();
@@ -176,6 +177,7 @@ class CombinableArbitraryTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void byteCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
+		// even().odd() => odd()
 		Byte actual = CombinableArbitrary.bytes().even().odd().combined();
 
 		then(actual % 2 != 0).isTrue();
@@ -183,10 +185,54 @@ class CombinableArbitraryTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void byteCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
-		Byte actual = CombinableArbitrary.bytes().negative().withRange((byte) 100, (byte) 127).combined();
+		// negative().withRange() => withRange()
+		Byte actual = CombinableArbitrary.bytes().negative().withRange((byte)100, (byte)127).combined();
 
-		then(actual).isBetween((byte) 100, (byte) 127);
+		then(actual).isBetween((byte)100, (byte)127);
 	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithAsciiAndPositive() {
+		// ascii().positive() => positive()
+		Byte actual = CombinableArbitrary.bytes().ascii().positive().combined();
+
+		then(actual).isPositive();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithPositiveAndAscii() {
+		// positive().ascii() => ascii()
+		Byte actual = CombinableArbitrary.bytes().positive().ascii().combined();
+
+		then(actual).isBetween((byte)0, (byte)127);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithAsciiAndEven() {
+		// ascii().even() => even()
+		Byte actual = CombinableArbitrary.bytes().ascii().even().combined();
+
+		then(actual % 2).isEqualTo(0);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithEvenAndAscii() {
+		// even().ascii() => ascii()
+		Byte actual = CombinableArbitrary.bytes().even().ascii().combined();
+
+		then(actual).isBetween((byte)0, (byte)127);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void byteCombinableArbitraryLastOperationWinsWithAsciiAndNegative() {
+		// ascii().negative() => negative()
+		Byte actual = CombinableArbitrary.bytes().ascii().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	// More comprehensive conflict API tests for Byte can be found in ByteCombinableArbitraryTest
+	// which demonstrates extensive last-method-wins behavior patterns
 
 	@Test
 	void stringCombinableArbitraryIsJqwik() {
