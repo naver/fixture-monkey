@@ -18,12 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.*;
 
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
-
 
 class ByteCombinableArbitraryTest {
 	@Test
@@ -128,20 +127,20 @@ class ByteCombinableArbitraryTest {
 		then(actual).startsWith("byte:");
 		String numberPart = actual.substring(5);
 		byte value = Byte.parseByte(numberPart);
-		then(value).isGreaterThan((byte) 0);
+		then(value).isGreaterThan((byte)0);
 	}
 
 	@Test
 	void byteFiltering() {
 		// when
 		Byte actual = CombinableArbitrary.bytes()
-			.withRange((byte) 0, (byte) 100)
+			.withRange((byte)0, (byte)100)
 			.filter(b -> b > 50)
 			.combined();
 
 		// then
-		then(actual).isGreaterThan((byte) 50);
-		then(actual).isLessThanOrEqualTo((byte) 100);
+		then(actual).isGreaterThan((byte)50);
+		then(actual).isLessThanOrEqualTo((byte)100);
 	}
 
 	@Test
@@ -153,7 +152,7 @@ class ByteCombinableArbitraryTest {
 			.combined();
 
 		// then
-		then(actual).isGreaterThan((byte) 0);
+		then(actual).isGreaterThan((byte)0);
 		then(actual % 10).isEqualTo(0);
 	}
 
@@ -179,7 +178,7 @@ class ByteCombinableArbitraryTest {
 
 		// then
 		then(actual).isNotNull();
-		then(actual).isGreaterThan((byte) 0);
+		then(actual).isGreaterThan((byte)0);
 	}
 
 	@Test
@@ -188,7 +187,7 @@ class ByteCombinableArbitraryTest {
 		String actual = CombinableArbitrary.bytes()
 			.ascii()
 			.filter(b -> b >= 65 && b <= 90)  // A-Z ASCII 범위
-			.map(b -> "ascii:" + (char) b.byteValue())  // 문자로 변환
+			.map(b -> "ascii:" + (char)b.byteValue())  // 문자로 변환
 			.combined();
 
 		// then
@@ -206,7 +205,7 @@ class ByteCombinableArbitraryTest {
 			.combined();
 
 		// then
-		then(actual).isBetween((byte) 0, (byte) 127);
+		then(actual).isBetween((byte)0, (byte)127);
 	}
 
 	@Test
@@ -222,7 +221,7 @@ class ByteCombinableArbitraryTest {
 	void lastMethodWinsRangeOverPositive() {
 		// when - positive()를 무시하고 withRange()가 우선되어야 함
 		boolean allInRange = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bytes().positive().withRange((byte) -10, (byte) -1).combined())
+			.mapToObj(i -> CombinableArbitrary.bytes().positive().withRange((byte)-10, (byte)-1).combined())
 			.allMatch(b -> b >= -10 && b <= -1);
 
 		// then
@@ -245,11 +244,112 @@ class ByteCombinableArbitraryTest {
 		// when - 5의 배수만 필터링
 		boolean allMultipleOfFive = IntStream.range(0, 30)
 			.mapToObj(i -> CombinableArbitrary.bytes()
-					.withRange((byte) 0, (byte) 100)
+				.withRange((byte)0, (byte)100)
 				.filter(b -> b % 5 == 0).combined())
 			.allMatch(b -> b % 5 == 0);
 
 		// then
 		then(allMultipleOfFive).isTrue();
+	}
+
+	@Test
+	void asciiWithOdd() {
+		// when
+		boolean allAsciiAndOdd = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().ascii().odd().combined())
+			.allMatch(b -> b >= 0 && b <= 127 && b % 2 != 0);
+
+		// then
+		then(allAsciiAndOdd).isTrue();
+	}
+
+	@Test
+	void asciiWithEven() {
+		// when
+		boolean allAsciiAndEven = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().ascii().even().combined())
+			.allMatch(b -> b >= 0 && b <= 127 && b % 2 == 0);
+
+		// then
+		then(allAsciiAndEven).isTrue();
+	}
+
+	@Test
+	void asciiWithPositive() {
+		// when
+		boolean allAsciiAndPositive = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().ascii().positive().combined())
+			.allMatch(b -> b >= 1 && b <= 127);
+
+		// then
+		then(allAsciiAndPositive).isTrue();
+	}
+
+	@Test
+	void asciiWithNegative() {
+		// when - ascii().negative() => negative()
+		boolean allNegative = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().ascii().negative().combined())
+			.allMatch(b -> b < 0);
+
+		// then
+		then(allNegative).isTrue();
+	}
+
+	@Test
+	void negativeWithAscii() {
+		// when - negative().ascii() => ascii()
+		boolean allAscii = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().negative().ascii().combined())
+			.allMatch(b -> b >= 0 && b <= 127);
+
+		// then
+		then(allAscii).isTrue();
+	}
+
+	@Test
+	void oddWithEvenCombination() {
+		// when - odd().even() => even()
+		boolean allEven = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().odd().even().combined())
+			.allMatch(b -> b % 2 == 0);
+
+		// then
+		then(allEven).isTrue();
+	}
+
+	@Test
+	void positiveWithNegativeCombination() {
+		// when - positive().negative() => negative()
+		boolean allNegative = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().positive().negative().combined())
+			.allMatch(b -> b < 0);
+
+		// then
+		then(allNegative).isTrue();
+	}
+
+	@Test
+	void complexApiCombination() {
+		// when - ascii().positive().odd()
+		boolean allMatch = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().ascii().positive().odd().combined())
+			.allMatch(b -> b >= 1 && b <= 127 && b % 2 != 0);
+
+		// then
+		then(allMatch).isTrue();
+	}
+
+	@Test
+	void rangeOverridesOtherConstraints() {
+		// when
+		byte min = -50;
+		byte max = -10;
+		boolean allInRange = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.bytes().ascii().positive().odd().withRange(min, max).combined())
+			.allMatch(b -> b >= min && b <= max);
+
+		// then
+		then(allInRange).isTrue();
 	}
 }

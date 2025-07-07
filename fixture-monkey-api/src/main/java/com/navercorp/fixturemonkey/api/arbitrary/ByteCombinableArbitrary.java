@@ -42,6 +42,8 @@ public interface ByteCombinableArbitrary extends CombinableArbitrary<Byte> {
 
 	/**
 	 * Generates a ByteCombinableArbitrary which produces only positive bytes.
+	 * <p><strong>Note:</strong> When combined with {@link #ascii()}, this will produce
+	 * only positive bytes within the ASCII range (1-127).
 	 *
 	 * @return the ByteCombinableArbitrary producing positive bytes
 	 */
@@ -49,6 +51,8 @@ public interface ByteCombinableArbitrary extends CombinableArbitrary<Byte> {
 
 	/**
 	 * Generates a ByteCombinableArbitrary which produces only negative bytes.
+	 * <p><strong>Note:</strong> Cannot be combined with {@link #ascii()} as ASCII range
+	 * contains no negative values.
 	 *
 	 * @return the ByteCombinableArbitrary producing negative bytes
 	 */
@@ -56,6 +60,8 @@ public interface ByteCombinableArbitrary extends CombinableArbitrary<Byte> {
 
 	/**
 	 * Generates a ByteCombinableArbitrary which produces only even bytes.
+	 * <p><strong>Note:</strong> When combined with {@link #ascii()}, this will produce
+	 * only even bytes within the ASCII range (0, 2, 4, ..., 126).
 	 *
 	 * @return the ByteCombinableArbitrary producing even bytes
 	 */
@@ -63,6 +69,8 @@ public interface ByteCombinableArbitrary extends CombinableArbitrary<Byte> {
 
 	/**
 	 * Generates a ByteCombinableArbitrary which produces only odd bytes.
+	 * <p><strong>Note:</strong> When combined with {@link #ascii()}, this will produce
+	 * only odd bytes within the ASCII range (1, 3, 5, ..., 127).
 	 *
 	 * @return the ByteCombinableArbitrary producing odd bytes
 	 */
@@ -70,6 +78,8 @@ public interface ByteCombinableArbitrary extends CombinableArbitrary<Byte> {
 
 	/**
 	 * Generates a ByteCombinableArbitrary which produces bytes in ASCII range (0-127).
+	 * <p><strong>Note:</strong> When combined with {@link #odd()}, this will produce
+	 * only odd bytes within the ASCII range (1, 3, 5, ..., 127).
 	 *
 	 * @return the ByteCombinableArbitrary producing ASCII bytes
 	 */
