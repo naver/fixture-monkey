@@ -1,7 +1,7 @@
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.*;
-import static org.assertj.core.api.BDDAssertions.*;
+import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
