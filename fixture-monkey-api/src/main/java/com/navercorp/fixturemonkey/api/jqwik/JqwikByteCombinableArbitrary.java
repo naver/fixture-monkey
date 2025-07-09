@@ -31,7 +31,7 @@ public final class JqwikByteCombinableArbitrary implements ByteCombinableArbitra
 	private final Arbitrary<Byte> byteArbitrary;
 
 	public JqwikByteCombinableArbitrary() {
-		this.byteArbitrary = Arbitraries.bytes();
+		this(Arbitraries.bytes());
 	}
 
 	private JqwikByteCombinableArbitrary(Arbitrary<Byte> byteArbitrary) {
