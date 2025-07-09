@@ -234,4 +234,97 @@ class LongCombinableArbitraryTest {
 		then(allOdd).isTrue();
 	}
 
+	@Test
+	void nonZero() {
+		// when
+		boolean allNonZero = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.longs().nonZero().combined())
+			.allMatch(value -> value != 0);
+
+		// then
+		then(allNonZero).isTrue();
+	}
+
+	@Test
+	void multipleOf() {
+		// when
+		boolean allMultipleOfFive = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.longs().multipleOf(5L).combined())
+			.allMatch(value -> value % 5 == 0);
+
+		// then
+		then(allMultipleOfFive).isTrue();
+	}
+
+	@Test
+	void nonZeroCombined() {
+		// when
+		Long actual = CombinableArbitrary.longs().nonZero().combined();
+
+		// then
+		then(actual).isNotEqualTo(0L);
+	}
+
+	@Test
+	void multipleOfCombined() {
+		// when
+		Long actual = CombinableArbitrary.longs().multipleOf(7L).combined();
+
+		// then
+		then(actual % 7L).isEqualTo(0L);
+	}
+
+	@Test
+	void nonZeroWithRangeCombined() {
+		// withRange(-5L, 5L).nonZero() => nonZero()
+		Long actual = CombinableArbitrary.longs()
+			.withRange(-5L, 5L)
+			.nonZero()
+			.combined();
+
+		// then
+		then(actual).isNotEqualTo(0L);
+	}
+
+	@Test
+	void multipleOfWithPositiveAndRangeCombined() {
+		// positive().withRange(1L, 50L).multipleOf(3L) => multipleOf(3L)
+		Long actual = CombinableArbitrary.longs()
+			.positive()
+			.withRange(1L, 50L)
+			.multipleOf(3L)
+			.combined();
+
+		// then
+		then(actual % 3L).isEqualTo(0L);
+	}
+
+	@Test
+	void nonZeroWithRangeExcludingZero() {
+		// when - range already excludes 0, nonZero() is redundant but harmless
+		Long actual = CombinableArbitrary.longs()
+			.withRange(10L, 20L)
+			.nonZero()
+			.combined();
+
+		// then
+		then(actual).isNotEqualTo(0L);
+		then(actual).isBetween(10L, 20L);
+	}
+
+	@Test
+	void multipleOfWithComplexConstraints() {
+		// when - multiple constraints: negative + range + multiple of 4
+		Long actual = CombinableArbitrary.longs()
+			.negative()
+			.withRange(-100L, -1L)
+			.multipleOf(4L)
+			.combined();
+
+		// then
+		then(actual).isNegative();
+		then(actual).isBetween(-100L, -1L);
+		then(actual % 4L).isEqualTo(0L);
+	}
+
 }

@@ -1003,6 +1003,64 @@ class KotestInJunitTest {
         then(actual).isBetween(10L, 20L)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryNonZero() {
+        val actual = CombinableArbitrary.longs().nonZero().combined()
+
+        then(actual).isNotEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryMultipleOf() {
+        val actual = CombinableArbitrary.longs().multipleOf(7L).combined()
+
+        then(actual % 7L).isEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryNonZeroWithRange() {
+        // withRange(-5L, 5L).nonZero() => nonZero()
+        val actual = CombinableArbitrary.longs().withRange(-5L, 5L).nonZero().combined()
+
+        then(actual).isNotEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryMultipleOfWithPositiveAndRange() {
+        // positive().withRange(1L, 50L).multipleOf(3L) => multipleOf(3L)
+        val actual = CombinableArbitrary.longs()
+            .positive()
+            .withRange(1L, 50L)
+            .multipleOf(3L)
+            .combined()
+
+        then(actual % 3L).isEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryLastMethodWinsWithPositiveAndNegative() {
+        // positive().negative() => negative()
+        val actual = CombinableArbitrary.longs().positive().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryLastMethodWinsWithEvenAndOdd() {
+        // even().odd() => odd()
+        val actual = CombinableArbitrary.longs().even().odd().combined()
+
+        then(actual.toInt() % 2 != 0).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryLastMethodWinsWithNegativeAndRange() {
+        // negative().withRange() => withRange()
+        val actual = CombinableArbitrary.longs().negative().withRange(100L, 1000L).combined()
+
+        then(actual).isBetween(100L, 1000L)
+    }
+
 
     @Test
     fun stringCombinableArbitrary() {
