@@ -68,6 +68,29 @@ public interface LongCombinableArbitrary extends CombinableArbitrary<Long> {
 	 */
 	LongCombinableArbitrary odd();
 
+	/**
+	 * Generates a LongCombinableArbitrary which produces only non-zero longs.
+	 * <p><strong>Note:</strong> Following the last-method-wins principle, when combined with other constraints,
+	 * this method will override all previous constraints and generate only non-zero values from the full Long range.
+	 * Useful for avoiding division by zero errors in mathematical operations.
+	 *
+	 * @return the LongCombinableArbitrary producing non-zero longs
+	 */
+	LongCombinableArbitrary nonZero();
+
+	/**
+	 * Generates a LongCombinableArbitrary which produces only longs that are multiples of the specified divisor.
+	 * <p><strong>Note:</strong> Following the last-method-wins principle, when combined with other constraints like 
+	 * {@link #positive()} or {@link #withRange(long, long)}, this method will override all previous constraints 
+	 * and generate multiples of the divisor from the full Long range.
+	 * <p><strong>Warning:</strong> If divisor is 0, this will cause an arithmetic exception during generation.
+	 *
+	 * @param divisor the divisor for multiples (must not be 0)
+	 * @return the LongCombinableArbitrary producing multiples of {@code divisor}
+	 * @throws ArithmeticException if divisor is 0
+	 */
+	LongCombinableArbitrary multipleOf(long divisor);
+
 	@Override
 	default LongCombinableArbitrary filter(Predicate<Long> predicate) {
 		return this.filter(DEFAULT_MAX_TRIES, predicate);

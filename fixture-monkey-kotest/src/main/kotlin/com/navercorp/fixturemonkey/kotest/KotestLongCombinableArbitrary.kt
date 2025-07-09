@@ -22,8 +22,8 @@ import com.navercorp.fixturemonkey.api.arbitrary.LongCombinableArbitrary
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.long
-import io.kotest.property.arbitrary.positiveLong
 import io.kotest.property.arbitrary.negativeLong
+import io.kotest.property.arbitrary.positiveLong
 import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
@@ -47,6 +47,12 @@ class KotestLongCombinableArbitrary(private val arb: Arb<Long> = Arb.long()) : L
 
     override fun odd(): LongCombinableArbitrary =
         KotestLongCombinableArbitrary(Arb.long().filter { it % 2 != 0.toLong() })
+
+    override fun nonZero(): LongCombinableArbitrary =
+        KotestLongCombinableArbitrary(Arb.long().filter { it != 0.toLong() })
+
+    override fun multipleOf(divisor: Long): LongCombinableArbitrary =
+        KotestLongCombinableArbitrary(Arb.long().filter { it % divisor == 0.toLong() })
 
     override fun filter(tries: Int, predicate: Predicate<Long>): LongCombinableArbitrary =
         KotestLongCombinableArbitrary(Arb.long().filter(predicate::test))

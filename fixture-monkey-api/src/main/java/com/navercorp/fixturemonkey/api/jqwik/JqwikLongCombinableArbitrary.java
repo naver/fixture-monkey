@@ -76,6 +76,16 @@ public final class JqwikLongCombinableArbitrary implements LongCombinableArbitra
 	}
 
 	@Override
+	public LongCombinableArbitrary nonZero() {
+		return new JqwikLongCombinableArbitrary(Arbitraries.longs().filter(it -> it != 0));
+	}
+
+	@Override
+	public LongCombinableArbitrary multipleOf(long divisor) {
+		return new JqwikLongCombinableArbitrary(Arbitraries.longs().filter(it -> it % divisor == 0));
+	}
+
+	@Override
 	public void clear() {
 		// ignored
 	}

@@ -65,6 +65,16 @@ final class LongCombinableArbitraryDelegator implements LongCombinableArbitrary 
 	}
 
 	@Override
+	public LongCombinableArbitrary nonZero() {
+		return CombinableArbitrary.longs().nonZero();
+	}
+
+	@Override
+	public LongCombinableArbitrary multipleOf(long divisor) {
+		return CombinableArbitrary.longs().multipleOf(divisor);
+	}
+
+	@Override
 	public void clear() {
 		delegate.clear();
 	}
