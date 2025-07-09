@@ -6,53 +6,43 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 
 class SeedInitializationTest {
-	private static final String SEED_FILE = ".fixture-monkey-seed";
-	private static final long FILE_SEED = 123456789L;
-	private static final long BUILDER_SEED = 987654321L;
 
-	@BeforeEach
-	void setUp() throws IOException {
-		Files.write(Paths.get(SEED_FILE), String.valueOf(FILE_SEED).getBytes());
-	}
-
-	@AfterEach
-	void tearDown() throws IOException {
-		Files.deleteIfExists(Paths.get(SEED_FILE));
+	@Test
+	void readsSeedFromFile() throws IOException {
+		// given
+		String seedFile = ".fixture-monkey-seed";
+		long fileSeed = 123456789L;
+		Files.write(Paths.get(seedFile), String.valueOf(fileSeed).getBytes());
+		try {
+			// when
+			FixtureMonkey.builder().build();
+			// then
+			then(Randoms.currentSeed()).isEqualTo(fileSeed);
+		} finally {
+			Files.deleteIfExists(Paths.get(seedFile));
+		}
 	}
 
 	@Test
-	void readsSeedFromFile() {
+	void builderSeedOverridesFileSeed() throws IOException {
 		// given
-		// seed file is created in setUp()
-
-		// when
-		FixtureMonkey.builder().build();
-
-		// then
-		then(Randoms.currentSeed()).isEqualTo(FILE_SEED);
-
-		// TODO: Change to use .giveMeOne() method in future tests
-	}
-
-	@Test
-	void builderSeedOverridesFileSeed() {
-		// given
-		// seed file is created in setUp()
-
-		// when
-		FixtureMonkey.builder().seed(BUILDER_SEED).build();
-
-		// then
-		then(Randoms.currentSeed()).isEqualTo(BUILDER_SEED);
-
-		// TODO: Change to use .giveMeOne() method in future tests
+		String seedFile = ".fixture-monkey-seed";
+		long fileSeed = 123456789L;
+		long builderSeed = 987654321L;
+		Files.write(Paths.get(seedFile), String.valueOf(fileSeed).getBytes());
+		try {
+			// when
+			FixtureMonkey.builder().seed(builderSeed).build();
+			// then
+			then(Randoms.currentSeed()).isEqualTo(builderSeed);
+		} finally {
+			Files.deleteIfExists(Paths.get(seedFile));
+		}
 	}
 }

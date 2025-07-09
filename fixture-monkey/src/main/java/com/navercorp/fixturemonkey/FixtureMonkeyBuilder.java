@@ -540,7 +540,7 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public long resolveInitialSeed() {
+	private long resolveInitialSeed() {
 		Long fileSeed = SeedFileLoader.loadSeedFromFile();
 		return fileSeed != null ? fileSeed : System.nanoTime();
 	}
