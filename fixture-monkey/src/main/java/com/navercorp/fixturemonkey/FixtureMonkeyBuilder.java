@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import com.navercorp.fixturemonkey.seed.SeedFileLoader;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -66,6 +65,10 @@ import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.expression.StrictModeMonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
+import com.navercorp.fixturemonkey.seed.SeedFileLoader;
+import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
+import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.fixturemonkey.tree.NodeResolver;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
