@@ -56,7 +56,7 @@ public final class JakartaArbitraryValidator implements ArbitraryValidator {
 
 			if (!violations.isEmpty()) {
 				throw new ValidationFailedException(
-					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(),
+					"DefaultArbitraryValidator ConstraintViolations. type: " + arbitrary.getClass(),
 					constraintViolationPropertyNames
 				);
 			}
