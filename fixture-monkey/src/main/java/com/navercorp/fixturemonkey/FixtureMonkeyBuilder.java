@@ -65,6 +65,7 @@ import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
+import com.navercorp.fixturemonkey.seed.SeedFileLoader;
 import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
@@ -81,7 +82,7 @@ public final class FixtureMonkeyBuilder {
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
-	private long seed = System.nanoTime();
+	private long seed = resolveInitialSeed();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -553,6 +554,11 @@ public final class FixtureMonkeyBuilder {
 			)
 		);
 		return this;
+	}
+
+	private long resolveInitialSeed() {
+		Long fileSeed = SeedFileLoader.loadSeedFromFile();
+		return fileSeed != null ? fileSeed : System.nanoTime();
 	}
 
 	/**
