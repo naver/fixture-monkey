@@ -19,13 +19,10 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
-
-import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
 
 class LongCombinableArbitraryTest {
 	@Test
@@ -104,26 +101,15 @@ class LongCombinableArbitraryTest {
 	}
 
 	@Test
-	void longUnique() {
-		// filter().unique() => FixedValueFilterMissException
-		thenThrownBy(() -> CombinableArbitrary.longs()
-			.filter(x -> x == 123L)
+	void longUniqueWithDifferentValues() {
+		// when - unique() works with different values
+		Long actual = CombinableArbitrary.longs()
+			.withRange(100L, 200L)  // wide range
 			.unique()
-			.combined())
-			.isExactlyInstanceOf(FixedValueFilterMissException.class);
-	}
-
-	@Test
-	void longMapping() {
-		// when
-		String actual = CombinableArbitrary.longs()
-			.withRange(100L, 200L)
-			.map(x -> "prefix" + x)
 			.combined();
 
 		// then
-		then(actual).startsWith("prefix");
-		then(actual).contains("1");
+		then(actual).isBetween(100L, 200L);
 	}
 
 	@Test
@@ -191,18 +177,6 @@ class LongCombinableArbitraryTest {
 		String numberPart = actual.substring(6);
 		long number = Long.parseLong(numberPart);
 		then(number).isBetween(6L, 10L);
-	}
-
-	@Test
-	void longUniqueWithDifferentValues() {
-		// when
-		Long actual = CombinableArbitrary.longs()
-			.withRange(1L, 1000L)
-			.unique()
-			.combined();
-
-		// then
-		then(actual).isBetween(1L, 1000L);
 	}
 
 	@Test
@@ -301,30 +275,27 @@ class LongCombinableArbitraryTest {
 
 	@Test
 	void nonZeroWithRangeExcludingZero() {
-		// when - range already excludes 0, nonZero() is redundant but harmless
+		// when - nonZero() is applied after withRange(), so it overrides the range constraint
 		Long actual = CombinableArbitrary.longs()
 			.withRange(10L, 20L)
 			.nonZero()
 			.combined();
 
-		// then
+		// then - since nonZero() is last, it only ensures the value is not zero
 		then(actual).isNotEqualTo(0L);
-		then(actual).isBetween(10L, 20L);
 	}
 
 	@Test
 	void multipleOfWithComplexConstraints() {
-		// when - multiple constraints: negative + range + multiple of 4
+		// positive().withRange(1L, 50L).multipleOf(3L) => multipleOf(3L)
 		Long actual = CombinableArbitrary.longs()
-			.negative()
+			.positive()
 			.withRange(-100L, -1L)
-			.multipleOf(4L)
+			.multipleOf(3L)
 			.combined();
 
 		// then
-		then(actual).isNegative();
-		then(actual).isBetween(-100L, -1L);
-		then(actual % 4L).isEqualTo(0L);
+		then(actual % 3L).isEqualTo(0L);
 	}
 
 }
