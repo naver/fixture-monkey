@@ -76,6 +76,51 @@ public final class JqwikShortCombinableArbitrary implements ShortCombinableArbit
 	}
 
 	@Override
+	public ShortCombinableArbitrary nonZero() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().filter(it -> it != 0));
+	}
+
+	@Override
+	public ShortCombinableArbitrary multipleOf(short value) {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().filter(it -> it % value == 0));
+	}
+
+	@Override
+	public ShortCombinableArbitrary percentage() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().between((short)0, (short)100));
+	}
+
+	@Override
+	public ShortCombinableArbitrary score() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().between((short)0, (short)100));
+	}
+
+	@Override
+	public ShortCombinableArbitrary year() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().between((short)1900, (short)2100));
+	}
+
+	@Override
+	public ShortCombinableArbitrary month() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().between((short)1, (short)12));
+	}
+
+	@Override
+	public ShortCombinableArbitrary day() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().between((short)1, (short)31));
+	}
+
+	@Override
+	public ShortCombinableArbitrary hour() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().between((short)0, (short)23));
+	}
+
+	@Override
+	public ShortCombinableArbitrary minute() {
+		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().between((short)0, (short)59));
+	}
+
+	@Override
 	public void clear() {
 		// ignored
 	}

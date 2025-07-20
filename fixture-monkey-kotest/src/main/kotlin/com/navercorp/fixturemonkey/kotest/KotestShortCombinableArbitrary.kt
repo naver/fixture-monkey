@@ -48,6 +48,33 @@ class KotestShortCombinableArbitrary(private val arb: Arb<Short> = Arb.short()) 
     override fun odd(): ShortCombinableArbitrary =
         KotestShortCombinableArbitrary(Arb.short().filter { it % 2 != 0 })
 
+    override fun nonZero(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it != 0.toShort() })
+
+    override fun multipleOf(value: Short): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it % value == 0 })
+
+    override fun percentage(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it in 0..100 })
+
+    override fun score(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it in 0..100 })
+
+    override fun year(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it in 1900..2100 })
+
+    override fun month(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it in 1..12 })
+
+    override fun day(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it in 1..31 })
+
+    override fun hour(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it in 0..23 })
+
+    override fun minute(): ShortCombinableArbitrary =
+        KotestShortCombinableArbitrary(Arb.short().filter { it in 0..59 })
+
     override fun filter(tries: Int, predicate: Predicate<Short>): ShortCombinableArbitrary =
         KotestShortCombinableArbitrary(Arb.short().filter(predicate::test))
 

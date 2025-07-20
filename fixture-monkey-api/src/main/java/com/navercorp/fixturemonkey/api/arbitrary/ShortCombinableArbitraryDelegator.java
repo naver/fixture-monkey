@@ -65,6 +65,51 @@ final class ShortCombinableArbitraryDelegator implements ShortCombinableArbitrar
 	}
 
 	@Override
+	public ShortCombinableArbitrary nonZero() {
+		return CombinableArbitrary.shorts().nonZero();
+	}
+
+	@Override
+	public ShortCombinableArbitrary multipleOf(short value) {
+		return CombinableArbitrary.shorts().multipleOf(value);
+	}
+
+	@Override
+	public ShortCombinableArbitrary percentage() {
+		return CombinableArbitrary.shorts().percentage();
+	}
+
+	@Override
+	public ShortCombinableArbitrary score() {
+		return CombinableArbitrary.shorts().score();
+	}
+
+	@Override
+	public ShortCombinableArbitrary year() {
+		return CombinableArbitrary.shorts().year();
+	}
+
+	@Override
+	public ShortCombinableArbitrary month() {
+		return CombinableArbitrary.shorts().month();
+	}
+
+	@Override
+	public ShortCombinableArbitrary day() {
+		return CombinableArbitrary.shorts().day();
+	}
+
+	@Override
+	public ShortCombinableArbitrary hour() {
+		return CombinableArbitrary.shorts().hour();
+	}
+
+	@Override
+	public ShortCombinableArbitrary minute() {
+		return CombinableArbitrary.shorts().minute();
+	}
+
+	@Override
 	public void clear() {
 		delegate.clear();
 	}
