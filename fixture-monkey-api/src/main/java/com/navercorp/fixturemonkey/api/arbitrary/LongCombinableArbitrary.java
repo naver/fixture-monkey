@@ -80,8 +80,8 @@ public interface LongCombinableArbitrary extends CombinableArbitrary<Long> {
 
 	/**
 	 * Generates a LongCombinableArbitrary which produces only longs that are multiples of the specified divisor.
-	 * <p><strong>Note:</strong> Following the last-method-wins principle, when combined with other constraints like 
-	 * {@link #positive()} or {@link #withRange(long, long)}, this method will override all previous constraints 
+	 * <p><strong>Note:</strong> Following the last-method-wins principle, when combined with other constraints like
+	 * {@link #positive()} or {@link #withRange(long, long)}, this method will override all previous constraints
 	 * and generate multiples of the divisor from the full Long range.
 	 * <p><strong>Warning:</strong> If divisor is 0, this will cause an arithmetic exception during generation.
 	 *
