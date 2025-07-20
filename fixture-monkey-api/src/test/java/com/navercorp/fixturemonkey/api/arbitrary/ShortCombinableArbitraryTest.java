@@ -18,7 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.stream.IntStream;
 
@@ -91,6 +92,108 @@ class ShortCombinableArbitraryTest {
 
 		// then
 		then(allOdd).isTrue();
+	}
+
+	@Test
+	void nonZero() {
+		// when
+		boolean allNonZero = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().nonZero().combined())
+			.allMatch(s -> s != 0);
+
+		// then
+		then(allNonZero).isTrue();
+	}
+
+	@Test
+	void multipleOf() {
+		// given
+		short multiplier = 7;
+
+		// when
+		boolean allMultiplesOfSeven = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().multipleOf(multiplier).combined())
+			.allMatch(s -> s % multiplier == 0);
+
+		// then
+		then(allMultiplesOfSeven).isTrue();
+	}
+
+	@Test
+	void percentage() {
+		// when
+		boolean allPercentage = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().percentage().combined())
+			.allMatch(s -> s >= 0 && s <= 100);
+
+		// then
+		then(allPercentage).isTrue();
+	}
+
+	@Test
+	void score() {
+		// when
+		boolean allScore = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().score().combined())
+			.allMatch(s -> s >= 0 && s <= 100);
+
+		// then
+		then(allScore).isTrue();
+	}
+
+	@Test
+	void year() {
+		// when
+		boolean allYear = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().year().combined())
+			.allMatch(s -> s >= 1900 && s <= 2100);
+
+		// then
+		then(allYear).isTrue();
+	}
+
+	@Test
+	void month() {
+		// when
+		boolean allMonth = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().month().combined())
+			.allMatch(s -> s >= 1 && s <= 12);
+
+		// then
+		then(allMonth).isTrue();
+	}
+
+	@Test
+	void day() {
+		// when
+		boolean allDay = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().day().combined())
+			.allMatch(s -> s >= 1 && s <= 31);
+
+		// then
+		then(allDay).isTrue();
+	}
+
+	@Test
+	void hour() {
+		// when
+		boolean allHour = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().hour().combined())
+			.allMatch(s -> s >= 0 && s <= 23);
+
+		// then
+		then(allHour).isTrue();
+	}
+
+	@Test
+	void minute() {
+		// when
+		boolean allMinute = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().minute().combined())
+			.allMatch(s -> s >= 0 && s <= 59);
+
+		// then
+		then(allMinute).isTrue();
 	}
 
 	@Test
@@ -288,4 +391,36 @@ class ShortCombinableArbitraryTest {
 		then(allPositive).isTrue();
 	}
 
+	@Test
+	void nonZeroWithMultipleOf() {
+		// when
+		boolean allNonZeroMultiplesOfFive = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().nonZero().multipleOf((short)5).combined())
+			.allMatch(s -> s != 0 && s % 5 == 0);
+
+		// then
+		then(allNonZeroMultiplesOfFive).isTrue();
+	}
+
+	@Test
+	void lastMethodWinsYearOverPercentage() {
+		// when - percentage().year() => year()
+		boolean allYear = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().percentage().year().combined())
+			.allMatch(s -> s >= 1900 && s <= 2100);
+
+		// then
+		then(allYear).isTrue();
+	}
+
+	@Test
+	void lastMethodWinsMultipleOfOverEven() {
+		// when - even().multipleOf(3) => multipleOf(3)
+		boolean allMultiplesOfThree = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().even().multipleOf((short)3).combined())
+			.allMatch(s -> s % 3 == 0);
+
+		// then
+		then(allMultiplesOfThree).isTrue();
+	}
 }

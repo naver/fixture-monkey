@@ -68,6 +68,71 @@ public interface ShortCombinableArbitrary extends CombinableArbitrary<Short> {
 	 */
 	ShortCombinableArbitrary odd();
 
+	/**
+	 * Generates a ShortCombinableArbitrary which produces only non-zero shorts.
+	 * This is useful for preventing division by zero errors.
+	 *
+	 * @return the ShortCombinableArbitrary producing non-zero shorts
+	 */
+	ShortCombinableArbitrary nonZero();
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces shorts that are multiples of the specified value.
+	 *
+	 * @param value the value to generate multiples of
+	 * @return the ShortCombinableArbitrary producing multiples of {@code value}
+	 */
+	ShortCombinableArbitrary multipleOf(short value);
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces percentage values (0-100).
+	 *
+	 * @return the ShortCombinableArbitrary producing percentage values
+	 */
+	ShortCombinableArbitrary percentage();
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces score values (0-100).
+	 *
+	 * @return the ShortCombinableArbitrary producing score values
+	 */
+	ShortCombinableArbitrary score();
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces year values (1900-2100).
+	 *
+	 * @return the ShortCombinableArbitrary producing year values
+	 */
+	ShortCombinableArbitrary year();
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces month values (1-12).
+	 *
+	 * @return the ShortCombinableArbitrary producing month values
+	 */
+	ShortCombinableArbitrary month();
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces day values (1-31).
+	 *
+	 * @return the ShortCombinableArbitrary producing day values
+	 */
+	ShortCombinableArbitrary day();
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces hour values (0-23).
+	 *
+	 * @return the ShortCombinableArbitrary producing hour values
+	 */
+	ShortCombinableArbitrary hour();
+
+	/**
+	 * Generates a ShortCombinableArbitrary which produces minute values (0-59).
+	 *
+	 * @return the ShortCombinableArbitrary producing minute values
+	 */
+	ShortCombinableArbitrary minute();
+
 	@Override
 	default ShortCombinableArbitrary filter(Predicate<Short> predicate) {
 		return this.filter(DEFAULT_MAX_TRIES, predicate);
