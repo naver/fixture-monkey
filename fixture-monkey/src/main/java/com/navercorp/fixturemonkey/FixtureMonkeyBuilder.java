@@ -78,10 +78,10 @@ public final class FixtureMonkeyBuilder {
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
 	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuildersWithPriority = new ArrayList<>();
-	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
-	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
+	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
+	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private boolean experimentalFileSeedEnabled = false;
 	private long seed = resolveInitialSeed();
 
