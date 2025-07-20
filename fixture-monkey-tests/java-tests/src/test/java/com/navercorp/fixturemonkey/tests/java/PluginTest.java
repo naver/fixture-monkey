@@ -18,6 +18,18 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
+import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
@@ -27,18 +39,13 @@ import com.navercorp.fixturemonkey.datafaker.plugin.DataFakerPlugin;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.specs.ConstructorSpecs.JavaxValidationObject;
 import com.navercorp.fixturemonkey.tests.java.specs.DataFakerSpecs;
-import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.*;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.AbstractClassObject;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.AbstractClassStringChildObject;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceIntegerObject;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceListObject;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceObject;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceStringObject;
+import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceWrapperObject;
 
 class PluginTest {
 	@RepeatedTest(TEST_COUNT)
@@ -197,6 +204,7 @@ class PluginTest {
 	void dataFakerPluginGeneratesUserFields() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
 			.plugin(new DataFakerPlugin())
 			.build();
 
@@ -213,6 +221,7 @@ class PluginTest {
 	void dataFakerPluginGeneratesFinanceFields() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
 			.plugin(new DataFakerPlugin())
 			.build();
 

@@ -1,12 +1,10 @@
 package com.navercorp.fixturemonkey.datafaker.arbitrary
 
-import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary
-
-interface InternetStringCombinableArbitrary : StringCombinableArbitrary {
+interface InternetStringCombinableArbitrary {
     fun emailAddress(): String
     fun domainName(): String
     fun url(): String
+    fun password(): String
     fun ipV4Address(): String
     fun ipV6Address(): String
-    fun macAddress(): String
 }

@@ -9,11 +9,18 @@ import com.navercorp.fixturemonkey.datafaker.support.DataFakerFieldResolver
 class DataFakerArbitraryIntrospector : ArbitraryIntrospector {
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val property = context.arbitraryProperty.objectProperty.property
-
-        val fieldName = property.name ?: "unknown"
+        val fieldName = property.name ?: return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         val fieldType = Types.getActualType(property.type) as Class<*>
 
-        val combinableArbitrary = DataFakerFieldResolver.resolveFakerArbitrary(fieldType, fieldName)
-        return ArbitraryIntrospectorResult(combinableArbitrary)
+        if (!DataFakerFieldResolver.isFakerTargetField(fieldType, fieldName)) {
+            return ArbitraryIntrospectorResult.NOT_INTROSPECTED
+        }
+
+        return try {
+            val combinableArbitrary = DataFakerFieldResolver.resolveFakerArbitrary(fieldType, fieldName)
+            ArbitraryIntrospectorResult(combinableArbitrary)
+        } catch (e: Exception) {
+            ArbitraryIntrospectorResult.NOT_INTROSPECTED
+        }
     }
 }

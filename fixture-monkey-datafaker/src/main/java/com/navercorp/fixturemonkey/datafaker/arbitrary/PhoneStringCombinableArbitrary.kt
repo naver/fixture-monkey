@@ -1,8 +1,7 @@
 package com.navercorp.fixturemonkey.datafaker.arbitrary
 
-import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary
-
-interface PhoneStringCombinableArbitrary : StringCombinableArbitrary {
-    fun cellPhone(): String
+interface PhoneStringCombinableArbitrary {
     fun phoneNumber(): String
+    fun cellPhone(): String
+    fun extension(): String
 }

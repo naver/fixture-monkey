@@ -1,10 +1,11 @@
 package com.navercorp.fixturemonkey.datafaker.arbitrary
 
-import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary
-
-interface AddressStringCombinableArbitrary : StringCombinableArbitrary {
-    fun fullAddress(): String
+interface AddressStringCombinableArbitrary {
     fun city(): String
-    fun country(): String
+    fun streetName(): String
+    fun streetAddress(): String
     fun zipCode(): String
+    fun state(): String
+    fun country(): String
+    fun fullAddress(): String
 }

@@ -1,7 +1,7 @@
 package com.navercorp.fixturemonkey.datafaker.arbitrary
 
-import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary
-
-interface FinanceStringCombinableArbitrary : StringCombinableArbitrary {
+interface FinanceStringCombinableArbitrary {
     fun creditCard(): String
+    fun iban(): String
+    fun bic(): String
 }

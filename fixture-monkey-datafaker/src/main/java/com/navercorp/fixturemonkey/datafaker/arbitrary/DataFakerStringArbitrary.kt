@@ -21,17 +21,17 @@ object DataFakerStringArbitrary {
     fun name(): NameStringCombinableArbitrary = name(Locale.ENGLISH)
 
     @JvmStatic
-    fun address(
-        locale: Locale = Locale.ENGLISH
-    ): AddressStringCombinableArbitrary =
+    fun address(locale: Locale = Locale.ENGLISH): AddressStringCombinableArbitrary =
         object : BaseStringCombinableArbitrary(), AddressStringCombinableArbitrary {
-
             private val faker = Faker(locale)
 
-            override fun fullAddress(): String = faker.address().fullAddress()
             override fun city(): String = faker.address().city()
-            override fun country(): String = faker.address().country()
+            override fun streetName(): String = faker.address().streetName()
+            override fun streetAddress(): String = faker.address().streetAddress()
             override fun zipCode(): String = faker.address().zipCode()
+            override fun state(): String = faker.address().state()
+            override fun country(): String = faker.address().country()
+            override fun fullAddress(): String = faker.address().fullAddress()
 
             override fun combined(): String = fullAddress()
         }
@@ -42,14 +42,14 @@ object DataFakerStringArbitrary {
     @JvmStatic
     fun internet(locale: Locale = Locale.ENGLISH): InternetStringCombinableArbitrary =
         object : BaseStringCombinableArbitrary(), InternetStringCombinableArbitrary {
-            private val innerFaker = Faker(locale)
+            private val faker = Faker(locale)
 
-            override fun emailAddress(): String = innerFaker.internet().emailAddress()
-            override fun domainName(): String = innerFaker.internet().domainName()
-            override fun url(): String = innerFaker.internet().url()
-            override fun ipV4Address(): String = innerFaker.internet().ipV4Address()
-            override fun ipV6Address(): String = innerFaker.internet().ipV6Address()
-            override fun macAddress(): String = innerFaker.internet().macAddress()
+            override fun emailAddress(): String = faker.internet().emailAddress()
+            override fun domainName(): String = faker.internet().domainName()
+            override fun url(): String = faker.internet().url()
+            override fun password(): String = faker.internet().password()
+            override fun ipV4Address(): String = faker.internet().ipV4Address()
+            override fun ipV6Address(): String = faker.internet().ipV6Address()
 
             override fun combined(): String = emailAddress()
         }
@@ -60,11 +60,13 @@ object DataFakerStringArbitrary {
     @JvmStatic
     fun phoneNumber(locale: Locale = Locale.ENGLISH): PhoneStringCombinableArbitrary =
         object : BaseStringCombinableArbitrary(), PhoneStringCombinableArbitrary {
-            private val innerFaker = Faker(locale)
+            private val faker = Faker(locale)
 
-            override fun cellPhone(): String = innerFaker.phoneNumber().cellPhone()
-            override fun phoneNumber(): String = innerFaker.phoneNumber().phoneNumber()
-            override fun combined(): String = cellPhone()
+            override fun phoneNumber(): String = faker.phoneNumber().phoneNumber()
+            override fun cellPhone(): String = faker.phoneNumber().cellPhone()
+            override fun extension(): String = faker.phoneNumber().extension()
+
+            override fun combined(): String = phoneNumber()
         }
 
     @JvmStatic
@@ -73,9 +75,12 @@ object DataFakerStringArbitrary {
     @JvmStatic
     fun finance(locale: Locale = Locale.ENGLISH): FinanceStringCombinableArbitrary =
         object : BaseStringCombinableArbitrary(), FinanceStringCombinableArbitrary {
-            private val innerFaker = Faker(locale)
+            private val faker = Faker(locale)
 
-            override fun creditCard(): String = innerFaker.finance().creditCard()
+            override fun creditCard(): String = faker.finance().creditCard()
+            override fun iban(): String = faker.finance().iban()
+            override fun bic(): String = faker.finance().bic()
+
             override fun combined(): String = creditCard()
         }
 

@@ -1,10 +1,11 @@
 package com.navercorp.fixturemonkey.tests.java;
 
-import com.navercorp.fixturemonkey.datafaker.arbitrary.DataFakerStringArbitrary;
-import org.junit.jupiter.api.RepeatedTest;
-
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
+
+import org.junit.jupiter.api.RepeatedTest;
+
+import com.navercorp.fixturemonkey.datafaker.arbitrary.DataFakerStringArbitrary;
 
 class DataFakerArbitraryTest {
 
