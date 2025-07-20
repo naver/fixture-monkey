@@ -31,7 +31,7 @@ import java.util.function.Predicate
 class KotestShortCombinableArbitrary(private val arb: Arb<Short> = Arb.short()) : ShortCombinableArbitrary {
     override fun combined(): Short = arb.single()
 
-    override fun rawValue(): Short = this.combined()
+    override fun rawValue(): Short = arb.single()
 
     override fun withRange(min: Short, max: Short): ShortCombinableArbitrary =
         KotestShortCombinableArbitrary(Arb.short().filter { it in min..max })
@@ -76,7 +76,7 @@ class KotestShortCombinableArbitrary(private val arb: Arb<Short> = Arb.short()) 
         KotestShortCombinableArbitrary(Arb.short().filter { it in 0..59 })
 
     override fun filter(tries: Int, predicate: Predicate<Short>): ShortCombinableArbitrary =
-        KotestShortCombinableArbitrary(Arb.short().filter(predicate::test))
+        KotestShortCombinableArbitrary(arb.filter(predicate::test))
 
     override fun clear() {
     }

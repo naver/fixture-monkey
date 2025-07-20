@@ -1102,8 +1102,7 @@ class KotestInJunitTest {
     @RepeatedTest(TEST_COUNT)
     fun shortCombinableArbitraryOdd() {
         val actual = CombinableArbitrary.shorts().odd().combined()
-
-        then(actual % 2).isEqualTo(1)
+        then(actual % 2 != 0).isTrue()
     }
 
     @RepeatedTest(TEST_COUNT)
