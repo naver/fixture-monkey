@@ -85,6 +85,7 @@ public final class FixtureMonkeyBuilder {
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
+	private boolean experimentalFileSeedEnabled = false;
 	private long seed = resolveInitialSeed();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
@@ -543,9 +544,22 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder useExperimental(String option) {
+		if ("fileSeed".equals(option)) {
+			this.experimentalFileSeedEnabled = true;
+			this.seed = resolveInitialSeed();
+		}
+		return this;
+	}
+
 	private long resolveInitialSeed() {
-		Long fileSeed = new SeedFileLoader().loadSeedFromFile();
-		return fileSeed != null ? fileSeed : System.nanoTime();
+		if (experimentalFileSeedEnabled) {
+			Long fileSeed = new SeedFileLoader().loadSeedFromFile();
+			if (fileSeed != null) {
+				return fileSeed;
+			}
+		}
+		return System.nanoTime();
 	}
 
 	/**
@@ -558,6 +572,7 @@ public final class FixtureMonkeyBuilder {
 	 * @return FixtureMonkeyBuilder
 	 */
 	public FixtureMonkeyBuilder seed(long seed) {
+		this.experimentalFileSeedEnabled = false;
 		this.seed = seed;
 		return this;
 	}
