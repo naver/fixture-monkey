@@ -26,10 +26,10 @@ import java.nio.file.Paths;
 public final class SeedFileLoader {
 	private static final String DEFAULT_SEED_FILE_NAME = ".fixture-monkey-seed";
 
-	private SeedFileLoader() {
+	public SeedFileLoader() {
 	}
 
-	public static Long loadSeedFromFile() {
+	public Long loadSeedFromFile() {
 		Path path = Paths.get(DEFAULT_SEED_FILE_NAME);
 		if (!Files.exists(path)) {
 			return null;
