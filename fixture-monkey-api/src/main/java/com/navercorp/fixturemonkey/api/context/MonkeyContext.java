@@ -51,7 +51,6 @@ public final class MonkeyContext {
 	private final ConcurrentLruCache<TreeRootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 	private final List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders;
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
-	
 	public MonkeyContext(
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty,
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty,
