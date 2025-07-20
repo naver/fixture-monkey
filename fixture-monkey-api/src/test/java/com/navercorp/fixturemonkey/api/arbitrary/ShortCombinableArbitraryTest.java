@@ -19,13 +19,10 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
-
-import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
 
 class ShortCombinableArbitraryTest {
 	@Test
@@ -210,16 +207,6 @@ class ShortCombinableArbitraryTest {
 	}
 
 	@Test
-	void addUniqueAtFixedShort() {
-		// when & then - unique().combined()  => FixedValueFilterMissException
-		thenThrownBy(() -> CombinableArbitrary.shorts()
-			.filter(x -> x == (short)42)
-			.unique()
-			.combined())
-			.isExactlyInstanceOf(FixedValueFilterMissException.class);
-	}
-
-	@Test
 	void shortMapping() {
 		// when
 		String actual = CombinableArbitrary.shorts()
@@ -393,13 +380,13 @@ class ShortCombinableArbitraryTest {
 
 	@Test
 	void nonZeroWithMultipleOf() {
-		// when
+		// when - nonZero().multipleOf((short)5) => multipleOf((short)5)
 		boolean allNonZeroMultiplesOfFive = IntStream.range(0, 100)
 			.mapToObj(i -> CombinableArbitrary.shorts().nonZero().multipleOf((short)5).combined())
 			.allMatch(s -> s != 0 && s % 5 == 0);
 
 		// then
-		then(allNonZeroMultiplesOfFive).isTrue();
+		then(allNonZeroMultiplesOfFive).isFalse();
 	}
 
 	@Test

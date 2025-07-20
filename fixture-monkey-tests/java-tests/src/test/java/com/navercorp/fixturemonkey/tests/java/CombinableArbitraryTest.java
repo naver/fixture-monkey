@@ -4,14 +4,15 @@ import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.RepetitionInfo;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikByteCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikShortCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 
 class CombinableArbitraryTest {
 	@Test
@@ -333,7 +334,7 @@ class CombinableArbitraryTest {
 	void shortCombinableArbitraryFilter() {
 		Short actual = CombinableArbitrary.shorts().filter(it -> it > 100).combined();
 
-		then(actual).isGreaterThan((short) 100);
+		then(actual).isGreaterThan((short)100);
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -352,16 +353,19 @@ class CombinableArbitraryTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void shortCombinableArbitraryWithRange() {
-		Short actual = CombinableArbitrary.shorts().withRange((short) 10, (short) 100).combined();
+		Short actual = CombinableArbitrary.shorts().withRange((short)10, (short)100).combined();
 
-		then(actual).isBetween((short) 10, (short) 100);
+		then(actual).isBetween((short)10, (short)100);
 	}
 
 	@RepeatedTest(TEST_COUNT)
 	void shortCombinableArbitraryWithRangeAndFilter() {
-		Short actual = CombinableArbitrary.shorts().withRange((short) 10, (short) 100).filter(it -> 75 <= it).combined();
+		Short actual = CombinableArbitrary.shorts()
+			.withRange((short)10, (short)100)
+			.filter(it -> 75 <= it)
+			.combined();
 
-		then(actual).isBetween((short) 75, (short) 100);
+		then(actual).isBetween((short)75, (short)100);
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -372,10 +376,13 @@ class CombinableArbitraryTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void shortCombinableArbitraryOdd() {
+	void shortCombinableArbitraryOdd(RepetitionInfo repetitionInfo) {
 		Short actual = CombinableArbitrary.shorts().odd().combined();
 
-		then(actual % 2).isEqualTo(1);
+		// 중간 로그 출력
+		System.out.printf("Test #%d: actual = %d%n", repetitionInfo.getCurrentRepetition(), actual);
+
+		then(actual % 2 != 0).isTrue();
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -389,14 +396,14 @@ class CombinableArbitraryTest {
 	void shortCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
 		Short actual = CombinableArbitrary.shorts().even().odd().combined();
 
-		then(actual % 2).isEqualTo(1);
+		then(actual % 2 != 0).isTrue();
 	}
 
 	@RepeatedTest(TEST_COUNT)
 	void shortCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
-		Short actual = CombinableArbitrary.shorts().negative().withRange((short) 100, (short) 1000).combined();
+		Short actual = CombinableArbitrary.shorts().negative().withRange((short)100, (short)1000).combined();
 
-		then(actual).isBetween((short) 100, (short) 1000);
+		then(actual).isBetween((short)100, (short)1000);
 	}
 
 }
