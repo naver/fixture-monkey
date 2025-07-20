@@ -222,7 +222,7 @@ class ShortCombinableArbitraryTest {
     @Test
     fun shortInjectNull() {
         // when
-        val actual = CombinableArbitrary.shorts()
+        val actual: Short? = CombinableArbitrary.shorts()
             .positive()
             .injectNull(1.0)
             .combined()
@@ -234,7 +234,7 @@ class ShortCombinableArbitraryTest {
     @Test
     fun shortInjectNullWithZeroProbability() {
         // when
-        val actual = CombinableArbitrary.shorts()
+        val actual: Short? = CombinableArbitrary.shorts()
             .positive()
             .injectNull(0.0)
             .combined()
