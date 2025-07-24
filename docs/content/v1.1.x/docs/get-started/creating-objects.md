@@ -68,7 +68,7 @@ public class Product {
 }
 ```
 
-(Note that the Lombok annotation `@Value` is used to make Immutable classes. If you're working in an environment without Lombok, go to [creating test objects without lombok](../creating-test-objects-without-lombok))
+(Note that the Lombok annotation `@Value` is used to make Immutable classes. If you're working in an environment without Lombok, go to [creating test objects without lombok](../creating-objects-without-lombok))
 
 For `ConstructorPropertiesArbitraryIntrospector`, the generated class should have a constructor with @ConstructorProperties or you can add `lombok.anyConstructor.addConstructorProperties=true` in the lombok.config file.
 (There are alternative Introspectors available, each with their own requirements. Check out the [`Introspectors` section](../../generating-objects/introspector) for more details.)

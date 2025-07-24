@@ -68,7 +68,7 @@ public class Product {
 }
 ```
 
-(Lombok 의 어노테이션인 `@Value` 는 불변 클래스를 만들기 위해 사용됩니다. 만약 Lombok 을 사용하지 않는다면, [Lombok 없이 테스트 객체 생성하기](../creating-test-objects-without-lombok) 으로 이동하세요.)
+(Lombok 의 어노테이션인 `@Value` 는 불변 클래스를 만들기 위해 사용됩니다. 만약 Lombok 을 사용하지 않는다면, [Lombok 없이 테스트 객체 생성하기](../creating-objects-without-lombok) 으로 이동하세요.)
 
 `ConstructorPropertiesArbitraryIntrospector` 를 사용하려면, 생성될 클래스에는 @ConstructorProperties 가 달린 생성자가 있거나, lombok.config 파일에 `lombok.anyConstructor.addConstructorProperties=true` 가 추가되어 있어야 합니다.
 (다른 Introspector를 사용할 수도 있습니다. 각각의 요구 사항은 [`Introspectors` section](../../generating-objects/introspector) 을 참고하세요.)
