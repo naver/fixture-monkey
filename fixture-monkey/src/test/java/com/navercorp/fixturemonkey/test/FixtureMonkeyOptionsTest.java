@@ -126,12 +126,46 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void strictModeSizeWrongExpressionThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(NestedStringList.class)
+				.size("nonExistentField", 1)
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given container expression.");
+	}
+
+	@Property
+	void strictModeSizeNestedWrongExpressionThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(NestedStringList.class)
+				.size("values.nonExistentField", 1)
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given container expression.");
+	}
+
+	@Property
 	void notStrictModeSetWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
 		thenNoException()
 			.isThrownBy(() -> sut.giveMeBuilder(String.class)
 				.set("nonExistentField", 0)
+				.sample());
+	}
+
+	@Property
+	void notStrictModeSizeWrongExpressionDoesNotThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder().build();
+
+		thenNoException()
+			.isThrownBy(() -> sut.giveMeBuilder(String.class)
+				.size("nonExistentField", 1)
 				.sample());
 	}
 
