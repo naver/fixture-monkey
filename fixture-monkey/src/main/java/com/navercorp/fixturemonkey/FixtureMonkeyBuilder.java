@@ -65,6 +65,7 @@ import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
+import com.navercorp.fixturemonkey.seed.SeedFileLoader;
 import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
@@ -77,11 +78,12 @@ public final class FixtureMonkeyBuilder {
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
 	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuildersWithPriority = new ArrayList<>();
-	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
-	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
-	private long seed = System.nanoTime();
+	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
+	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
+	private boolean experimentalFileSeedEnabled = false;
+	private long seed = resolveInitialSeed();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -555,6 +557,24 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder useExperimental(String option) {
+		if ("fileSeed".equals(option)) {
+			this.experimentalFileSeedEnabled = true;
+			this.seed = resolveInitialSeed();
+		}
+		return this;
+	}
+
+	private long resolveInitialSeed() {
+		if (experimentalFileSeedEnabled) {
+			Long fileSeed = new SeedFileLoader().loadSeedFromFile();
+			if (fileSeed != null) {
+				return fileSeed;
+			}
+		}
+		return System.nanoTime();
+	}
+
 	/**
 	 * sets the seed for generating random numbers.
 	 * <p>
@@ -565,6 +585,7 @@ public final class FixtureMonkeyBuilder {
 	 * @return FixtureMonkeyBuilder
 	 */
 	public FixtureMonkeyBuilder seed(long seed) {
+		this.experimentalFileSeedEnabled = false;
 		this.seed = seed;
 		return this;
 	}
