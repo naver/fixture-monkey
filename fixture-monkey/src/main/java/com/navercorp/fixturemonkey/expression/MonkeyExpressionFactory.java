@@ -25,4 +25,8 @@ import org.apiguardian.api.API.Status;
 @FunctionalInterface
 public interface MonkeyExpressionFactory {
 	MonkeyExpression from(String expression);
+
+	default MonkeyExpression from(String expression, Class<?> rootClass) {
+		return from(expression);
+	}
 }

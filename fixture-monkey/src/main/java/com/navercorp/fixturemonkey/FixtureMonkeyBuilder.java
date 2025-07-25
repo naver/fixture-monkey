@@ -63,6 +63,7 @@ import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
+import com.navercorp.fixturemonkey.expression.StrictModeNextNodePredicateList;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
@@ -498,20 +499,33 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder useExpressionStrictMode() {
-		this.monkeyExpressionFactory = expression -> {
-			MonkeyExpression monkeyExpression = new ArbitraryExpressionFactory().from(expression);
+		this.monkeyExpressionFactory = new MonkeyExpressionFactory() {
+			private final MonkeyExpressionFactory delegate = new ArbitraryExpressionFactory();
 
-			return new MonkeyExpression() {
-				@Override
-				public NodeResolver toNodeResolver() {
-					return new ApplyStrictModeResolver(monkeyExpression.toNodeResolver());
-				}
+			@Override
+			public MonkeyExpression from(String expression) {
+				return from(expression, null);
+			}
 
-				@Override
-				public List<NextNodePredicate> toNextNodePredicate() { // TODO:
-					return monkeyExpression.toNextNodePredicate();
-				}
-			};
+			@Override
+			public MonkeyExpression from(String expression, Class<?> rootClass) {
+				MonkeyExpression monkeyExpression = delegate.from(expression);
+				return new MonkeyExpression() {
+					@Override
+					public NodeResolver toNodeResolver() {
+						return new ApplyStrictModeResolver(monkeyExpression.toNodeResolver());
+					}
+
+					@Override
+					public List<NextNodePredicate> toNextNodePredicate() {
+						if (rootClass == null) {
+							return monkeyExpression.toNextNodePredicate();
+						}
+						List<NextNodePredicate> predicates = monkeyExpression.toNextNodePredicate();
+						return new StrictModeNextNodePredicateList(predicates, rootClass);
+					}
+				};
+			}
 		};
 		return this;
 	}
