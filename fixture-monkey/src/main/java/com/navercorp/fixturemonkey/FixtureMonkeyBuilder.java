@@ -61,13 +61,10 @@ import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
-import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
+import com.navercorp.fixturemonkey.expression.StrictModeMonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
-import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -498,21 +495,7 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder useExpressionStrictMode() {
-		this.monkeyExpressionFactory = expression -> {
-			MonkeyExpression monkeyExpression = new ArbitraryExpressionFactory().from(expression);
-
-			return new MonkeyExpression() {
-				@Override
-				public NodeResolver toNodeResolver() {
-					return new ApplyStrictModeResolver(monkeyExpression.toNodeResolver());
-				}
-
-				@Override
-				public List<NextNodePredicate> toNextNodePredicate() { // TODO:
-					return monkeyExpression.toNextNodePredicate();
-				}
-			};
-		};
+		this.monkeyExpressionFactory = new StrictModeMonkeyExpressionFactory(new ArbitraryExpressionFactory());
 		return this;
 	}
 
