@@ -23,10 +23,10 @@ import java.util.List;
 
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 
-public class StrictModeNextNodePredicateList extends AbstractList<NextNodePredicate> {
+public class StrictModeNextNodePredicateContainer extends AbstractList<NextNodePredicate> {
 	private final List<NextNodePredicate> delegate;
 
-	public StrictModeNextNodePredicateList(List<NextNodePredicate> delegate, Class<?> rootClass) {
+	public StrictModeNextNodePredicateContainer(List<NextNodePredicate> delegate, Class<?> rootClass) {
 		this.delegate = delegate;
 		if (!ExpressionPathValidator.isValidFieldPath(rootClass, delegate)) {
 			throw new IllegalArgumentException("No matching results for given container expression.");

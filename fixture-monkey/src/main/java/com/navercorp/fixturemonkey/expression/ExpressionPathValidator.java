@@ -34,13 +34,7 @@ public class ExpressionPathValidator {
 		Class<?> currentClass = Types.getActualType(rootClass);
 		for (NextNodePredicate predicate : predicates) {
 			if (predicate instanceof PropertyNameNodePredicate) {
-				String fieldName = extractPropertyName((PropertyNameNodePredicate)predicate);
-				if (fieldName == null) {
-					return false;
-				}
-				if (!hasDeclaredField(currentClass, fieldName)) {
-					return false;
-				}
+				String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
 				try {
 					Field field = currentClass.getDeclaredField(fieldName);
 					currentClass = field.getType();
@@ -50,24 +44,5 @@ public class ExpressionPathValidator {
 			}
 		}
 		return true;
-	}
-
-	private static String extractPropertyName(PropertyNameNodePredicate predicate) {
-		try {
-			Field propertyNameField = predicate.getClass().getDeclaredField("propertyName");
-			propertyNameField.setAccessible(true);
-			return (String)propertyNameField.get(predicate);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	private static boolean hasDeclaredField(Class<?> clazz, String fieldName) {
-		try {
-			clazz.getDeclaredField(fieldName);
-			return true;
-		} catch (NoSuchFieldException e) {
-			return false;
-		}
 	}
 }

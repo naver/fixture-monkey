@@ -588,6 +588,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 					.getPropertyNameResolver(property);
 				return propertyNameResolver.resolve(property);
 			});
+
 			return monkeyExpressionFactory.from(stringExpression, rootClass);
 		}
 
