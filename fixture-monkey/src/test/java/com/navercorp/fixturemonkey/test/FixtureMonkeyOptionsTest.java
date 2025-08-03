@@ -170,6 +170,23 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void strictModeMultiOperationValidExpression() {
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		String actual = sut.giveMeBuilder(new TypeReference<List<List<SimpleObject>>>() {
+			})
+			.size("$", 1)
+			.size("$[0]", 1)
+			.set("$[0][0].str", "expected")
+			.sample()
+			.get(0)
+			.get(0)
+			.getStr();
+
+		then(actual).isEqualTo("expected");
+	}
+
+	@Property
 	void pushAssignableTypeNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeNullInjectGenerator(
