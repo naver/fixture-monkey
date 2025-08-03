@@ -121,7 +121,7 @@ public final class ArbitraryBuilderContext {
 			.map(ContainerInfoManipulator::copy)
 			.collect(Collectors.toList());
 
-		return new ArbitraryBuilderContext(
+		ArbitraryBuilderContext copiedContext = new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			copiedContainerInfoManipulators,
 			new HashMap<>(propertyConfigurers),
@@ -130,6 +130,11 @@ public final class ArbitraryBuilderContext {
 			fixedCombinableArbitrary,
 			monkeyContext
 		);
+
+		copiedContext.setCustomizedValidOnly(customizedValidOnly);
+		copiedContext.setOptionValidOnly(optionValidOnly);
+
+		return copiedContext;
 	}
 
 	public void addManipulator(ArbitraryManipulator arbitraryManipulator) {
