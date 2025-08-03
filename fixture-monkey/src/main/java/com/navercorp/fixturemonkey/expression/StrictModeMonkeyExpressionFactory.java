@@ -20,15 +20,20 @@ package com.navercorp.fixturemonkey.expression;
 
 import java.util.List;
 
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 
 public class StrictModeMonkeyExpressionFactory implements MonkeyExpressionFactory {
 	private final MonkeyExpressionFactory delegate;
+	private final PropertyNameResolver propertyNameResolver;
 
-	public StrictModeMonkeyExpressionFactory(MonkeyExpressionFactory delegate) {
+	public StrictModeMonkeyExpressionFactory(
+		MonkeyExpressionFactory delegate, PropertyNameResolver propertyNameResolver
+	) {
 		this.delegate = delegate;
+		this.propertyNameResolver = propertyNameResolver;
 	}
 
 	@Override
@@ -39,16 +44,20 @@ public class StrictModeMonkeyExpressionFactory implements MonkeyExpressionFactor
 	@Override
 	public MonkeyExpression from(String expression, Class<?> rootClass) {
 		MonkeyExpression monkeyExpression = delegate.from(expression);
-		return new StrictModeMonkeyExpression(monkeyExpression, rootClass);
+		return new StrictModeMonkeyExpression(monkeyExpression, rootClass, propertyNameResolver);
 	}
 
 	private static class StrictModeMonkeyExpression implements MonkeyExpression {
 		private final MonkeyExpression delegate;
 		private final Class<?> rootClass;
+		private final PropertyNameResolver propertyNameResolver;
 
-		public StrictModeMonkeyExpression(MonkeyExpression delegate, Class<?> rootClass) {
+		public StrictModeMonkeyExpression(
+			MonkeyExpression delegate, Class<?> rootClass, PropertyNameResolver propertyNameResolver
+		) {
 			this.delegate = delegate;
 			this.rootClass = rootClass;
+			this.propertyNameResolver = propertyNameResolver;
 		}
 
 		@Override
@@ -62,7 +71,7 @@ public class StrictModeMonkeyExpressionFactory implements MonkeyExpressionFactor
 				return delegate.toNextNodePredicate();
 			}
 			List<NextNodePredicate> predicates = delegate.toNextNodePredicate();
-			return new StrictModeNextNodePredicateContainer(predicates, rootClass);
+			return new StrictModeNextNodePredicateContainer(predicates, rootClass, propertyNameResolver);
 		}
 	}
 }

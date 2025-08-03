@@ -21,14 +21,17 @@ package com.navercorp.fixturemonkey.expression;
 import java.util.AbstractList;
 import java.util.List;
 
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 
 public class StrictModeNextNodePredicateContainer extends AbstractList<NextNodePredicate> {
 	private final List<NextNodePredicate> delegate;
 
-	public StrictModeNextNodePredicateContainer(List<NextNodePredicate> delegate, Class<?> rootClass) {
+	public StrictModeNextNodePredicateContainer(
+		List<NextNodePredicate> delegate, Class<?> rootClass, PropertyNameResolver propertyNameResolver
+	) {
 		this.delegate = delegate;
-		if (!ExpressionPathValidator.isValidFieldPath(rootClass, delegate)) {
+		if (!ExpressionPathValidator.isValidFieldPath(rootClass, delegate, propertyNameResolver)) {
 			throw new IllegalArgumentException("No matching results for given container expression.");
 		}
 	}

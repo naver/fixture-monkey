@@ -93,7 +93,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS);
 	private ObjectPropertyGenerator defaultObjectPropertyGenerator;
 	private List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers = new ArrayList<>();
-	private PropertyNameResolver defaultPropertyNameResolver;
+	private PropertyNameResolver defaultPropertyNameResolver = FixtureMonkeyOptions.DEFAULT_PROPERTY_NAME_RESOLVER;
 	private List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators = new ArrayList<>(
 		FixtureMonkeyOptions.DEFAULT_NULL_INJECT_GENERATORS
 	);
@@ -289,6 +289,10 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder defaultPropertyNameResolver(PropertyNameResolver defaultPropertyNameResolver) {
 		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 		return this;
+	}
+
+	public PropertyNameResolver getDefaultPropertyNameResolver() {
+		return defaultPropertyNameResolver;
 	}
 
 	public FixtureMonkeyOptionsBuilder nullInjectGenerators(

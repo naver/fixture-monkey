@@ -495,7 +495,10 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder useExpressionStrictMode() {
-		this.monkeyExpressionFactory = new StrictModeMonkeyExpressionFactory(new ArbitraryExpressionFactory());
+		this.monkeyExpressionFactory = new StrictModeMonkeyExpressionFactory(
+			new ArbitraryExpressionFactory(),
+			fixtureMonkeyOptionsBuilder.getDefaultPropertyNameResolver()
+		);
 		return this;
 	}
 

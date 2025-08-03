@@ -19,15 +19,21 @@
 package com.navercorp.fixturemonkey.expression;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
 
 public class ExpressionPathValidator {
 
-	public static boolean isValidFieldPath(Class<?> rootClass, List<NextNodePredicate> predicates) {
+	public static boolean isValidFieldPath(
+		Class<?> rootClass, List<NextNodePredicate> predicates, PropertyNameResolver propertyNameResolver
+	) {
 		if (predicates == null || predicates.isEmpty()) {
 			return false;
 		}
@@ -35,12 +41,14 @@ public class ExpressionPathValidator {
 		for (NextNodePredicate predicate : predicates) {
 			if (predicate instanceof PropertyNameNodePredicate) {
 				String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
-				try {
-					Field field = currentClass.getDeclaredField(fieldName);
-					currentClass = field.getType();
-				} catch (NoSuchFieldException e) {
+				Optional<Field> field = Arrays.stream(currentClass.getDeclaredFields())
+					.filter(f -> propertyNameResolver.resolve(new FieldProperty(f)).equals(fieldName))
+					.findFirst();
+
+				if (!field.isPresent()) {
 					return false;
 				}
+				currentClass = field.get().getType();
 			}
 		}
 		return true;
