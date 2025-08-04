@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.datafaker.property
 
 import com.navercorp.fixturemonkey.api.property.Property
 
-class DataFakerProperty(private val originalProperty: Property) : Property {
+class DataFakerStringProperty(private val originalProperty: Property) : Property {
     private val uniqueId = System.nanoTime().toString() + Math.random().toString()
 
     override fun getType() = originalProperty.type
@@ -34,7 +34,7 @@ class DataFakerProperty(private val originalProperty: Property) : Property {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is DataFakerProperty) return false
+        if (other !is DataFakerStringProperty) return false
         return uniqueId == other.uniqueId
     }
 
