@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     api(project(":fixture-monkey-api"))
-    implementation("net.datafaker:datafaker:1.9.0")
+    implementation("net.datafaker:datafaker:${Versions.DATAFAKER}")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")

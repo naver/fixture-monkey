@@ -33,4 +33,5 @@ object Versions {
     const val AUTO_PARAMS = "1.1.1"
     const val JACKSON = "2.14.2"
     const val MOCKITO = "3.9.0"
+    const val DATAFAKER = "1.9.0"
 }
