@@ -39,17 +39,18 @@ public class ExpressionPathValidator {
 		}
 		Class<?> currentClass = Types.getActualType(rootClass);
 		for (NextNodePredicate predicate : predicates) {
-			if (predicate instanceof PropertyNameNodePredicate) {
-				String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
-				Optional<Field> field = Arrays.stream(currentClass.getDeclaredFields())
-					.filter(f -> propertyNameResolver.resolve(new FieldProperty(f)).equals(fieldName))
-					.findFirst();
-
-				if (!field.isPresent()) {
-					return false;
-				}
-				currentClass = field.get().getType();
+			if (!(predicate instanceof PropertyNameNodePredicate)) {
+				continue;
 			}
+			String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
+			Optional<Field> field = Arrays.stream(currentClass.getDeclaredFields())
+				.filter(f -> propertyNameResolver.resolve(new FieldProperty(f)).equals(fieldName))
+				.findFirst();
+
+			if (!field.isPresent()) {
+				return false;
+			}
+			currentClass = field.get().getType();
 		}
 		return true;
 	}

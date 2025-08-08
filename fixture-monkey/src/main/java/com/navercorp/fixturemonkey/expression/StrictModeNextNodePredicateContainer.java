@@ -24,7 +24,7 @@ import java.util.List;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 
-public class StrictModeNextNodePredicateContainer extends AbstractList<NextNodePredicate> {
+public final class StrictModeNextNodePredicateContainer extends AbstractList<NextNodePredicate> {
 	private final List<NextNodePredicate> delegate;
 
 	public StrictModeNextNodePredicateContainer(

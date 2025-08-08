@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 
-public class StrictModeMonkeyExpressionFactory implements MonkeyExpressionFactory {
+public final class StrictModeMonkeyExpressionFactory implements MonkeyExpressionFactory {
 	private final MonkeyExpressionFactory delegate;
 	private final PropertyNameResolver propertyNameResolver;
 
@@ -47,7 +47,7 @@ public class StrictModeMonkeyExpressionFactory implements MonkeyExpressionFactor
 		return new StrictModeMonkeyExpression(monkeyExpression, rootClass, propertyNameResolver);
 	}
 
-	private static class StrictModeMonkeyExpression implements MonkeyExpression {
+	private static final class StrictModeMonkeyExpression implements MonkeyExpression {
 		private final MonkeyExpression delegate;
 		private final Class<?> rootClass;
 		private final PropertyNameResolver propertyNameResolver;
