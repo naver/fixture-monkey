@@ -150,6 +150,66 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void strictModeSetWrongExpressionAfterPushAssignableTypePropertyNameResolverThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.useExpressionStrictMode()
+			.pushAssignableTypePropertyNameResolver(String.class, p -> "prop_" + p.getName())
+			.build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(String.class)
+				.set("prop_non_existent_str", "test")
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given NodeResolvers.");
+	}
+
+	@Property
+	void strictModeSizeWrongExpressionAfterPushAssignableTypePropertyNameResolverThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.useExpressionStrictMode()
+			.pushAssignableTypePropertyNameResolver(String.class, p -> "prop_" + p.getName())
+			.build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(NestedStringList.class)
+				.size("prop_non_existent_container", 1)
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given container expression.");
+	}
+
+	@Property
+	void strictModeSetWrongExpressionAfterDefaultPropertyNameResolverThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.useExpressionStrictMode()
+			.defaultPropertyNameResolver(p -> "prop_" + p.getName())
+			.build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(String.class)
+				.set("prop_non_existent_str", 1)
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given NodeResolvers.");
+	}
+
+	@Property
+	void strictModeSizeWrongExpressionAfterDefaultPropertyNameResolverThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.useExpressionStrictMode()
+			.defaultPropertyNameResolver(p -> "prop_" + p.getName())
+			.build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(NestedStringList.class)
+				.size("prop_non_existent_container", 1)
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given container expression.");
+	}
+
+	@Property
 	void notStrictModeSetWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
@@ -164,8 +224,8 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
 		thenNoException()
-			.isThrownBy(() -> sut.giveMeBuilder(String.class)
-				.size("nonExistentField", 1)
+			.isThrownBy(() -> sut.giveMeBuilder(NestedStringList.class)
+				.size("values.nonExistentField", 1)
 				.sample());
 	}
 
