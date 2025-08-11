@@ -291,6 +291,10 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public PropertyNameResolver getDefaultPropertyNameResolver() {
+		return defaultPropertyNameResolver;
+	}
+
 	public FixtureMonkeyOptionsBuilder nullInjectGenerators(
 		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators
 	) {
