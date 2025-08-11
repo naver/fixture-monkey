@@ -53,4 +53,16 @@ class AnnotationTest {
 
 		then(actual).isNull();
 	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleNotValidAnnotationWithCopy() {
+		String actual = SUT.giveMeBuilder(StringNotNullAnnotationObject.class)
+			.set("value", null)
+			.validOnly(false)
+			.copy()
+			.sample()
+			.getValue();
+
+		then(actual).isNull();
+	}
 }
