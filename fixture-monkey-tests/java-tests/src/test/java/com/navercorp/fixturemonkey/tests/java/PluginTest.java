@@ -35,8 +35,10 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.datafaker.plugin.DataFakerPlugin;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.specs.ConstructorSpecs.JavaxValidationObject;
+import com.navercorp.fixturemonkey.tests.java.specs.DataFakerSpecs;
 import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.AbstractClassObject;
 import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.AbstractClassStringChildObject;
 import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceIntegerObject;
@@ -196,5 +198,36 @@ class PluginTest {
 		java.time.LocalDateTime expectedMinDate = java.time.LocalDateTime.now().minusDays(expected);
 		java.time.LocalDateTime expectedMaxDate = java.time.LocalDateTime.now().plusDays(expected + 30L);
 		then(actual).isBetween(expectedMinDate, expectedMaxDate);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void dataFakerPluginGeneratesUserFields() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.plugin(new DataFakerPlugin())
+			.build();
+
+		DataFakerSpecs.User actual = sut.giveMeOne(DataFakerSpecs.User.class);
+
+		// then
+		then(actual.getFullName()).isNotBlank();
+		then(actual.getEmail()).contains("@");
+		then(actual.getHomeAddress()).isNotBlank();
+		then(actual.getPhoneNumber()).isNotBlank();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void dataFakerPluginGeneratesFinanceFields() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.plugin(new DataFakerPlugin())
+			.build();
+
+		DataFakerSpecs.Finance actual = sut.giveMeOne(DataFakerSpecs.Finance.class);
+
+		// then
+		then(actual.getCreditCard()).isNotBlank();
 	}
 }
