@@ -60,6 +60,7 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.experimental.ExperimentalFixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.expression.StrictModeMonkeyExpressionFactory;
@@ -544,8 +545,14 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder useExperimental(String option) {
-		if ("fileSeed".equals(option)) {
+	public FixtureMonkeyBuilder useExperimental(
+		UnaryOperator<ExperimentalFixtureMonkeyOptions> experimentalOptionsConfigurator
+	) {
+		ExperimentalFixtureMonkeyOptions options = experimentalOptionsConfigurator.apply(
+			new ExperimentalFixtureMonkeyOptions()
+		);
+
+		if (options.isFileSeedEnabled()) {
 			this.experimentalFileSeedEnabled = true;
 			this.seed = resolveInitialSeed();
 		}

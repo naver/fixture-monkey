@@ -15,7 +15,7 @@ class SeedInitializationTest {
 		long fileSeed = 123456789L;
 
 		// when
-		FixtureMonkey.builder().useExperimental("fileSeed").build();
+		FixtureMonkey.builder().useExperimental(options -> options.fileSeed()).build();
 
 		// then
 		then(Randoms.currentSeed()).isEqualTo(fileSeed);
@@ -32,4 +32,5 @@ class SeedInitializationTest {
 		// then
 		then(Randoms.currentSeed()).isEqualTo(builderSeed);
 	}
+
 }
