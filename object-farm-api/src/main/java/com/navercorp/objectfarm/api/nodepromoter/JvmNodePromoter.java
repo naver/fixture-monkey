@@ -22,12 +22,41 @@ import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecontext.JvmNodeContext;
 
-// 재실행 가능해야 한다.
-// 사용 사례, 인터페이스의 구현체 결정
+/**
+ * Responsible for promoting JvmNodeCandidate instances to JvmNode instances.
+ * <p>
+ * JvmNodePromoter serves as a factory that transforms intermediate node candidates
+ * into actual nodes. This promotion process must be idempotent and repeatable,
+ * ensuring consistent results across multiple executions.
+ * <p>
+ * Key responsibilities include:
+ * <ul>
+ *   <li>Determining concrete implementations for abstract types (interfaces, abstract classes)</li>
+ *   <li>Resolving type-specific instantiation logic</li>
+ *   <li>Providing consistent and reproducible node creation</li>
+ * </ul>
+ * <p>
+ * The promotion process should be deterministic and safe to execute multiple times
+ * with the same input parameters.
+ */
 public interface JvmNodePromoter {
+	/**
+	 * Checks whether this promoter can handle the promotion of the given node candidate.
+	 * 
+	 * @param node the node candidate to check
+	 * @return true if this promoter can promote the given node, false otherwise
+	 */
 	default boolean canPromote(JvmNodeCandidate node) {
 		return true;
 	}
 
+	/**
+	 * Promotes a JvmNodeCandidate to a JvmNode using the provided context.
+	 * This operation must be idempotent and deterministic.
+	 * 
+	 * @param node the node candidate to promote
+	 * @param context the context containing additional information for promotion
+	 * @return the promoted JvmNode instance
+	 */
 	JvmNode promote(JvmNodeCandidate node, JvmNodeContext context);
 }

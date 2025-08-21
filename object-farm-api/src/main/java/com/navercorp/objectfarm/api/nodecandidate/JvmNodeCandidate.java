@@ -22,7 +22,17 @@ import javax.annotation.Nullable;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 
-// 무엇을 생성할 것인가?
+/**
+ * Represents a candidate for creating a JvmNode that contains essential information
+ * required before actual JvmNode creation.
+ * <p>
+ * JvmNodeCandidate serves as an intermediate representation that holds necessary metadata
+ * and type information. It is later promoted to a JvmNode using a NodePromoter.
+ * This two-phase approach (similar to Hibernate's two-phase loading) prevents
+ * circular reference issues and allows for better control over the node creation process.
+ * <p>
+ * The creation flow is: JvmNodeCandidate --[promoted by NodePromoter]--> JvmNode
+ */
 public interface JvmNodeCandidate {
 	JvmType getJvmType();
 

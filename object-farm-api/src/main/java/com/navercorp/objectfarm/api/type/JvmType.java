@@ -46,15 +46,39 @@ import java.util.List;
  * </ul>
  */
 public interface JvmType {
+	/**
+	 * Returns the raw class type, stripping away all generic type information.
+	 * 
+	 * @return the raw Class object representing this type
+	 */
 	Class<?> getRawType();
 
+	/**
+	 * Returns the type arguments for generic types.
+	 * For non-generic types, this returns an empty list.
+	 * 
+	 * @return a list of type variables, or empty list for non-generic types
+	 */
 	default List<? extends JvmType> getTypeVariables() {
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Returns all annotations present on this type.
+	 * 
+	 * @return a list of annotations associated with this type
+	 */
 	List<Annotation> getAnnotations();
 
-	// TODO: should remove
+	/**
+	 * Returns the AnnotatedType representation of this JvmType.
+	 * 
+	 * @deprecated This method is deprecated and will be removed in future versions.
+	 *             Use {@link #getRawType()} and {@link #getAnnotations()} instead.
+	 * @return the AnnotatedType representation
+	 * @throws UnsupportedOperationException as this method is not supported
+	 */
+	@Deprecated
 	default AnnotatedType getAnnotatedType() {
 		throw new UnsupportedOperationException("This method is not supported for JvmType");
 	}

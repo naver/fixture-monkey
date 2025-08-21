@@ -21,6 +21,12 @@ package com.navercorp.objectfarm.api.nodecontext;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 public interface JvmContainerNodeContext {
-	// seed에 따라 고정
+	/**
+	 * Resolves the size of a container based on the given container type.
+	 * The size is determined by the random seed to ensure reproducible results.
+	 *
+	 * @param containerType the type of the container
+	 * @return the resolved size of the container
+	 */
 	int resolveContainerSize(JvmType containerType);
 }

@@ -25,15 +25,65 @@ import javax.annotation.Nullable;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-// 타입에 상관없이 JvmNode로 구분
-// 하위 노드 생성. 하위 노드는 재생성할 수 있다.
+/**
+ * Represents a unified node structure for all JVM types in object graph operations.
+ * <p>
+ * JvmNode serves as the primary building block for representing object structures,
+ * regardless of the underlying type complexity. It provides a consistent interface
+ * for navigating and manipulating object graphs across various operations such as
+ * object creation, validation, analysis, and transformation.
+ * <p>
+ * Key characteristics:
+ * <ul>
+ *   <li>Type-agnostic representation - all types are unified under JvmNode</li>
+ *   <li>Hierarchical structure with parent-child relationships</li>
+ *   <li>Supports both candidate children (JvmNodeCandidate) and actual children (JvmNode)</li>
+ *   <li>Child nodes can be regenerated and replaced as needed</li>
+ *   <li>Maintains type safety through JvmType association</li>
+ * </ul>
+ * <p>
+ * The dual child representation allows for:
+ * <ul>
+ *   <li>Lazy evaluation of child nodes</li>
+ *   <li>Flexible node promotion from candidates to actual nodes</li>
+ *   <li>Efficient memory usage through on-demand child creation</li>
+ *   <li>Support for complex object graph modifications</li>
+ * </ul>
+ */
 public interface JvmNode {
+	/**
+	 * Returns the JVM type that this node represents.
+	 * 
+	 * @return the JvmType associated with this node
+	 */
 	JvmType getType();
 
+	/**
+	 * Returns the name of this node, if available.
+	 * The name typically represents the field name, map key, or other identifier
+	 * that distinguishes this node within its parent context.
+	 * 
+	 * @return the node name, or null if this node has no specific name
+	 */
 	@Nullable
 	String getNodeName();
 
+	/**
+	 * Returns a list of candidate children that can be promoted to actual child nodes.
+	 * These candidates represent potential child nodes that haven't been fully
+	 * materialized yet, allowing for lazy evaluation and flexible node creation.
+	 * 
+	 * @return a list of JvmNodeCandidate instances representing potential children
+	 */
 	List<JvmNodeCandidate> getCandidateChildren();
 
+	/**
+	 * Returns a list of actual child nodes.
+	 * These are fully materialized JvmNode instances that represent the current
+	 * state of the object graph. Child nodes can be regenerated and replaced
+	 * as needed during various operations including creation, validation, and analysis.
+	 * 
+	 * @return a list of child JvmNode instances
+	 */
 	List<JvmNode> getChildren();
 }
