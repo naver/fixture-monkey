@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +29,9 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * It is a property for a type parameter.
@@ -38,20 +41,20 @@ import org.apiguardian.api.API.Status;
  */
 @API(since = "1.1.6", status = Status.EXPERIMENTAL)
 public final class TypeParameterProperty implements Property {
-	private final AnnotatedType annotatedType;
+	private final JvmType type;
 
 	public TypeParameterProperty(AnnotatedType typeParameterAnnotatedType) {
-		this.annotatedType = typeParameterAnnotatedType;
+		this.type = Types.toJvmType(typeParameterAnnotatedType, Collections.emptyList());
 	}
 
 	@Override
 	public Type getType() {
-		return this.annotatedType.getType();
+		return this.type.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.type.getAnnotatedType();
 	}
 
 	/**
@@ -67,7 +70,7 @@ public final class TypeParameterProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return Arrays.asList(this.annotatedType.getAnnotations());
+		return this.type.getAnnotations();
 	}
 
 	@Nullable
@@ -85,11 +88,11 @@ public final class TypeParameterProperty implements Property {
 			return false;
 		}
 		TypeParameterProperty that = (TypeParameterProperty)obj;
-		return Objects.equals(annotatedType.getType(), that.annotatedType.getType());
+		return Objects.equals(type, that.type);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(annotatedType.getType());
+		return Objects.hashCode(type);
 	}
 }

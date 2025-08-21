@@ -34,6 +34,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapEntryElementProperty implements Property {
@@ -43,9 +44,8 @@ public final class MapEntryElementProperty implements Property {
 
 	private final Property valueProperty;
 
-	private final Type type = MapEntryElementType.class;
-
-	private final AnnotatedType annotatedType = generateAnnotatedTypeWithoutAnnotation(type);
+	private final JvmType jvmType =
+		Types.toJvmType(generateAnnotatedTypeWithoutAnnotation(MapEntryElementType.class), Collections.emptyList());
 
 	public MapEntryElementProperty(
 		Property mapEntryProperty,
@@ -71,12 +71,12 @@ public final class MapEntryElementProperty implements Property {
 
 	@Override
 	public Type getType() {
-		return this.type;
+		return this.jvmType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.jvmType.getAnnotatedType();
 	}
 
 	@Override

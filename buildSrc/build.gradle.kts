@@ -22,5 +22,9 @@ gradlePlugin {
             id = "com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions"
             implementationClass = "com.navercorp.fixturemonkey.gradle.plugin.MavenPublishConventionsPlugin"
         }
+        register("objectFarmMavenPublishConventionsPlugin") {
+            id = "com.navercorp.fixturemonkey.gradle.plugin.object-farm-maven-publish-conventions"
+            implementationClass = "com.navercorp.fixturemonkey.gradle.plugin.ObjectFarmMavenPublishConventionsPlugin"
+        }
     }
 }
