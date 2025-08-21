@@ -1,5 +1,6 @@
 plugins {
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
+    id("com.navercorp.fixturemonkey.gradle.plugin.object-farm-maven-publish-conventions")
 }
 
 dependencies {
