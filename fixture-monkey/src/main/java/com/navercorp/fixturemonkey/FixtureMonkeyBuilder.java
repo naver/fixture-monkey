@@ -554,7 +554,13 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkey build() {
-		applyDeferredOptions();
+		if (defaultPropertyNameResolver != null) {
+			fixtureMonkeyOptionsBuilder.defaultPropertyNameResolver(defaultPropertyNameResolver);
+		}
+
+		for (MatcherOperator<PropertyNameResolver> propertyNameResolver : propertyNameResolvers) {
+			fixtureMonkeyOptionsBuilder.insertFirstPropertyNameResolver(propertyNameResolver);
+		}
 
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
@@ -563,7 +569,7 @@ public final class FixtureMonkeyBuilder {
 			fixtureMonkeyOptions.getContainerPropertyGenerators()
 		);
 
-		MonkeyExpressionFactory monkeyExpressionFactory = buildExpressionFactory(fixtureMonkeyOptions);
+		MonkeyExpressionFactory monkeyExpressionFactory = newExpressionFactory(fixtureMonkeyOptions);
 
 		Randoms.setSeed(seed);
 		return new FixtureMonkey(
@@ -576,22 +582,12 @@ public final class FixtureMonkeyBuilder {
 		);
 	}
 
-	private void applyDeferredOptions() {
-		if (defaultPropertyNameResolver != null) {
-			fixtureMonkeyOptionsBuilder.defaultPropertyNameResolver(defaultPropertyNameResolver);
-		}
-
-		for (MatcherOperator<PropertyNameResolver> propertyNameResolver : propertyNameResolvers) {
-			fixtureMonkeyOptionsBuilder.insertFirstPropertyNameResolver(propertyNameResolver);
-		}
-	}
-
-	private MonkeyExpressionFactory buildExpressionFactory(FixtureMonkeyOptions fixtureMonkeyOptions) {
+	private MonkeyExpressionFactory newExpressionFactory(FixtureMonkeyOptions fixtureMonkeyOptions) {
 		if (!expressionStrictMode) {
 			return this.monkeyExpressionFactory;
 		}
 
-		PropertyNameResolver compositePropertyNameResolver = buildCompositePropertyNameResolver(fixtureMonkeyOptions);
+		PropertyNameResolver compositePropertyNameResolver = newCompositePropertyNameResolver(fixtureMonkeyOptions);
 
 		return new StrictModeMonkeyExpressionFactory(
 			new ArbitraryExpressionFactory(),
@@ -599,7 +595,7 @@ public final class FixtureMonkeyBuilder {
 		);
 	}
 
-	private PropertyNameResolver buildCompositePropertyNameResolver(
+	private PropertyNameResolver newCompositePropertyNameResolver(
 		FixtureMonkeyOptions fixtureMonkeyOptions
 	) {
 		return property -> fixtureMonkeyOptions.getPropertyNameResolvers().stream()

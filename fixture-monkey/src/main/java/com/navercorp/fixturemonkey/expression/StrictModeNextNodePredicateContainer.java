@@ -18,11 +18,17 @@
 
 package com.navercorp.fixturemonkey.expression;
 
+import java.lang.reflect.Field;
 import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
 
 public final class StrictModeNextNodePredicateContainer extends AbstractList<NextNodePredicate> {
 	private final List<NextNodePredicate> delegate;
@@ -31,7 +37,7 @@ public final class StrictModeNextNodePredicateContainer extends AbstractList<Nex
 		List<NextNodePredicate> delegate, Class<?> rootClass, PropertyNameResolver propertyNameResolver
 	) {
 		this.delegate = delegate;
-		if (!ExpressionPathValidator.isValidFieldPath(rootClass, delegate, propertyNameResolver)) {
+		if (!isValidFieldPath(rootClass, delegate, propertyNameResolver)) {
 			throw new IllegalArgumentException("No matching results for given container expression.");
 		}
 	}
@@ -44,5 +50,29 @@ public final class StrictModeNextNodePredicateContainer extends AbstractList<Nex
 	@Override
 	public int size() {
 		return delegate.size();
+	}
+
+	private boolean isValidFieldPath(
+		Class<?> rootClass, List<NextNodePredicate> predicates, PropertyNameResolver propertyNameResolver
+	) {
+		if (predicates == null || predicates.isEmpty()) {
+			return false;
+		}
+		Class<?> currentClass = Types.getActualType(rootClass);
+		for (NextNodePredicate predicate : predicates) {
+			if (!(predicate instanceof PropertyNameNodePredicate)) {
+				continue;
+			}
+			String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
+			Optional<Field> field = Arrays.stream(currentClass.getDeclaredFields())
+				.filter(f -> propertyNameResolver.resolve(new FieldProperty(f)).equals(fieldName))
+				.findFirst();
+
+			if (!field.isPresent()) {
+				return false;
+			}
+			currentClass = field.get().getType();
+		}
+		return true;
 	}
 }
