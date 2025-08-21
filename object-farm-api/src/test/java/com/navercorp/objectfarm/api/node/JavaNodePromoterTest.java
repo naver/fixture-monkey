@@ -76,7 +76,11 @@ class JavaNodePromoterTest {
 
 		// when
 		JvmNode actual = promoter.promote(
-			node.getCandidateChildren().get(0),
+			// We need to get the candidate manually for this test
+			CONTEXT.getCandidateNodeGenerators().stream()
+				.filter(gen -> gen.isSupported(node.getType()))
+				.flatMap(gen -> gen.generateNextNodeCandidates(node.getType()).stream())
+				.findFirst().orElseThrow(() -> new RuntimeException("No candidate found")),
 			CONTEXT
 		);
 

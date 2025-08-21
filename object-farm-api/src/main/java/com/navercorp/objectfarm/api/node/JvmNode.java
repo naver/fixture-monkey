@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
+import com.navercorp.objectfarm.api.nodepromoter.JvmNodePromoter;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -37,16 +37,16 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * <ul>
  *   <li>Type-agnostic representation - all types are unified under JvmNode</li>
  *   <li>Hierarchical structure with parent-child relationships</li>
- *   <li>Supports both candidate children (JvmNodeCandidate) and actual children (JvmNode)</li>
+ *   <li>Child nodes are created on-demand through NodePromoter</li>
  *   <li>Child nodes can be regenerated and replaced as needed</li>
  *   <li>Maintains type safety through JvmType association</li>
  * </ul>
  * <p>
- * The dual child representation allows for:
+ * The on-demand child creation approach allows for:
  * <ul>
  *   <li>Lazy evaluation of child nodes</li>
- *   <li>Flexible node promotion from candidates to actual nodes</li>
- *   <li>Efficient memory usage through on-demand child creation</li>
+ *   <li>Flexible node promotion through NodePromoter</li>
+ *   <li>Efficient memory usage through delayed instantiation</li>
  *   <li>Support for complex object graph modifications</li>
  * </ul>
  */
@@ -69,21 +69,13 @@ public interface JvmNode {
 	String getNodeName();
 
 	/**
-	 * Returns a list of candidate children that can be promoted to actual child nodes.
-	 * These candidates represent potential child nodes that haven't been fully
-	 * materialized yet, allowing for lazy evaluation and flexible node creation.
-	 * 
-	 * @return a list of JvmNodeCandidate instances representing potential children
-	 */
-	List<JvmNodeCandidate> getCandidateChildren();
-
-	/**
-	 * Returns a list of actual child nodes.
-	 * These are fully materialized JvmNode instances that represent the current
-	 * state of the object graph. Child nodes can be regenerated and replaced
+	 * Returns a list of child nodes by promoting candidates using the provided promoter.
+	 * This method enables on-demand child creation, allowing for lazy evaluation
+	 * and efficient memory usage. Child nodes can be regenerated and replaced
 	 * as needed during various operations including creation, validation, and analysis.
 	 * 
+	 * @param promoter the NodePromoter to use for converting candidates to actual nodes
 	 * @return a list of child JvmNode instances
 	 */
-	List<JvmNode> getChildren();
+	List<JvmNode> getChildren(JvmNodePromoter promoter);
 }
