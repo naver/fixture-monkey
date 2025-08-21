@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +30,11 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * A {@link Property} implementation representing a concrete type,
@@ -41,14 +45,14 @@ import org.apiguardian.api.API.Status;
  */
 @API(since = "1.1.7", status = Status.EXPERIMENTAL)
 public final class ConcreteTypeProperty implements Property {
-	private final AnnotatedType concreteAnnotatedType;
+	private static final Logger log = LoggerFactory.getLogger(ConcreteTypeProperty.class);
+
+	private final JvmType jvmType;
 	private final Property abstractTypeProperty;
-	private final List<Annotation> annotations;
 
 	public ConcreteTypeProperty(AnnotatedType concreteAnnotatedType, Property abstractTypeProperty) {
-		this.concreteAnnotatedType = concreteAnnotatedType;
+		this.jvmType = Types.toJvmType(concreteAnnotatedType, Collections.emptyList());
 		this.abstractTypeProperty = abstractTypeProperty;
-		this.annotations = Collections.emptyList();
 	}
 
 	public ConcreteTypeProperty(
@@ -56,19 +60,18 @@ public final class ConcreteTypeProperty implements Property {
 		Property abstractTypeProperty,
 		List<Annotation> annotations
 	) {
-		this.concreteAnnotatedType = concreteAnnotatedType;
+		this.jvmType = Types.toJvmType(concreteAnnotatedType, annotations);
 		this.abstractTypeProperty = abstractTypeProperty;
-		this.annotations = annotations;
 	}
 
 	@Override
 	public Type getType() {
-		return concreteAnnotatedType.getType();
+		return jvmType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return concreteAnnotatedType;
+		return jvmType.getAnnotatedType();
 	}
 
 	@Nullable
@@ -79,8 +82,7 @@ public final class ConcreteTypeProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		List<Annotation> concatAnnotations = new ArrayList<>(this.annotations);
-		concatAnnotations.addAll(Arrays.asList(concreteAnnotatedType.getAnnotations()));
+		List<Annotation> concatAnnotations = new ArrayList<>(this.jvmType.getAnnotations());
 		concatAnnotations.addAll(abstractTypeProperty.getAnnotations());
 		return Collections.unmodifiableList(concatAnnotations);
 	}
@@ -100,13 +102,12 @@ public final class ConcreteTypeProperty implements Property {
 			return false;
 		}
 		ConcreteTypeProperty that = (ConcreteTypeProperty)obj;
-		return Objects.equals(concreteAnnotatedType.getType(), that.concreteAnnotatedType.getType())
-			&& Objects.equals(abstractTypeProperty, that.abstractTypeProperty)
-			&& Objects.equals(annotations, that.annotations);
+		return Objects.equals(jvmType, that.jvmType)
+			&& Objects.equals(abstractTypeProperty, that.abstractTypeProperty);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(concreteAnnotatedType.getType(), abstractTypeProperty, annotations);
+		return Objects.hash(jvmType, abstractTypeProperty);
 	}
 }

@@ -21,10 +21,13 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
+
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * It is deprecated.
@@ -32,7 +35,7 @@ import javax.annotation.Nullable;
  */
 @Deprecated
 public final class MethodParameterProperty implements Property {
-	private final AnnotatedType annotatedType;
+	private final JvmType jvmType;
 	@Nullable
 	private final String parameterName;
 	@Nullable
@@ -43,19 +46,19 @@ public final class MethodParameterProperty implements Property {
 		@Nullable String parameterName,
 		@Nullable Boolean nullable
 	) {
-		this.annotatedType = annotatedType;
+		this.jvmType = Types.toJvmType(annotatedType, Collections.emptyList());
 		this.parameterName = parameterName;
 		this.nullable = nullable;
 	}
 
 	@Override
 	public Type getType() {
-		return annotatedType.getType();
+		return jvmType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return annotatedType;
+		return jvmType.getAnnotatedType();
 	}
 
 	@Nullable
@@ -66,7 +69,7 @@ public final class MethodParameterProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return Arrays.asList(annotatedType.getAnnotations());
+		return jvmType.getAnnotations();
 	}
 
 	@Nullable

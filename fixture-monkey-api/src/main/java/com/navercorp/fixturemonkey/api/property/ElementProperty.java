@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +40,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * It is deprecated.
@@ -50,14 +51,12 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public class ElementProperty implements ContainerElementProperty {
 	private final Property containerProperty;
 
-	private final AnnotatedType elementType;
+	private final JvmType elementType;
 
 	@Nullable
 	private final Integer index;
 
 	private final int sequence;
-
-	private final List<Annotation> annotations;
 
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
@@ -68,22 +67,21 @@ public class ElementProperty implements ContainerElementProperty {
 		int sequence
 	) {
 		this.containerProperty = containerProperty;
-		this.elementType = elementType;
+		this.elementType = Types.toJvmType(elementType, Collections.emptyList());
 		this.index = index;
 		this.sequence = sequence;
-		this.annotations = Arrays.asList(this.elementType.getAnnotations());
-		this.annotationsMap = this.annotations.stream()
+		this.annotationsMap = this.elementType.getAnnotations().stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 	}
 
 	@Override
 	public Type getType() {
-		return this.getAnnotatedType().getType();
+		return this.elementType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.elementType;
+		return this.elementType.getAnnotatedType();
 	}
 
 	public Property getContainerProperty() {
@@ -96,7 +94,7 @@ public class ElementProperty implements ContainerElementProperty {
 	}
 
 	public AnnotatedType getElementType() {
-		return this.elementType;
+		return this.elementType.getAnnotatedType();
 	}
 
 	@Nullable
@@ -116,7 +114,7 @@ public class ElementProperty implements ContainerElementProperty {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return this.elementType.getAnnotations();
 	}
 
 	@Override
@@ -166,13 +164,12 @@ public class ElementProperty implements ContainerElementProperty {
 		}
 		ElementProperty that = (ElementProperty)obj;
 		return containerProperty.equals(that.containerProperty)
-			&& elementType.getType().equals(that.elementType.getType())
-			&& annotations.equals(that.annotations);
+			&& elementType.equals(that.elementType);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(containerProperty, elementType.getType(), annotations);
+		return Objects.hash(containerProperty, elementType);
 	}
 
 	private boolean isOptional(Class<?> type) {
