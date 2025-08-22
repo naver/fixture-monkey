@@ -84,7 +84,7 @@ public final class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private boolean experimentalFileSeedEnabled = false;
-	private long seed = resolveInitialSeed();
+	private long seed = System.nanoTime();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -567,19 +567,10 @@ public final class FixtureMonkeyBuilder {
 
 		if (options.isFileSeedEnabled()) {
 			this.experimentalFileSeedEnabled = true;
-			this.seed = resolveInitialSeed();
+			Long fileSeed = new SeedFileLoader().loadSeedFromFile();
+			this.seed = fileSeed != null ? fileSeed : System.nanoTime();
 		}
 		return this;
-	}
-
-	private long resolveInitialSeed() {
-		if (experimentalFileSeedEnabled) {
-			Long fileSeed = new SeedFileLoader().loadSeedFromFile();
-			if (fileSeed != null) {
-				return fileSeed;
-			}
-		}
-		return System.nanoTime();
 	}
 
 	/**
