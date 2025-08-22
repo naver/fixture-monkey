@@ -67,9 +67,6 @@ import com.navercorp.fixturemonkey.expression.StrictModeMonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.seed.SeedFileLoader;
-import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -87,7 +84,7 @@ public final class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private boolean experimentalFileSeedEnabled = false;
-	private long seed = resolveInitialSeed();
+	private long seed = System.nanoTime();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -554,19 +551,10 @@ public final class FixtureMonkeyBuilder {
 
 		if (options.isFileSeedEnabled()) {
 			this.experimentalFileSeedEnabled = true;
-			this.seed = resolveInitialSeed();
+			Long fileSeed = new SeedFileLoader().loadSeedFromFile();
+			this.seed = fileSeed != null ? fileSeed : System.nanoTime();
 		}
 		return this;
-	}
-
-	private long resolveInitialSeed() {
-		if (experimentalFileSeedEnabled) {
-			Long fileSeed = new SeedFileLoader().loadSeedFromFile();
-			if (fileSeed != null) {
-				return fileSeed;
-			}
-		}
-		return System.nanoTime();
 	}
 
 	/**
