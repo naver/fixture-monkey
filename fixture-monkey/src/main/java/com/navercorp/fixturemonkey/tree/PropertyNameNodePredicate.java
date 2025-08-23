@@ -57,4 +57,8 @@ public final class PropertyNameNodePredicate implements NextNodePredicate {
 	public int hashCode() {
 		return Objects.hash(propertyName);
 	}
+
+	public String getPropertyName() {
+		return this.propertyName;
+	}
 }

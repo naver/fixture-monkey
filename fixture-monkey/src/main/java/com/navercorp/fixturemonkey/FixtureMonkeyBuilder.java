@@ -61,13 +61,10 @@ import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
-import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
+import com.navercorp.fixturemonkey.expression.StrictModeMonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
-import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -75,6 +72,9 @@ public final class FixtureMonkeyBuilder {
 	private static final int DEFAULT_PRIORITY = Integer.MAX_VALUE;
 
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
+	private boolean expressionStrictMode = false;
+	private PropertyNameResolver defaultPropertyNameResolver;
+	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers = new ArrayList<>();
 	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuildersWithPriority = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
@@ -169,7 +169,7 @@ public final class FixtureMonkeyBuilder {
 		Class<?> type,
 		PropertyNameResolver propertyNameResolver
 	) {
-		fixtureMonkeyOptionsBuilder.insertFirstPropertyNameResolver(type, propertyNameResolver);
+		this.propertyNameResolvers.add(MatcherOperator.assignableTypeMatchOperator(type, propertyNameResolver));
 		return this;
 	}
 
@@ -177,21 +177,19 @@ public final class FixtureMonkeyBuilder {
 		Class<?> type,
 		PropertyNameResolver propertyNameResolver
 	) {
-		fixtureMonkeyOptionsBuilder.insertFirstPropertyNameResolver(
-			MatcherOperator.exactTypeMatchOperator(type, propertyNameResolver)
-		);
+		this.propertyNameResolvers.add(MatcherOperator.exactTypeMatchOperator(type, propertyNameResolver));
 		return this;
 	}
 
 	public FixtureMonkeyBuilder pushPropertyNameResolver(
 		MatcherOperator<PropertyNameResolver> propertyNameResolver
 	) {
-		fixtureMonkeyOptionsBuilder.insertFirstPropertyNameResolver(propertyNameResolver);
+		this.propertyNameResolvers.add(propertyNameResolver);
 		return this;
 	}
 
 	public FixtureMonkeyBuilder defaultPropertyNameResolver(PropertyNameResolver propertyNameResolver) {
-		fixtureMonkeyOptionsBuilder.defaultPropertyNameResolver(propertyNameResolver);
+		this.defaultPropertyNameResolver = propertyNameResolver;
 		return this;
 	}
 
@@ -498,21 +496,7 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder useExpressionStrictMode() {
-		this.monkeyExpressionFactory = expression -> {
-			MonkeyExpression monkeyExpression = new ArbitraryExpressionFactory().from(expression);
-
-			return new MonkeyExpression() {
-				@Override
-				public NodeResolver toNodeResolver() {
-					return new ApplyStrictModeResolver(monkeyExpression.toNodeResolver());
-				}
-
-				@Override
-				public List<NextNodePredicate> toNextNodePredicate() { // TODO:
-					return monkeyExpression.toNextNodePredicate();
-				}
-			};
-		};
+		this.expressionStrictMode = true;
 		return this;
 	}
 
@@ -570,12 +554,22 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkey build() {
+		if (defaultPropertyNameResolver != null) {
+			fixtureMonkeyOptionsBuilder.defaultPropertyNameResolver(defaultPropertyNameResolver);
+		}
+
+		for (MatcherOperator<PropertyNameResolver> propertyNameResolver : propertyNameResolvers) {
+			fixtureMonkeyOptionsBuilder.insertFirstPropertyNameResolver(propertyNameResolver);
+		}
+
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
 			fixtureMonkeyOptions.getContainerPropertyGenerators()
 		);
+
+		MonkeyExpressionFactory monkeyExpressionFactory = newExpressionFactory(fixtureMonkeyOptions);
 
 		Randoms.setSeed(seed);
 		return new FixtureMonkey(
@@ -586,5 +580,28 @@ public final class FixtureMonkeyBuilder {
 			monkeyExpressionFactory,
 			registeredPriorityMatchersByName
 		);
+	}
+
+	private MonkeyExpressionFactory newExpressionFactory(FixtureMonkeyOptions fixtureMonkeyOptions) {
+		if (!expressionStrictMode) {
+			return this.monkeyExpressionFactory;
+		}
+
+		PropertyNameResolver compositePropertyNameResolver = newCompositePropertyNameResolver(fixtureMonkeyOptions);
+
+		return new StrictModeMonkeyExpressionFactory(
+			new ArbitraryExpressionFactory(),
+			compositePropertyNameResolver
+		);
+	}
+
+	private PropertyNameResolver newCompositePropertyNameResolver(
+		FixtureMonkeyOptions fixtureMonkeyOptions
+	) {
+		return property -> fixtureMonkeyOptions.getPropertyNameResolvers().stream()
+			.filter(it -> it.getMatcher().match(property))
+			.findFirst()
+			.map(it -> it.getOperator().resolve(property))
+			.orElseGet(() -> fixtureMonkeyOptions.getDefaultPropertyNameResolver().resolve(property));
 	}
 }
