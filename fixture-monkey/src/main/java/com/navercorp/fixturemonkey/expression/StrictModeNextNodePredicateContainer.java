@@ -52,6 +52,20 @@ public final class StrictModeNextNodePredicateContainer extends AbstractList<Nex
 		return delegate.size();
 	}
 
+	/**
+	 * Validates if the given expression path corresponds to a valid field path within the root class.
+	 * <p>
+	 * Currently, this validation only checks for the existence of property names along the path.
+	 * It does not validate array or list indices.
+	 * For example, for an expression like {@code list[1]}, it checks for the existence of the {@code list} field,
+	 * but it does not verify if index {@code 1} is valid for that list.
+	 * This can lead to runtime errors in some edge cases, instead of errors at the validation stage.
+	 *
+	 * @param rootClass            The class to start path validation from.
+	 * @param predicates           A list of predicates representing the expression path.
+	 * @param propertyNameResolver The resolver used to check property names.
+	 * @return {@code true} if the path is valid, {@code false} otherwise.
+	 */
 	private boolean isValidFieldPath(
 		Class<?> rootClass, List<NextNodePredicate> predicates, PropertyNameResolver propertyNameResolver
 	) {
