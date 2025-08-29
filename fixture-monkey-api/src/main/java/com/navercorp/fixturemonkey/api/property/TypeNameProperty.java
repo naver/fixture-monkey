@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,13 +30,16 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+
 /**
  * It is a property has a type name.
  * For example, It can be used to represent a type name of a class or method.
  */
 @API(since = "1.1.6", status = Status.EXPERIMENTAL)
 public final class TypeNameProperty implements Property {
-	private final AnnotatedType annotatedType;
+	private final JvmType jvmType;
 	private final String typeName;
 	@Nullable
 	private final Boolean nullable;
@@ -46,19 +49,19 @@ public final class TypeNameProperty implements Property {
 		String typeName,
 		@Nullable Boolean nullable
 	) {
-		this.annotatedType = annotatedType;
+		this.jvmType = Types.toJvmType(annotatedType, Collections.emptyList());
 		this.typeName = typeName;
 		this.nullable = nullable;
 	}
 
 	@Override
 	public Type getType() {
-		return annotatedType.getType();
+		return jvmType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return annotatedType;
+		return jvmType.getAnnotatedType();
 	}
 
 	@Nullable
@@ -69,7 +72,7 @@ public final class TypeNameProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return Arrays.asList(annotatedType.getAnnotations());
+		return jvmType.getAnnotations();
 	}
 
 	@Nullable
@@ -93,13 +96,13 @@ public final class TypeNameProperty implements Property {
 			return false;
 		}
 		TypeNameProperty that = (TypeNameProperty)obj;
-		return Objects.equals(annotatedType, that.annotatedType)
+		return Objects.equals(jvmType, that.jvmType)
 			&& Objects.equals(typeName, that.typeName)
 			&& Objects.equals(nullable, that.nullable);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType, typeName, nullable);
+		return Objects.hash(jvmType, typeName, nullable);
 	}
 }

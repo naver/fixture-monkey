@@ -54,11 +54,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ObjectTypeReference;
 
 @API(since = "0.4.0", status = Status.INTERNAL)
 public abstract class Types {
@@ -562,5 +567,26 @@ public abstract class Types {
 			throw new IllegalArgumentException("given value should not be null");
 		}
 		return obj;
+	}
+
+	public static JvmType toJvmType(AnnotatedType annotatedType, List<Annotation> annotations) {
+		List<Annotation> concatAnnotations =
+			Stream.concat(annotations.stream(), Arrays.stream(annotatedType.getAnnotations()))
+				.collect(Collectors.toList());
+
+		return new JavaType(
+			Types.getActualType(annotatedType),
+			Types.getGenericsTypes(annotatedType).stream()
+				.map(
+					genericAnnotatedType -> new JavaType(new ObjectTypeReference<Object>() {
+						@Override
+						public AnnotatedType getAnnotatedType() {
+							return genericAnnotatedType;
+						}
+					}))
+				.collect(Collectors.toList()),
+			concatAnnotations,
+			annotatedType
+		);
 	}
 }

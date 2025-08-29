@@ -27,7 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,12 +39,13 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.TypeCache;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class PropertyDescriptorProperty implements Property {
-	private final AnnotatedType annotatedType;
+	private final JvmType jvmType;
 	private final PropertyDescriptor propertyDescriptor;
-	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public PropertyDescriptorProperty(PropertyDescriptor propertyDescriptor) {
@@ -62,8 +62,6 @@ public final class PropertyDescriptorProperty implements Property {
 	 * @see com.navercorp.fixturemonkey.api.type.Types
 	 */
 	public PropertyDescriptorProperty(AnnotatedType annotatedType, PropertyDescriptor propertyDescriptor) {
-		this.annotatedType = annotatedType;
-		this.propertyDescriptor = propertyDescriptor;
 		List<Annotation> concatAnnotations = new ArrayList<>();
 		if (propertyDescriptor.getWriteMethod() != null) {
 			concatAnnotations.addAll(Arrays.asList(propertyDescriptor.getWriteMethod().getAnnotations()));
@@ -71,8 +69,9 @@ public final class PropertyDescriptorProperty implements Property {
 		if (propertyDescriptor.getReadMethod() != null) {
 			concatAnnotations.addAll(Arrays.asList(propertyDescriptor.getReadMethod().getAnnotations()));
 		}
-		this.annotations = Collections.unmodifiableList(concatAnnotations);
-		this.annotationsMap = this.annotations.stream()
+		this.jvmType = Types.toJvmType(annotatedType, concatAnnotations);
+		this.propertyDescriptor = propertyDescriptor;
+		this.annotationsMap = this.getAnnotations().stream()
 			.collect(toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 	}
 
@@ -87,7 +86,7 @@ public final class PropertyDescriptorProperty implements Property {
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.jvmType.getAnnotatedType();
 	}
 
 	@Override
@@ -97,7 +96,7 @@ public final class PropertyDescriptorProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return this.jvmType.getAnnotations();
 	}
 
 	@Override
@@ -129,19 +128,18 @@ public final class PropertyDescriptorProperty implements Property {
 			return false;
 		}
 		PropertyDescriptorProperty that = (PropertyDescriptorProperty)obj;
-		return annotatedType.getType().equals(that.annotatedType.getType())
-			&& annotations.equals(that.annotations);
+		return jvmType.equals(that.jvmType);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType.getType(), annotations);
+		return Objects.hash(jvmType);
 	}
 
 	@Override
 	public String toString() {
 		return "PropertyDescriptorProperty{"
-			+ "annotatedType=" + annotatedType
+			+ "annotatedType=" + jvmType.getAnnotatedType()
 			+ ", propertyDescriptor=" + propertyDescriptor + '}';
 	}
 }

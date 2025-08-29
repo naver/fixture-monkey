@@ -28,14 +28,16 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+
 @API(since = "1.0.17", status = Status.MAINTAINED)
 public final class ConstantProperty implements Property {
-	private final AnnotatedType annotatedType;
+	private final JvmType jvmType;
 	@Nullable
 	private final String propertyName;
 	@Nullable
 	private final Object constantValue;
-	private final List<Annotation> annotations;
 
 	public ConstantProperty(
 		AnnotatedType annotatedType,
@@ -43,20 +45,19 @@ public final class ConstantProperty implements Property {
 		@Nullable Object constantValue,
 		List<Annotation> annotations
 	) {
-		this.annotatedType = annotatedType;
+		this.jvmType = Types.toJvmType(annotatedType, annotations);
 		this.propertyName = propertyName;
 		this.constantValue = constantValue;
-		this.annotations = annotations;
 	}
 
 	@Override
 	public Type getType() {
-		return this.annotatedType.getType();
+		return this.jvmType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.jvmType.getAnnotatedType();
 	}
 
 	@Nullable
@@ -67,7 +68,7 @@ public final class ConstantProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return this.jvmType.getAnnotations();
 	}
 
 	@Nullable

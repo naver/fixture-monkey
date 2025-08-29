@@ -25,45 +25,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+
 /**
  * An interface method property for Java.
  */
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class InterfaceJavaMethodProperty implements MethodProperty {
-	private final AnnotatedType returnAnnotatedType;
+	private final JvmType returnJvmType;
 	private final String name;
 	private final String methodName;
-	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public InterfaceJavaMethodProperty(
 		AnnotatedType returnAnnotatedType,
 		String name,
 		String methodName,
-		List<Annotation> annotations,
-		Map<Class<? extends Annotation>, Annotation> annotationsMap
+		List<Annotation> annotations
 	) {
-		this.returnAnnotatedType = returnAnnotatedType;
+		this.returnJvmType = Types.toJvmType(returnAnnotatedType, annotations);
 		this.name = name;
 		this.methodName = methodName;
-		this.annotations = annotations;
-		this.annotationsMap = annotationsMap;
+		this.annotationsMap = annotations.stream()
+			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 	}
 
 	@Override
 	public Type getType() {
-		return this.getAnnotatedType().getType();
+		return this.returnJvmType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.returnAnnotatedType;
+		return this.returnJvmType.getAnnotatedType();
 	}
 
 	@Override
@@ -77,7 +80,7 @@ public final class InterfaceJavaMethodProperty implements MethodProperty {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return this.returnJvmType.getAnnotations();
 	}
 
 	@Override
@@ -101,12 +104,11 @@ public final class InterfaceJavaMethodProperty implements MethodProperty {
 			return false;
 		}
 		InterfaceJavaMethodProperty that = (InterfaceJavaMethodProperty)obj;
-		return returnAnnotatedType.getType().equals(that.returnAnnotatedType.getType())
-			&& Objects.equals(annotations, that.annotations);
+		return returnJvmType.equals(that.returnJvmType);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(returnAnnotatedType.getType(), annotations);
+		return Objects.hash(returnJvmType);
 	}
 }
