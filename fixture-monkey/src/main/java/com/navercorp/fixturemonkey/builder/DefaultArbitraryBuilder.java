@@ -103,6 +103,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
+	private final Class<?> rootClass;
 
 	public DefaultArbitraryBuilder(
 		TreeRootProperty rootProperty,
@@ -122,6 +123,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.monkeyContext = monkeyContext;
 		this.standbyContexts = standbyContexts;
 		this.instantiatorProcessor = instantiatorProcessor;
+		this.rootClass = Types.getActualType(rootProperty.getType());
 	}
 
 	@Override
@@ -587,7 +589,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				return propertyNameResolver.resolve(property);
 			});
 
-			return monkeyExpressionFactory.from(stringExpression);
+			return monkeyExpressionFactory.from(stringExpression, rootClass);
 		}
 
 		throw new UnsupportedOperationException(
