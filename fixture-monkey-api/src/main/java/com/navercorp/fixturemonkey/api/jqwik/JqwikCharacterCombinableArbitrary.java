@@ -114,40 +114,6 @@ public final class JqwikCharacterCombinableArbitrary implements CharacterCombina
 	}
 
 	@Override
-	public CharacterCombinableArbitrary punctuation() {
-		return new JqwikCharacterCombinableArbitrary(
-			Arbitraries.oneOf(
-				Arbitraries.chars().range('!', '/'),
-				Arbitraries.chars().range(':', '@'),
-				Arbitraries.chars().range('[', '`'),
-				Arbitraries.chars().range('{', '~')
-			)
-		);
-	}
-
-	@Override
-	public CharacterCombinableArbitrary digit() {
-		return this.numeric();
-	}
-
-	@Override
-	public CharacterCombinableArbitrary control() {
-		return new JqwikCharacterCombinableArbitrary(
-			Arbitraries.oneOf(
-				Arbitraries.chars().range('\u0000', '\u001F'),
-				Arbitraries.chars().range('\u007F', '\u009F')
-			)
-		);
-	}
-
-	@Override
-	public CharacterCombinableArbitrary unicodeCategory(int category) {
-		return new JqwikCharacterCombinableArbitrary(
-			Arbitraries.chars().filter(ch -> Character.getType(ch) == category)
-		);
-	}
-
-	@Override
 	public void clear() {
 		// ignored
 	}
