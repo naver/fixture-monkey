@@ -21,8 +21,8 @@ package com.navercorp.fixturemonkey.experimental;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public class ExperimentalFixtureMonkeyOptions {
+@API(since = "1.1.15", status = Status.EXPERIMENTAL)
+public final class ExperimentalFixtureMonkeyOptions {
 	private boolean fileSeedEnabled = false;
 
 	public ExperimentalFixtureMonkeyOptions fileSeed() {
