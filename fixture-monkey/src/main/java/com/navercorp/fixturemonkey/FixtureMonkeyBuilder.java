@@ -60,11 +60,13 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.experimental.ExperimentalFixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.expression.StrictModeMonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
+import com.navercorp.fixturemonkey.seed.SeedFileLoader;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -77,10 +79,11 @@ public final class FixtureMonkeyBuilder {
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers = new ArrayList<>();
 	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuildersWithPriority = new ArrayList<>();
-	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
-	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
+	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
+	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
+	private boolean experimentalFileSeedEnabled = false;
 	private long seed = System.nanoTime();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
@@ -539,6 +542,21 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder useExperimental(
+		UnaryOperator<ExperimentalFixtureMonkeyOptions> experimentalOptionsConfigurator
+	) {
+		ExperimentalFixtureMonkeyOptions options = experimentalOptionsConfigurator.apply(
+			new ExperimentalFixtureMonkeyOptions()
+		);
+
+		if (options.isFileSeedEnabled()) {
+			this.experimentalFileSeedEnabled = true;
+			Long fileSeed = new SeedFileLoader().loadSeedFromFile();
+			this.seed = fileSeed != null ? fileSeed : System.nanoTime();
+		}
+		return this;
+	}
+
 	/**
 	 * sets the seed for generating random numbers.
 	 * <p>
@@ -549,6 +567,7 @@ public final class FixtureMonkeyBuilder {
 	 * @return FixtureMonkeyBuilder
 	 */
 	public FixtureMonkeyBuilder seed(long seed) {
+		this.experimentalFileSeedEnabled = false;
 		this.seed = seed;
 		return this;
 	}
