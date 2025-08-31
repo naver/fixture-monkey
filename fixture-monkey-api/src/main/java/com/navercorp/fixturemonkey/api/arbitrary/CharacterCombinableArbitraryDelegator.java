@@ -90,26 +90,6 @@ final class CharacterCombinableArbitraryDelegator implements CharacterCombinable
 	}
 
 	@Override
-	public CharacterCombinableArbitrary punctuation() {
-		return CombinableArbitrary.chars().punctuation();
-	}
-
-	@Override
-	public CharacterCombinableArbitrary digit() {
-		return CombinableArbitrary.chars().digit();
-	}
-
-	@Override
-	public CharacterCombinableArbitrary control() {
-		return CombinableArbitrary.chars().control();
-	}
-
-	@Override
-	public CharacterCombinableArbitrary unicodeCategory(int category) {
-		return CombinableArbitrary.chars().unicodeCategory(category);
-	}
-
-	@Override
 	public void clear() {
 		delegate.clear();
 	}

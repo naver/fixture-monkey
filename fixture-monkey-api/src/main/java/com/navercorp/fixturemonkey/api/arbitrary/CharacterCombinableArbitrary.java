@@ -104,36 +104,6 @@ public interface CharacterCombinableArbitrary extends CombinableArbitrary<Charac
 	 */
 	CharacterCombinableArbitrary whitespace();
 
-	/**
-	 * Generates a CharacterCombinableArbitrary which produces punctuation characters.
-	 *
-	 * @return the CharacterCombinableArbitrary producing punctuation characters
-	 */
-	CharacterCombinableArbitrary punctuation();
-
-	/**
-	 * Generates a CharacterCombinableArbitrary which produces digit characters (0-9).
-	 * This is an alias for {@link #numeric()} for better semantic clarity.
-	 *
-	 * @return the CharacterCombinableArbitrary producing digit characters
-	 */
-	CharacterCombinableArbitrary digit();
-
-	/**
-	 * Generates a CharacterCombinableArbitrary which produces control characters.
-	 *
-	 * @return the CharacterCombinableArbitrary producing control characters
-	 */
-	CharacterCombinableArbitrary control();
-
-	/**
-	 * Generates a CharacterCombinableArbitrary which produces characters from the specified Unicode category.
-	 *
-	 * @param category the Unicode character category (e.g., Character.UPPERCASE_LETTER)
-	 * @return the CharacterCombinableArbitrary producing characters from the specified category
-	 */
-	CharacterCombinableArbitrary unicodeCategory(int category);
-
 	@Override
 	default CharacterCombinableArbitrary filter(Predicate<Character> predicate) {
 		return this.filter(DEFAULT_MAX_TRIES, predicate);

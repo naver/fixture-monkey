@@ -73,27 +73,6 @@ class KotestCharacterCombinableArbitrary(private val arb: Arb<Char> = Arb.char()
     override fun whitespace(): CharacterCombinableArbitrary =
         KotestCharacterCombinableArbitrary(Arb.char().filter { it.isWhitespace() })
 
-    override fun punctuation(): CharacterCombinableArbitrary =
-        KotestCharacterCombinableArbitrary(
-            Arb.char().filter {
-                it in '!'..'/' || it in ':'..'@' || it in '['..'`' || it in '{'..'~'
-            }
-        )
-
-    override fun digit(): CharacterCombinableArbitrary = this.numeric()
-
-    override fun control(): CharacterCombinableArbitrary =
-        KotestCharacterCombinableArbitrary(
-            Arb.char().filter {
-                it.code in 0x0000..0x001F || it.code in 0x007F..0x009F
-            }
-        )
-
-    override fun unicodeCategory(category: Int): CharacterCombinableArbitrary =
-        KotestCharacterCombinableArbitrary(
-            Arb.char().filter { Character.getType(it) == category }
-        )
-
     override fun filter(tries: Int, predicate: Predicate<Char>): CharacterCombinableArbitrary =
         KotestCharacterCombinableArbitrary(Arb.char().filter { predicate.test(it) })
 
