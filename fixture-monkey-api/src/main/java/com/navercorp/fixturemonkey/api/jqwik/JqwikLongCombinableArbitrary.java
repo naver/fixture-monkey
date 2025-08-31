@@ -26,7 +26,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.arbitrary.LongCombinableArbitrary;
 
-@API(since = "1.1.12", status = Status.EXPERIMENTAL)
+@API(since = "1.1.15", status = Status.EXPERIMENTAL)
 public final class JqwikLongCombinableArbitrary implements LongCombinableArbitrary {
 	private final Arbitrary<Long> longArbitrary;
 
