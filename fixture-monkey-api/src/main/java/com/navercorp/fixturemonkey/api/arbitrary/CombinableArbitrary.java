@@ -262,7 +262,7 @@ public interface CombinableArbitrary<T> {
 	 *
 	 * @return a {@link CombinableArbitrary} returns a randomly generated Character
 	 */
-	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
+	@API(since = "1.1.15", status = Status.EXPERIMENTAL)
 	static CharacterCombinableArbitrary chars() {
 		return CHARACTER_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}
