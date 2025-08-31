@@ -143,7 +143,7 @@ class CharacterCombinableArbitraryTest {
 		// when
 		boolean allWhitespace = IntStream.range(0, 100)
 			.mapToObj(i -> CombinableArbitrary.chars().whitespace().combined())
-			.allMatch(c -> c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f');
+			.allMatch(Character::isWhitespace);
 
 		// then
 		then(allWhitespace).isTrue();
@@ -155,7 +155,7 @@ class CharacterCombinableArbitraryTest {
 		char min = '0';
 		char max = '9';
 
-		// when - alphabetic()를 무시하고 withRange()가 우선되어야 함
+		// when - withRange() should take precedence over alphabetic()
 		Character actual = CombinableArbitrary.chars().alphabetic().withRange(min, max).combined();
 
 		// then
@@ -164,9 +164,9 @@ class CharacterCombinableArbitraryTest {
 
 	@Test
 	void characterUnique() {
-		// when & then - 고정값에 unique() 적용하면 예외 발생해야 함
+		// when & then - applying unique() to fixed value should throw exception
 		thenThrownBy(() -> CombinableArbitrary.chars()
-			.filter(x -> x == 'A')  // 항상 같은 값만 생성
+			.filter(x -> x == 'A')  // always generates same value
 			.unique()
 			.combined())
 			.isExactlyInstanceOf(FixedValueFilterMissException.class);
@@ -205,7 +205,7 @@ class CharacterCombinableArbitraryTest {
 		// when
 		Character actual = CombinableArbitrary.chars()
 			.alphabetic()
-			.filter(Character::isUpperCase)  // 대문자만
+			.filter(Character::isUpperCase)  // uppercase only
 			.combined();
 
 		// then
@@ -240,11 +240,11 @@ class CharacterCombinableArbitraryTest {
 
 	@Test
 	void characterCombinationWithMultipleOperations() {
-		// when - 여러 연산을 조합
+		// when - combining multiple operations
 		String actual = CombinableArbitrary.chars()
 			.uppercase()
-			.filter(c -> c >= 'A' && c <= 'F')  // A-F 범위
-			.map(c -> "hex:" + c)               // 문자열 변환
+			.filter(c -> c >= 'A' && c <= 'F')  // A-F range
+			.map(c -> "hex:" + c)               // string conversion
 			.combined();
 
 		// then
@@ -255,9 +255,9 @@ class CharacterCombinableArbitraryTest {
 
 	@Test
 	void characterUniqueWithDifferentValues() {
-		// when - 서로 다른 값들에는 unique()가 정상 작동
+		// when - unique() works properly with different values
 		Character actual = CombinableArbitrary.chars()
-			.alphabetic()  // 충분히 넓은 범위
+			.alphabetic()  // sufficiently wide range
 			.unique()
 			.combined();
 
@@ -276,7 +276,7 @@ class CharacterCombinableArbitraryTest {
 
 	@Test
 	void lastMethodWinsKoreanOverAscii() {
-		// when - ascii()를 무시하고 korean()이 우선되어야 함
+		// when - korean() should take precedence over ascii()
 		boolean allKorean = IntStream.range(0, 30)
 			.mapToObj(i -> CombinableArbitrary.chars().ascii().korean().combined())
 			.allMatch(c -> c >= '\uAC00' && c <= '\uD7AF');
@@ -287,7 +287,7 @@ class CharacterCombinableArbitraryTest {
 
 	@Test
 	void lastMethodWinsRangeOverAlpha() {
-		// when - alpha()를 무시하고 withRange()가 우선되어야 함
+		// when - withRange() should take precedence over alpha()
 		boolean allInRange = IntStream.range(0, 30)
 			.mapToObj(i -> CombinableArbitrary.chars().alphabetic().withRange('0', '9').combined())
 			.allMatch(c -> c >= '0' && c <= '9');
@@ -298,7 +298,7 @@ class CharacterCombinableArbitraryTest {
 
 	@Test
 	void characterFilterWithSpecificCondition() {
-		// when - 대문자만 필터링
+		// when - filtering uppercase only
 		boolean allUppercase = IntStream.range(0, 30)
 			.mapToObj(i -> CombinableArbitrary.chars().alphabetic().filter(Character::isUpperCase).combined())
 			.allMatch(Character::isUpperCase);
