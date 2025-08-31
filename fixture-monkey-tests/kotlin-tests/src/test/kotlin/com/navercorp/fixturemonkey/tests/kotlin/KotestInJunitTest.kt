@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotest.KotestIntegerCombinableArbitrary
+import com.navercorp.fixturemonkey.kotest.KotestByteCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestLongCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestPlugin
 import com.navercorp.fixturemonkey.kotest.KotestStringCombinableArbitrary
@@ -917,6 +918,13 @@ class KotestInJunitTest {
         val actual = CombinableArbitrary.integers().withRange(10, 20).combined()
 
         then(actual).isBetween(10, 20)
+    }
+
+    @Test
+    fun byteCombinableArbitrary() {
+        val actual = CombinableArbitrary.bytes()
+
+        then(actual).isInstanceOf(KotestByteCombinableArbitrary::class.java)
     }
 
     @RepeatedTest(TEST_COUNT)
