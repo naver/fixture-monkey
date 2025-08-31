@@ -255,13 +255,13 @@ class ShortCombinableArbitraryTest {
 
     @Test
     fun nonZeroWithMultipleOf() {
-        // when
-        val allNonZeroMultiplesOfFive = (0 until 100)
+        // when - nonZero().multipleOf(5) => multipleOf(5)
+        val allMultiplesOfFive = (0 until 100)
             .map { CombinableArbitrary.shorts().nonZero().multipleOf(5).combined() }
-            .all { it != 0.toShort() && it % 5 == 0 }
+            .all { it % 5 == 0 }
 
         // then
-        then(allNonZeroMultiplesOfFive).isTrue()
+        then(allMultiplesOfFive).isTrue()
     }
 
     @Test
