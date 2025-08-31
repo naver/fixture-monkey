@@ -114,8 +114,6 @@ class KotestDoubleCombinableArbitrary(
         )
     }
 
-
-
     override fun clear() {
         // No-op for Kotest
     }
