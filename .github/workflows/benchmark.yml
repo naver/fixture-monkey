@@ -25,12 +25,12 @@ jobs:
       - name: Execute benchmark for ${{ matrix.benchmark-module }}
         uses: gradle/gradle-build-action@v2.4.2
         with:
-          arguments: :${{ matrix.benchmark-module }}:jmh
+          arguments: :fixture-monkey-benchmarks:${{ matrix.benchmark-module }}:jmh
       - name: Upload benchmark results
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-results-${{ matrix.benchmark-module }}
-          path: ./fixture-monkey-benchmarks/${{ matrix.benchmark-module }}/build/results/jmh/results.csv
+          path: ./fixture-monkey-benchmarks/${{ matrix.benchmark-module }}/build/reports/jmh/results.csv
 
   merge-results:
     name: Merge benchmark results
