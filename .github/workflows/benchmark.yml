@@ -27,7 +27,7 @@ jobs:
         with:
           arguments: :${{ matrix.benchmark-module }}:jmh
       - name: Upload benchmark results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: benchmark-results-${{ matrix.benchmark-module }}
           path: ./fixture-monkey-benchmarks/${{ matrix.benchmark-module }}/build/results/jmh/results.csv
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download all benchmark results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ./benchmark-results
       - name: Merge benchmark results
