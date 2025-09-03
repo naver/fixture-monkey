@@ -1,7 +1,10 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fixture Monkey on</title><link>https://naver.github.io/fixture-monkey/v1-1-0/</link><description>Recent content in Fixture Monkey on</description><generator>Hugo -- gohugo.io</generator><language>en-US</language><copyright>Copyright (c) 2020-2021 Henk Verlinde</copyright><lastBuildDate>Tue, 06 Oct 2020 08:47:36 +0000</lastBuildDate><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0/index.xml" rel="self" type="application/rss+xml"/><item><title>Release Notes</title><link>https://naver.github.io/fixture-monkey/v1-1-0/release-notes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/release-notes/</guid><description>v1.1.x # v1.1.14 # Fix the property instantiation within the register option
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fixture Monkey on</title><link>https://naver.github.io/fixture-monkey/v1-1-0/</link><description>Recent content in Fixture Monkey on</description><generator>Hugo -- gohugo.io</generator><language>en-US</language><copyright>Copyright (c) 2020-2021 Henk Verlinde</copyright><lastBuildDate>Tue, 06 Oct 2020 08:47:36 +0000</lastBuildDate><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0/index.xml" rel="self" type="application/rss+xml"/><item><title>Release Notes</title><link>https://naver.github.io/fixture-monkey/v1-1-0/release-notes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/release-notes/</guid><description>v1.1.x # v1.1.15 # Fix recursive invocation of Kotlin customizeProperty function
+Add ByteCombinableArbitrary
+Fix Typo in JakartaArbitraryValidator ValidationFailedException message
+Add DataFaker arbitrary generators and plugin
+Fix copy ArbitraryBuilderContext with optionValidOnly and customizedValueOnly
+Fix validate container expression for size in strict mode
+Add file based seed initialization
+v1.1.14 # Fix the property instantiation within the register option
 Add a new &amp;lsquo;register&amp;rsquo; option with the priority
-v1.1.13 # Fix the issue where the instantiate API is not working within the register
-Fix BeanArbitraryIntrospector throw NPE when retrieving setter
-v1.1.12 # Fix size API within register that applies to root type
-Add compatibility with TypedPropertySelector and path expression DSL
-Fix bugs in SimpleValueJqwikPlugin if minSize is greater than default max size</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/</guid><description/></item></channel></rss>
+v1.1.13 # Fix the issue where the instantiate API is not working within the register</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/</guid><description/></item></channel></rss>
