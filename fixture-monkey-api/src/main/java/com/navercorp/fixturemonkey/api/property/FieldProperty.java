@@ -36,12 +36,13 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.TypeCache;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FieldProperty implements Property {
-	private final AnnotatedType annotatedType;
+	private final JvmType jvmType;
 	private final Field field;
-	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public FieldProperty(Field field) {
@@ -58,10 +59,12 @@ public final class FieldProperty implements Property {
 	 * @see com.navercorp.fixturemonkey.api.type.Types
 	 */
 	public FieldProperty(AnnotatedType annotatedType, Field field) {
-		this.annotatedType = annotatedType;
+		this.jvmType = Types.toJvmType(
+			annotatedType,
+			Arrays.stream(field.getAnnotations()).collect(Collectors.toList())
+		);
 		this.field = field;
-		this.annotations = Arrays.asList(field.getAnnotations());
-		this.annotationsMap = this.annotations.stream()
+		this.annotationsMap = this.getAnnotations().stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 	}
 
@@ -71,12 +74,12 @@ public final class FieldProperty implements Property {
 
 	@Override
 	public Type getType() {
-		return this.getAnnotatedType().getType();
+		return this.jvmType.getRawType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.jvmType.getAnnotatedType();
 	}
 
 	@Override
@@ -86,7 +89,7 @@ public final class FieldProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return jvmType.getAnnotations();
 	}
 
 	@Override
@@ -105,13 +108,13 @@ public final class FieldProperty implements Property {
 		}
 		FieldProperty that = (FieldProperty)obj;
 
-		return annotatedType.getType().equals(that.annotatedType.getType())
-			&& annotations.equals(that.annotations);
+		return jvmType.equals(that.jvmType)
+			&& getAnnotations().equals(that.getAnnotations());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType.getType(), annotations);
+		return Objects.hash(jvmType);
 	}
 
 	@Nullable
@@ -131,7 +134,7 @@ public final class FieldProperty implements Property {
 	@Override
 	public String toString() {
 		return "FieldProperty{"
-			+ "annotatedType=" + annotatedType
+			+ "annotatedType=" + getAnnotatedType()
 			+ ", field=" + field + '}';
 	}
 }
