@@ -8,7 +8,7 @@ description = ""
 
 ## Documentation
 docsVersion = "1.0.0"
-fixtureMonkeyVersion = "1.1.14"
+fixtureMonkeyVersion = "1.1.15"
 
 ## Open Graph
 images = ["fixtureMonkey.png"]
@@ -115,4 +115,4 @@ lastMod = false
     collapsibleSidebar = true
 
 [[params.versions]]
-version = "1.1.14"
+version = "1.1.15"

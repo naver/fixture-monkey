@@ -7,6 +7,20 @@ weight: 100
 ---
 
 ## v1.1.x
+### v1.1.15
+Fix recursive invocation of Kotlin customizeProperty function 
+
+Add ByteCombinableArbitrary
+
+Fix Typo in JakartaArbitraryValidator ValidationFailedException message
+
+Add DataFaker arbitrary generators and plugin
+
+Fix copy ArbitraryBuilderContext with optionValidOnly and customizedValueOnly
+
+Fix validate container expression for size in strict mode
+
+Add file based seed initialization 
 
 ### v1.1.14
 Fix the property instantiation within the register option
