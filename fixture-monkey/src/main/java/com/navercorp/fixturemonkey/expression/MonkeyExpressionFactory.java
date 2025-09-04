@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.expression;
 
+import java.lang.reflect.AnnotatedType;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -26,7 +28,7 @@ import org.apiguardian.api.API.Status;
 public interface MonkeyExpressionFactory {
 	MonkeyExpression from(String expression);
 
-	default MonkeyExpression from(String expression, Class<?> rootClass) {
+	default MonkeyExpression from(String expression, AnnotatedType rootClass) {
 		return from(expression);
 	}
 }

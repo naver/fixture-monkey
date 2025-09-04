@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.expression;
 
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -27,17 +28,19 @@ import java.util.Optional;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
+import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 public final class StrictModeNextNodePredicateContainer extends AbstractList<NextNodePredicate> {
 	private final List<NextNodePredicate> delegate;
 
 	public StrictModeNextNodePredicateContainer(
-		List<NextNodePredicate> delegate, Class<?> rootClass, PropertyNameResolver propertyNameResolver
+		List<NextNodePredicate> delegate, AnnotatedType rootAnnotatedType, PropertyNameResolver propertyNameResolver
 	) {
 		this.delegate = delegate;
-		if (!isValidFieldPath(rootClass, delegate, propertyNameResolver)) {
+		if (!isValidFieldPath(rootAnnotatedType, delegate, propertyNameResolver)) {
 			throw new IllegalArgumentException("No matching results for given container expression.");
 		}
 	}
@@ -61,31 +64,46 @@ public final class StrictModeNextNodePredicateContainer extends AbstractList<Nex
 	 * but it does not verify if index {@code 1} is valid for that list.
 	 * This can lead to runtime errors in some edge cases, instead of errors at the validation stage.
 	 *
-	 * @param rootClass            The class to start path validation from.
+	 * @param rootAnnotatedType    The class to start path validation from.
 	 * @param predicates           A list of predicates representing the expression path.
 	 * @param propertyNameResolver The resolver used to check property names.
 	 * @return {@code true} if the path is valid, {@code false} otherwise.
 	 */
 	private boolean isValidFieldPath(
-		Class<?> rootClass, List<NextNodePredicate> predicates, PropertyNameResolver propertyNameResolver
+		AnnotatedType rootAnnotatedType, List<NextNodePredicate> predicates, PropertyNameResolver propertyNameResolver
 	) {
 		if (predicates == null || predicates.isEmpty()) {
 			return false;
 		}
-		Class<?> currentClass = Types.getActualType(rootClass);
 		for (NextNodePredicate predicate : predicates) {
-			if (!(predicate instanceof PropertyNameNodePredicate)) {
+			if (predicate instanceof StartNodePredicate) {
 				continue;
 			}
-			String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
-			Optional<Field> field = Arrays.stream(currentClass.getDeclaredFields())
-				.filter(f -> propertyNameResolver.resolve(new FieldProperty(f)).equals(fieldName))
-				.findFirst();
+			if (predicate instanceof PropertyNameNodePredicate) {
+				String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
+				Class<?> actualClass = Types.getActualType(rootAnnotatedType);
+				Optional<Field> field = Arrays.stream(actualClass.getDeclaredFields())
+					.filter(f -> {
+						String resolvedFieldName = propertyNameResolver.resolve(new FieldProperty(f));
+						return resolvedFieldName.equals(fieldName);
+					})
+					.findFirst();
 
-			if (!field.isPresent()) {
+				if (!field.isPresent()) {
+					return false;
+				}
+
+				rootAnnotatedType = field.get().getAnnotatedType();
+			} else if (predicate instanceof ContainerElementPredicate) {
+				List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(rootAnnotatedType);
+
+				if (genericAnnotatedTypes.isEmpty()) {
+					return false;
+				}
+				rootAnnotatedType = genericAnnotatedTypes.get(0);
+			} else {
 				return false;
 			}
-			currentClass = field.get().getType();
 		}
 		return true;
 	}

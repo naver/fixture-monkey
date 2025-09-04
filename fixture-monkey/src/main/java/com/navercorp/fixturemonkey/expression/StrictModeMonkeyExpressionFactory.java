@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.expression;
 
+import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -42,21 +43,21 @@ public final class StrictModeMonkeyExpressionFactory implements MonkeyExpression
 	}
 
 	@Override
-	public MonkeyExpression from(String expression, Class<?> rootClass) {
+	public MonkeyExpression from(String expression, AnnotatedType rootAnnotatedType) {
 		MonkeyExpression monkeyExpression = delegate.from(expression);
-		return new StrictModeMonkeyExpression(monkeyExpression, rootClass, propertyNameResolver);
+		return new StrictModeMonkeyExpression(monkeyExpression, rootAnnotatedType, propertyNameResolver);
 	}
 
 	private static final class StrictModeMonkeyExpression implements MonkeyExpression {
 		private final MonkeyExpression delegate;
-		private final Class<?> rootClass;
+		private final AnnotatedType rootAnnotatedType;
 		private final PropertyNameResolver propertyNameResolver;
 
 		public StrictModeMonkeyExpression(
-			MonkeyExpression delegate, Class<?> rootClass, PropertyNameResolver propertyNameResolver
+			MonkeyExpression delegate, AnnotatedType rootAnnotatedType, PropertyNameResolver propertyNameResolver
 		) {
 			this.delegate = delegate;
-			this.rootClass = rootClass;
+			this.rootAnnotatedType = rootAnnotatedType;
 			this.propertyNameResolver = propertyNameResolver;
 		}
 
@@ -67,11 +68,11 @@ public final class StrictModeMonkeyExpressionFactory implements MonkeyExpression
 
 		@Override
 		public List<NextNodePredicate> toNextNodePredicate() {
-			if (rootClass == null) {
+			if (rootAnnotatedType == null) {
 				return delegate.toNextNodePredicate();
 			}
 			List<NextNodePredicate> predicates = delegate.toNextNodePredicate();
-			return new StrictModeNextNodePredicateContainer(predicates, rootClass, propertyNameResolver);
+			return new StrictModeNextNodePredicateContainer(predicates, rootAnnotatedType, propertyNameResolver);
 		}
 	}
 }
