@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.api.matcher.*;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -47,8 +46,8 @@ import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
-import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -72,6 +71,10 @@ import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
+import com.navercorp.fixturemonkey.api.matcher.DefaultMatcherOperatorRegistry;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
@@ -134,15 +137,18 @@ public final class FixtureMonkeyOptionsBuilder {
 	private List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers = new ArrayList<>();
 
 	FixtureMonkeyOptionsBuilder() {
-		propertyGenerators = createMatcherOperatorRegistry(new ArrayList<>(FixtureMonkeyOptions.DEFAULT_PROPERTY_GENERATORS));
-		containerPropertyGenerators = createMatcherOperatorRegistry(new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS));
-		nullInjectGenerators = createMatcherOperatorRegistry(new ArrayList<>(FixtureMonkeyOptions.DEFAULT_NULL_INJECT_GENERATORS));
+		propertyGenerators = createMatcherOperatorRegistry(
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_PROPERTY_GENERATORS));
+		containerPropertyGenerators = createMatcherOperatorRegistry(
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS));
+		nullInjectGenerators = createMatcherOperatorRegistry(
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_NULL_INJECT_GENERATORS));
 		arbitraryObjectPropertyGenerators = createMatcherOperatorRegistry(new ArrayList<>());
 		propertyNameResolvers = createMatcherOperatorRegistry(new ArrayList<>());
 		arbitraryContainerInfoGenerators = createMatcherOperatorRegistry(new ArrayList<>());
 		arbitraryIntrospectors = createMatcherOperatorRegistry(new ArrayList<>(DEFAULT_ARBITRARY_INTROSPECTORS));
-		candidateConcretePropertyResolvers = createMatcherOperatorRegistry(new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CANDIDATE_CONCRETE_PROPERTY_RESOLVERS));
-
+		candidateConcretePropertyResolvers = createMatcherOperatorRegistry(
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CANDIDATE_CONCRETE_PROPERTY_RESOLVERS));
 
 		new JdkVariantOptions().apply(this);
 	}
@@ -690,7 +696,8 @@ public final class FixtureMonkeyOptionsBuilder {
 		);
 	}
 
-	private <T> DefaultMatcherOperatorRegistry<T> createMatcherOperatorRegistry(List<MatcherOperator<T>> matcherOperators) {
+	private <T> DefaultMatcherOperatorRegistry<T> createMatcherOperatorRegistry(
+		List<MatcherOperator<T>> matcherOperators) {
 		DefaultMatcherOperatorRegistry<T> registry = new DefaultMatcherOperatorRegistry<>();
 		matcherOperators.forEach(registry::addLast);
 

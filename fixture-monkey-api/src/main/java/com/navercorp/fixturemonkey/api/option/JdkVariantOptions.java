@@ -23,7 +23,7 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "1.0.14", status = Status.INTERNAL)
 public final class JdkVariantOptions {
-	public void apply(FixtureMonkeyOptionsBuilder optionsBuilder){
+	public void apply(FixtureMonkeyOptionsBuilder optionsBuilder) {
 		// omitted because JDK8 is a default version
 	}
 }

@@ -45,7 +45,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.api.matcher.*;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -73,6 +72,14 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ConstantIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.ExactPropertyMatcher;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperatorRegistry;
+import com.navercorp.fixturemonkey.api.matcher.Matchers;
+import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.CompositeCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver;

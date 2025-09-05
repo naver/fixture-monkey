@@ -1,11 +1,16 @@
 package com.navercorp.fixturemonkey.api.matcher;
 
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistry<T> {
 	private final AtomicInteger sequenceIssuer = new AtomicInteger(0);
@@ -14,7 +19,7 @@ public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistr
 	private final Map<Class<?>, List<PriorityMatcherOperator<T>>> typeAssignableIntrospectors = new HashMap<>();
 
 	public void addFirst(MatcherOperator<T> matcherOperator) {
-		addInternal(matcherOperator,  true);
+		addInternal(matcherOperator, true);
 	}
 
 	public void addLast(MatcherOperator<T> matcherOperator) {
@@ -35,11 +40,12 @@ public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistr
 		);
 
 		if (matcher instanceof ExactTypeMatcher) {
-			Class<?> type = ((ExactTypeMatcher) matcher).getType();
+			Class<?> type = ((ExactTypeMatcher)matcher).getType();
 			typeAwareIntrospectors.computeIfAbsent(type, k -> new ArrayList<>()).add(priorityMatcherOperator);
 		} else if (matcher instanceof AssignableTypeMatcher) {
-			Class<?> anchorType = ((AssignableTypeMatcher) matcher).getAnchorType();
-			typeAssignableIntrospectors.computeIfAbsent(anchorType, k -> new ArrayList<>()).add(priorityMatcherOperator);
+			Class<?> anchorType = ((AssignableTypeMatcher)matcher).getAnchorType();
+			typeAssignableIntrospectors.computeIfAbsent(anchorType, k -> new ArrayList<>())
+				.add(priorityMatcherOperator);
 		} else {
 			typeUnknownIntrospectors.add(priorityMatcherOperator);
 		}
@@ -60,7 +66,7 @@ public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistr
 
 		return acc.stream()
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
-			.map(op -> (MatcherOperator<T>) op)
+			.map(op -> (MatcherOperator<T>)op)
 			.collect(Collectors.toList());
 	}
 
@@ -70,10 +76,9 @@ public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistr
 		typeAwareIntrospectors.values().forEach(acc::addAll);
 		typeAssignableIntrospectors.values().forEach(acc::addAll);
 
-
 		return acc.stream()
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
-			.map(op -> (MatcherOperator<T>) op)
+			.map(op -> (MatcherOperator<T>)op)
 			.collect(Collectors.toList());
 	}
 }
