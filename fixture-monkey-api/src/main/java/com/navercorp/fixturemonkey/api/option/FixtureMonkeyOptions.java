@@ -214,7 +214,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<PropertyGenerator>> getPropertyGenerators() {
-		return propertyGenerators.findAll();
+		return propertyGenerators.values();
 	}
 
 	@Nullable
@@ -231,11 +231,11 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<ObjectPropertyGenerator>> getObjectPropertyGenerators() {
-		return objectPropertyGenerators.findAll();
+		return objectPropertyGenerators.values();
 	}
 
 	public ObjectPropertyGenerator getObjectPropertyGenerator(Property property) {
-		return objectPropertyGenerators.findAll(property)
+		return objectPropertyGenerators.get(property)
 			.stream()
 			.map(MatcherOperator::getOperator)
 			.findFirst()
@@ -247,12 +247,12 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<ContainerPropertyGenerator>> getContainerPropertyGenerators() {
-		return containerPropertyGenerators.findAll();
+		return containerPropertyGenerators.values();
 	}
 
 	@Nullable
 	public ContainerPropertyGenerator getContainerPropertyGenerator(Property property) {
-		return containerPropertyGenerators.findAll(property)
+		return containerPropertyGenerators.get(property)
 			.stream()
 			.map(MatcherOperator::getOperator)
 			.findFirst()
@@ -260,11 +260,11 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
-		return this.propertyNameResolvers.findAll();
+		return this.propertyNameResolvers.values();
 	}
 
 	public PropertyNameResolver getPropertyNameResolver(Property property) {
-		return this.propertyNameResolvers.findAll(property).stream()
+		return this.propertyNameResolvers.get(property).stream()
 			.map(MatcherOperator::getOperator)
 			.findFirst()
 			.orElse(this.getDefaultPropertyNameResolver());
@@ -275,7 +275,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<NullInjectGenerator>> getNullInjectGenerators() {
-		return this.nullInjectGenerators.findAll();
+		return this.nullInjectGenerators.values();
 	}
 
 	public NullInjectGenerator getNullInjectGenerator(Property property) {
@@ -291,7 +291,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<ArbitraryContainerInfoGenerator>> getArbitraryContainerInfoGenerators() {
-		return this.arbitraryContainerInfoGenerators.findAll();
+		return this.arbitraryContainerInfoGenerators.values();
 	}
 
 	public ArbitraryContainerInfoGenerator getArbitraryContainerInfoGenerator(Property property) {
@@ -343,7 +343,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<CandidateConcretePropertyResolver>> getCandidateConcretePropertyResolvers() {
-		return candidateConcretePropertyResolvers.findAll();
+		return candidateConcretePropertyResolvers.values();
 	}
 
 	/**
@@ -353,7 +353,7 @@ public final class FixtureMonkeyOptions {
 	@Deprecated
 	public CandidateConcretePropertyResolver getCandidateConcretePropertyResolver(Property property) {
 		List<CandidateConcretePropertyResolver> candidateConcretePropertyResolverList =
-			this.candidateConcretePropertyResolvers.findAll(property)
+			this.candidateConcretePropertyResolvers.get(property)
 				.stream()
 				.map(MatcherOperator::getOperator)
 				.collect(Collectors.toList());
@@ -368,20 +368,20 @@ public final class FixtureMonkeyOptions {
 	public FixtureMonkeyOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
-			.arbitraryObjectPropertyGenerators(this.objectPropertyGenerators.findAll())
+			.arbitraryObjectPropertyGenerators(this.objectPropertyGenerators.values())
 			.defaultObjectPropertyGenerator(defaultObjectPropertyGenerator)
-			.arbitraryContainerPropertyGenerators(this.containerPropertyGenerators.findAll())
-			.propertyNameResolvers(this.propertyNameResolvers.findAll())
+			.arbitraryContainerPropertyGenerators(this.containerPropertyGenerators.values())
+			.propertyNameResolvers(this.propertyNameResolvers.values())
 			.defaultPropertyNameResolver(this.defaultPropertyNameResolver)
-			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators.findAll()))
+			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators.values()))
 			.defaultNullInjectGenerator(this.defaultNullInjectGenerator)
-			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators.findAll()))
+			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators.values()))
 			.defaultArbitraryContainerInfoGenerator(this.defaultArbitraryContainerInfoGenerator)
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
 			.javaConstraintGenerator(javaConstraintGenerator)
 			.instantiatorProcessor(instantiatorProcessor)
-			.candidateConcretePropertyResolvers(new ArrayList<>(candidateConcretePropertyResolvers.findAll()))
+			.candidateConcretePropertyResolvers(new ArrayList<>(candidateConcretePropertyResolvers.values()))
 			.builderContextInitializers(builderContextInitializers);
 	}
 

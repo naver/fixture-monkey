@@ -40,10 +40,8 @@ public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 		int priority
 	) {
 		super(matcher, operator);
-		checkPriority(priority);
 		this.priority = priority;
 	}
-
 	/**
 	 * Returns the priority of this matcher operator.
 	 *
@@ -51,17 +49,5 @@ public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 	 */
 	public int getPriority() {
 		return priority;
-	}
-
-	/**
-	 * Checks if the priority is valid.
-	 *
-	 * @param priority the priority to be checked
-	 * @throws IllegalArgumentException if the priority is less than 0
-	 */
-	private void checkPriority(int priority) {
-		if (priority < 0) {
-			throw new IllegalArgumentException("Priority must be greater than or equal to 0");
-		}
 	}
 }
