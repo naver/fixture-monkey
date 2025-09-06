@@ -57,18 +57,16 @@ class KotestCharacterCombinableArbitrary(private val arb: Arb<Char> = Arb.char()
     override fun korean(): CharacterCombinableArbitrary =
         KotestCharacterCombinableArbitrary(Arb.char().filter { it in '가'..'힣' })
 
+    private fun isEmojiCodePoint(codePoint: Int): Boolean {
+        return codePoint in 0x1F600..0x1F64F || // Emoticons
+            codePoint in 0x1F300..0x1F5FF || // Misc Symbols and Pictographs
+            codePoint in 0x1F680..0x1F6FF || // Transport and Map
+            codePoint in 0x2600..0x26FF || // Misc symbols
+            codePoint in 0x2700..0x27BF // Dingbats
+    }
+
     override fun emoji(): CharacterCombinableArbitrary =
-        KotestCharacterCombinableArbitrary(
-            Arb.char().filter {
-                val codePoint = it.code
-                // Basic emoji ranges
-                codePoint in 0x1F600..0x1F64F || // Emoticons
-                        codePoint in 0x1F300..0x1F5FF || // Misc Symbols and Pictographs
-                        codePoint in 0x1F680..0x1F6FF || // Transport and Map
-                        codePoint in 0x2600..0x26FF || // Misc symbols
-                        codePoint in 0x2700..0x27BF // Dingbats
-            }
-        )
+        KotestCharacterCombinableArbitrary(Arb.char().filter { isEmojiCodePoint(it.code) })
 
     override fun whitespace(): CharacterCombinableArbitrary =
         KotestCharacterCombinableArbitrary(Arb.char().filter { it.isWhitespace() })
