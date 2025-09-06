@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "1.1.15", status = Status.EXPERIMENTAL)
+@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public interface LongCombinableArbitrary extends CombinableArbitrary<Long> {
 	@Override
 	Long combined();

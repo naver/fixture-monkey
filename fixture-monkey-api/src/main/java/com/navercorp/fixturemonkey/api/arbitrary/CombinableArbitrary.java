@@ -236,7 +236,7 @@ public interface CombinableArbitrary<T> {
 	 *
 	 * @return a {@link CombinableArbitrary} returns a randomly generated Long
 	 */
-	@API(since = "1.1.15", status = Status.EXPERIMENTAL)
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 	static LongCombinableArbitrary longs() {
 		return LONG_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}

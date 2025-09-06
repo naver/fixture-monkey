@@ -29,7 +29,7 @@ import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.util.function.Predicate
 
-@API(since = "1.1.15", status = Status.EXPERIMENTAL)
+@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 class KotestLongCombinableArbitrary(private val arb: Arb<Long> = Arb.long()) : LongCombinableArbitrary {
     override fun combined(): Long = arb.single()
 
