@@ -175,7 +175,7 @@ class BigIntegerCombinableArbitraryTest {
 		// when
 		String actual = CombinableArbitrary.bigIntegers()
 			.positive()
-			.map(x -> "bigint:" + x)
+			.map(bigInt -> "bigint:" + bigInt)
 			.combined();
 
 		// then
@@ -412,31 +412,38 @@ class BigIntegerCombinableArbitraryTest {
 		then(allInRange).isTrue();
 	}
 
-	private boolean isPrime(BigInteger n) {
-		if (n.compareTo(BigInteger.valueOf(2)) < 0)
+	private boolean isPrime(BigInteger number) {
+		if (number.compareTo(BigInteger.valueOf(2)) < 0) {
 			return false;
-		if (n.equals(BigInteger.valueOf(2)))
+		}
+		if (number.equals(BigInteger.valueOf(2))) {
 			return true;
-		if (n.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO))
+		}
+		if (number.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) {
 			return false;
+		}
 
-		BigInteger sqrt = sqrt(n);
-		for (BigInteger i = BigInteger.valueOf(3); i.compareTo(sqrt) <= 0; i = i.add(BigInteger.valueOf(2))) {
-			if (n.remainder(i).equals(BigInteger.ZERO))
+		BigInteger sqrt = sqrt(number);
+		for (BigInteger index = BigInteger.valueOf(3);
+			index.compareTo(sqrt) <= 0;
+			index = index.add(BigInteger.valueOf(2))) {
+			if (number.remainder(index).equals(BigInteger.ZERO)) {
 				return false;
+			}
 		}
 		return true;
 	}
 
-	private BigInteger sqrt(BigInteger n) {
-		if (n.equals(BigInteger.ZERO))
+	private BigInteger sqrt(BigInteger number) {
+		if (number.equals(BigInteger.ZERO)) {
 			return BigInteger.ZERO;
-		BigInteger x = n;
-		BigInteger y = n.add(BigInteger.ONE).divide(BigInteger.valueOf(2));
-		while (y.compareTo(x) < 0) {
-			x = y;
-			y = x.add(n.divide(x)).divide(BigInteger.valueOf(2));
 		}
-		return x;
+		BigInteger current = number;
+		BigInteger next = number.add(BigInteger.ONE).divide(BigInteger.valueOf(2));
+		while (next.compareTo(current) < 0) {
+			current = next;
+			next = current.add(number.divide(current)).divide(BigInteger.valueOf(2));
+		}
+		return current;
 	}
 }
