@@ -26,7 +26,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CharacterCombinableArbitrary;
 
-@API(since = "1.1.15", status = Status.EXPERIMENTAL)
+@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public final class JqwikCharacterCombinableArbitrary implements CharacterCombinableArbitrary {
 	private final Arbitrary<Character> characterArbitrary;
 
