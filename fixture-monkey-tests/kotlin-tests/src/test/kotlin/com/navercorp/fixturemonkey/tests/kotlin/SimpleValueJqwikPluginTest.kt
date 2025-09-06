@@ -145,7 +145,7 @@ class SimpleValueJqwikPluginTest {
 
     @RepeatedTest(TEST_COUNT)
     fun sampleSetObject() {
-        class SetObject(val integers: Set<Int>)
+        class SetObject(val integers: Set<Integer>)
 
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
