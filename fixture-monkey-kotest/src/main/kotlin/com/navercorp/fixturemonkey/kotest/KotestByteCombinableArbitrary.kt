@@ -52,7 +52,7 @@ class KotestByteCombinableArbitrary(private val arb: Arb<Byte> = Arb.byte()) : B
         KotestByteCombinableArbitrary(Arb.byte().filter { it in 0..127 })
 
     override fun filter(tries: Int, predicate: Predicate<Byte>): ByteCombinableArbitrary =
-        KotestByteCombinableArbitrary(arb.filter(predicate::test))
+        KotestByteCombinableArbitrary(Arb.byte().filter(predicate::test))
 
     override fun clear() {
     }
