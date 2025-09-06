@@ -26,9 +26,12 @@ import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.choice
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.single
+import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 class KotestDoubleCombinableArbitrary(
     private val doubleArb: Arb<Double> = Arb.double()
 ) : DoubleCombinableArbitrary {
