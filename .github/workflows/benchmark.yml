@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-results-${{ matrix.benchmark-module }}
-          path: ./fixture-monkey-benchmarks/${{ matrix.benchmark-module }}/build/reports/jmh/results.csv
+          path: ./fixture-monkey-benchmarks/${{ matrix.benchmark-module }}/build/results/jmh/results.csv
 
   merge-results:
     name: Merge benchmark results
