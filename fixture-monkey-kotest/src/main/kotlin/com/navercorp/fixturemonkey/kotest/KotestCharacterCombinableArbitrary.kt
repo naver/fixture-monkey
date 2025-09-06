@@ -27,7 +27,7 @@ import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.util.function.Predicate
 
-@API(since = "1.1.15", status = Status.EXPERIMENTAL)
+@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 class KotestCharacterCombinableArbitrary(private val arb: Arb<Char> = Arb.char()) : CharacterCombinableArbitrary {
     override fun combined(): Char = arb.single()
 
@@ -63,10 +63,10 @@ class KotestCharacterCombinableArbitrary(private val arb: Arb<Char> = Arb.char()
                 val codePoint = it.code
                 // Basic emoji ranges
                 codePoint in 0x1F600..0x1F64F || // Emoticons
-                    codePoint in 0x1F300..0x1F5FF || // Misc Symbols and Pictographs
-                    codePoint in 0x1F680..0x1F6FF || // Transport and Map
-                    codePoint in 0x2600..0x26FF || // Misc symbols
-                    codePoint in 0x2700..0x27BF // Dingbats
+                        codePoint in 0x1F300..0x1F5FF || // Misc Symbols and Pictographs
+                        codePoint in 0x1F680..0x1F6FF || // Transport and Map
+                        codePoint in 0x2600..0x26FF || // Misc symbols
+                        codePoint in 0x2700..0x27BF // Dingbats
             }
         )
 

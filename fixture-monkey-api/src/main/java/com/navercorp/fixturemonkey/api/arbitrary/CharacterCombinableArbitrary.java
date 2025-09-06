@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
  * A combinable arbitrary for generating single characters with various character sets and constraints.
  * This interface provides Character-specific generation methods that are not available in StringCombinableArbitrary.
  */
-@API(since = "1.1.15", status = Status.EXPERIMENTAL)
+@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public interface CharacterCombinableArbitrary extends CombinableArbitrary<Character> {
 	@Override
 	Character rawValue();
