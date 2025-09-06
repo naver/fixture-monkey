@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
+import com.navercorp.fixturemonkey.kotest.KotestBigDecimalCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestIntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestByteCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestPlugin
@@ -1071,6 +1072,54 @@ class KotestInJunitTest {
         val actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined()
 
         then(actual).isBetween(100, 1000)
+    }
+
+    // new test for BigDecimal CombinableArbitrary
+    @Test
+    fun bigDecimalCombinableArbitrary() {
+        val actual = CombinableArbitrary.bigDecimals()
+
+        then(actual).isInstanceOf(KotestBigDecimalCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryPositive() {
+        val actual = CombinableArbitrary.bigDecimals().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryNegative() {
+        val actual = CombinableArbitrary.bigDecimals().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.bigDecimals().withRange(
+            BigDecimal("100.0"), BigDecimal("1000.0")
+        ).combined()
+
+        then(actual).isBetween(BigDecimal("100.0"), BigDecimal("1000.0"))
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryWithPrecision() {
+        val actual = CombinableArbitrary.bigDecimals().withPrecision(2).combined()
+
+        then(actual).hasScaleOf(2)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryLastMethodWins() {
+        val actual = CombinableArbitrary.bigDecimals()
+            .withRange(BigDecimal("10.0"), BigDecimal("20.0"))
+            .negative()
+            .combined()
+
+        then(actual).isNegative()
     }
 
     companion object {
