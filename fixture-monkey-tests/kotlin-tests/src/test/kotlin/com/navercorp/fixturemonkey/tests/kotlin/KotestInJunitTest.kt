@@ -1109,7 +1109,7 @@ class KotestInJunitTest {
     fun bigDecimalCombinableArbitraryWithPrecision() {
         val actual = CombinableArbitrary.bigDecimals().withPrecision(2).combined()
 
-        then(actual).hasScaleOf(2)
+        then(actual.precision()).isLessThanOrEqualTo(2)
     }
 
     @RepeatedTest(TEST_COUNT)

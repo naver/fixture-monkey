@@ -70,17 +70,17 @@ class KotestBigDecimalCombinableArbitrary(
 
     override fun withPrecision(precision: Int): BigDecimalCombinableArbitrary =
         KotestBigDecimalCombinableArbitrary(
-            arb.map { it.round(MathContext(precision)) }
+            Arb.bigDecimal().map { it.round(MathContext(precision)) }
         )
 
     override fun withScale(scale: Int): BigDecimalCombinableArbitrary =
         KotestBigDecimalCombinableArbitrary(
-            arb.map { it.setScale(scale, RoundingMode.HALF_UP) }
+            Arb.bigDecimal().map { it.setScale(scale, RoundingMode.HALF_UP) }
         )
 
     override fun normalized(): BigDecimalCombinableArbitrary =
         KotestBigDecimalCombinableArbitrary(
-            arb.map { it.stripTrailingZeros() }
+            Arb.bigDecimal().map { it.stripTrailingZeros() }
         )
 
     override fun filter(tries: Int, predicate: Predicate<BigDecimal>): BigDecimalCombinableArbitrary =

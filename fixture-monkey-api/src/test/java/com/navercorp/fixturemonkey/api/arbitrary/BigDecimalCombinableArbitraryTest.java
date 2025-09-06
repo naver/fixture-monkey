@@ -86,7 +86,8 @@ class BigDecimalCombinableArbitraryTest {
 		// when
 		boolean allInPercentageRange = IntStream.range(0, 100)
 			.mapToObj(i -> CombinableArbitrary.bigDecimals().percentage().combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) >= 0 && b.compareTo(BigDecimal.valueOf(100)) <= 0);
+			.allMatch(b -> b.compareTo(BigDecimal.ZERO) >= 0
+				&& b.compareTo(BigDecimal.valueOf(100)) <= 0);
 
 		// then
 		then(allInPercentageRange).isTrue();
@@ -114,7 +115,9 @@ class BigDecimalCombinableArbitraryTest {
 
 		// when
 		boolean allWithCorrectPrecision = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().withPrecision(precision).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.withPrecision(precision)
+				.combined())
 			.allMatch(b -> b.precision() <= precision);
 
 		// then
@@ -128,7 +131,9 @@ class BigDecimalCombinableArbitraryTest {
 
 		// when
 		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().withScale(scale).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.withScale(scale)
+				.combined())
 			.allMatch(b -> b.scale() == scale);
 
 		// then
@@ -139,7 +144,9 @@ class BigDecimalCombinableArbitraryTest {
 	void normalized() {
 		// when
 		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().normalized().combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.normalized()
+				.combined())
 			.allMatch(b -> b.equals(b.stripTrailingZeros()));
 
 		// then
@@ -153,7 +160,10 @@ class BigDecimalCombinableArbitraryTest {
 		BigDecimal max = BigDecimal.valueOf(-10.5);
 
 		// when - positive().withRange() => withRange()
-		BigDecimal actual = CombinableArbitrary.bigDecimals().positive().withRange(min, max).combined();
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.positive()
+			.withRange(min, max)
+			.combined();
 
 		// then
 		then(actual).isBetween(min, max);
@@ -192,7 +202,8 @@ class BigDecimalCombinableArbitraryTest {
 		// when
 		BigDecimal actual = CombinableArbitrary.bigDecimals()
 			.positive()
-			.filter(b -> b.remainder(BigDecimal.valueOf(0.5)).compareTo(BigDecimal.ZERO) == 0)  // multiples of 0.5
+			.filter(b -> b.remainder(BigDecimal.valueOf(0.5))
+				.compareTo(BigDecimal.ZERO) == 0)
 			.combined();
 
 		// then
@@ -205,7 +216,7 @@ class BigDecimalCombinableArbitraryTest {
 		// when
 		BigDecimal actual = CombinableArbitrary.bigDecimals()
 			.positive()
-			.injectNull(1.0)  // 100% null
+			.injectNull(1.0)
 			.combined();
 
 		// then
@@ -217,7 +228,7 @@ class BigDecimalCombinableArbitraryTest {
 		// when
 		BigDecimal actual = CombinableArbitrary.bigDecimals()
 			.positive()
-			.injectNull(0.0)  // 0% null
+			.injectNull(0.0)
 			.combined();
 
 		// then
@@ -230,7 +241,7 @@ class BigDecimalCombinableArbitraryTest {
 		// when - combine multiple operations
 		String actual = CombinableArbitrary.bigDecimals()
 			.percentage()
-			.filter(b -> b.compareTo(BigDecimal.valueOf(50)) >= 0)  // >= 50
+			.filter(b -> b.compareTo(BigDecimal.valueOf(50)) >= 0)
 			.map(b -> "percentage:" + b)
 			.combined();
 
@@ -245,7 +256,7 @@ class BigDecimalCombinableArbitraryTest {
 	void bigDecimalUniqueWithDifferentValues() {
 		// when - unique() works with different values
 		BigDecimal actual = CombinableArbitrary.bigDecimals()
-			.withRange(BigDecimal.ZERO, BigDecimal.valueOf(1000))  // wide range
+			.withRange(BigDecimal.ZERO, BigDecimal.valueOf(1000))
 			.unique()
 			.combined();
 
@@ -266,8 +277,12 @@ class BigDecimalCombinableArbitraryTest {
 	void lastMethodWinsRangeOverPositive() {
 		// when - positive().withRange() => withRange()
 		boolean allInRange = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().positive().withRange(BigDecimal.valueOf(-10.5), BigDecimal.valueOf(-1.5)).combined())
-			.allMatch(b -> b.compareTo(BigDecimal.valueOf(-10.5)) >= 0 && b.compareTo(BigDecimal.valueOf(-1.5)) <= 0);
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.positive()
+				.withRange(BigDecimal.valueOf(-10.5), BigDecimal.valueOf(-1.5))
+				.combined())
+			.allMatch(b -> b.compareTo(BigDecimal.valueOf(-10.5)) >= 0
+				&& b.compareTo(BigDecimal.valueOf(-1.5)) <= 0);
 
 		// then
 		then(allInRange).isTrue();
@@ -277,7 +292,10 @@ class BigDecimalCombinableArbitraryTest {
 	void lastMethodWinsPrecisionOverScale() {
 		// when - withPrecision().withScale() => withScale()
 		boolean allWithCorrectScale = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().withPrecision(5).withScale(2).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.withPrecision(5)
+				.withScale(2)
+				.combined())
 			.allMatch(b -> b.scale() == 2);
 
 		// then
@@ -291,8 +309,11 @@ class BigDecimalCombinableArbitraryTest {
 			.mapToObj(i -> CombinableArbitrary.bigDecimals()
 				.positive()
 				.withScale(2)
-				.filter(b -> b.compareTo(BigDecimal.valueOf(10)) >= 0).combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) > 0 && b.scale() == 2 && b.compareTo(BigDecimal.valueOf(10)) >= 0);
+				.filter(b -> b.compareTo(BigDecimal.valueOf(10)) >= 0)
+				.combined())
+			.allMatch(b -> b.compareTo(BigDecimal.ZERO) > 0
+				&& b.scale() == 2
+				&& b.compareTo(BigDecimal.valueOf(10)) >= 0);
 
 		// then
 		then(allPositiveWithScale).isTrue();
@@ -302,7 +323,10 @@ class BigDecimalCombinableArbitraryTest {
 	void nonZeroWithPrecision() {
 		// when - nonZero().withPrecision() => withPrecision()
 		boolean allWithCorrectPrecision = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().nonZero().withPrecision(3).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.nonZero()
+				.withPrecision(3)
+				.combined())
 			.allMatch(b -> b.precision() <= 3);
 
 		// then
@@ -313,7 +337,10 @@ class BigDecimalCombinableArbitraryTest {
 	void nonZeroWithScale() {
 		// when - nonZero().withScale() => withScale()
 		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().nonZero().withScale(2).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.nonZero()
+				.withScale(2)
+				.combined())
 			.allMatch(b -> b.scale() == 2);
 
 		// then
@@ -324,7 +351,10 @@ class BigDecimalCombinableArbitraryTest {
 	void nonZeroWithPositive() {
 		// when
 		boolean allNonZeroAndPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().nonZero().positive().combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.nonZero()
+				.positive()
+				.combined())
 			.allMatch(b -> b.compareTo(BigDecimal.ZERO) > 0);
 
 		// then
@@ -335,7 +365,10 @@ class BigDecimalCombinableArbitraryTest {
 	void nonZeroWithNegative() {
 		// when - nonZero().negative() => negative()
 		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().nonZero().negative().combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.nonZero()
+				.negative()
+				.combined())
 			.allMatch(b -> b.compareTo(BigDecimal.ZERO) < 0);
 
 		// then
@@ -346,7 +379,10 @@ class BigDecimalCombinableArbitraryTest {
 	void negativeWithNonZero() {
 		// when - negative().nonZero() => nonZero()
 		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().negative().nonZero().combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.negative()
+				.nonZero()
+				.combined())
 			.allMatch(b -> b.compareTo(BigDecimal.ZERO) != 0);
 
 		// then
@@ -357,7 +393,10 @@ class BigDecimalCombinableArbitraryTest {
 	void positiveWithNegativeCombination() {
 		// when - positive().negative() => negative()
 		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().positive().negative().combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.positive()
+				.negative()
+				.combined())
 			.allMatch(b -> b.compareTo(BigDecimal.ZERO) < 0);
 
 		// then
@@ -368,7 +407,11 @@ class BigDecimalCombinableArbitraryTest {
 	void complexApiCombination() {
 		// when - nonZero().positive().withScale() => withScale()
 		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().nonZero().positive().withScale(2).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.nonZero()
+				.positive()
+				.withScale(2)
+				.combined())
 			.allMatch(b -> b.scale() == 2);
 
 		// then
@@ -381,7 +424,12 @@ class BigDecimalCombinableArbitraryTest {
 		BigDecimal min = BigDecimal.valueOf(-50.5);
 		BigDecimal max = BigDecimal.valueOf(-10.5);
 		boolean allInRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().nonZero().positive().withScale(3).withRange(min, max).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.nonZero()
+				.positive()
+				.withScale(3)
+				.withRange(min, max)
+				.combined())
 			.allMatch(b -> b.compareTo(min) >= 0 && b.compareTo(max) <= 0);
 
 		// then
@@ -392,7 +440,10 @@ class BigDecimalCombinableArbitraryTest {
 	void normalizedWithScale() {
 		// when - normalized().withScale() => withScale()
 		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().normalized().withScale(2).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.normalized()
+				.withScale(2)
+				.combined())
 			.allMatch(b -> b.scale() == 2);
 
 		// then
@@ -403,7 +454,10 @@ class BigDecimalCombinableArbitraryTest {
 	void scaleWithNormalized() {
 		// when - withScale().normalized() => normalized()
 		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().withScale(2).normalized().combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.withScale(2)
+				.normalized()
+				.combined())
 			.allMatch(b -> b.equals(b.stripTrailingZeros()));
 
 		// then
@@ -414,7 +468,10 @@ class BigDecimalCombinableArbitraryTest {
 	void precisionWithNormalized() {
 		// when - withPrecision().normalized() => normalized()
 		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().withPrecision(5).normalized().combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.withPrecision(5)
+				.normalized()
+				.combined())
 			.allMatch(b -> b.equals(b.stripTrailingZeros()));
 
 		// then
@@ -425,7 +482,10 @@ class BigDecimalCombinableArbitraryTest {
 	void normalizedWithPrecision() {
 		// when - normalized().withPrecision() => withPrecision()
 		boolean allWithCorrectPrecision = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().normalized().withPrecision(3).combined())
+			.mapToObj(i -> CombinableArbitrary.bigDecimals()
+				.normalized()
+				.withPrecision(3)
+				.combined())
 			.allMatch(b -> b.precision() <= 3);
 
 		// then
