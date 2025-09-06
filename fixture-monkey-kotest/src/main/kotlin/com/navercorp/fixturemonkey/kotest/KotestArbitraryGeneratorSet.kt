@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotest
 
+import com.navercorp.fixturemonkey.api.arbitrary.CharacterCombinableArbitrary
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.arbitrary.IntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet
@@ -30,7 +31,6 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.bigDecimal
 import io.kotest.property.arbitrary.bigInt
 import io.kotest.property.arbitrary.byte
-import io.kotest.property.arbitrary.char
 import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.double
 import io.kotest.property.arbitrary.duration
@@ -92,8 +92,18 @@ class KotestJavaArbitraryGeneratorSet(
         }
     }
 
-    override fun characters(context: ArbitraryGeneratorContext): CombinableArbitrary<Char> =
-        CombinableArbitrary.from { Arb.char().single() }
+    override fun characters(context: ArbitraryGeneratorContext): CharacterCombinableArbitrary {
+        val integerConstraint = constraintGenerator.generateIntegerConstraint(context)
+        val combinableArbitrary = KotestCharacterCombinableArbitrary()
+
+        return if (integerConstraint != null) {
+            val min = integerConstraint.min?.toInt()?.toChar() ?: Char.MIN_VALUE
+            val max = integerConstraint.max?.toInt()?.toChar() ?: Char.MAX_VALUE
+            combinableArbitrary.withRange(min, max)
+        } else {
+            combinableArbitrary
+        }
+    }
 
     override fun shorts(context: ArbitraryGeneratorContext): CombinableArbitrary<Short> {
         val integerConstraint = constraintGenerator.generateIntegerConstraint(context)
