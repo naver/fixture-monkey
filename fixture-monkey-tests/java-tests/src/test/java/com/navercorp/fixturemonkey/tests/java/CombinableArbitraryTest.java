@@ -379,9 +379,6 @@ class CombinableArbitraryTest {
 	void shortCombinableArbitraryOdd(RepetitionInfo repetitionInfo) {
 		Short actual = CombinableArbitrary.shorts().odd().combined();
 
-		// 중간 로그 출력
-		System.out.printf("Test #%d: actual = %d%n", repetitionInfo.getCurrentRepetition(), actual);
-
 		then(actual % 2 != 0).isTrue();
 	}
 
