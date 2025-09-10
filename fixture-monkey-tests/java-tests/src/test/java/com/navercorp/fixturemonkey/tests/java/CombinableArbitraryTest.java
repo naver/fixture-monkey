@@ -10,6 +10,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikByteCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikLongCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 
 class CombinableArbitraryTest {
@@ -95,6 +96,90 @@ class CombinableArbitraryTest {
 		Integer actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined();
 
 		then(actual).isBetween(100, 1000);
+	}
+
+	@Test
+	void longCombinableArbitraryIsJqwik() {
+		CombinableArbitrary<Long> actual = CombinableArbitrary.longs();
+
+		then(actual).isInstanceOf(JqwikLongCombinableArbitrary.class);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryInjectNull() {
+		Long actual = CombinableArbitrary.longs().injectNull(1).combined();
+
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryFilter() {
+		Long actual = CombinableArbitrary.longs().filter(it -> it > 10000L).combined();
+
+		then(actual).isGreaterThan(10000L);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryPositive() {
+		Long actual = CombinableArbitrary.longs().positive().combined();
+
+		then(actual).isPositive();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryNegative() {
+		Long actual = CombinableArbitrary.longs().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryWithRange() {
+		Long actual = CombinableArbitrary.longs().withRange(10L, 100L).combined();
+
+		then(actual).isBetween(10L, 100L);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryWithRangeAndFilter() {
+		Long actual = CombinableArbitrary.longs().withRange(10L, 100L).filter(it -> 75L <= it).combined();
+
+		then(actual).isBetween(75L, 100L);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryEven() {
+		Long actual = CombinableArbitrary.longs().even().combined();
+
+		then(actual % 2).isEqualTo(0);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryOdd() {
+		Long actual = CombinableArbitrary.longs().odd().combined();
+
+		then(actual % 2 != 0).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
+		Long actual = CombinableArbitrary.longs().positive().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
+		Long actual = CombinableArbitrary.longs().even().odd().combined();
+
+		then(actual % 2 != 0).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void longCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
+		Long actual = CombinableArbitrary.longs().negative().withRange(100L, 1000L).combined();
+
+		then(actual).isBetween(100L, 1000L);
 	}
 
 	@Test
