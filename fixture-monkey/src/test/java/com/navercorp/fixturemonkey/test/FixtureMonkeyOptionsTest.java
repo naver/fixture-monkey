@@ -91,7 +91,6 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterfaceImplementation2;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairInterface;
@@ -106,6 +105,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceFieldImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
@@ -168,7 +168,7 @@ class FixtureMonkeyOptionsTest {
 	void strictModeSizeWrongExpressionAfterPushAssignableTypePropertyNameResolverThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.useExpressionStrictMode()
-			.pushAssignableTypePropertyNameResolver(String.class, p -> "prop_" + p.getName())
+			.pushAssignableTypePropertyNameResolver(List.class, p -> "prop_" + p.getName())
 			.build();
 
 		thenThrownBy(
@@ -242,6 +242,23 @@ class FixtureMonkeyOptionsTest {
 			.get(0)
 			.get(0)
 			.getStr();
+
+		then(actual).isEqualTo("expected");
+	}
+
+	@Property
+	void strictModeNestedListValidExpression() {
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		String actual = sut.giveMeBuilder(NestedListStringObject.class)
+			.size("values", 1)
+			.size("values[0].values", 3)
+			.set("values[0].values[2]", "expected")
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues()
+			.get(2);
 
 		then(actual).isEqualTo("expected");
 	}
