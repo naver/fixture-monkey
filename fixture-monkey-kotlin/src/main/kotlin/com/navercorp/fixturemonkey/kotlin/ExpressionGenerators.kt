@@ -472,7 +472,7 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
     private val fieldAnnotations: List<Annotation> =
         property.javaField?.annotations?.toList() ?: listOf()
 
-    override fun getType(): Class<*> = property.javaField!!.type
+    override fun getType(): Class<*> = property.javaField?.type ?: Object::class.java
 
     override fun getAnnotatedType(): AnnotatedType =
         property.javaField!!.annotatedType
