@@ -75,13 +75,14 @@ public final class StrictModeNextNodePredicateContainer extends AbstractList<Nex
 		if (predicates == null || predicates.isEmpty()) {
 			return false;
 		}
+		AnnotatedType currentAnnotatedType = rootAnnotatedType;
 		for (NextNodePredicate predicate : predicates) {
 			if (predicate instanceof StartNodePredicate) {
 				continue;
 			}
 			if (predicate instanceof PropertyNameNodePredicate) {
 				String fieldName = ((PropertyNameNodePredicate)predicate).getPropertyName();
-				Class<?> actualClass = Types.getActualType(rootAnnotatedType);
+				Class<?> actualClass = Types.getActualType(currentAnnotatedType);
 				Optional<Field> field = Arrays.stream(actualClass.getDeclaredFields())
 					.filter(f -> {
 						String resolvedFieldName = propertyNameResolver.resolve(new FieldProperty(f));
@@ -93,14 +94,14 @@ public final class StrictModeNextNodePredicateContainer extends AbstractList<Nex
 					return false;
 				}
 
-				rootAnnotatedType = field.get().getAnnotatedType();
+				currentAnnotatedType = field.get().getAnnotatedType();
 			} else if (predicate instanceof ContainerElementPredicate) {
-				List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(rootAnnotatedType);
+				List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
 
 				if (genericAnnotatedTypes.isEmpty()) {
 					return false;
 				}
-				rootAnnotatedType = genericAnnotatedTypes.get(0);
+				currentAnnotatedType = genericAnnotatedTypes.get(0);
 			} else {
 				return false;
 			}
