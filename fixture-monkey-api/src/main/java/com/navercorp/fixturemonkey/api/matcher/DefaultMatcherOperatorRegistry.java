@@ -71,7 +71,7 @@ public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistr
 	}
 
 	@Override
-	public List<MatcherOperator<T>> get(Property property) {
+	public List<MatcherOperator<T>> getListByProperty(Property property) {
 		Class<?> propertyType = Types.getActualType(property.getType());
 		List<PriorityMatcherOperator<T>> acc = new ArrayList<>(typeUnknownIntrospectors);
 		for (Map.Entry<Class<?>, List<PriorityMatcherOperator<T>>> e : typeAssignableIntrospectors.entrySet()) {

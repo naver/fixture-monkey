@@ -242,7 +242,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public ObjectPropertyGenerator getObjectPropertyGenerator(Property property) {
-		return objectPropertyGenerators.get(property)
+		return objectPropertyGenerators.getListByProperty(property)
 			.stream()
 			.map(MatcherOperator::getOperator)
 			.findFirst()
@@ -259,7 +259,7 @@ public final class FixtureMonkeyOptions {
 
 	@Nullable
 	public ContainerPropertyGenerator getContainerPropertyGenerator(Property property) {
-		return containerPropertyGenerators.get(property)
+		return containerPropertyGenerators.getListByProperty(property)
 			.stream()
 			.map(MatcherOperator::getOperator)
 			.findFirst()
@@ -271,7 +271,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public PropertyNameResolver getPropertyNameResolver(Property property) {
-		return this.propertyNameResolvers.get(property).stream()
+		return this.propertyNameResolvers.getListByProperty(property).stream()
 			.map(MatcherOperator::getOperator)
 			.findFirst()
 			.orElse(this.getDefaultPropertyNameResolver());
@@ -360,7 +360,7 @@ public final class FixtureMonkeyOptions {
 	@Deprecated
 	public CandidateConcretePropertyResolver getCandidateConcretePropertyResolver(Property property) {
 		List<CandidateConcretePropertyResolver> candidateConcretePropertyResolverList =
-			this.candidateConcretePropertyResolvers.get(property)
+			this.candidateConcretePropertyResolvers.getListByProperty(property)
 				.stream()
 				.map(MatcherOperator::getOperator)
 				.collect(Collectors.toList());
