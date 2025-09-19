@@ -43,33 +43,9 @@ public final class DefaultMatcherOperatorContainer<T>
 		addInternal(matcherOperator, true);
 	}
 
+	@Override
 	public void addLast(MatcherOperator<T> matcherOperator) {
 		addInternal(matcherOperator, false);
-	}
-
-	private void addInternal(MatcherOperator<T> matcherOperator, boolean prepend) {
-		int seq = sequenceIssuer.incrementAndGet();
-		int sequence = prepend ? -seq : seq;
-
-		Matcher matcher = matcherOperator.getMatcher();
-		T operator = matcherOperator.getOperator();
-
-		PriorityMatcherOperator<T> priorityMatcherOperator = new PriorityMatcherOperator<>(
-			matcher,
-			operator,
-			sequence
-		);
-
-		if (matcher instanceof ExactTypeMatcher) {
-			Class<?> type = ((ExactTypeMatcher)matcher).getType();
-			typeAwareIntrospectors.computeIfAbsent(type, k -> new ArrayList<>()).add(priorityMatcherOperator);
-		} else if (matcher instanceof AssignableTypeMatcher) {
-			Class<?> anchorType = ((AssignableTypeMatcher)matcher).getAnchorType();
-			typeAssignableIntrospectors.computeIfAbsent(anchorType, k -> new ArrayList<>())
-				.add(priorityMatcherOperator);
-		} else {
-			typeUnknownIntrospectors.add(priorityMatcherOperator);
-		}
 	}
 
 	@Override
@@ -101,5 +77,30 @@ public final class DefaultMatcherOperatorContainer<T>
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
 			.map(op -> (MatcherOperator<T>)op)
 			.collect(Collectors.toList());
+	}
+
+	private void addInternal(MatcherOperator<T> matcherOperator, boolean prepend) {
+		int seq = sequenceIssuer.incrementAndGet();
+		int sequence = prepend ? -seq : seq;
+
+		Matcher matcher = matcherOperator.getMatcher();
+		T operator = matcherOperator.getOperator();
+
+		PriorityMatcherOperator<T> priorityMatcherOperator = new PriorityMatcherOperator<>(
+			matcher,
+			operator,
+			sequence
+		);
+
+		if (matcher instanceof ExactTypeMatcher) {
+			Class<?> type = ((ExactTypeMatcher)matcher).getType();
+			typeAwareIntrospectors.computeIfAbsent(type, k -> new ArrayList<>()).add(priorityMatcherOperator);
+		} else if (matcher instanceof AssignableTypeMatcher) {
+			Class<?> anchorType = ((AssignableTypeMatcher)matcher).getAnchorType();
+			typeAssignableIntrospectors.computeIfAbsent(anchorType, k -> new ArrayList<>())
+				.add(priorityMatcherOperator);
+		} else {
+			typeUnknownIntrospectors.add(priorityMatcherOperator);
+		}
 	}
 }
