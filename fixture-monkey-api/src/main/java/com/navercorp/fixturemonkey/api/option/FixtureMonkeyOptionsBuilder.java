@@ -71,7 +71,7 @@ import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
-import com.navercorp.fixturemonkey.api.matcher.DefaultMatcherOperatorRegistry;
+import com.navercorp.fixturemonkey.api.matcher.DefaultMatcherOperatorContainer;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
@@ -85,20 +85,20 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FixtureMonkeyOptionsBuilder {
-	private DefaultMatcherOperatorRegistry<PropertyGenerator> propertyGenerators;
+	private DefaultMatcherOperatorContainer<PropertyGenerator> propertyGenerators;
 	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
-	private DefaultMatcherOperatorRegistry<ObjectPropertyGenerator> arbitraryObjectPropertyGenerators;
-	private DefaultMatcherOperatorRegistry<ContainerPropertyGenerator> containerPropertyGenerators;
+	private DefaultMatcherOperatorContainer<ObjectPropertyGenerator> arbitraryObjectPropertyGenerators;
+	private DefaultMatcherOperatorContainer<ContainerPropertyGenerator> containerPropertyGenerators;
 	private ObjectPropertyGenerator defaultObjectPropertyGenerator;
-	private DefaultMatcherOperatorRegistry<PropertyNameResolver> propertyNameResolvers;
+	private DefaultMatcherOperatorContainer<PropertyNameResolver> propertyNameResolvers;
 	private PropertyNameResolver defaultPropertyNameResolver;
-	private DefaultMatcherOperatorRegistry<NullInjectGenerator> nullInjectGenerators;
+	private DefaultMatcherOperatorContainer<NullInjectGenerator> nullInjectGenerators;
 	private NullInjectGenerator defaultNullInjectGenerator;
-	private DefaultMatcherOperatorRegistry<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerators;
+	private DefaultMatcherOperatorContainer<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerators;
 	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private ArbitraryGenerator defaultArbitraryGenerator;
 	private UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator = it -> it;
-	private DefaultMatcherOperatorRegistry<ArbitraryIntrospector> arbitraryIntrospectors;
+	private DefaultMatcherOperatorContainer<ArbitraryIntrospector> arbitraryIntrospectors;
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		IntrospectedArbitraryGenerator.javaBuilder();
 	private boolean defaultNotNull = false;
@@ -133,7 +133,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	@Nullable
 	private Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet = null;
 	private InstantiatorProcessor instantiatorProcessor = new JavaInstantiatorProcessor();
-	private DefaultMatcherOperatorRegistry<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
+	private DefaultMatcherOperatorContainer<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 	private List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers = new ArrayList<>();
 
 	FixtureMonkeyOptionsBuilder() {
@@ -634,7 +634,7 @@ public final class FixtureMonkeyOptionsBuilder {
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
 		List<ArbitraryIntrospector> typedArbitraryIntrospectors = arbitraryIntrospectors
-			.values()
+			.getList()
 			.stream()
 			.map(TypedArbitraryIntrospector::new)
 			.collect(Collectors.toList());
@@ -696,9 +696,9 @@ public final class FixtureMonkeyOptionsBuilder {
 		);
 	}
 
-	private <T> DefaultMatcherOperatorRegistry<T> createMatcherOperatorRegistry(
+	private <T> DefaultMatcherOperatorContainer<T> createMatcherOperatorRegistry(
 		List<MatcherOperator<T>> matcherOperators) {
-		DefaultMatcherOperatorRegistry<T> registry = new DefaultMatcherOperatorRegistry<>();
+		DefaultMatcherOperatorContainer<T> registry = new DefaultMatcherOperatorContainer<>();
 		matcherOperators.forEach(registry::addLast);
 
 		return registry;

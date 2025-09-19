@@ -76,7 +76,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.ExactPropertyMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperatorRegistry;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperatorRetriever;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
@@ -148,16 +148,16 @@ public final class FixtureMonkeyOptions {
 		DEFAULT_JAVA_PACKAGES = Collections.unmodifiableList(defaultJavaPackages);
 	}
 
-	private final MatcherOperatorRegistry<PropertyGenerator> propertyGenerators;
+	private final MatcherOperatorRetriever<PropertyGenerator> propertyGenerators;
 	private final PropertyGenerator defaultPropertyGenerator;
-	private final MatcherOperatorRegistry<ObjectPropertyGenerator> objectPropertyGenerators;
+	private final MatcherOperatorRetriever<ObjectPropertyGenerator> objectPropertyGenerators;
 	private final ObjectPropertyGenerator defaultObjectPropertyGenerator;
-	private final MatcherOperatorRegistry<ContainerPropertyGenerator> containerPropertyGenerators;
-	private final MatcherOperatorRegistry<PropertyNameResolver> propertyNameResolvers;
+	private final MatcherOperatorRetriever<ContainerPropertyGenerator> containerPropertyGenerators;
+	private final MatcherOperatorRetriever<PropertyNameResolver> propertyNameResolvers;
 	private final PropertyNameResolver defaultPropertyNameResolver;
-	private final MatcherOperatorRegistry<NullInjectGenerator> nullInjectGenerators;
+	private final MatcherOperatorRetriever<NullInjectGenerator> nullInjectGenerators;
 	private final NullInjectGenerator defaultNullInjectGenerator;
-	private final MatcherOperatorRegistry<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerators;
+	private final MatcherOperatorRetriever<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerators;
 	private final ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 	private final ArbitraryValidator defaultArbitraryValidator;
@@ -166,21 +166,21 @@ public final class FixtureMonkeyOptions {
 	private final int generateUniqueMaxTries;
 	private final JavaConstraintGenerator javaConstraintGenerator;
 	private final InstantiatorProcessor instantiatorProcessor;
-	private final MatcherOperatorRegistry<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
+	private final MatcherOperatorRetriever<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 	private final boolean enableLoggingFail;
 	private final List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers;
 
 	public FixtureMonkeyOptions(
-		MatcherOperatorRegistry<PropertyGenerator> propertyGenerators,
+		MatcherOperatorRetriever<PropertyGenerator> propertyGenerators,
 		PropertyGenerator defaultPropertyGenerator,
-		MatcherOperatorRegistry<ObjectPropertyGenerator> objectPropertyGenerators,
+		MatcherOperatorRetriever<ObjectPropertyGenerator> objectPropertyGenerators,
 		ObjectPropertyGenerator defaultObjectPropertyGenerator,
-		MatcherOperatorRegistry<ContainerPropertyGenerator> containerPropertyGenerators,
-		MatcherOperatorRegistry<PropertyNameResolver> propertyNameResolvers,
+		MatcherOperatorRetriever<ContainerPropertyGenerator> containerPropertyGenerators,
+		MatcherOperatorRetriever<PropertyNameResolver> propertyNameResolvers,
 		PropertyNameResolver defaultPropertyNameResolver,
-		MatcherOperatorRegistry<NullInjectGenerator> nullInjectGenerators,
+		MatcherOperatorRetriever<NullInjectGenerator> nullInjectGenerators,
 		NullInjectGenerator defaultNullInjectGenerator,
-		MatcherOperatorRegistry<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerators,
+		MatcherOperatorRetriever<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerators,
 		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator,
 		ArbitraryGenerator defaultArbitraryGenerator,
 		ArbitraryValidator defaultArbitraryValidator,
@@ -189,7 +189,7 @@ public final class FixtureMonkeyOptions {
 		int generateUniqueMaxTries,
 		JavaConstraintGenerator javaConstraintGenerator,
 		InstantiatorProcessor instantiatorProcessor,
-		MatcherOperatorRegistry<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers,
+		MatcherOperatorRetriever<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers,
 		boolean enableLoggingFail,
 		List<TreeMatcherOperator<BuilderContextInitializer>> builderContextCustomizer
 	) {
@@ -221,7 +221,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<PropertyGenerator>> getPropertyGenerators() {
-		return propertyGenerators.values();
+		return propertyGenerators.getList();
 	}
 
 	@Nullable
@@ -238,7 +238,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<ObjectPropertyGenerator>> getObjectPropertyGenerators() {
-		return objectPropertyGenerators.values();
+		return objectPropertyGenerators.getList();
 	}
 
 	public ObjectPropertyGenerator getObjectPropertyGenerator(Property property) {
@@ -254,7 +254,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<ContainerPropertyGenerator>> getContainerPropertyGenerators() {
-		return containerPropertyGenerators.values();
+		return containerPropertyGenerators.getList();
 	}
 
 	@Nullable
@@ -267,7 +267,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
-		return this.propertyNameResolvers.values();
+		return this.propertyNameResolvers.getList();
 	}
 
 	public PropertyNameResolver getPropertyNameResolver(Property property) {
@@ -282,7 +282,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<NullInjectGenerator>> getNullInjectGenerators() {
-		return this.nullInjectGenerators.values();
+		return this.nullInjectGenerators.getList();
 	}
 
 	public NullInjectGenerator getNullInjectGenerator(Property property) {
@@ -298,7 +298,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<ArbitraryContainerInfoGenerator>> getArbitraryContainerInfoGenerators() {
-		return this.arbitraryContainerInfoGenerators.values();
+		return this.arbitraryContainerInfoGenerators.getList();
 	}
 
 	public ArbitraryContainerInfoGenerator getArbitraryContainerInfoGenerator(Property property) {
@@ -350,7 +350,7 @@ public final class FixtureMonkeyOptions {
 	}
 
 	public List<MatcherOperator<CandidateConcretePropertyResolver>> getCandidateConcretePropertyResolvers() {
-		return candidateConcretePropertyResolvers.values();
+		return candidateConcretePropertyResolvers.getList();
 	}
 
 	/**
@@ -375,20 +375,20 @@ public final class FixtureMonkeyOptions {
 	public FixtureMonkeyOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
-			.arbitraryObjectPropertyGenerators(this.objectPropertyGenerators.values())
+			.arbitraryObjectPropertyGenerators(this.objectPropertyGenerators.getList())
 			.defaultObjectPropertyGenerator(defaultObjectPropertyGenerator)
-			.arbitraryContainerPropertyGenerators(this.containerPropertyGenerators.values())
-			.propertyNameResolvers(this.propertyNameResolvers.values())
+			.arbitraryContainerPropertyGenerators(this.containerPropertyGenerators.getList())
+			.propertyNameResolvers(this.propertyNameResolvers.getList())
 			.defaultPropertyNameResolver(this.defaultPropertyNameResolver)
-			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators.values()))
+			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators.getList()))
 			.defaultNullInjectGenerator(this.defaultNullInjectGenerator)
-			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators.values()))
+			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators.getList()))
 			.defaultArbitraryContainerInfoGenerator(this.defaultArbitraryContainerInfoGenerator)
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
 			.javaConstraintGenerator(javaConstraintGenerator)
 			.instantiatorProcessor(instantiatorProcessor)
-			.candidateConcretePropertyResolvers(new ArrayList<>(candidateConcretePropertyResolvers.values()))
+			.candidateConcretePropertyResolvers(new ArrayList<>(candidateConcretePropertyResolvers.getList()))
 			.builderContextInitializers(builderContextInitializers);
 	}
 

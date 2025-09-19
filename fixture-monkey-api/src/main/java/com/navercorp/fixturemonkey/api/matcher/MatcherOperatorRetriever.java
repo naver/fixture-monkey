@@ -18,14 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import java.util.List;
 
-import org.apiguardian.api.API;
+import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "1.1.16", status = EXPERIMENTAL)
-public interface MatcherOperatorRegistry<T> {
+public interface MatcherOperatorRetriever<T> {
 
-	void addFirst(MatcherOperator<T> matcherOperator);
+	List<MatcherOperator<T>> getList();
 
-	void addLast(MatcherOperator<T> matcherOperator);
+	List<MatcherOperator<T>> getListByProperty(Property property);
 }

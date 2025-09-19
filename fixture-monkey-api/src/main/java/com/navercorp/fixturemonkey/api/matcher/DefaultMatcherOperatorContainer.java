@@ -31,12 +31,14 @@ import java.util.stream.Collectors;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistry<T> {
+public final class DefaultMatcherOperatorContainer<T>
+	implements MatcherOperatorRegistry<T>, MatcherOperatorRetriever<T> {
 	private final AtomicInteger sequenceIssuer = new AtomicInteger(0);
 	private final List<PriorityMatcherOperator<T>> typeUnknownIntrospectors = new ArrayList<>();
 	private final Map<Class<?>, List<PriorityMatcherOperator<T>>> typeAwareIntrospectors = new HashMap<>();
 	private final Map<Class<?>, List<PriorityMatcherOperator<T>>> typeAssignableIntrospectors = new HashMap<>();
 
+	@Override
 	public void addFirst(MatcherOperator<T> matcherOperator) {
 		addInternal(matcherOperator, true);
 	}
@@ -90,7 +92,7 @@ public class DefaultMatcherOperatorRegistry<T> implements MatcherOperatorRegistr
 	}
 
 	@Override
-	public List<MatcherOperator<T>> values() {
+	public List<MatcherOperator<T>> getList() {
 		List<PriorityMatcherOperator<T>> acc = new ArrayList<>(typeUnknownIntrospectors);
 		typeAwareIntrospectors.values().forEach(acc::addAll);
 		typeAssignableIntrospectors.values().forEach(acc::addAll);
