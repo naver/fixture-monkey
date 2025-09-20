@@ -37,4 +37,8 @@ public final class AssignableTypeMatcher implements Matcher {
 		Class<?> propertyType = Types.getActualType(property.getType());
 		return this.type.isAssignableFrom(propertyType);
 	}
+
+	public Class<?> getAnchorType() {
+		return this.type;
+	}
 }

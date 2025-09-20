@@ -32,6 +32,10 @@ public final class ExactTypeMatcher implements Matcher {
 		this.type = type;
 	}
 
+	public Class<?> getType() {
+		return this.type;
+	}
+
 	@Override
 	public boolean match(Property property) {
 		return this.type == Types.getActualType(property.getType());
