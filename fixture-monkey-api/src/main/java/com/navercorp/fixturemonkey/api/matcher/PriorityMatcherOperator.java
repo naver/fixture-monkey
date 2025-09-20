@@ -24,8 +24,10 @@ import org.apiguardian.api.API;
 
 /**
  * A class that represents a matcher operator with a priority.
+ * Priority may be negative or positive. {@link DefaultMatcherOperatorContainer}
  * This class extends {@link MatcherOperator} and adds a priority field.
  * This class is intended for internal use only.
+ *
  *
  * @param <T> the type of the operator
  * @since 1.1.15
@@ -42,6 +44,7 @@ public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 		super(matcher, operator);
 		this.priority = priority;
 	}
+
 	/**
 	 * Returns the priority of this matcher operator.
 	 *
