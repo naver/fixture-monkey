@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
 public final class DefaultMatcherOperatorContainer<T>
 	implements MatcherOperatorRegistry<T>, MatcherOperatorRetriever<T> {
@@ -52,14 +53,17 @@ public final class DefaultMatcherOperatorContainer<T>
 	public List<MatcherOperator<T>> getListByProperty(Property property) {
 		Class<?> propertyType = Types.getActualType(property.getType());
 		List<PriorityMatcherOperator<T>> acc = new ArrayList<>(typeUnknownIntrospectors);
-		for (Map.Entry<Class<?>, List<PriorityMatcherOperator<T>>> e : typeAssignableIntrospectors.entrySet()) {
-			Class<?> anchorType = e.getKey();
-			if (anchorType.isAssignableFrom(propertyType)) {
-				acc.addAll(e.getValue());
-			}
-		}
 
-		acc.addAll(typeAwareIntrospectors.getOrDefault(propertyType, Collections.emptyList()));
+		if (propertyType != UnidentifiableType.class) {
+			for (Map.Entry<Class<?>, List<PriorityMatcherOperator<T>>> e : typeAssignableIntrospectors.entrySet()) {
+				Class<?> anchorType = e.getKey();
+				if (anchorType.isAssignableFrom(propertyType)) {
+					acc.addAll(e.getValue());
+				}
+			}
+
+			acc.addAll(typeAwareIntrospectors.getOrDefault(propertyType, Collections.emptyList()));
+		}
 
 		return acc.stream()
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))

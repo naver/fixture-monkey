@@ -6,11 +6,13 @@ import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.api.expression.TypedPropertySelector
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
+import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Field
+import java.lang.reflect.Type
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
@@ -356,7 +358,8 @@ internal fun <T> allIndexExpressionGenerator(property: KFunction1<T, Class<T>>, 
         key
     )
 
-class PropertyExpressionGenerator<F, T>(private val property: Property) : ExpressionGenerator, TypedPropertySelector<T> {
+class PropertyExpressionGenerator<F, T>(private val property: Property) : ExpressionGenerator,
+    TypedPropertySelector<T> {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         propertyNameResolver.resolve(property)
 }
@@ -472,10 +475,30 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
     private val fieldAnnotations: List<Annotation> =
         property.javaField?.annotations?.toList() ?: listOf()
 
-    override fun getType(): Class<*> = property.javaField?.type ?: Object::class.java
+    /**
+     * If backed only by a getter, {@code javaProperty} or {@code javaField} may be null and cause NPE.
+     * To avoid this, returns {@link Types.UnidentifiableType} when the type cannot be identified.
+     *
+     * @see com.navercorp.fixturemonkey.kotlin.expression.root
+     */
+    override fun getType(): Class<*> = property.javaField?.type ?: Types.UnidentifiableType::class.java
 
+    /**
+     * If backed only by a getter, {@code javaProperty} or {@code javaField} may be null and cause NPE.
+     * To avoid this, returns {@link Types.UnidentifiableType} when the type cannot be identified.
+     *
+     * @see com.navercorp.fixturemonkey.kotlin.expression.root
+     */
     override fun getAnnotatedType(): AnnotatedType =
-        property.javaField!!.annotatedType
+        property.javaField?.annotatedType ?: object : AnnotatedType {
+            override fun getType(): Type = Types.UnidentifiableType::class.java
+
+            override fun getAnnotations(): Array<Annotation> = emptyArray()
+
+            override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T? = null
+
+            override fun getDeclaredAnnotations(): Array<Annotation> = emptyArray()
+        }
 
     override fun getName(): String = property.name
 
