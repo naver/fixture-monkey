@@ -358,7 +358,8 @@ internal fun <T> allIndexExpressionGenerator(property: KFunction1<T, Class<T>>, 
         key
     )
 
-class PropertyExpressionGenerator<F, T>(private val property: Property) : ExpressionGenerator,
+class PropertyExpressionGenerator<F, T>(private val property: Property) :
+    ExpressionGenerator,
     TypedPropertySelector<T> {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         propertyNameResolver.resolve(property)
