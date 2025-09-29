@@ -1,18 +1,18 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kotlin.jvm)
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
 
 dependencies {
     api(project(":fixture-monkey"))
-    api("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT_JUPITER}")
+    api(libs.junit.jupiter.api)
 
     testImplementation(project(":fixture-monkey-javax-validation"))
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.KOTLIN}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.lombok)
+    testImplementation(libs.kotlin.stdlib)
+    testAnnotationProcessor(libs.lombok)
 }
 
 tasks.withType<Test> {

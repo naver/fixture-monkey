@@ -1,12 +1,12 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
-    id("org.jlleitschuh.gradle.ktlint") version Versions.KTLINT
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktlint)
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
 
 dependencies {
     api(project(":fixture-monkey-kotlin"))
-    api("io.kotest:kotest-property-jvm:${Versions.KOTEST}")
+    api(libs.kotest.property.jvm)
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN}")
+    implementation(libs.kotlin.reflect)
 }

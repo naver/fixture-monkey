@@ -1,18 +1,18 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
-    id("org.jlleitschuh.gradle.ktlint") version Versions.KTLINT
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktlint)
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
 
 dependencies {
     api(project(":fixture-monkey"))
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN}")
+    implementation(libs.kotlin.reflect)
 
     testImplementation(project(":fixture-monkey-jackson"))
     testImplementation(project(":fixture-monkey-javax-validation"))
-    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-    testImplementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
+    testImplementation(libs.jackson.module.kotlin)
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.engine)
+    testImplementation(libs.assertj.core)
 }

@@ -1,16 +1,16 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN}")
+    implementation(libs.kotlin.reflect)
 
     testImplementation(project(":fixture-monkey-kotlin"))
     testImplementation(project(":fixture-monkey-kotest"))
     testImplementation(project(":fixture-monkey-javax-validation"))
-    testImplementation("io.kotest:kotest-runner-junit5:${Versions.KOTEST}")
-    testImplementation("io.kotest:kotest-assertions-core:${Versions.KOTEST}")
-    testImplementation("io.kotest.extensions:kotest-property-arbs:2.1.2")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property.arbs)
+    testImplementation(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
 }

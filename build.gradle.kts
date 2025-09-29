@@ -1,9 +1,9 @@
 plugins {
     java
     `java-library`
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    id("org.jetbrains.kotlin.jvm") version Versions.KOTLIN apply false
-    id("nl.littlerobots.version-catalog-update") version "1.0.1"
+    alias(libs.plugins.nexus.publish)
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.version.catalog.update)
 }
 
 allprojects {
@@ -19,10 +19,12 @@ subprojects {
     }
 
     dependencies {
-        api("com.google.code.findbugs:jsr305:${Versions.FIND_BUGS_JSR305}")
-        implementation("com.google.code.findbugs:findbugs-annotations:${Versions.FIND_BUGS_ANNOTATIONS}")
-        compileOnly("org.slf4j:slf4j-api:${Versions.SLF4J}")
-        testImplementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
+        val libs = rootProject.libs
+
+        api(libs.google.jsr305)
+        implementation(libs.google.findbugs.annotations)
+        compileOnly(libs.slf4j.api)
+        testImplementation(libs.logback.classic)
     }
 
     tasks.javadoc { enabled = false }

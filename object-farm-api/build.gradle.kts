@@ -4,11 +4,11 @@ plugins {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-    testImplementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.engine)
+    testImplementation(libs.lombok)
+    testImplementation(libs.assertj.core)
+    testAnnotationProcessor(libs.lombok)
 }
 
 configurations.compileOnly {

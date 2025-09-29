@@ -5,11 +5,11 @@ plugins {
 
 dependencies {
     api(project(":fixture-monkey"))
-    api("org.mockito:mockito-core:${Versions.MOCKITO}")
+    api(libs.mockito.core)
 
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
 }
 
 
