@@ -3,6 +3,7 @@ plugins {
     `java-library`
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("org.jetbrains.kotlin.jvm") version Versions.KOTLIN apply false
+    id("nl.littlerobots.version-catalog-update") version "1.0.1"
 }
 
 allprojects {
