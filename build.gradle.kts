@@ -3,7 +3,6 @@ plugins {
     `java-library`
     alias(libs.plugins.nexus.publish)
     alias(libs.plugins.kotlin.jvm) apply false
-    alias(libs.plugins.version.catalog.update)
 }
 
 allprojects {
