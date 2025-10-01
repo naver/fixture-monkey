@@ -24,10 +24,11 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Specifies actual property comprise an instance.
@@ -99,6 +100,7 @@ public interface Property {
 	 * {@code false} represents it is not nullable.
 	 */
 	@Nullable
+	@SuppressFBWarnings("NP_BOOLEAN_RETURN_NULL")
 	default Boolean isNullable() {
 		return null;
 	}

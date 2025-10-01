@@ -21,10 +21,9 @@ package com.navercorp.fixturemonkey.api.jqwik;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;

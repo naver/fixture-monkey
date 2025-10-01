@@ -2,7 +2,7 @@ package com.navercorp.fixturemonkey.api.property;
 
 import java.util.Objects;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 

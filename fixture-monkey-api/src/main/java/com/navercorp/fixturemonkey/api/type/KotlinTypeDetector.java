@@ -20,10 +20,9 @@ package com.navercorp.fixturemonkey.api.type;
 
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 

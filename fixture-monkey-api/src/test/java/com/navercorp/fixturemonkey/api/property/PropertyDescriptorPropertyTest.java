@@ -23,9 +23,8 @@ import static org.assertj.core.api.BDDAssertions.then;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class PropertyDescriptorPropertyTest {
@@ -41,14 +40,14 @@ class PropertyDescriptorPropertyTest {
 		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
 		PropertyDescriptorProperty sut = new PropertyDescriptorProperty(propertyDescriptor);
 		then(sut.getAnnotations()).hasSize(1);
-		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(Nonnull.class);
+		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(NonNull.class);
 	}
 
 	@Test
 	void getAnnotation() {
 		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
 		PropertyDescriptorProperty sut = new PropertyDescriptorProperty(propertyDescriptor);
-		then(sut.getAnnotation(Nonnull.class)).isPresent();
+		then(sut.getAnnotation(NonNull.class)).isPresent();
 	}
 
 	@Test

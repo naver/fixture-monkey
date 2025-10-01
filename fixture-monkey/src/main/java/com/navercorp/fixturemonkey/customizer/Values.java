@@ -20,10 +20,9 @@ package com.navercorp.fixturemonkey.customizer;
 
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Provides static methods or constants for extensions of ArbitraryBuilder {@code set}.
