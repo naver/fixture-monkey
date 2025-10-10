@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.LongCombinableArbitrary
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.long
+import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.negativeLong
 import io.kotest.property.arbitrary.positiveLong
 import io.kotest.property.arbitrary.single
@@ -43,16 +44,16 @@ class KotestLongCombinableArbitrary(private val arb: Arb<Long> = Arb.long()) : L
     override fun negative(): LongCombinableArbitrary = KotestLongCombinableArbitrary(Arb.negativeLong())
 
     override fun even(): LongCombinableArbitrary =
-        KotestLongCombinableArbitrary(Arb.long().filter { it % 2 == 0.toLong() })
+        KotestLongCombinableArbitrary(Arb.long().map(::toEven))
 
     override fun odd(): LongCombinableArbitrary =
-        KotestLongCombinableArbitrary(Arb.long().filter { it % 2 != 0.toLong() })
+        KotestLongCombinableArbitrary(Arb.long().map(::toOdd))
 
     override fun nonZero(): LongCombinableArbitrary =
-        KotestLongCombinableArbitrary(Arb.long().filter { it != 0.toLong() })
+        KotestLongCombinableArbitrary(Arb.long().map(::ensureNonZero))
 
     override fun multipleOf(divisor: Long): LongCombinableArbitrary =
-        KotestLongCombinableArbitrary(Arb.long().filter { it % divisor == 0.toLong() })
+        KotestLongCombinableArbitrary(Arb.long().map { toMultipleOf(it, divisor) })
 
     override fun filter(tries: Int, predicate: Predicate<Long>): LongCombinableArbitrary =
         KotestLongCombinableArbitrary(Arb.long().filter(predicate::test))
@@ -61,4 +62,18 @@ class KotestLongCombinableArbitrary(private val arb: Arb<Long> = Arb.long()) : L
     }
 
     override fun fixed(): Boolean = false
+
+    companion object {
+        private fun toEven(value: Long): Long = value and -2L
+
+        private fun toOdd(value: Long): Long = toEven(value) or 1L
+
+        private fun ensureNonZero(value: Long): Long = if (value == 0L) 1L else value
+
+        private fun toMultipleOf(value: Long, divisor: Long): Long {
+            require(divisor != 0L) { "divisor must not be zero." }
+            val remainder = value % divisor
+            return if (remainder == 0L) value else value - remainder
+        }
+    }
 }

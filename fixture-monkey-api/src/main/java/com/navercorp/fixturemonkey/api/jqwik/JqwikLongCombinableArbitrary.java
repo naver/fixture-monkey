@@ -67,22 +67,33 @@ public final class JqwikLongCombinableArbitrary implements LongCombinableArbitra
 
 	@Override
 	public LongCombinableArbitrary even() {
-		return new JqwikLongCombinableArbitrary(Arbitraries.longs().filter(it -> it % 2 == 0));
+		return new JqwikLongCombinableArbitrary(
+			Arbitraries.longs().map(JqwikLongCombinableArbitrary::toEven)
+		);
 	}
 
 	@Override
 	public LongCombinableArbitrary odd() {
-		return new JqwikLongCombinableArbitrary(Arbitraries.longs().filter(it -> it % 2 != 0));
+		return new JqwikLongCombinableArbitrary(
+			Arbitraries.longs().map(JqwikLongCombinableArbitrary::toOdd)
+		);
 	}
 
 	@Override
 	public LongCombinableArbitrary nonZero() {
-		return new JqwikLongCombinableArbitrary(Arbitraries.longs().filter(it -> it != 0));
+		return new JqwikLongCombinableArbitrary(
+			Arbitraries.longs().map(JqwikLongCombinableArbitrary::ensureNonZero)
+		);
 	}
 
 	@Override
 	public LongCombinableArbitrary multipleOf(long divisor) {
-		return new JqwikLongCombinableArbitrary(Arbitraries.longs().filter(it -> it % divisor == 0));
+		if (divisor == 0L) {
+			throw new IllegalArgumentException("divisor must not be zero.");
+		}
+		return new JqwikLongCombinableArbitrary(
+			Arbitraries.longs().map(it -> toMultipleOf(it, divisor))
+		);
 	}
 
 	@Override
@@ -93,5 +104,25 @@ public final class JqwikLongCombinableArbitrary implements LongCombinableArbitra
 	@Override
 	public boolean fixed() {
 		return false;
+	}
+
+	private static long toEven(long value) {
+		return value & ~1L;
+	}
+
+	private static long toOdd(long value) {
+		return (value & ~1L) | 1L;
+	}
+
+	private static long ensureNonZero(long value) {
+		return value == 0L ? 1L : value;
+	}
+
+	private static long toMultipleOf(long value, long divisor) {
+		long remainder = value % divisor;
+		if (remainder == 0L) {
+			return value;
+		}
+		return value - remainder;
 	}
 }
