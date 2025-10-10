@@ -95,14 +95,14 @@ public final class JqwikBigIntegerCombinableArbitrary implements BigIntegerCombi
 	@Override
 	public BigIntegerCombinableArbitrary even() {
 		return new JqwikBigIntegerCombinableArbitrary(
-			Arbitraries.bigIntegers().filter(it -> it.mod(TWO).equals(BigInteger.ZERO))
+			Arbitraries.bigIntegers().filter(it -> it.remainder(TWO).equals(BigInteger.ZERO))
 		);
 	}
 
 	@Override
 	public BigIntegerCombinableArbitrary odd() {
 		return new JqwikBigIntegerCombinableArbitrary(
-			Arbitraries.bigIntegers().filter(it -> it.mod(TWO).equals(BigInteger.ONE))
+			Arbitraries.bigIntegers().filter(it -> it.remainder(TWO).abs().equals(BigInteger.ONE))
 		);
 	}
 
@@ -117,8 +117,8 @@ public final class JqwikBigIntegerCombinableArbitrary implements BigIntegerCombi
 	public BigIntegerCombinableArbitrary prime() {
 		return new JqwikBigIntegerCombinableArbitrary(
 			Arbitraries.bigIntegers()
-				.greaterOrEqual(BigInteger.valueOf(2))
-				.filter(it -> it.isProbablePrime(20))
+				.between(BigInteger.valueOf(2), BigInteger.valueOf(1000))
+				.filter(it -> it.isProbablePrime(10))
 		);
 	}
 

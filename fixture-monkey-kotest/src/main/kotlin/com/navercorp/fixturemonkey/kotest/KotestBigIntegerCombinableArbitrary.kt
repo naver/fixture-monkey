@@ -39,22 +39,22 @@ class KotestBigIntegerCombinableArbitrary(
 
     override fun withRange(min: BigInteger, max: BigInteger): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(64).filter { it in min..max }
+            Arb.bigInt(min.bitLength().coerceAtLeast(max.bitLength()) + 1).filter { it in min..max }
         )
 
     override fun positive(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(64).filter { it > BigInteger.ZERO }
+            Arb.bigInt(32).filter { it > BigInteger.ZERO }
         )
 
     override fun negative(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(64).filter { it < BigInteger.ZERO }
+            Arb.bigInt(32).filter { it < BigInteger.ZERO }
         )
 
     override fun nonZero(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(64).filter { it != BigInteger.ZERO }
+            Arb.bigInt(32).filter { it != BigInteger.ZERO }
         )
 
     override fun percentage(): BigIntegerCombinableArbitrary =
@@ -67,22 +67,25 @@ class KotestBigIntegerCombinableArbitrary(
 
     override fun even(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(64).filter { it % BigInteger.valueOf(2) == BigInteger.ZERO }
+            Arb.bigInt(32).filter { it % BigInteger.valueOf(2) == BigInteger.ZERO }
         )
 
     override fun odd(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(64).filter { it % BigInteger.valueOf(2) != BigInteger.ZERO }
+            Arb.bigInt(32).filter { it.remainder(BigInteger.valueOf(2)).abs() == BigInteger.ONE }
         )
 
     override fun multipleOf(divisor: BigInteger): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(64).filter { it % divisor == BigInteger.ZERO }
+            Arb.bigInt(32).filter { it % divisor == BigInteger.ZERO }
         )
 
     override fun prime(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(32).filter { it > BigInteger.ONE && it.isProbablePrime(100) }
+            Arb.bigInt(10).filter { 
+                val value = it.abs()
+                value >= BigInteger.valueOf(2) && value <= BigInteger.valueOf(1000) && value.isProbablePrime(10)
+            }
         )
 
     override fun filter(tries: Int, predicate: Predicate<BigInteger>): BigIntegerCombinableArbitrary =
