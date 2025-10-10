@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
+    api(projects.fixtureMonkey)
     api(libs.mockito.core)
 
     testImplementation(libs.assertj.core)

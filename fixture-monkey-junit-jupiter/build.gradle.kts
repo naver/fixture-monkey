@@ -5,10 +5,10 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
+    api(projects.fixtureMonkey)
     api(libs.junit.jupiter.api)
 
-    testImplementation(project(":fixture-monkey-javax-validation"))
+    testImplementation(projects.fixtureMonkeyJavaxValidation)
     testImplementation(libs.assertj.core)
     testImplementation(libs.lombok)
     testImplementation(libs.kotlin.stdlib)

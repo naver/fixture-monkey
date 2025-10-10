@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    testImplementation(project(":fixture-monkey-kotlin"))
+    testImplementation(projects.fixtureMonkeyKotlin)
 }

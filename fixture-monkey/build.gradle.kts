@@ -4,14 +4,14 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":fixture-monkey-engine"))
-    api(project(":fixture-monkey-api"))
+    runtimeOnly(projects.fixtureMonkeyEngine)
+    api(projects.fixtureMonkeyApi)
     api(libs.slf4j.api)
     api(libs.jqwik)
     api(libs.rgxgen)
     api(libs.generex)
 
-    testRuntimeOnly(project(":fixture-monkey-engine"))
+    testRuntimeOnly(projects.fixtureMonkeyEngine)
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(libs.junit.platform.engine)
     testImplementation(libs.assertj.core)

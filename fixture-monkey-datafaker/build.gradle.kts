@@ -5,13 +5,13 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey-api"))
+    api(projects.fixtureMonkeyApi)
     implementation(libs.datafaker)
     implementation(libs.kotlin.reflect)
 
     testAnnotationProcessor(libs.lombok)
 
-    testImplementation(project(":fixture-monkey"))
+    testImplementation(projects.fixtureMonkey)
     testImplementation(libs.lombok)
     implementation(libs.kotlin.stdlib.jdk8)
 }

@@ -5,12 +5,12 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
+    api(projects.fixtureMonkey)
 
     implementation(libs.kotlin.reflect)
 
-    testImplementation(project(":fixture-monkey-jackson"))
-    testImplementation(project(":fixture-monkey-javax-validation"))
+    testImplementation(projects.fixtureMonkeyJackson)
+    testImplementation(projects.fixtureMonkeyJavaxValidation)
     testImplementation(libs.jackson.module.kotlin)
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(libs.junit.platform.engine)

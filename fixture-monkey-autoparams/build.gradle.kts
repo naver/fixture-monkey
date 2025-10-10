@@ -4,11 +4,11 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
+    api(projects.fixtureMonkey)
     api(libs.autoparams)
-    compileOnly(project(":fixture-monkey-engine"))
+    compileOnly(projects.fixtureMonkeyEngine)
 
-    testImplementation(project(":fixture-monkey-engine"))
+    testImplementation(projects.fixtureMonkeyEngine)
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(libs.junit.platform.engine)
     testImplementation(libs.assertj.core)

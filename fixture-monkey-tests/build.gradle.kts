@@ -6,9 +6,10 @@ allprojects {
 subprojects {
     dependencies {
         val libs = rootProject.libs
+        val projects = rootProject.projects
 
-        testImplementation(project(":fixture-monkey"))
-        testImplementation(project(":fixture-monkey-tests"))
+        testImplementation(projects.fixtureMonkey)
+        testImplementation(projects.fixtureMonkeyTests)
         testImplementation(libs.junit.jupiter.api)
         testImplementation(libs.junit.jupiter.engine)
         testImplementation(libs.assertj.core)

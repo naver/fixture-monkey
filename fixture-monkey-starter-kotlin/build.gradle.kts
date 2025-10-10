@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey-starter"))
-    api(project(":fixture-monkey-kotlin"))
+    api(projects.fixtureMonkeyStarter)
+    api(projects.fixtureMonkeyKotlin)
 
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.engine)

@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
-    api(project(":fixture-monkey-jakarta-validation"))
+    api(projects.fixtureMonkey)
+    api(projects.fixtureMonkeyJakartaValidation)
 
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.engine)

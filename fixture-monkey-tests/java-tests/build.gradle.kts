@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    testImplementation(project(":fixture-monkey-javax-validation"))
-    testImplementation(project(":fixture-monkey-datafaker"))
-    testImplementation(project(":fixture-monkey-jackson"))
+    testImplementation(projects.fixtureMonkeyJavaxValidation)
+    testImplementation(projects.fixtureMonkeyDatafaker)
+    testImplementation(projects.fixtureMonkeyJackson)
     testImplementation(libs.jspecify)
     testImplementation(libs.checker.qual)
     testImplementation(libs.lombok)

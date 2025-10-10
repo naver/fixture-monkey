@@ -24,7 +24,7 @@ multiReleaseVersions.forEach { releaseVersion ->
 
 dependencies {
     api(libs.apiguardian.api)
-    api(project(":object-farm-api"))
+    api(projects.objectFarmApi)
 
     compileOnly(libs.jqwik.engine)
     compileOnly(libs.jqwik.api)

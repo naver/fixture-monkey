@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey-kotlin"))
-    jmhImplementation(testFixtures(project(":fixture-monkey-benchmarks:fixture-monkey-benchmark")))
+    api(projects.fixtureMonkeyKotlin)
+    jmhImplementation(testFixtures(projects.fixtureMonkeyBenchmarks.fixtureMonkeyBenchmark))
 }
 
 jmh {

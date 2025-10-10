@@ -18,15 +18,16 @@ subprojects {
 
     dependencies {
         val libs = rootProject.libs
+        val projects = rootProject.projects
 
-        jmhImplementation(project(":fixture-monkey-javax-validation"))
-        jmhImplementation(project(":fixture-monkey-jackson"))
+        jmhImplementation(projects.fixtureMonkeyJavaxValidation)
+        jmhImplementation(projects.fixtureMonkeyJackson)
         jmhImplementation(libs.jmh.core)
         jmhImplementation(libs.jmh.generator.annprocess)
         jmhImplementation(libs.lombok)
         jmhAnnotationProcessor(libs.lombok)
 
-        testFixturesApi(project(":fixture-monkey-javax-validation"))
+        testFixturesApi(projects.fixtureMonkeyJavaxValidation)
         testFixturesApi(libs.jmh.core)
         testFixturesApi(libs.jmh.generator.annprocess)
         testFixturesApi(libs.lombok)

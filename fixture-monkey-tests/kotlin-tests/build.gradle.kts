@@ -5,9 +5,9 @@ plugins {
 dependencies {
     implementation(libs.kotlin.reflect)
 
-    testImplementation(project(":fixture-monkey-kotlin"))
-    testImplementation(project(":fixture-monkey-kotest"))
-    testImplementation(project(":fixture-monkey-javax-validation"))
+    testImplementation(projects.fixtureMonkeyKotlin)
+    testImplementation(projects.fixtureMonkeyKotest)
+    testImplementation(projects.fixtureMonkeyJavaxValidation)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property.arbs)

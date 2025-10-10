@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
+    api(projects.fixtureMonkey)
     api(libs.jackson.databind)
     api(libs.jackson.datatype.jdk8)
     api(libs.jackson.datatype.jsr310)

@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey-kotlin"))
+    api(projects.fixtureMonkeyKotlin)
     api(libs.kotest.property.jvm)
 
     implementation(libs.kotlin.reflect)

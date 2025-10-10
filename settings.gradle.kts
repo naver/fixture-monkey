@@ -37,5 +37,7 @@ include(
         "fixture-monkey-benchmarks",
         "fixture-monkey-benchmarks:fixture-monkey-benchmark",
         "fixture-monkey-benchmarks:fixture-monkey-benchmark-kotlin",
-        'fixture-monkey-datafaker',
+        "fixture-monkey-datafaker",
 )
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
