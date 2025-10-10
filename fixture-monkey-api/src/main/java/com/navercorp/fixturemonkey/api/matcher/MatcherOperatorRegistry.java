@@ -18,13 +18,15 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.apiguardian.api.API.Status.INTERNAL;
 
 import org.apiguardian.api.API;
 
-@API(since = "1.1.16", status = EXPERIMENTAL)
+/**
+ * It is for internal use only.
+ */
+@API(since = "1.1.16", status = INTERNAL)
 public interface MatcherOperatorRegistry<T> {
-
 	void addFirst(MatcherOperator<T> matcherOperator);
 
 	void addLast(MatcherOperator<T> matcherOperator);

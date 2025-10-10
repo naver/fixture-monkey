@@ -19,6 +19,8 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import static org.apiguardian.api.API.Status.INTERNAL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,10 +30,16 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.apiguardian.api.API;
+
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
+/**
+ * It is for internal use only.
+ */
+@API(since = "1.1.16", status = INTERNAL)
 public final class DefaultMatcherOperatorContainer<T>
 	implements MatcherOperatorRegistry<T>, MatcherOperatorRetriever<T> {
 	private final AtomicInteger sequenceIssuer = new AtomicInteger(0);
@@ -54,16 +62,20 @@ public final class DefaultMatcherOperatorContainer<T>
 		Class<?> propertyType = Types.getActualType(property.getType());
 		List<PriorityMatcherOperator<T>> acc = new ArrayList<>(typeUnknownIntrospectors);
 
-		if (propertyType != UnidentifiableType.class) {
-			for (Map.Entry<Class<?>, List<PriorityMatcherOperator<T>>> e : typeAssignableIntrospectors.entrySet()) {
-				Class<?> anchorType = e.getKey();
-				if (anchorType.isAssignableFrom(propertyType)) {
-					acc.addAll(e.getValue());
-				}
-			}
-
-			acc.addAll(typeAwareIntrospectors.getOrDefault(propertyType, Collections.emptyList()));
+		if (propertyType == UnidentifiableType.class) {
+			return typeAssignableIntrospectors.getOrDefault(propertyType, Collections.emptyList()).stream()
+				.map(it -> (MatcherOperator<T>)it)
+				.collect(Collectors.toList());
 		}
+
+		for (Map.Entry<Class<?>, List<PriorityMatcherOperator<T>>> e : typeAssignableIntrospectors.entrySet()) {
+			Class<?> anchorType = e.getKey();
+			if (anchorType.isAssignableFrom(propertyType)) {
+				acc.addAll(e.getValue());
+			}
+		}
+
+		acc.addAll(typeAwareIntrospectors.getOrDefault(propertyType, Collections.emptyList()));
 
 		return acc.stream()
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
