@@ -21,6 +21,9 @@ package com.navercorp.fixturemonkey.kotest
 import com.navercorp.fixturemonkey.api.arbitrary.BigIntegerCombinableArbitrary
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.bigInt
+import io.kotest.property.arbitrary.constant
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
@@ -30,7 +33,7 @@ import java.util.function.Predicate
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 class KotestBigIntegerCombinableArbitrary(
-    private val arb: Arb<BigInteger> = Arb.bigInt(32)
+    private val arb: Arb<BigInteger> = Arb.bigInt(maxNumBits = DEFAULT_MAX_NUM_BITS)
 ) : BigIntegerCombinableArbitrary {
 
     override fun combined(): BigInteger = arb.single()
@@ -38,28 +41,26 @@ class KotestBigIntegerCombinableArbitrary(
     override fun rawValue(): BigInteger = this.combined()
 
     override fun withRange(min: BigInteger, max: BigInteger): BigIntegerCombinableArbitrary =
-        KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(min.bitLength().coerceAtLeast(max.bitLength()) + 1).filter { it in min..max }
-        )
+        KotestBigIntegerCombinableArbitrary(bigIntegersInRange(min, max))
 
     override fun positive(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(32).filter { it > BigInteger.ZERO }
+            Arb.bigInt(maxNumBits = DEFAULT_MAX_NUM_BITS).map(::toPositive)
         )
 
     override fun negative(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(32).filter { it < BigInteger.ZERO }
+            Arb.bigInt(maxNumBits = DEFAULT_MAX_NUM_BITS).map { toPositive(it).negate() }
         )
 
     override fun nonZero(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(32).filter { it != BigInteger.ZERO }
+            Arb.bigInt(maxNumBits = DEFAULT_MAX_NUM_BITS).map(::ensureNonZero)
         )
 
     override fun percentage(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(7).filter { it >= BigInteger.ZERO && it <= BigInteger.valueOf(100) }
+            Arb.int(0..100).map { BigInteger.valueOf(it.toLong()) }
         )
 
     override fun score(min: BigInteger, max: BigInteger): BigIntegerCombinableArbitrary =
@@ -67,25 +68,25 @@ class KotestBigIntegerCombinableArbitrary(
 
     override fun even(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(32).filter { it % BigInteger.valueOf(2) == BigInteger.ZERO }
+            Arb.bigInt(maxNumBits = EVEN_MAX_NUM_BITS).map { it.shiftLeft(1) }
         )
 
     override fun odd(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(32).filter { it.remainder(BigInteger.valueOf(2)).abs() == BigInteger.ONE }
+            Arb.bigInt(maxNumBits = EVEN_MAX_NUM_BITS).map { it.shiftLeft(1).add(BigInteger.ONE) }
         )
 
     override fun multipleOf(divisor: BigInteger): BigIntegerCombinableArbitrary =
-        KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(32).filter { it % divisor == BigInteger.ZERO }
-        )
+        when {
+            divisor == BigInteger.ZERO -> throw ArithmeticException("Division by zero")
+            else -> KotestBigIntegerCombinableArbitrary(
+                Arb.bigInt(maxNumBits = DEFAULT_MAX_NUM_BITS).map { it.multiply(divisor) }
+            )
+        }
 
     override fun prime(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(10).filter {
-                val value = it.abs()
-                value >= BigInteger.valueOf(2) && value <= BigInteger.valueOf(1000) && value.isProbablePrime(10)
-            }
+            Arb.int(0..PRIME_CANDIDATES.lastIndex).map { PRIME_CANDIDATES[it] }
         )
 
     override fun filter(tries: Int, predicate: Predicate<BigInteger>): BigIntegerCombinableArbitrary =
@@ -95,4 +96,48 @@ class KotestBigIntegerCombinableArbitrary(
     }
 
     override fun fixed(): Boolean = false
+
+    companion object {
+        private const val DEFAULT_MAX_NUM_BITS = 32
+        private const val EVEN_MAX_NUM_BITS = DEFAULT_MAX_NUM_BITS - 1
+
+        private val PRIME_CANDIDATES: List<BigInteger> = buildList {
+            val limit = 1000
+            val isComposite = BooleanArray(limit + 1)
+            for (candidate in 2..limit) {
+                if (!isComposite[candidate]) {
+                    add(BigInteger.valueOf(candidate.toLong()))
+                    var multiple = candidate * 2
+                    while (multiple <= limit) {
+                        isComposite[multiple] = true
+                        multiple += candidate
+                    }
+                }
+            }
+        }
+
+        private fun toPositive(candidate: BigInteger): BigInteger {
+            val absValue = candidate.abs()
+            return if (absValue == BigInteger.ZERO) BigInteger.ONE else absValue
+        }
+
+        private fun ensureNonZero(candidate: BigInteger): BigInteger =
+            if (candidate == BigInteger.ZERO) BigInteger.ONE else candidate
+
+        private fun bigIntegersInRange(min: BigInteger, max: BigInteger): Arb<BigInteger> {
+            if (min == max) {
+                return Arb.constant(min)
+            }
+
+            val (lower, upper) = if (min <= max) min to max else max to min
+            val span = upper.subtract(lower)
+            val spanPlusOne = span.add(BigInteger.ONE)
+            val bitLength = spanPlusOne.bitLength().coerceAtLeast(1)
+
+            return Arb.bigInt(maxNumBits = bitLength).map { candidate ->
+                val offset = candidate.abs().mod(spanPlusOne)
+                lower.add(offset)
+            }
+        }
+    }
 }
