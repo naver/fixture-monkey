@@ -21,8 +21,8 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.math.BigInteger;
-import java.util.stream.IntStream;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -428,8 +428,8 @@ class BigIntegerCombinableArbitraryTest {
 
 		BigInteger sqrt = sqrt(number);
 		for (BigInteger index = BigInteger.valueOf(3);
-			 index.compareTo(sqrt) <= 0;
-			 index = index.add(BigInteger.valueOf(2))) {
+			index.compareTo(sqrt) <= 0;
+			index = index.add(BigInteger.valueOf(2))) {
 			if (number.remainder(index).equals(BigInteger.ZERO)) {
 				return false;
 			}
