@@ -15,17 +15,37 @@ jobs:
   jmh:
     name: Run benchmark
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        benchmark-module: 
+          - 'fixture-monkey-benchmark'
+          - 'fixture-monkey-benchmark-kotlin'
     steps:
       - uses: actions/checkout@v2
-      - name: Execute benchmark
+      - name: Execute benchmark for ${{ matrix.benchmark-module }}
         uses: gradle/gradle-build-action@v2.4.2
         with:
-          arguments: jmh
+          arguments: :fixture-monkey-benchmarks:${{ matrix.benchmark-module }}:jmh
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ matrix.benchmark-module }}
+          path: ./fixture-monkey-benchmarks/${{ matrix.benchmark-module }}/build/results/jmh/results.csv
+
+  merge-results:
+    name: Merge benchmark results
+    needs: jmh
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          path: ./benchmark-results
       - name: Merge benchmark results
         id: merge
         run: |
           echo "" > merged_results.csv
-          find ./fixture-monkey-benchmarks -name 'results.csv' | while read line; do
+          find ./benchmark-results -name 'results.csv' | while read line; do
             cat "$line" >> merged_results.csv
             echo "" >> merged_results.csv
           done

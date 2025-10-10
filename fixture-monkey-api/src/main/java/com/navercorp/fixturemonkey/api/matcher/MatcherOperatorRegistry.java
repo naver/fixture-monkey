@@ -16,14 +16,18 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.option;
+package com.navercorp.fixturemonkey.api.matcher;
+
+import static org.apiguardian.api.API.Status.INTERNAL;
 
 import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
-@API(since = "1.0.14", status = Status.INTERNAL)
-public final class JdkVariantOptions {
-	public void apply(FixtureMonkeyOptionsBuilder optionsBuilder) {
-		// omitted because JDK8 is a default version
-	}
+/**
+ * It is for internal use only.
+ */
+@API(since = "1.1.16", status = INTERNAL)
+public interface MatcherOperatorRegistry<T> {
+	void addFirst(MatcherOperator<T> matcherOperator);
+
+	void addLast(MatcherOperator<T> matcherOperator);
 }

@@ -19,6 +19,8 @@
 object Versions {
     const val FIND_BUGS_JSR305 = "3.0.2"
     const val FIND_BUGS_ANNOTATIONS = "3.0.1"
+    const val JSPECIFY = "1.0.0"
+    const val CHECKER_QUAL = "3.50.0"
     const val SLF4J = "1.7.25"
     const val LOGBACK = "1.2.9"
     const val JUNIT_ENGINE = "1.9.1"
