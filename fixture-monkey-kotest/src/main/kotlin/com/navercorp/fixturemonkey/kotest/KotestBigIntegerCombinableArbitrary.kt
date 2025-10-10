@@ -82,7 +82,7 @@ class KotestBigIntegerCombinableArbitrary(
 
     override fun prime(): BigIntegerCombinableArbitrary =
         KotestBigIntegerCombinableArbitrary(
-            Arb.bigInt(10).filter { 
+            Arb.bigInt(10).filter {
                 val value = it.abs()
                 value >= BigInteger.valueOf(2) && value <= BigInteger.valueOf(1000) && value.isProbablePrime(10)
             }
