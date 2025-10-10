@@ -24,8 +24,10 @@ import org.apiguardian.api.API;
 
 /**
  * A class that represents a matcher operator with a priority.
+ * Priority may be negative or positive. {@link DefaultMatcherOperatorContainer}
  * This class extends {@link MatcherOperator} and adds a priority field.
  * This class is intended for internal use only.
+ *
  *
  * @param <T> the type of the operator
  * @since 1.1.15
@@ -40,7 +42,6 @@ public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 		int priority
 	) {
 		super(matcher, operator);
-		checkPriority(priority);
 		this.priority = priority;
 	}
 
@@ -51,17 +52,5 @@ public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 	 */
 	public int getPriority() {
 		return priority;
-	}
-
-	/**
-	 * Checks if the priority is valid.
-	 *
-	 * @param priority the priority to be checked
-	 * @throws IllegalArgumentException if the priority is less than 0
-	 */
-	private void checkPriority(int priority) {
-		if (priority < 0) {
-			throw new IllegalArgumentException("Priority must be greater than or equal to 0");
-		}
 	}
 }

@@ -43,7 +43,8 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			"org.springframework.lang.Nullable",
 			"org.checkerframework.checker.nullness.qual.Nullable",
 			"org.eclipse.jgit.annotations.Nullable",
-			"org.jmlspecs.annotation.Nullable"
+			"org.jmlspecs.annotation.Nullable",
+			"org.jspecify.annotations.Nullable"
 		)
 	);
 
@@ -55,7 +56,8 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			"jakarta.validation.constraints.NotNull",
 			"org.springframework.lang.NonNull",
 			"org.checkerframework.checker.nullness.qual.NonNull",
-			"org.jmlspecs.annotation.NonNull"
+			"org.jmlspecs.annotation.NonNull",
+			"org.jspecify.annotations.NonNull"
 		)
 	);
 

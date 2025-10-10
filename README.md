@@ -226,6 +226,7 @@ Originally developed at [Naver](https://www.navercorp.com/en), Fixture Monkey ha
 * [TestFixture를 쉽게 생성해 주는 라이브러리가 있다?](https://oliveyoung.tech/blog/2024-04-01/testcode-use-fixture-monkey/)
 * [Fixture Monkey로 테스트 픽스처를 쉽게 생성하고 리팩토링 해보자](https://jxmen.github.io/wiki/project/cs-ai-interviewer/refactoring-with-fixture-monkey/)
 * [Fixture Monkey를 적용해보자 w/JPA Test](https://currenjin.github.io/wiki/fixture-monkey-with-jpa/#fixture-monkey%EB%A5%BC-%EC%A0%81%EC%9A%A9%ED%95%B4%EB%B3%B4%EC%9E%90)
+* [[Fixture Monkey] 불변 객체를 위한 사용자 정의 인트로스펙터 예제 코드](https://the0.tistory.com/93)
 
 Welcome to write articles about Fixture Monkey!
 Please make an issue to let us know if you'd like to share your post.

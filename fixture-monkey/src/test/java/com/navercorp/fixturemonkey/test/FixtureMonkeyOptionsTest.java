@@ -874,14 +874,6 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Property
-	void registerWithPriorityLessThenZero() {
-		thenThrownBy(() -> FixtureMonkey.builder()
-			.register(String.class, monkey -> monkey.giveMeBuilder("test"), -1)
-			.build()
-		).isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Priority must be greater than or equal to 0");
-	}
 
 	@Property
 	void nullableElement() {
