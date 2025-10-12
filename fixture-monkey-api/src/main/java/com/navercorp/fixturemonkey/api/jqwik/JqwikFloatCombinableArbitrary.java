@@ -132,10 +132,13 @@ public final class JqwikFloatCombinableArbitrary implements FloatCombinableArbit
 		return new JqwikFloatCombinableArbitrary(
 			Arbitraries.oneOf(
 				this.floatArbitrary,
-				Arbitraries.of(Float.NaN),
-				Arbitraries.of(Float.MIN_VALUE),
-				Arbitraries.of(Float.POSITIVE_INFINITY),
-				Arbitraries.of(Float.NEGATIVE_INFINITY)
+				Arbitraries.of(
+					Float.NaN,
+					Float.MIN_VALUE,
+					Float.MIN_NORMAL,
+					Float.POSITIVE_INFINITY,
+					Float.NEGATIVE_INFINITY
+				)
 			)
 		);
 	}
