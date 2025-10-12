@@ -1112,6 +1112,18 @@ class KotestInJunitTest {
         then(actual).isBetween(10.toShort(), 20.toShort())
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun shortCombinableArbitraryWithRangeThenMultipleOf() {
+        val actual = CombinableArbitrary
+            .shorts()
+            .withRange(10.toShort(), 14.toShort())
+            .multipleOf(6.toShort())
+            .combined()
+
+        then(actual).isBetween(10.toShort(), 14.toShort())
+        then(actual % 6).isEqualTo(0)
+    }
+
     @Test
     fun stringCombinableArbitrary() {
         val actual = CombinableArbitrary.strings()

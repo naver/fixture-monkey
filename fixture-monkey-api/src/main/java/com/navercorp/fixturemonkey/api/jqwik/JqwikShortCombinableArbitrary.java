@@ -67,22 +67,26 @@ public final class JqwikShortCombinableArbitrary implements ShortCombinableArbit
 
 	@Override
 	public ShortCombinableArbitrary even() {
-		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().filter(it -> it % 2 == 0));
+		return new JqwikShortCombinableArbitrary(this.shortArbitrary.map(it -> (short)(it & ~1)));
 	}
 
 	@Override
 	public ShortCombinableArbitrary odd() {
-		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().filter(it -> it % 2 != 0));
+		return new JqwikShortCombinableArbitrary(this.shortArbitrary.map(it -> (short)(it | 1)));
 	}
 
 	@Override
 	public ShortCombinableArbitrary nonZero() {
-		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().filter(it -> it != 0));
+		return new JqwikShortCombinableArbitrary(
+			this.shortArbitrary.map(JqwikShortCombinableArbitrary::ensureNonZero)
+		);
 	}
 
 	@Override
 	public ShortCombinableArbitrary multipleOf(short value) {
-		return new JqwikShortCombinableArbitrary(Arbitraries.shorts().filter(it -> it % value == 0));
+		return new JqwikShortCombinableArbitrary(
+			this.shortArbitrary.map(it -> toMultipleOf(it, value))
+		);
 	}
 
 	@Override
@@ -128,5 +132,14 @@ public final class JqwikShortCombinableArbitrary implements ShortCombinableArbit
 	@Override
 	public boolean fixed() {
 		return false;
+	}
+
+	private static short ensureNonZero(short value) {
+		return value != 0 ? value : 1;
+	}
+
+	private static short toMultipleOf(short candidate, short divisor) {
+		int remainder = Math.floorMod(candidate, divisor);
+		return (short)(candidate - remainder);
 	}
 }

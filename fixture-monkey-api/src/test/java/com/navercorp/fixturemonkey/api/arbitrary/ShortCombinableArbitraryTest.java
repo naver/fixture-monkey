@@ -117,6 +117,17 @@ class ShortCombinableArbitraryTest {
 	}
 
 	@Test
+	void multipleOfRespectsRange() {
+		// when
+		boolean allWithinRange = IntStream.range(0, 100)
+			.mapToObj(i -> CombinableArbitrary.shorts().withRange((short)10, (short)14).multipleOf((short)6).combined())
+			.allMatch(value -> value >= 10 && value <= 14 && value % 6 == 0);
+
+		// then
+		then(allWithinRange).isTrue();
+	}
+
+	@Test
 	void percentage() {
 		// when
 		boolean allPercentage = IntStream.range(0, 100)
