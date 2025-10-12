@@ -67,7 +67,10 @@ public final class JqwikCharacterCombinableArbitrary implements CharacterCombina
 	@Override
 	public CharacterCombinableArbitrary alphaNumeric() {
 		return new JqwikCharacterCombinableArbitrary(
-			Arbitraries.chars().alpha().numeric()
+			Arbitraries.oneOf(
+				Arbitraries.chars().alpha(),
+				Arbitraries.chars().numeric()
+			)
 		);
 	}
 
