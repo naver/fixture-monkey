@@ -137,10 +137,13 @@ public final class JqwikDoubleCombinableArbitrary implements DoubleCombinableArb
 		return new JqwikDoubleCombinableArbitrary(
 			Arbitraries.oneOf(
 				this.doubleArbitrary,
-				Arbitraries.of(Double.NaN),
-				Arbitraries.of(Double.MIN_VALUE),
-				Arbitraries.of(Double.POSITIVE_INFINITY),
-				Arbitraries.of(Double.NEGATIVE_INFINITY)
+				Arbitraries.of(
+					Double.NaN,
+					Double.MIN_VALUE,
+					Double.MIN_NORMAL,
+					Double.POSITIVE_INFINITY,
+					Double.NEGATIVE_INFINITY
+				)
 			)
 		);
 	}
