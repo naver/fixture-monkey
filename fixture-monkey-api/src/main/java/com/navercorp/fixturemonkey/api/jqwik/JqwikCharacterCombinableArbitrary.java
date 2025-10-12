@@ -105,7 +105,7 @@ public final class JqwikCharacterCombinableArbitrary implements CharacterCombina
 	@Override
 	public CharacterCombinableArbitrary emoji() {
 		return new JqwikCharacterCombinableArbitrary(
-			Arbitraries.chars().range('\uD83D', '\uD83F')  // Basic emoji range
+			Arbitraries.chars().range('\u2600', '\u27BF')
 		);
 	}
 
