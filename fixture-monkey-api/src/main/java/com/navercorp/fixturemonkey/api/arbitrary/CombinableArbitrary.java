@@ -46,6 +46,8 @@ public interface CombinableArbitrary<T> {
 		ServiceLoader.load(StringCombinableArbitrary.class);
 	ServiceLoader<ByteCombinableArbitrary> BYTE_COMBINABLE_ARBITRARY_SERVICE_LOADER =
 		ServiceLoader.load(ByteCombinableArbitrary.class);
+	ServiceLoader<BigDecimalCombinableArbitrary> BIG_DECIMAL_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(BigDecimalCombinableArbitrary.class);
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -226,6 +228,17 @@ public interface CombinableArbitrary<T> {
 	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
 	static StringCombinableArbitrary strings() {
 		return STRING_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
+	/**
+	 * Generates a {@link BigDecimalCombinableArbitrary} which returns a randomly generated BigDecimal.
+	 * You can customize the generated BigDecimal by using {@link BigDecimalCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated BigDecimal
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static BigDecimalCombinableArbitrary bigDecimals() {
+		return BIG_DECIMAL_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}
 
 }
