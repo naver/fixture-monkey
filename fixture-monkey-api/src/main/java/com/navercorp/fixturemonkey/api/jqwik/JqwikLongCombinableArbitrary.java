@@ -88,9 +88,6 @@ public final class JqwikLongCombinableArbitrary implements LongCombinableArbitra
 
 	@Override
 	public LongCombinableArbitrary multipleOf(long divisor) {
-		if (divisor == 0L) {
-			throw new IllegalArgumentException("divisor must not be zero.");
-		}
 		return new JqwikLongCombinableArbitrary(
 			Arbitraries.longs().map(it -> toMultipleOf(it, divisor))
 		);
