@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
+    api(projects.fixtureMonkey)
 }
 
 jmh {

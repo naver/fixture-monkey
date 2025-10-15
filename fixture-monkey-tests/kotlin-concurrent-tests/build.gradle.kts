@@ -1,7 +1,7 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") 
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
-    testImplementation(project(":fixture-monkey-kotlin"))
+    testImplementation(projects.fixtureMonkeyKotlin)
 }

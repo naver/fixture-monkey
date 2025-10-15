@@ -1,5 +1,5 @@
 plugins {
-    id("me.champeau.mrjar") version "0.1.1"
+    alias(libs.plugins.mrjar)
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
@@ -23,25 +23,25 @@ multiReleaseVersions.forEach { releaseVersion ->
 }
 
 dependencies {
-    api("org.apiguardian:apiguardian-api:1.1.2")
-    api(project(":object-farm-api"))
+    api(libs.apiguardian.api)
+    api(projects.objectFarmApi)
 
-    compileOnly("net.jqwik:jqwik-engine:${Versions.JQWIK}")
-    compileOnly("net.jqwik:jqwik-api:${Versions.JQWIK}")
-    compileOnly("net.jqwik:jqwik-web:${Versions.JQWIK}")
-    compileOnly("net.jqwik:jqwik-time:${Versions.JQWIK}")
-    compileOnly("com.github.curious-odd-man:rgxgen:1.4")
-    compileOnly("com.github.mifmif:generex:1.0.2")
+    compileOnly(libs.jqwik.engine)
+    compileOnly(libs.jqwik.api)
+    compileOnly(libs.jqwik.web)
+    compileOnly(libs.jqwik.time)
+    compileOnly(libs.rgxgen)
+    compileOnly(libs.generex)
 
-    testImplementation("net.jqwik:jqwik-engine:${Versions.JQWIK}")
-    testImplementation("net.jqwik:jqwik-api:${Versions.JQWIK}")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-    testImplementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testImplementation("net.jqwik:jqwik-time:${Versions.JQWIK}")
-    testImplementation("com.github.curious-odd-man:rgxgen:1.4")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(libs.jqwik.engine)
+    testImplementation(libs.jqwik.api)
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.engine)
+    testImplementation(libs.lombok)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.jqwik.time)
+    testImplementation(libs.rgxgen)
+    testAnnotationProcessor(libs.lombok)
 }
 
 configurations.compileOnly {

@@ -4,16 +4,16 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
-    api("com.fasterxml.jackson.core:jackson-databind:${Versions.JACKSON}")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${Versions.JACKSON}")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Versions.JACKSON}")
+    api(projects.fixtureMonkey)
+    api(libs.jackson.databind)
+    api(libs.jackson.datatype.jdk8)
+    api(libs.jackson.datatype.jsr310)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-    testImplementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.engine)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
 }
 
 tasks.withType<Test> {

@@ -5,11 +5,14 @@ allprojects {
 
 subprojects {
     dependencies {
-        testImplementation(project(":fixture-monkey"))
-        testImplementation(project(":fixture-monkey-tests"))
-        testImplementation("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT_JUPITER}")
-        testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-        testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
+        val libs = rootProject.libs
+        val projects = rootProject.projects
+
+        testImplementation(projects.fixtureMonkey)
+        testImplementation(projects.fixtureMonkeyTests)
+        testImplementation(libs.junit.jupiter.api)
+        testImplementation(libs.junit.jupiter.engine)
+        testImplementation(libs.assertj.core)
     }
 
     tasks.withType<Test> {

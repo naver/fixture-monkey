@@ -4,16 +4,16 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey"))
-    api("io.github.autoparams:autoparams:${Versions.AUTO_PARAMS}")
-    compileOnly(project(":fixture-monkey-engine"))
+    api(projects.fixtureMonkey)
+    api(libs.autoparams)
+    compileOnly(projects.fixtureMonkeyEngine)
 
-    testImplementation(project(":fixture-monkey-engine"))
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-    testImplementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(projects.fixtureMonkeyEngine)
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.engine)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
 }
 
 tasks.withType<Test> {

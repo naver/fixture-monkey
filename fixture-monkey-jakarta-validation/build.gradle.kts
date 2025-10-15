@@ -4,17 +4,17 @@ plugins {
 }
 
 dependencies {
-    api(project(":fixture-monkey-api"))
-    api("org.hibernate.validator:hibernate-validator:7.0.5.Final")
-    api("jakarta.validation:jakarta.validation-api:3.0.2")
-    api("org.glassfish:jakarta.el:4.0.2")
+    api(projects.fixtureMonkeyApi)
+    api(libs.hibernate.validator7)
+    api(libs.jakarta.validation.api)
+    api(libs.jakarta.el4)
 
-    testImplementation(project(":fixture-monkey"))
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-    testImplementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(projects.fixtureMonkey)
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.engine)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
 }
 
 

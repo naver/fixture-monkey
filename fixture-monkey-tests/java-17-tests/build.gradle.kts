@@ -7,5 +7,5 @@ java {
 }
 
 dependencies {
-    testImplementation(project(":fixture-monkey-jackson"))
+    testImplementation(projects.fixtureMonkeyJackson)
 }

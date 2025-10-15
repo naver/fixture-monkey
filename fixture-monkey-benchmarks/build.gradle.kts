@@ -1,5 +1,5 @@
 plugins {
-    id("me.champeau.jmh") version "0.7.2"
+    alias(libs.plugins.jmh)
     `java-test-fixtures`
 }
 
@@ -17,17 +17,20 @@ subprojects {
     plugins.apply("java-test-fixtures")
 
     dependencies {
-        jmhImplementation(project(":fixture-monkey-javax-validation"))
-        jmhImplementation(project(":fixture-monkey-jackson"))
-        jmhImplementation("org.openjdk.jmh:jmh-core:${Versions.JMH}")
-        jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:${Versions.JMH}")
-        jmhImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-        jmhAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+        val libs = rootProject.libs
+        val projects = rootProject.projects
 
-        testFixturesApi(project(":fixture-monkey-javax-validation"))
-        testFixturesApi("org.openjdk.jmh:jmh-core:${Versions.JMH}")
-        testFixturesApi("org.openjdk.jmh:jmh-generator-annprocess:${Versions.JMH}")
-        testFixturesApi("org.projectlombok:lombok:${Versions.LOMBOK}")
-        testFixturesAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+        jmhImplementation(projects.fixtureMonkeyJavaxValidation)
+        jmhImplementation(projects.fixtureMonkeyJackson)
+        jmhImplementation(libs.jmh.core)
+        jmhImplementation(libs.jmh.generator.annprocess)
+        jmhImplementation(libs.lombok)
+        jmhAnnotationProcessor(libs.lombok)
+
+        testFixturesApi(projects.fixtureMonkeyJavaxValidation)
+        testFixturesApi(libs.jmh.core)
+        testFixturesApi(libs.jmh.generator.annprocess)
+        testFixturesApi(libs.lombok)
+        testFixturesAnnotationProcessor(libs.lombok)
     }
 }

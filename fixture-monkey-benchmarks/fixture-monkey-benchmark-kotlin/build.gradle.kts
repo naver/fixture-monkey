@@ -1,11 +1,11 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
-    id("org.jlleitschuh.gradle.ktlint") version Versions.KTLINT
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktlint)
 }
 
 dependencies {
-    api(project(":fixture-monkey-kotlin"))
-    jmhImplementation(testFixtures(project(":fixture-monkey-benchmarks:fixture-monkey-benchmark")))
+    api(projects.fixtureMonkeyKotlin)
+    jmhImplementation(testFixtures(projects.fixtureMonkeyBenchmarks.fixtureMonkeyBenchmark))
 }
 
 jmh {

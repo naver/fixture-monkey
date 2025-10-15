@@ -1,17 +1,17 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kotlin.jvm)
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
 
 dependencies {
-    api(project(":fixture-monkey-api"))
-    implementation("net.datafaker:datafaker:${Versions.DATAFAKER}")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    api(projects.fixtureMonkeyApi)
+    implementation(libs.datafaker)
+    implementation(libs.kotlin.reflect)
 
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testAnnotationProcessor(libs.lombok)
 
-    testImplementation(project(":fixture-monkey"))
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    implementation(kotlin("stdlib-jdk8"))
+    testImplementation(projects.fixtureMonkey)
+    testImplementation(libs.lombok)
+    implementation(libs.kotlin.stdlib.jdk8)
 }

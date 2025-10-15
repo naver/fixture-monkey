@@ -4,11 +4,11 @@ plugins {
 }
 
 dependencies {
-    api("net.jqwik:jqwik-engine:${Versions.JQWIK}")
-    implementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
-    implementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
+    api(libs.jqwik.engine)
+    implementation(libs.junit.jupiter.engine)
+    implementation(libs.junit.platform.engine)
 
-    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
-    testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
 }
