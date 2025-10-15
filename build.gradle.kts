@@ -22,6 +22,7 @@ subprojects {
 
         api(libs.google.jsr305)
         implementation(libs.google.findbugs.annotations)
+        implementation(libs.jspecify)
         compileOnly(libs.slf4j.api)
         testImplementation(libs.logback.classic)
     }

@@ -20,10 +20,11 @@ package com.navercorp.fixturemonkey.kotlin;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.validation.constraints.Negative;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
+
+import org.jspecify.annotations.Nullable;
 
 public class ExpressionGeneratorJavaTestSpecs {
 	public static class PersonJava {

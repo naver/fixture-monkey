@@ -25,9 +25,8 @@ import java.lang.reflect.AnnotatedType;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class PropertyTest {
@@ -40,7 +39,7 @@ class PropertyTest {
 	@Test
 	void getAnnotationNotFound() {
 		Property sut = this.anonymousProperty();
-		then(sut.getAnnotation(Nonnull.class)).isEmpty();
+		then(sut.getAnnotation(NonNull.class)).isEmpty();
 	}
 
 	private Property anonymousProperty() {

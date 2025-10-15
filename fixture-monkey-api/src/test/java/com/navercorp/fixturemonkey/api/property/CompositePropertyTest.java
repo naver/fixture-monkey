@@ -25,9 +25,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class CompositePropertyTest {
@@ -54,7 +54,7 @@ class CompositePropertyTest {
 		CompositeProperty sut = new CompositeProperty(primaryProperty, secondaryProperty);
 
 		then(sut.getAnnotations()).hasSize(2);
-		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(Nonnull.class);
+		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(NonNull.class);
 		then(sut.getAnnotations().get(1).annotationType()).isEqualTo(Nullable.class);
 	}
 
@@ -67,7 +67,7 @@ class CompositePropertyTest {
 
 		CompositeProperty sut = new CompositeProperty(primaryProperty, secondaryProperty);
 
-		then(sut.getAnnotation(Nonnull.class)).isPresent();
+		then(sut.getAnnotation(NonNull.class)).isPresent();
 		then(sut.getAnnotation(Nullable.class)).isPresent();
 	}
 

@@ -26,10 +26,9 @@ import static com.navercorp.fixturemonkey.api.type.Types.nullSafe;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;

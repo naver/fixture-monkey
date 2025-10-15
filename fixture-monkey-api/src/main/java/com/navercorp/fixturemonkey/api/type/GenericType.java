@@ -23,10 +23,9 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a parameterized type with a container type, type arguments, and an optional owner type.

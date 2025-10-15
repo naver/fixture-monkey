@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.expression;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 

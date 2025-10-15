@@ -22,9 +22,8 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.lang.reflect.Field;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class FieldPropertyTest {
@@ -54,7 +53,7 @@ class FieldPropertyTest {
 	void getAnnotationNotFound() throws NoSuchFieldException {
 		Field field = PropertyValue.class.getDeclaredField("name");
 		FieldProperty sut = new FieldProperty(field);
-		then(sut.getAnnotation(Nonnull.class)).isEmpty();
+		then(sut.getAnnotation(NonNull.class)).isEmpty();
 	}
 
 	@Test

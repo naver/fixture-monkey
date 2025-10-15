@@ -20,10 +20,9 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.lang.reflect.Proxy;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
 
