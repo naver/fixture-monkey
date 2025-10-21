@@ -34,7 +34,8 @@ public class CustomArbitraryIntrospector implements ArbitraryIntrospector {
     @Override
     public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
         // Step 1: Check if this introspector should handle this type
-        Class<?> type = context.getResolvedType().getType();
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
         if (!MyCustomClass.class.isAssignableFrom(type)) {
             // If not our target type, let other introspectors handle it
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
@@ -110,7 +111,8 @@ public class ConstantArbitraryIntrospector implements ArbitraryIntrospector {
     
     @Override
     public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-        Class<?> type = context.getResolvedType().getType();
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
         
         // Make sure our constant is the right type
         if (!type.isInstance(constantValue)) {
@@ -129,13 +131,15 @@ public class ConstantArbitraryIntrospector implements ArbitraryIntrospector {
 
 After creating your introspector, you can use it in two ways:
 
-### As the Primary Introspector
+### As the Global Introspector
+
+##### Standalone Usage
 
 ```java
 // Create your custom introspector
 ArbitraryIntrospector customIntrospector = new CustomArbitraryIntrospector();
 
-// Use it as the main introspector
+// Use it as the global introspector
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .objectIntrospector(customIntrospector)
     .build();
@@ -144,7 +148,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 MyCustomClass obj = fixtureMonkey.giveMeOne(MyCustomClass.class);
 ```
 
-### Combined with Other Introspectors
+##### Combined with Other Introspectors
 
 Usually, you'll want to combine your custom introspector with the built-in ones:
 
@@ -163,6 +167,23 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     ))
     .build();
 ```
+
+### As a Type-Specific Introspector
+
+```java
+// Use customIntrospector only for MyCustomClass and its subclasses
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .pushArbitraryIntrospector(
+                new MatcherOperator<>(
+                        new AssignableTypeMatcher(MyCustomClass.class),
+                        customIntrospector
+                )
+        )
+        .build();
+```
+
+For more information on various `ArbitraryIntrospector` configuration options, see [Advanced Plugin
+Customization](../../fixture-monkey-options/advanced-options-for-experts#advanced-plugin-customization).
 
 ## Best Practices
 

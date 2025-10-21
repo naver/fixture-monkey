@@ -36,7 +36,8 @@ public class CustomArbitraryIntrospector implements ArbitraryIntrospector {
     @Override
     public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
         // 1단계: 이 인트로스펙터가 이 타입을 처리해야 하는지 확인
-        Class<?> type = context.getResolvedType().getType();
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
         if (!MyCustomClass.class.isAssignableFrom(type)) {
             // 대상 타입이 아니면 다른 인트로스펙터가 처리하도록 함
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
@@ -116,7 +117,8 @@ public class ConstantArbitraryIntrospector implements ArbitraryIntrospector {
     
     @Override
     public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-        Class<?> type = context.getResolvedType().getType();
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
         
         // 상수가 올바른 타입인지 확인
         if (!type.isInstance(constantValue)) {
@@ -135,13 +137,15 @@ public class ConstantArbitraryIntrospector implements ArbitraryIntrospector {
 
 인트로스펙터를 만든 후에는 두 가지 방법으로 사용할 수 있습니다:
 
-### 주요 인트로스펙터로 사용
+### 전역 인트로스펙터로 사용
+
+##### 단독 사용
 
 ```java
 // 사용자 정의 인트로스펙터 생성
 ArbitraryIntrospector customIntrospector = new CustomArbitraryIntrospector();
 
-// 주요 인트로스펙터로 사용
+// 전역 인트로스펙터로 사용
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .objectIntrospector(customIntrospector)
     .build();
@@ -150,7 +154,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 MyCustomClass obj = fixtureMonkey.giveMeOne(MyCustomClass.class);
 ```
 
-### 다른 인트로스펙터와 함께 사용
+##### 다른 인트로스펙터와 함께 사용
 
 일반적으로 사용자 정의 인트로스펙터를 내장 인트로스펙터와 함께 사용하고 싶을 것입니다:
 
@@ -169,6 +173,22 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     ))
     .build();
 ```
+
+### 특정 타입 전용 인트로스펙터로 사용
+
+```java
+// MyCustomClass 및 그 하위 클래스에 대해서만 customIntrospector 사용
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .pushArbitraryIntrospector(
+                new MatcherOperator<>(
+                        new AssignableTypeMatcher(MyCustomClass.class),
+                        customIntrospector
+                )
+        )
+        .build();
+```
+
+다양한 `ArbitraryIntrospector` 설정 옵션에 대해서는 [고급 플러그인 커스터마이징](../../fixture-monkey-options/advanced-options-for-experts#고급-플러그인-커스터마이징) 에서 확인하세요.
 
 ## 모범 사례
 
