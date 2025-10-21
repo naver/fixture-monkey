@@ -96,7 +96,7 @@ FixtureMonkey monkey = FixtureMonkey.builder()
 
 > 옵션 스코핑의 실제 사용에 대해서는 다음을 참조하세요:
 > * [일반 빌더 옵션](../essential-options-for-beginners#general-builder-options) (필수 옵션)
-> * [고급 커스터마이징](../advanced-options-for-experts#advanced-customization) (고급 옵션)
+> * [프로퍼티 커스터마이징](./advanced-options-for-experts#프로퍼티-커스터마이징) (고급 옵션)
 
 ### 4. 타입 등록 시스템
 
@@ -141,7 +141,6 @@ FixtureMonkey monkey = FixtureMonkey.builder()
 
 > 플러그인 사용 예제는 다음을 참조하세요:
 > * [JqwikPlugin 옵션](../essential-options-for-beginners#jqwikplugin-options) (필수 옵션)
-> * [고급 플러그인 커스터마이징](../advanced-options-for-experts#advanced-plugin-customization) (고급 옵션)
 
 ## 프로퍼티와 컨테이너
 

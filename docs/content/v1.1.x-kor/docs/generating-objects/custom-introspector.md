@@ -188,7 +188,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
         .build();
 ```
 
-다양한 `ArbitraryIntrospector` 설정 옵션에 대해서는 [고급 플러그인 커스터마이징](../../fixture-monkey-options/advanced-options-for-experts#고급-플러그인-커스터마이징) 에서 확인하세요.
+다양한 `ArbitraryIntrospector` 설정 옵션에 대해서는 [커스텀 인트로스펙션 설정(고급 옵션)](../../fixture-monkey-options/advanced-options-for-experts#커스텀-인트로스펙터-등록) 에서 확인하세요.
 
 ## 모범 사례
 
