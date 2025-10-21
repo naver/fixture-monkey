@@ -27,10 +27,9 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 @API(since = "0.6.10", status = Status.INTERNAL)
 public abstract class AnnotatedTypes {

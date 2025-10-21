@@ -19,10 +19,10 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.customizer.InnerSpec
-import java.util.function.Predicate
-import javax.annotation.Nullable
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
+import org.jspecify.annotations.Nullable
+import java.util.function.Predicate
 
 /**
  * A Kotlin DSL wrapper for {@link InnerSpec} that provides type-safe configuration of nested properties.
@@ -142,7 +142,7 @@ class KotlinInnerSpec {
      *
      * @param value value of the map value to set
      */
-    fun value(@Nullable value: Any?): KotlinInnerSpec {
+    fun value(value: @Nullable Any?): KotlinInnerSpec {
         return applyToSpec { it.value(value) }
     }
 
@@ -186,7 +186,7 @@ class KotlinInnerSpec {
      * @param key   value of the entry key to set
      * @param value value of the entry value to set
      */
-    fun entry(key: Any?, @Nullable value: Any?): KotlinInnerSpec {
+    fun entry(key: Any?, value: @Nullable Any?): KotlinInnerSpec {
         return applyToSpec { it.entry(key, value) }
     }
 
@@ -234,7 +234,7 @@ class KotlinInnerSpec {
      *                  the nested map key
      * @param value     value of the map value to set
      */
-    fun entry(configure: KotlinInnerSpec.() -> Unit, @Nullable value: Any?): KotlinInnerSpec {
+    fun entry(configure: KotlinInnerSpec.() -> Unit, value: @Nullable Any?): KotlinInnerSpec {
         return applyToSpec { spec ->
             spec.entry({ nestedSpec ->
                 val nestedKotlinSpec = KotlinInnerSpec()
@@ -303,7 +303,7 @@ class KotlinInnerSpec {
      *
      * @param value value of the map value to set
      */
-    fun allValue(@Nullable value: Any?): KotlinInnerSpec {
+    fun allValue(value: @Nullable Any?): KotlinInnerSpec {
         return applyToSpec { it.allValue(value) }
     }
 
@@ -360,7 +360,7 @@ class KotlinInnerSpec {
      * @param index index of the element to set
      * @param value value of the element to set
      */
-    fun listElement(index: Int, @Nullable value: Any?): KotlinInnerSpec {
+    fun listElement(index: Int, value: @Nullable Any?): KotlinInnerSpec {
         return applyToSpec { it.listElement(index, value) }
     }
 
@@ -387,7 +387,7 @@ class KotlinInnerSpec {
      *
      * @param value value of the elements to set
      */
-    fun allListElement(@Nullable value: Any?): KotlinInnerSpec {
+    fun allListElement(value: @Nullable Any?): KotlinInnerSpec {
         return applyToSpec { it.allListElement(value) }
     }
 
@@ -414,7 +414,7 @@ class KotlinInnerSpec {
      *                     (only string-formatted property names are allowed, and expressions are not supported)
      * @param value        value of the property to set
      */
-    fun property(propertyName: String, @Nullable value: Any?): KotlinInnerSpec {
+    fun property(propertyName: String, value: @Nullable Any?): KotlinInnerSpec {
         return applyToSpec { it.property(propertyName, value) }
     }
 

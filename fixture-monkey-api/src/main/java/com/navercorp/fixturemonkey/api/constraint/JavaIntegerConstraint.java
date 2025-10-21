@@ -20,10 +20,9 @@ package com.navercorp.fixturemonkey.api.constraint;
 
 import java.math.BigInteger;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 @API(since = "0.6.8", status = Status.MAINTAINED)
 public final class JavaIntegerConstraint {

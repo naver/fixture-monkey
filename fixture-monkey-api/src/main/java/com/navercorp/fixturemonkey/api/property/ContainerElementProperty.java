@@ -18,10 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 /**
  * It represents a property that is a container element.
