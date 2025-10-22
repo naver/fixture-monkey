@@ -603,6 +603,6 @@ void testLargeDataSetPerformance() {
 
 After mastering these advanced options, you can consider:
 
-→ [Creating Custom Introspector](../../generate-objects/custom-introspector) - Implement your own introspector for special domain requirements
+→ [Creating Custom Introspector](../../generating-objects/custom-introspector) - Implement your own introspector for special domain requirements
 
 → [Contributing to Fixture Monkey](https://github.com/naver/fixture-monkey/blob/main/CONTRIBUTING.md) - Join the open source community

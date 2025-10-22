@@ -308,6 +308,4 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 → [옵션 개념](../concepts) - 옵션이 내부적으로 어떻게 작동하는지 더 깊이 이해하기
 
-→ [프로퍼티 표현식](../../generate-objects/property-expression) - 프로퍼티를 지정하는 더 고급 방법 배우기 
-
 → [JavaBean 유효성 검사](../../plugins/junit-plugin) - 데이터 생성을 안내하기 위한 유효성 검사 어노테이션 사용하기

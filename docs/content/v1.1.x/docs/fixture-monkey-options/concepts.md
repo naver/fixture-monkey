@@ -300,4 +300,4 @@ After understanding these concepts, you can:
 
 → [Advanced Options for Experts](../advanced-options-for-experts) - Explore advanced options for complex testing scenarios
 
-→ [Creating Custom Introspector](../../generate-objects/custom-introspector) - Implement your own introspector for special domain requirements
+→ [Creating Custom Introspector](../../generating-objects/custom-introspector) - Implement your own introspector for special domain requirements

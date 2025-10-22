@@ -355,7 +355,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 **유의:** 나중에 등록된 옵션이 먼저 적용됩니다.
 
-커스텀 인트로스펙터 작성 방법은 [사용자 정의 인트로스펙터 만들기 가이드](../../generate-objects/custom-introspector)를 참고하세요.
+커스텀 인트로스펙터 작성 방법은 [사용자 정의 인트로스펙터 만들기 가이드](../../generating-objects/custom-introspector)를 참고하세요.
 
 ## 표현식 엄격 모드
 
@@ -472,6 +472,6 @@ void testLargeDataSetPerformance() {
 
 이러한 고급 옵션을 마스터한 후에는 다음을 고려해 볼 수 있습니다:
 
-→ [커스텀 인트로스펙터 만들기](../../generate-objects/custom-introspector) - 특별한 도메인 요구사항을 위한 자체 인트로스펙터 구현하기
+→ [커스텀 인트로스펙터 만들기](../../generating-objects/custom-introspector) - 특별한 도메인 요구사항을 위한 자체 인트로스펙터 구현하기
 
 → [Fixture Monkey에 기여하기](https://github.com/naver/fixture-monkey/blob/main/CONTRIBUTING.md) - 오픈 소스 커뮤니티에 참여하기

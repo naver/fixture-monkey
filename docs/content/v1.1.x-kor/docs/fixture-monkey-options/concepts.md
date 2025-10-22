@@ -300,4 +300,4 @@ FixtureMonkey monkey = FixtureMonkey.builder()
 
 → [전문가를 위한 고급 옵션](../advanced-options-for-experts) - 복잡한 테스트 시나리오를 위한 고급 옵션 탐색하기
 
-→ [커스텀 인트로스펙터 만들기](../../generate-objects/custom-introspector) - 특별한 도메인 요구사항을 위한 자체 인트로스펙터 구현하기
+→ [커스텀 인트로스펙터 만들기](../../generating-objects/custom-introspector) - 특별한 도메인 요구사항을 위한 자체 인트로스펙터 구현하기
