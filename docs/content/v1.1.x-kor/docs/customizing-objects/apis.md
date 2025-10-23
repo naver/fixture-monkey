@@ -72,7 +72,7 @@ docs:
 `set()` 메서드는 객체의 특정 속성에 원하는 값을 설정할 때 사용합니다.
 가장 기본적이고 많이 사용되는 API입니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -105,11 +105,26 @@ val order = fixtureMonkey.giveMeBuilder<Order>()
 {{< /tab >}}
 {{< /tabpane>}}
 
+#### Values.just()
+
+`Values.just()`로 래핑된 객체를 사용하면 내부적으로 객체를 분해하지 않고 사용자가 제공한 값을 그대로 사용합니다.
+
+**주의:** Just 로 설정한 후에는 하위 속성을 변경할 수 없습니다.
+
+```java
+Product product = fixture.giveMeBuilder(MyClass.class)
+	  	.set("options", Values.just(List.of("red", "medium", "adult"))
+	  	.set("options[0]", "blue")
+        .sample();
+```
+
+예를 들어, MyClass의 options[0] 값은 "blue" 가 아닌 `Values.just()`로 설정된 리스트로 유지됩니다.
+
 ### size(), minSize(), maxSize()
 `size()` 메서드는 리스트나 배열같은 컬렉션의 크기를 지정할 때 사용합니다.
 정확한 크기를 설정하거나, 최소/최대 크기를 지정할 수 있습니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -139,7 +154,7 @@ val product = fixtureMonkey.giveMeBuilder<Product>()
 ### setNull(), setNotNull()
 `setNull()`과 `setNotNull()`은 특정 속성을 null로 만들거나, 반드시 값이 있도록 만들 때 사용합니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -176,7 +191,7 @@ val validOrder = fixtureMonkey.giveMeBuilder<Order>()
 `setInner()`는 여러 테스트에서 재사용할 수 있는 설정을 만들 때 사용합니다.
 예를 들어, 여러 테스트에서 동일한 형태의 회원 정보나 주문 정보가 필요할 때 유용합니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -209,7 +224,7 @@ val vipMember = fixtureMonkey.giveMeBuilder<Member>()
 `setLazy()`는 매번 다른 값이나 순차적인 값을 생성할 때 사용합니다.
 예를 들어, 순차적인 주문번호나 현재 시간을 사용할 때 유용합니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -242,7 +257,7 @@ val nextOrder = fixtureMonkey.giveMeBuilder<Order>()
 
 {{< alert icon="🚨" text="조건이 너무 까다로우면 값을 찾는 데 시간이 오래 걸릴 수 있습니다. 가능하면 set()을 사용하세요." />}}
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -275,7 +290,7 @@ val largeOrder = fixtureMonkey.giveMeBuilder<Order>()
 ### fixed()
 `fixed()`는 테스트를 실행할 때마다 동일한 테스트 데이터가 필요할 때 사용합니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -299,7 +314,7 @@ val member = fixtureMonkey.giveMeBuilder<Member>()
 ### limit
 `limit`는 컬렉션의 일부 요소만 특정 값으로 설정하고 싶을 때 사용합니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -324,7 +339,7 @@ val cart = fixtureMonkey.giveMeBuilder<Cart>()
 `thenApply()`는 이미 생성된 객체의 값을 기반으로 다른 값을 설정해야 할 때 사용합니다.
 예를 들어, 주문의 총액을 주문 상품들의 가격 합계로 설정할 때 유용합니다.
 
-#### 기본 사용법
+##### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}

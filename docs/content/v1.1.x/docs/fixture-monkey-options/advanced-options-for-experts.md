@@ -20,11 +20,11 @@ This guide covers advanced Fixture Monkey options that experienced users can lev
 2. [Performance Optimization Options](#performance-optimization-options)
 3. [Custom Type Registration and Generation](#custom-type-registration-and-generation)
 4. [Default Arbitrary Generator](#default-arbitrary-generator)
-5. [Advanced Customization](#advanced-customization)
-6. [Object Property Generators](#object-property-generators)
-7. [Container Handling Options](#container-handling-options)
-8. [Validation & Constraints](#validation--constraints)
-9. [Advanced Plugin Customization](#advanced-plugin-customization)
+5. [Object Property Generators](#object-property-generators)
+6. [Container Handling Options](#container-handling-options)
+7. [Validation & Constraints](#validation--constraints)
+8. [Property Customization](#property-customization)
+9. [Custom Introspection Settings](#custom-introspection-settings)
 10. [Expression Strict Mode](#expression-strict-mode)
 11. [Real-World Advanced Configuration](#real-world-advanced-configuration)
 12. [Common Advanced Testing Scenarios](#common-advanced-testing-scenarios)
@@ -40,8 +40,8 @@ Follow this sequence to quickly apply the most common advanced options:
 4. Object Property Generators
 5. Container Handling Options
 6. Validation & Constraints
-7. Advanced Customization
-8. Advanced Plugin Customization
+7. Property Customization
+8. Custom Introspection Settings
 9. Expression Strict Mode
 10. Real-World Advanced Configuration
 11. Common Advanced Testing Scenarios
@@ -216,7 +216,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 > For a conceptual understanding of generators, see [Generators and Introspectors](../concepts#1-generators-and-introspectors) in the Concepts documentation.
 
-## Advanced Customization
+## Property Customization
 
 ### Matcher-Based Property Generators
 
@@ -452,38 +452,41 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 **When to use**: When you need to enforce custom validation logic or apply Java Bean Validation constraints to generated fixtures.
 
-## Advanced Plugin Customization
+## Custom Introspection Settings
+> `pushArbitraryIntrospector`, `pushAssignableTypeArbitraryIntrospector`, `pushExactTypeArbitraryIntrospector`
 
-Use plugins and `ArbitraryIntrospector` to extend Fixture Monkey behavior:
-
-```java
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .plugin(new JacksonPlugin())
-    .pushExactTypeArbitraryIntrospector(MyType.class, MyIntrospector.INSTANCE)
-    .build();
-```
-
-### Custom Introspection Settings
-
-Use `pushArbitraryIntrospector(MatcherOperator<ArbitraryIntrospector>)` to register a custom introspector based on matching rules:
+Use `pushArbitraryIntrospector(MatcherOperator<ArbitraryIntrospector>)` to register a custom introspector based on matching conditions:
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .pushArbitraryIntrospector(
-        MatcherOperator.assignableTypeMatchOperator(
-            MyClass.class,
+        new MatcherOperator<>(
+            new ExactTypeMatcher(MyClass.class), 
             new CustomArbitraryIntrospector()
         )
     )
     .build();
 ```
 
-**When to use:** When you want conditional control over how objects are introspected and generated.
+For generic classes, you can also include the number of type parameters in the matching condition.
+> `SingleGenericTypeMatcher`, `DoubleGenericTypeMatcher`, `TripleGenericTypeMatcher`
 
-For more details on implementing custom introspectors, see the [Creating Custom Introspector guide](../../generate-objects/custom-introspector).
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .pushArbitraryIntrospector(
+        new MatcherOperator<>(
+            new AssignableTypeMatcher(MyParameterizedClass.class).intersect(new SingleGenericTypeMatcher()),
+            new CustomArbitraryIntrospector()
+        )
+    )
+    .build();
+```
 
-> For introductory information on plugins, see [Plugin System](../concepts#5-plugin-system) in the Concepts documentation.
-> For basic customization of Java types using JqwikPlugin, see [JqwikPlugin Options](../essential-options-for-beginners#jqwikplugin-options) in the Essential Options guide.
+**When to use:** When you want to control how objects are introspected based on specific conditions.
+
+**Note:** Options registered later are applied first.
+
+For information on implementing custom introspectors, see the [Creating Custom Introspector guide](../../generating-objects/custom-introspector).
 
 ## Expression Strict Mode
 
@@ -600,6 +603,6 @@ void testLargeDataSetPerformance() {
 
 After mastering these advanced options, you can consider:
 
-→ [Creating Custom Introspector](../../generate-objects/custom-introspector) - Implement your own introspector for special domain requirements
+→ [Creating Custom Introspector](../../generating-objects/custom-introspector) - Implement your own introspector for special domain requirements
 
 → [Contributing to Fixture Monkey](https://github.com/naver/fixture-monkey/blob/main/CONTRIBUTING.md) - Join the open source community

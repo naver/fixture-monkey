@@ -18,33 +18,27 @@ weight: 53
 
 1. [추천 사용 순서](#추천-사용-순서)
 2. [성능 최적화 옵션](#성능-최적화-옵션)
-3. [커스텀 타입 등록 및 생성](#커스텀-타입-등록-및-생성)
-4. [기본 Arbitrary 생성기](#기본-arbitrary-생성기)
-5. [객체 프로퍼티 생성기](#객체-프로퍼티-생성기)
-6. [컨테이너 처리 옵션](#컨테이너-처리-옵션)
-7. [유효성 검사 및 제약 조건](#유효성-검사-및-제약-조건)
-8. [고급 커스터마이징](#고급-커스터마이징)
-9. [고급 플러그인 커스터마이징](#고급-플러그인-커스터마이징)
-10. [표현식 엄격 모드](#표현식-엄격-모드)
-11. [실제 고급 구성 예시](#실제-고급-구성-예시)
-12. [일반적인 고급 테스트 시나리오](#일반적인-고급-테스트-시나리오)
-13. [다음은 무엇인가요?](#다음은-무엇인가요)
+3. [커스텀 Arbitrary 생성 로직](#커스텀-arbitrary-생성-로직)
+4. [커스텀 타입 등록 및 생성](#커스텀-타입-등록-및-생성)
+5. [프로퍼티 커스터마이징](#프로퍼티-커스터마이징)
+6. [커스텀 인트로스펙션 설정](#커스텀-인트로스펙션-설정)
+7. [표현식 엄격 모드](#표현식-엄격-모드)
+8. [실제 고급 구성 예시](#실제-고급-구성-예시)
+9. [일반적인 고급 테스트 시나리오](#일반적인-고급-테스트-시나리오)
+10. [다음은 무엇인가요?](#다음은-무엇인가요)
 
 ## 추천 사용 순서
 
 아래 순서로 진행하여 가장 많이 사용하는 고급 옵션을 빠르게 적용하세요:
 
 1. 성능 최적화 옵션
-2. 커스텀 타입 등록 및 생성
-3. 기본 Arbitrary 생성기
-4. 객체 프로퍼티 생성기
-5. 컨테이너 처리 옵션
-6. 유효성 검사 및 제약 조건
-7. 고급 커스터마이징
-8. 고급 플러그인 커스터마이징
-9. 표현식 엄격 모드
-10. 실제 고급 구성 예시
-11. 일반적인 고급 테스트 시나리오
+2. 커스텀 Arbitrary 생성 로직 
+3. 커스텀 타입 등록 및 생성 
+4. 프로퍼티 커스터마이징
+5. 커스텀 인트로스펙션 설정
+6. 표현식 엄격 모드 
+7. 실제 고급 구성 예시 
+8. 일반적인 고급 테스트 시나리오
 
 ## 성능 최적화 옵션
 
@@ -209,7 +203,7 @@ fixtureMonkey.registerAssignableType(
 
 참고: 동일한 타입에 `registerExactType`과 `registerAssignableType`을 모두 적용한 경우, 마지막에 추가된 설정이 우선 적용됩니다.
 
-## 고급 커스터마이징
+## 프로퍼티 커스터마이징
 
 ### Matcher 기반 프로퍼티 생성기 추가하기
 
@@ -327,26 +321,30 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 **사용 시기:** `@JsonProperty`로 정의된 이름 또는 JSON 필드가 코드 프로퍼티와 다른 경우.
 
-## 고급 플러그인 커스터마이징
-
-플러그인과 `ArbitraryIntrospector`를 사용하여 Fixture Monkey 동작을 확장할 수 있습니다:
-
-```java
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .plugin(new JacksonPlugin())
-    .pushExactTypeArbitraryIntrospector(MyType.class, MyIntrospector.INSTANCE)
-    .build();
-```
-
-### 커스텀 인트로스펙션 설정
+## 커스텀 인트로스펙션 설정
+> `pushArbitraryIntrospector`, `pushAssignableTypeArbitraryIntrospector`, `pushExactTypeArbitraryIntrospector`
 
 `pushArbitraryIntrospector(MatcherOperator<ArbitraryIntrospector>)`를 사용하여 매칭 조건에 따른 커스텀 인트로스펙터를 등록할 수 있습니다:
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .pushArbitraryIntrospector(
-        MatcherOperator.assignableTypeMatchOperator(
-            MyClass.class,
+        new MatcherOperator<>(
+            new ExactTypeMatcher(MyClass.class), 
+            new CustomArbitraryIntrospector()
+        )
+    )
+    .build();
+```
+
+제네릭 클래스의 경우, 타입 파라미터 개수도 매칭 조건에 포함할 수 있습니다.
+> `SingleGenericTypeMatcher`, `DoubleGenericTypeMatcher`, `TripleGenericTypeMatcher`
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .pushArbitraryIntrospector(
+        new MatcherOperator<>(
+            new AssignableTypeMatcher(MyParameterizedClass.class).intersect(new SingleGenericTypeMatcher()),
             new CustomArbitraryIntrospector()
         )
     )
@@ -355,9 +353,9 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 **사용 시기:** 객체 인트로스펙션 방식을 조건별로 제어하고 싶을 때.
 
-더 자세한 커스텀 인트로스펙터 작성 방법은 [커스텀 인트로스펙터 생성하기 가이드](../../generate-objects/custom-introspector)를 참고하세요.
+**유의:** 나중에 등록된 옵션이 먼저 적용됩니다.
 
-기본 제공 ArbitraryIntrospector 구현체 및 플러그인 조합에 대한 자세한 내용은 [개념 가이드](../concepts)에서 확인하세요.
+커스텀 인트로스펙터 작성 방법은 [사용자 정의 인트로스펙터 만들기 가이드](../../generating-objects/custom-introspector)를 참고하세요.
 
 ## 표현식 엄격 모드
 
@@ -474,6 +472,6 @@ void testLargeDataSetPerformance() {
 
 이러한 고급 옵션을 마스터한 후에는 다음을 고려해 볼 수 있습니다:
 
-→ [커스텀 인트로스펙터 만들기](../../generate-objects/custom-introspector) - 특별한 도메인 요구사항을 위한 자체 인트로스펙터 구현하기
+→ [커스텀 인트로스펙터 만들기](../../generating-objects/custom-introspector) - 특별한 도메인 요구사항을 위한 자체 인트로스펙터 구현하기
 
 → [Fixture Monkey에 기여하기](https://github.com/naver/fixture-monkey/blob/main/CONTRIBUTING.md) - 오픈 소스 커뮤니티에 참여하기

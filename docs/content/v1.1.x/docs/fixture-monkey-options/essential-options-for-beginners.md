@@ -308,6 +308,4 @@ Now that you understand the essential options, you can learn about:
 
 → [Option Concepts](../concepts) - Gain deeper knowledge of how options work internally
 
-→ [Property Expressions](../../generate-objects/property-expression) - Learn more advanced ways to specify properties 
-
 → [JavaBean Validation](../../plugins/junit-plugin) - Use validation annotations to guide data generation
