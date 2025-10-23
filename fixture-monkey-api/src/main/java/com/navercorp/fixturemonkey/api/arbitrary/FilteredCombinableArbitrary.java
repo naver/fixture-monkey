@@ -82,6 +82,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 					lastException = ex;
 				}
 				combinableArbitrary.clear();
+				if (ex instanceof ValidationFailedException
+					|| (ex.getCause() instanceof ValidationFailedException)) {
+					break;
+				}
 			}
 		}
 
@@ -142,6 +146,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 					lastException = ex;
 				}
 				combinableArbitrary.clear();
+				if (ex instanceof ValidationFailedException
+					|| (ex.getCause() instanceof ValidationFailedException)) {
+					break;
+				}
 			} catch (ClassCastException ex) {
 				throw new ClassCastException(
 					String.format(
