@@ -171,11 +171,11 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ### As a Type-Specific Introspector
 
 ```java
-// Use customIntrospector only for MyCustomClass and its subclasses
+// Use customIntrospector only for MyCustomClass
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
         .pushArbitraryIntrospector(
                 new MatcherOperator<>(
-                        new AssignableTypeMatcher(MyCustomClass.class),
+                        new ExactTypeMatcher(MyCustomClass.class),
                         customIntrospector
                 )
         )
@@ -193,6 +193,93 @@ When creating custom introspectors:
 3. **Keep it focused** - each introspector should handle a specific pattern or class type
 4. **Consider performance** since introspectors run for every object creation
 5. **Test thoroughly** with various edge cases
+
+#### Real-world Example: Class Range
+
+```java
+/**
+ * External library - Class Range<C> using Instant as generic type
+ */
+public class RangeInstantArbitraryIntrospector implements ArbitraryIntrospector {
+
+    @Override
+    public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
+        List<AnnotatedType> typeArguments = Types.getGenericsTypes(property.getAnnotatedType());
+        Class<?> genericType = typeArguments.isEmpty() ? null : Types.getActualType(typeArguments.getFirst());
+        if (!type.equals(Range.class)
+                || typeArguments.size() != 1
+                || !genericType.equals(Instant.class)) {
+            return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+        }
+
+        // ===== Random generation example =====
+        int randomInt = (int)(Math.random() * 365) + 1;
+
+        Instant startTime = Instant.now().minus(randomInt, ChronoUnit.DAYS);
+        Instant endTime = Instant.now().plus(randomInt, ChronoUnit.DAYS);
+
+        Range<Instant> rangeValue = Range.closed(startTime, endTime);
+
+        return new ArbitraryIntrospectorResult(
+                CombinableArbitrary.from(rangeValue)
+        );
+    }
+}
+```
+
+#### Real-world Example: Class InetAddress
+
+You can also handle class type matching in `.pushArbitraryIntrospector()` instead of inside the introspector.
+
+```java
+/**
+ * Class java.net.InetAddress
+ */
+public class InetAddressArbitraryIntrospector implements ArbitraryIntrospector {
+
+    @Override
+    public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
+
+        InetAddress inetAddress;
+        if (type.equals(Inet4Address.class)){
+            inetAddress = generateRandomInet4Address();
+        } else {
+            inetAddress = generateRandomInet6Address();
+        }
+
+        return new ArbitraryIntrospectorResult(
+                CombinableArbitrary.from(inetAddress)
+        );
+    }
+    
+    private Inet4Address generateRandomInet4Address() {
+        // Implement random generation logic
+    }
+
+    private Inet6Address generateRandomInet6Address() {
+        // Implement random generation logic
+    }
+}
+```
+
+```java
+ArbitraryIntrospector inetAddressArbitraryIntrospector = new InetAddressArbitraryIntrospector();
+
+// Use InetAddressArbitraryIntrospector only for InetAddress and its subclasses
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .pushArbitraryIntrospector(
+                new MatcherOperator<>(
+                        new AssignableTypeMatcher(InetAddress.class),
+                        inetAddressArbitraryIntrospector
+                )
+        )
+        // ...
+        .build();
+```
 
 ## Advanced: Property Generators
 
