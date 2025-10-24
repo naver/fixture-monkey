@@ -198,7 +198,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
-		ManipulatorSet manipulatorSet = innerSpec.getManipulatorSet(monkeyManipulatorFactory);
+		ManipulatorSet manipulatorSet = innerSpec.getManipulatorSet(monkeyManipulatorFactory, rootAnnotatedType);
 		List<ArbitraryManipulator> arbitraryManipulators = manipulatorSet.getArbitraryManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorSet.getContainerInfoManipulators();
 

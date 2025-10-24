@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
@@ -30,6 +31,10 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.fixturemonkey.tree.NodeAllElementPredicate;
+import com.navercorp.fixturemonkey.tree.NodeElementPredicate;
+import com.navercorp.fixturemonkey.tree.NodeKeyPredicate;
+import com.navercorp.fixturemonkey.tree.NodeValuePredicate;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
 import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
@@ -96,12 +101,77 @@ public final class StrictModeNextNodePredicateContainer extends AbstractList<Nex
 
 				currentAnnotatedType = field.get().getAnnotatedType();
 			} else if (predicate instanceof ContainerElementPredicate) {
-				List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
+				Class<?> actualClass = Types.getActualType(currentAnnotatedType);
 
-				if (genericAnnotatedTypes.isEmpty()) {
+				if (!Map.class.isAssignableFrom(actualClass)) {
+
+					List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
+
+					if (genericAnnotatedTypes.isEmpty()) {
+						return false;
+					}
+					currentAnnotatedType = genericAnnotatedTypes.get(0);
+				}
+
+			} else if (predicate instanceof NodeElementPredicate) {
+
+				Class<?> actualClass = Types.getActualType(currentAnnotatedType);
+
+				if (!Map.class.isAssignableFrom(actualClass)) {
+
+					List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
+
+					if (genericAnnotatedTypes.isEmpty()) {
+						return false;
+					}
+					currentAnnotatedType = genericAnnotatedTypes.get(0);
+				}
+			} else if (predicate instanceof NodeAllElementPredicate) {
+				Class<?> actualClass = Types.getActualType(currentAnnotatedType);
+
+				if (Map.class.isAssignableFrom(actualClass)) {
+
+					List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
+					if (genericAnnotatedTypes.size() < 2) {
+						return false;
+					}
+					currentAnnotatedType = genericAnnotatedTypes.get(1);
+				} else {
+
+					List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
+					if (genericAnnotatedTypes.isEmpty()) {
+						return false;
+					}
+					currentAnnotatedType = genericAnnotatedTypes.get(0);
+				}
+			} else if (predicate instanceof NodeKeyPredicate) {
+
+				Class<?> actualClass = Types.getActualType(currentAnnotatedType);
+
+				if (!Map.class.isAssignableFrom(actualClass)) {
 					return false;
 				}
-				currentAnnotatedType = genericAnnotatedTypes.get(0);
+
+				List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
+				if (!genericAnnotatedTypes.isEmpty()) {
+
+					currentAnnotatedType = genericAnnotatedTypes.get(0);
+				}
+
+			} else if (predicate instanceof NodeValuePredicate) {
+
+				Class<?> actualClass = Types.getActualType(currentAnnotatedType);
+
+				if (!Map.class.isAssignableFrom(actualClass)) {
+					return false;
+				}
+
+				List<AnnotatedType> genericAnnotatedTypes = Types.getGenericsTypes(currentAnnotatedType);
+				if (genericAnnotatedTypes.size() >= 2) {
+
+					currentAnnotatedType = genericAnnotatedTypes.get(1);
+				}
+
 			} else {
 				return false;
 			}
