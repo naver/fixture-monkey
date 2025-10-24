@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.test;
 
 import static com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary.NOT_GENERATED;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
+import static com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -112,7 +113,6 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
-import com.navercorp.fixturemonkey.test.StrictModeInnerMapTest.CustomObject;
 
 class FixtureMonkeyOptionsTest {
 	@Property
@@ -216,7 +216,7 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
 		thenThrownBy(
-			() -> sut.giveMeBuilder(CustomObject.class)
+			() -> sut.giveMeBuilder(MapObject.class)
 				.setInner(
 					new InnerSpec()
 						.property("nonExistentField",
@@ -232,10 +232,10 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
 		thenThrownBy(
-			() -> sut.giveMeBuilder(CustomObject.class)
+			() -> sut.giveMeBuilder(MapObject.class)
 				.setInner(
 					new InnerSpec()
-						.property("mapValueObject",
+						.property("objectValueMap",
 							m -> m.size(1).value(
 								v -> v.property("nonExistentField", "value"))
 						)
@@ -270,7 +270,7 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
 		thenNoException()
-			.isThrownBy(() -> sut.giveMeBuilder(CustomObject.class)
+			.isThrownBy(() -> sut.giveMeBuilder(MapObject.class)
 				.setInner(
 					new InnerSpec()
 						.property("nonExistentField",
@@ -318,10 +318,10 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
 		thenNoException()
-			.isThrownBy(() -> sut.giveMeBuilder(CustomObject.class)
+			.isThrownBy(() -> sut.giveMeBuilder(MapObject.class)
 				.setInner(
 					new InnerSpec()
-						.property("map",
+						.property("strMap",
 							m -> m.minSize(1).key("key"))
 				)
 				.sample());
@@ -937,7 +937,6 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).isEqualTo("test");
 	}
-
 
 	@Property
 	void nullableElement() {
