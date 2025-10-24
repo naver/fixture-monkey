@@ -70,6 +70,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteStringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneValue;
@@ -111,6 +112,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
+import com.navercorp.fixturemonkey.test.StrictModeInnerMapTest.CustomObject;
 
 class FixtureMonkeyOptionsTest {
 	@Property
@@ -210,6 +212,40 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void strictModePropertyWrongExpressionThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(CustomObject.class)
+				.setInner(
+					new InnerSpec()
+						.property("nonExistentField",
+							m -> m.size(1).entry("key", "value"))
+				)
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given container expression.");
+	}
+
+	@Property
+	void strictModePropertyInValueWrongExpressionThrows() {
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		thenThrownBy(
+			() -> sut.giveMeBuilder(CustomObject.class)
+				.setInner(
+					new InnerSpec()
+						.property("mapValueObject",
+							m -> m.size(1).value(
+								v -> v.property("nonExistentField", "value"))
+						)
+				)
+				.sample()
+		).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given container expression.");
+	}
+
+	@Property
 	void notStrictModeSetWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
@@ -226,6 +262,20 @@ class FixtureMonkeyOptionsTest {
 		thenNoException()
 			.isThrownBy(() -> sut.giveMeBuilder(NestedStringList.class)
 				.size("values.nonExistentField", 1)
+				.sample());
+	}
+
+	@Property
+	void notStrictModePropertyWrongExpressionDoesNotThrow() {
+		FixtureMonkey sut = FixtureMonkey.builder().build();
+
+		thenNoException()
+			.isThrownBy(() -> sut.giveMeBuilder(CustomObject.class)
+				.setInner(
+					new InnerSpec()
+						.property("nonExistentField",
+							m -> m.minSize(1).key("key"))
+				)
 				.sample());
 	}
 
@@ -261,6 +311,20 @@ class FixtureMonkeyOptionsTest {
 			.get(2);
 
 		then(actual).isEqualTo("expected");
+	}
+
+	@Property
+	void strictModePropertyValidExpressionDoesNotThrow() {
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		thenNoException()
+			.isThrownBy(() -> sut.giveMeBuilder(CustomObject.class)
+				.setInner(
+					new InnerSpec()
+						.property("map",
+							m -> m.minSize(1).key("key"))
+				)
+				.sample());
 	}
 
 	@Property
