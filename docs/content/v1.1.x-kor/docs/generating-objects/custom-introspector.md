@@ -36,7 +36,8 @@ public class CustomArbitraryIntrospector implements ArbitraryIntrospector {
     @Override
     public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
         // 1단계: 이 인트로스펙터가 이 타입을 처리해야 하는지 확인
-        Class<?> type = context.getResolvedType().getType();
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
         if (!MyCustomClass.class.isAssignableFrom(type)) {
             // 대상 타입이 아니면 다른 인트로스펙터가 처리하도록 함
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
@@ -116,7 +117,8 @@ public class ConstantArbitraryIntrospector implements ArbitraryIntrospector {
     
     @Override
     public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-        Class<?> type = context.getResolvedType().getType();
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
         
         // 상수가 올바른 타입인지 확인
         if (!type.isInstance(constantValue)) {
@@ -135,13 +137,15 @@ public class ConstantArbitraryIntrospector implements ArbitraryIntrospector {
 
 인트로스펙터를 만든 후에는 두 가지 방법으로 사용할 수 있습니다:
 
-### 주요 인트로스펙터로 사용
+### 전역 인트로스펙터로 사용
+
+##### 단독 사용
 
 ```java
 // 사용자 정의 인트로스펙터 생성
 ArbitraryIntrospector customIntrospector = new CustomArbitraryIntrospector();
 
-// 주요 인트로스펙터로 사용
+// 전역 인트로스펙터로 사용
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .objectIntrospector(customIntrospector)
     .build();
@@ -150,7 +154,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 MyCustomClass obj = fixtureMonkey.giveMeOne(MyCustomClass.class);
 ```
 
-### 다른 인트로스펙터와 함께 사용
+##### 다른 인트로스펙터와 함께 사용
 
 일반적으로 사용자 정의 인트로스펙터를 내장 인트로스펙터와 함께 사용하고 싶을 것입니다:
 
@@ -170,6 +174,22 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
+### 특정 타입 전용 인트로스펙터로 사용
+
+```java
+// MyCustomClass에 한해 customIntrospector 사용
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .pushArbitraryIntrospector(
+                new MatcherOperator<>(
+                        new ExactTypeMatcher(MyCustomClass.class),
+                        customIntrospector
+                )
+        )
+        .build();
+```
+
+다양한 `ArbitraryIntrospector` 설정 옵션에 대해서는 [커스텀 인트로스펙션 설정(고급 옵션)](../../fixture-monkey-options/advanced-options-for-experts#커스텀-인트로스펙터-등록) 에서 확인하세요.
+
 ## 모범 사례
 
 사용자 정의 인트로스펙터를 만들 때:
@@ -179,6 +199,94 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 3. **집중적으로 유지하세요** - 각 인트로스펙터는 특정 패턴이나 클래스 타입을 처리해야 함
 4. **성능을 고려하세요** - 인트로스펙터는 모든 객체 생성에 실행됨
 5. **철저하게 테스트하세요** - 다양한 엣지 케이스로 테스트
+
+#### 실제 사례: Range 클래스
+
+```java
+/*
+ * 외부 라이브러리 - Instant를 제네릭 타입으로 사용하는 Range<C> 클래스
+ */
+public class RangeInstantArbitraryIntrospector implements ArbitraryIntrospector {
+
+    @Override
+    public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
+        List<AnnotatedType> typeArguments = Types.getGenericsTypes(property.getAnnotatedType());
+        Class<?> genericType = typeArguments.isEmpty() ? null : Types.getActualType(typeArguments.getFirst());
+        
+        if (!type.equals(Range.class)
+                || typeArguments.size() != 1
+                || !genericType.equals(Instant.class)) {
+            return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+        }
+        
+        // ===== 난수 생성 예시 =====
+        int randomInt = (int)(Math.random() * 365) + 1;
+
+        Instant startTime = Instant.now().minus(randomInt, ChronoUnit.DAYS);
+        Instant endTime = Instant.now().plus(randomInt, ChronoUnit.DAYS);
+
+        Range<Instant> rangeValue = Range.closed(startTime, endTime);
+        
+        return new ArbitraryIntrospectorResult(
+                CombinableArbitrary.from(rangeValue)
+        );
+    }
+}
+```
+
+#### 실제 사례: InetAddress 클래스
+
+클래스 타입 매칭을 인트로스펙터 내부가 아닌 `.pushArbitraryIntrospector()` 에서 처리할 수도 있습니다.
+
+```java
+/**
+ * java.net.InetAddress 클래스
+ */
+public class InetAddressArbitraryIntrospector implements ArbitraryIntrospector {
+
+    @Override
+    public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+        Property property = context.getResolvedProperty();
+        Class<?> type = Types.getActualType(property.getType());
+
+        InetAddress inetAddress;
+        if (type.equals(Inet4Address.class)){
+            inetAddress = generateRandomInet4Address();
+        } else {
+            inetAddress = generateRandomInet6Address();
+        }
+
+        return new ArbitraryIntrospectorResult(
+                CombinableArbitrary.from(inetAddress)
+        );
+    }
+
+    private Inet4Address generateRandomInet4Address() {
+        // 랜덤 생성 로직 구현
+    }
+
+    private Inet6Address generateRandomInet6Address() {
+        // 랜덤 생성 로직 구현
+    }
+}
+```
+
+```java
+ArbitraryIntrospector inetAddressArbitraryIntrospector = new InetAddressArbitraryIntrospector();
+
+// InetAddress 및 그 하위 클래스에 한해 InetAddressArbitraryIntrospector 사용
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .pushArbitraryIntrospector(
+                new MatcherOperator<>(
+                        new AssignableTypeMatcher(InetAddress.class),
+                        inetAddressArbitraryIntrospector
+                )
+        )
+        // ...
+        .build();
+```
 
 ## 고급: 속성 생성기
 

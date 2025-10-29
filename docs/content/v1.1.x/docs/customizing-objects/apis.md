@@ -72,7 +72,7 @@ Here are some common scenarios where you can use Fixture Monkey APIs:
 The `set()` method is used to set specific values for object properties.
 This is the most basic and commonly used API.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -105,11 +105,26 @@ val order = fixtureMonkey.giveMeBuilder<Order>()
 {{< /tab >}}
 {{< /tabpane>}}
 
+#### Values.just()
+
+`Values.just()` wraps an object to use it as-is without decomposing it into individual fields internally.
+
+**Caution:** You cannot set a child property after setting with `Just`.
+
+```java
+Product product = fixture.giveMeBuilder(MyClass.class)
+	  	.set("options", Values.just(List.of("red", "medium", "adult"))
+	  	.set("options[0]", "blue")
+        .sample();
+```
+
+For example, the value of options[0] in MyClass will not be "blue", but will remain as the list set with `Values.just()`.
+
 ### size(), minSize(), maxSize()
 The `size()` method is used to specify the size of collections like lists or arrays.
 You can set exact sizes or specify minimum/maximum sizes.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -139,7 +154,7 @@ val product = fixtureMonkey.giveMeBuilder<Product>()
 ### setNull(), setNotNull()
 `setNull()` and `setNotNull()` are used to make properties null or ensure they have values.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -176,7 +191,7 @@ val validOrder = fixtureMonkey.giveMeBuilder<Order>()
 `setInner()` is used to create reusable settings for multiple tests.
 It's useful when you need the same member or order information across different tests.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -209,7 +224,7 @@ val vipMember = fixtureMonkey.giveMeBuilder<Member>()
 `setLazy()` is used to generate different or sequential values each time.
 It's useful for creating sequential order numbers or using current timestamps.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -242,7 +257,7 @@ It's useful when testing services with specific requirements, like adults-only s
 
 {{< alert icon="🚨" text="If conditions are too strict, finding values might take longer. Use set() when possible." />}}
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -275,7 +290,7 @@ val largeOrder = fixtureMonkey.giveMeBuilder<Order>()
 ### fixed()
 `fixed()` is used when you need the same test data every time you run your tests.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -299,7 +314,7 @@ val member = fixtureMonkey.giveMeBuilder<Member>()
 ### limit
 `limit` is used when you want to set specific values for only some elements in a collection.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -324,7 +339,7 @@ val cart = fixtureMonkey.giveMeBuilder<Cart>()
 `thenApply()` is used when you need to set values based on other values in the object.
 For example, setting an order's total amount based on its item prices.
 
-#### Basic Usage
+##### Basic Usage
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}

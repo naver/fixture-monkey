@@ -96,7 +96,7 @@ The more specific scope overrides the more general one - similar to how CSS spec
 
 > For practical usage of option scoping, see:
 > * [General Builder Options](../essential-options-for-beginners#general-builder-options) in Essential Options
-> * [Advanced Customization](../advanced-options-for-experts#advanced-customization) in Advanced Options
+> * [Property Customization](../advanced-options-for-experts#property-customization) in Advanced Options
 
 ### 4. Type Registration System
 
@@ -141,7 +141,6 @@ Plugins can:
 
 > For plugin usage examples, see:
 > * [JqwikPlugin Options](../essential-options-for-beginners#jqwikplugin-options) in Essential Options
-> * [Advanced Plugin Customization](../advanced-options-for-experts#advanced-plugin-customization) in Advanced Options
 
 ## Properties and Containers
 
@@ -301,4 +300,4 @@ After understanding these concepts, you can:
 
 → [Advanced Options for Experts](../advanced-options-for-experts) - Explore advanced options for complex testing scenarios
 
-→ [Creating Custom Introspector](../../generate-objects/custom-introspector) - Implement your own introspector for special domain requirements
+→ [Creating Custom Introspector](../../generating-objects/custom-introspector) - Implement your own introspector for special domain requirements
