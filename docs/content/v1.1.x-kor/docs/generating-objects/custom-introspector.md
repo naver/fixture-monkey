@@ -29,9 +29,7 @@ weight: 36
 이 방법은 속성을 사용하여 수동으로 객체를 구성해야 할 때 유용합니다:
 
 ```java
-/**
- * 특정 클래스 타입을 처리하는 사용자 정의 인트로스펙터 예제
- */
+// 특정 클래스 타입을 처리하는 사용자 정의 인트로스펙터 예제
 public class CustomArbitraryIntrospector implements ArbitraryIntrospector {
     @Override
     public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
@@ -78,9 +76,7 @@ public class CustomArbitraryIntrospector implements ArbitraryIntrospector {
 때로는 자식 속성이 발견되고 생성되는 방식을 사용자 정의해야 할 수 있습니다:
 
 ```java
-/**
- * 특정 속성에 대한 속성 생성을 제어하려면 이 메서드를 오버라이드하세요
- */
+//특정 속성에 대한 속성 생성을 제어하려면 이 메서드를 오버라이드하세요
 @Override
 @Nullable
 public PropertyGenerator getRequiredPropertyGenerator(Property property) {
@@ -105,9 +101,7 @@ public PropertyGenerator getRequiredPropertyGenerator(Property property) {
 때로는 상수나 특별히 계산된 값만 반환하면 되는 경우가 있습니다:
 
 ```java
-/**
- * 특정 타입에 대해 고정 값을 반환하는 인트로스펙터 예제
- */
+// 특정 타입에 대해 고정 값을 반환하는 인트로스펙터 예제
 public class ConstantArbitraryIntrospector implements ArbitraryIntrospector {
     private final Object constantValue;
     
@@ -203,9 +197,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 #### 실제 사례: Range 클래스
 
 ```java
-/*
- * 외부 라이브러리 - Instant를 제네릭 타입으로 사용하는 Range<C> 클래스
- */
+// 외부 라이브러리 - Instant를 제네릭 타입으로 사용하는 Range<C> 클래스
 public class RangeInstantArbitraryIntrospector implements ArbitraryIntrospector {
 
     @Override
@@ -241,9 +233,7 @@ public class RangeInstantArbitraryIntrospector implements ArbitraryIntrospector 
 클래스 타입 매칭을 인트로스펙터 내부가 아닌 `.pushArbitraryIntrospector()` 에서 처리할 수도 있습니다.
 
 ```java
-/**
- * java.net.InetAddress 클래스
- */
+// java.net.InetAddress 클래스
 public class InetAddressArbitraryIntrospector implements ArbitraryIntrospector {
 
     @Override

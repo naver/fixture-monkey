@@ -197,9 +197,7 @@ When creating custom introspectors:
 #### Real-world Example: Class Range
 
 ```java
-/**
- * External library - Class Range<C> using Instant as generic type
- */
+// External library - Class Range<C> using Instant as generic type
 public class RangeInstantArbitraryIntrospector implements ArbitraryIntrospector {
 
     @Override
@@ -234,9 +232,7 @@ public class RangeInstantArbitraryIntrospector implements ArbitraryIntrospector 
 You can also handle class type matching in `.pushArbitraryIntrospector()` instead of inside the introspector.
 
 ```java
-/**
- * Class java.net.InetAddress
- */
+// Class java.net.InetAddress
 public class InetAddressArbitraryIntrospector implements ArbitraryIntrospector {
 
     @Override
