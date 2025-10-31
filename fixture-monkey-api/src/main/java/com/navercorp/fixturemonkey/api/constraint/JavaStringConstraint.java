@@ -38,6 +38,8 @@ public final class JavaStringConstraint {
 
 	private final boolean notBlank;
 
+	private final boolean notEmpty;
+
 	@Nullable
 	private final PatternConstraint pattern;
 
@@ -49,6 +51,7 @@ public final class JavaStringConstraint {
 		boolean digits,
 		boolean notNull,
 		boolean notBlank,
+		boolean notEmpty,
 		@Nullable PatternConstraint pattern,
 		boolean email
 	) {
@@ -57,6 +60,7 @@ public final class JavaStringConstraint {
 		this.digits = digits;
 		this.notNull = notNull;
 		this.notBlank = notBlank;
+		this.notEmpty = notEmpty;
 		this.pattern = pattern;
 		this.email = email;
 	}
@@ -81,6 +85,10 @@ public final class JavaStringConstraint {
 
 	public boolean isNotBlank() {
 		return this.notBlank;
+	}
+
+	public boolean isNotEmpty() {
+		return this.notEmpty;
 	}
 
 	@Nullable

@@ -40,10 +40,12 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
@@ -55,6 +57,7 @@ import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
+import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
@@ -86,39 +89,19 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 				constraintGenerator.generateStringConstraint(context);
 
 			if (javaStringConstraint != null) {
-				generated = generated.filter(
-					it -> {
+				String violationProperty = resolveViolationProperty(context);
+
+				if (generated.fixed()) {
+					String string = (String)generated.rawValue();
+					enforceMandatoryStringConstraints(javaStringConstraint, string, violationProperty);
+					validateStringLengthOrThrow(javaStringConstraint, string, violationProperty);
+				} else {
+					generated = generated.filter(it -> {
 						String string = (String)it;
-						if (javaStringConstraint.isNotNull() && string == null) {
-							return false;
-						}
-
-						if (javaStringConstraint.isNotBlank()) {
-							if (string == null) {
-								return false;
-							}
-							return !isBlank(string);
-						}
-
-						if (javaStringConstraint.getMinSize() != null) {
-							if (string == null) {
-								return true;
-							}
-							return BigInteger.valueOf(string.length()).compareTo(javaStringConstraint.getMinSize())
-								>= 0;
-						}
-
-						if (javaStringConstraint.getMaxSize() != null) {
-							if (string == null) {
-								return true;
-							}
-							return BigInteger.valueOf(string.length()).compareTo(javaStringConstraint.getMaxSize())
-								<= 0;
-						}
-
-						return true;
-					}
-				);
+						enforceMandatoryStringConstraints(javaStringConstraint, string, violationProperty);
+						return isStringLengthWithinBounds(javaStringConstraint, string);
+					});
+				}
 			}
 		}
 
@@ -376,5 +359,92 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 			}
 		}
 		return value.length() == length;
+	}
+
+	private void enforceMandatoryStringConstraints(
+		JavaStringConstraint constraint,
+		@Nullable String value,
+		String violationProperty
+	) {
+		if (value == null) {
+			if (constraint.isNotNull()) {
+				throw new ValidationFailedException(
+					"Given value is null but annotated with @NotNull.",
+					Collections.singleton(violationProperty)
+				);
+			}
+			if (constraint.isNotBlank()) {
+				throw new ValidationFailedException(
+					"Given value is null but annotated with @NotBlank.",
+					Collections.singleton(violationProperty)
+				);
+			}
+			if (constraint.isNotEmpty()) {
+				throw new ValidationFailedException(
+					"Given value is null but annotated with @NotEmpty.",
+					Collections.singleton(violationProperty)
+				);
+			}
+			return;
+		}
+
+		if (constraint.isNotBlank() && isBlank(value)) {
+			throw new ValidationFailedException(
+				"Given value is blank but annotated with @NotBlank.",
+				Collections.singleton(violationProperty)
+			);
+		}
+
+		if (constraint.isNotEmpty() && value.isEmpty()) {
+			throw new ValidationFailedException(
+				"Given value is empty but annotated with @NotEmpty.",
+				Collections.singleton(violationProperty)
+			);
+		}
+	}
+
+	private String resolveViolationProperty(ArbitraryGeneratorContext context) {
+		String resolvedName = context.getArbitraryProperty().getObjectProperty().getResolvedPropertyName();
+		if (resolvedName != null && !resolvedName.isEmpty()) {
+			return resolvedName;
+		}
+
+		String propertyExpression = context.getPropertyPath().getExpression();
+		if (propertyExpression != null && !propertyExpression.isEmpty()) {
+			return propertyExpression;
+		}
+
+		return "$";
+	}
+
+	private boolean isStringLengthWithinBounds(JavaStringConstraint constraint, @Nullable String value) {
+		if (value == null) {
+			return true;
+		}
+
+		if (constraint.getMinSize() != null
+			&& BigInteger.valueOf(value.length()).compareTo(constraint.getMinSize()) < 0) {
+			return false;
+		}
+
+		if (constraint.getMaxSize() != null
+			&& BigInteger.valueOf(value.length()).compareTo(constraint.getMaxSize()) > 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private void validateStringLengthOrThrow(
+		JavaStringConstraint constraint,
+		@Nullable String value,
+		String violationProperty
+	) {
+		if (!isStringLengthWithinBounds(constraint, value)) {
+			throw new ValidationFailedException(
+				"Given value does not satisfy @Size constraints.",
+				Collections.singleton(violationProperty)
+			);
+		}
 	}
 }
