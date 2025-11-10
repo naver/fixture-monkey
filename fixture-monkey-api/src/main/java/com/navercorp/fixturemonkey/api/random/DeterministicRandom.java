@@ -42,10 +42,10 @@ public class DeterministicRandom extends Random {
 		long value = super.nextLong();
 		this.currentSeed = value;
 
-		SEED_CACHE.computeIfAbsent(value, seed -> {
+		if (!SEED_CACHE.containsKey(value)) {
 			manageCacheSize();
-			return new Random(seed);
-		});
+			SEED_CACHE.put(value, new Random(value));
+		}
 
 		return value;
 	}
