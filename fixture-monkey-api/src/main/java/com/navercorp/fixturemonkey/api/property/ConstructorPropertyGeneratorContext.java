@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
@@ -32,7 +33,7 @@ public final class ConstructorPropertyGeneratorContext {
 	private final Property property;
 	private final Constructor<?> constructor;
 	private final List<TypeReference<?>> inputParameterTypes;
-	private final List<String> inputParameterNames;
+	private final List<@Nullable String> inputParameterNames;
 
 	public ConstructorPropertyGeneratorContext(
 		Property property,
@@ -45,7 +46,7 @@ public final class ConstructorPropertyGeneratorContext {
 		Property property,
 		Constructor<?> constructor,
 		List<TypeReference<?>> inputParameterTypes,
-		List<String> inputParameterNames
+		List<@Nullable String> inputParameterNames
 	) {
 		this.property = property;
 		this.constructor = constructor;
@@ -65,7 +66,7 @@ public final class ConstructorPropertyGeneratorContext {
 		return inputParameterTypes;
 	}
 
-	public List<String> getInputParameterNames() {
+	public List<@Nullable String> getInputParameterNames() {
 		return inputParameterNames;
 	}
 }

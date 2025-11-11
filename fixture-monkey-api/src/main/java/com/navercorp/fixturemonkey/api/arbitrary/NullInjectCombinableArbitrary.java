@@ -39,7 +39,7 @@ final class NullInjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		this.nullProbability = nullProbability;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "argument"})
 	@Override
 	public T combined() {
 		T combined = combinableArbitrary.combined();
@@ -50,6 +50,7 @@ final class NullInjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		return (T)injectNull(combined);
 	}
 
+	@SuppressWarnings("return")
 	@Override
 	public Object rawValue() {
 		Object rawValue = combinableArbitrary.rawValue();

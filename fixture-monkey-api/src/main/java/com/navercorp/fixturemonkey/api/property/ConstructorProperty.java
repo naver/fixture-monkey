@@ -98,6 +98,7 @@ public final class ConstructorProperty implements Property {
 	}
 
 	@Override
+	@SuppressWarnings("return")
 	public String getName() {
 		return this.parameterProperty.getName();
 	}
@@ -124,7 +125,7 @@ public final class ConstructorProperty implements Property {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 /**
  * It is a property for a root type.
@@ -30,7 +31,7 @@ public final class ComparableRootProperty implements TreeRootProperty {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

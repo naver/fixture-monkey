@@ -29,13 +29,15 @@ import javax.validation.ValidatorFactory;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.5.6", status = Status.MAINTAINED)
 public final class JavaxArbitraryValidator implements ArbitraryValidator {
-	private Validator validator;
+	private @Nullable Validator validator;
 
 	public JavaxArbitraryValidator() {
 		try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
@@ -51,7 +53,7 @@ public final class JavaxArbitraryValidator implements ArbitraryValidator {
 			Set<ConstraintViolation<Object>> violations = this.validator.validate(arbitrary);
 
 			Set<String> constraintViolationPropertyNames = violations.stream()
-				.map(ConstraintViolation::getPropertyPath)
+				.<@NonNull Path>map(ConstraintViolation::getPropertyPath)
 				.map(Path::toString)
 				.collect(Collectors.toSet());
 

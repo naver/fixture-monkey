@@ -32,6 +32,7 @@ public final class UnSafeLazyArbitraryImpl<T> implements LazyArbitrary<T> {
 
 	private Object value = UNINITIALIZED_VALUE;
 
+	@SuppressWarnings("assignment")
 	UnSafeLazyArbitraryImpl(T value) {
 		this.value = value;
 		this.initializer = () -> value;
@@ -47,7 +48,7 @@ public final class UnSafeLazyArbitraryImpl<T> implements LazyArbitrary<T> {
 		this(initializer, false);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "assignment"})
 	public T getValue() {
 		if (value == UNINITIALIZED_VALUE) {
 			value = initializer.get();

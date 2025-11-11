@@ -115,7 +115,7 @@ public final class MonkeyManipulatorFactory {
 
 	public <T> ArbitraryManipulator newArbitraryManipulator(
 		NodeResolver nodeResolver,
-		Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> arbitraryCustomizer
+		@Nullable Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> arbitraryCustomizer
 	) {
 		if (arbitraryCustomizer == null) {
 			return newArbitraryManipulator(nodeResolver, (Object)null);
@@ -177,7 +177,7 @@ public final class MonkeyManipulatorFactory {
 		return manipulators;
 	}
 
-	private ArbitraryBuilderContext findRegisteredArbitraryBuilderContext(
+	private @Nullable ArbitraryBuilderContext findRegisteredArbitraryBuilderContext(
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		Property property
 	) {

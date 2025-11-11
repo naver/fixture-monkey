@@ -54,6 +54,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> resolveArbitrary;
 	private final MonkeyGeneratorContext monkeyGeneratorContext;
 	private final LazyArbitrary<PropertyPath> lazyPropertyPath;
+	@SuppressWarnings("methodref.receiver.bound")
 	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary<?>>> arbitraryListByArbitraryProperty =
 		LazyArbitrary.lazy(this::initArbitraryListByArbitraryProperty);
 	private final int generateUniqueMaxTries;
@@ -124,6 +125,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
 	}
 
+	@SuppressWarnings("return")
 	public Map<String, CombinableArbitrary<?>> getCombinableArbitrariesByPropertyName() {
 		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
 			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
@@ -142,7 +144,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		return this.property.getObjectProperty().isRoot();
 	}
 
-	public synchronized boolean isUniqueAndCheck(PropertyPath property, Object value) {
+	public synchronized boolean isUniqueAndCheck(PropertyPath property, @Nullable Object value) {
 		return monkeyGeneratorContext.isUniqueAndCheck(property, value);
 	}
 

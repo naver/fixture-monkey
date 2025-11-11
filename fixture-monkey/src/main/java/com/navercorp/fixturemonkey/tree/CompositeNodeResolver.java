@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class CompositeNodeResolver implements NodeResolver {
@@ -93,7 +94,7 @@ public final class CompositeNodeResolver implements NodeResolver {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

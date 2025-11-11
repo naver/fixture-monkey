@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
@@ -112,6 +113,7 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 		}
 	}
 
+	@SuppressWarnings("dereference.of.nullable")
 	public List<Property> generateParameterProperties(ConstructorPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
@@ -122,7 +124,7 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			getGenericAnnotatedTypesByGenericTypeName(property);
 
 		List<String> parameterNamesByConstructor = Arrays.asList(getParameterNames(constructor));
-		List<String> inputParameterNames = context.getInputParameterNames();
+		List<@Nullable String> inputParameterNames = context.getInputParameterNames();
 		List<TypeReference<?>> typeReferencesByConstructor = Arrays.stream(constructor.getAnnotatedParameterTypes())
 			.map(it -> actualGenericTypesByTypeVariable.getOrDefault(it.getType().getTypeName(), it))
 			.map(ConstructorParameterPropertyGenerator::toTypeReference)

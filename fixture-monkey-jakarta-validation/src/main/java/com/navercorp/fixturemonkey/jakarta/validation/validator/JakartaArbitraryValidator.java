@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
@@ -34,7 +36,7 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.5.6", status = Status.MAINTAINED)
 public final class JakartaArbitraryValidator implements ArbitraryValidator {
-	private Validator validator;
+	private @Nullable Validator validator;
 
 	public JakartaArbitraryValidator() {
 		try {
@@ -50,7 +52,7 @@ public final class JakartaArbitraryValidator implements ArbitraryValidator {
 			Set<ConstraintViolation<Object>> violations = this.validator.validate(arbitrary);
 
 			Set<String> constraintViolationPropertyNames = violations.stream()
-				.map(ConstraintViolation::getPropertyPath)
+				.<@NonNull Path>map(ConstraintViolation::getPropertyPath)
 				.map(Path::toString)
 				.collect(Collectors.toSet());
 

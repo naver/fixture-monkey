@@ -29,6 +29,10 @@ class CheckerFrameworkConventionsPlugin : Plugin<Project> {
 
         project.extensions.getByType<CheckerFrameworkExtension>().apply {
             checkers = listOf("org.checkerframework.checker.nullness.NullnessChecker")
+            extraJavacArgs = listOf(
+                "-AsuppressWarnings=initialization,method.invocation,type.arguments"
+            )
+            excludeTests = true
         }
     }
 }

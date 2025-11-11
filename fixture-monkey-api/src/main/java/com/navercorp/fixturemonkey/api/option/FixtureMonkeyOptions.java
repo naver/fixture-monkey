@@ -462,6 +462,7 @@ public final class FixtureMonkeyOptions {
 		);
 	}
 
+	@SuppressWarnings("nullness")
 	private static List<MatcherOperator<PropertyGenerator>> getDefaultPropertyGenerators() {
 		return Arrays.asList(
 			new MatcherOperator<>(ConstantIntrospector.INSTANCE, EmptyPropertyGenerator.INSTANCE),

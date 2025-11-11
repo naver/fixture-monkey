@@ -154,7 +154,7 @@ public class ElementProperty implements ContainerElementProperty {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -179,6 +179,7 @@ public class ElementProperty implements ContainerElementProperty {
 	}
 
 	@Nullable
+	@SuppressWarnings("argument")
 	private Object getOptionalValue(Object obj) {
 		Class<?> actualType = Types.getActualType(obj.getClass());
 		if (Optional.class.isAssignableFrom(actualType)) {

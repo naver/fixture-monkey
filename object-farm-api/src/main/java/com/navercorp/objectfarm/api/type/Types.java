@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 public abstract class Types {
 	private static final Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<>();
 
@@ -163,7 +165,7 @@ public abstract class Types {
 		);
 	}
 
-	public static Class<?> primitiveToWrapper(final Class<?> cls) {
+	public static @Nullable Class<?> primitiveToWrapper(final @Nullable Class<?> cls) {
 		Class<?> convertedClass = cls;
 		if (cls != null && cls.isPrimitive()) {
 			convertedClass = primitiveWrapperMap.get(cls);
@@ -171,7 +173,7 @@ public abstract class Types {
 		return convertedClass;
 	}
 
-	public static Class<?> wrapperToPrimitive(final Class<?> cls) {
+	public static @Nullable Class<?> wrapperToPrimitive(final Class<?> cls) {
 		return wrapperPrimitiveMap.get(cls);
 	}
 
@@ -182,7 +184,7 @@ public abstract class Types {
 		return isAssignable(cls, toClass, true);
 	}
 
-	public static boolean isAssignable(Class<?> cls, Class<?> toClass, boolean autoboxing) {
+	public static boolean isAssignable(@Nullable Class<?> cls, @Nullable Class<?> toClass, boolean autoboxing) {
 		if (toClass == null) {
 			return false;
 		}
@@ -250,7 +252,7 @@ public abstract class Types {
 			}
 
 			@Override
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			public @Nullable <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
 				return null;
 			}
 

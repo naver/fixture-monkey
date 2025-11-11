@@ -23,13 +23,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.jspecify.annotations.Nullable;
+
 public final class SeedFileLoader {
 	private static final String DEFAULT_SEED_FILE_NAME = ".fixture-monkey-seed";
 
 	public SeedFileLoader() {
 	}
 
-	public Long loadSeedFromFile() {
+	public @Nullable Long loadSeedFromFile() {
 		Path path = Paths.get(DEFAULT_SEED_FILE_NAME);
 		if (!Files.exists(path)) {
 			return null;

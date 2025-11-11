@@ -67,29 +67,32 @@ final class InnerSpecState {
 	InnerSpecState withPrefix(DefaultDeclarativeExpression parentDeclarativeExpression) {
 		InnerSpecState newState = new InnerSpecState();
 
-		if (this.nodeSetManipulatorSnapshot != null) {
+		NodeSetManipulatorSnapshot nodeSetManipulatorSnapshot1 = this.nodeSetManipulatorSnapshot;
+		if (nodeSetManipulatorSnapshot1 != null) {
 			newState.nodeSetManipulatorSnapshot = new NodeSetManipulatorSnapshot(
-				this.nodeSetManipulatorSnapshot.sequence,
-				this.nodeSetManipulatorSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
-				this.nodeSetManipulatorSnapshot.value
+				nodeSetManipulatorSnapshot1.sequence,
+				nodeSetManipulatorSnapshot1.declarativeExpression.prepend(parentDeclarativeExpression),
+				nodeSetManipulatorSnapshot1.value
 			);
 		}
 
-		if (this.filterSnapshot != null) {
+		FilterSnapshot filterSnapshot = this.filterSnapshot;
+		if (filterSnapshot != null) {
 			newState.filterSnapshot = new FilterSnapshot(
-				this.filterSnapshot.sequence,
-				this.filterSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
-				this.filterSnapshot.type,
-				this.filterSnapshot.predicate
+				filterSnapshot.sequence,
+				filterSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
+				filterSnapshot.type,
+				filterSnapshot.predicate
 			);
 		}
 
-		if (this.containerInfoSnapshot != null) {
+		ContainerInfoSnapshot containerInfoSnapshot = this.containerInfoSnapshot;
+		if (containerInfoSnapshot != null) {
 			newState.containerInfoSnapshot = new ContainerInfoSnapshot(
-				this.containerInfoSnapshot.sequence,
-				this.containerInfoSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
-				this.containerInfoSnapshot.elementMinSize,
-				this.containerInfoSnapshot.elementMaxSize
+				containerInfoSnapshot.sequence,
+				containerInfoSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
+				containerInfoSnapshot.elementMinSize,
+				containerInfoSnapshot.elementMaxSize
 			);
 		}
 

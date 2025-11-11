@@ -123,7 +123,7 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -147,7 +147,8 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 			|| OptionalDouble.class.isAssignableFrom(type);
 	}
 
-	private Object getOptionalValue(Object obj) {
+	@SuppressWarnings("argument")
+	private @Nullable Object getOptionalValue(Object obj) {
 		Class<?> actualType = Types.getActualType(obj.getClass());
 		if (Optional.class.isAssignableFrom(actualType)) {
 			return ((Optional<?>)obj).orElse(null);

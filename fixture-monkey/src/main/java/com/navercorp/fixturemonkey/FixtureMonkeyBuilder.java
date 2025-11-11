@@ -293,6 +293,7 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("dereference.of.nullable")
 	public FixtureMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
 		return pushExceptGenerateType(
 			property -> Types.primitiveToWrapper(Types.getActualType(property.getType()))
@@ -374,6 +375,7 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("return")
 	public FixtureMonkeyBuilder registerGroup(Class<?>... arbitraryBuilderGroups) {
 		for (Class<?> arbitraryBuilderGroup : arbitraryBuilderGroups) {
 			Method[] methods = arbitraryBuilderGroup.getMethods();

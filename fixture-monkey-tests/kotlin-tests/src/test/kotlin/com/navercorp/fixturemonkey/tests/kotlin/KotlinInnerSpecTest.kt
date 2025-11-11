@@ -182,7 +182,7 @@ class KotlinInnerSpecTest {
                 .setKotlinInner {
                     property("strMap") {
                         minSize(1)
-                        key(null)
+                        key {}
                     }
                 }
                 .sample()

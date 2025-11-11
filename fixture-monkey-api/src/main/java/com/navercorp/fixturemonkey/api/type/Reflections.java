@@ -48,6 +48,7 @@ public abstract class Reflections {
 		}
 	}
 
+	@SuppressWarnings("return")
 	public static Object invokeMethod(Method method, Object target, Object... args) {
 		if (!method.isAccessible()) {
 			method.setAccessible(true);
@@ -157,6 +158,7 @@ public abstract class Reflections {
 			.collect(toList());
 	}
 
+	@SuppressWarnings("argument")
 	private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 		Set<Object> seen = ConcurrentHashMap.newKeySet();
 		return t -> seen.add(keyExtractor.apply(t));

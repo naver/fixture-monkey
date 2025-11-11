@@ -28,6 +28,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JacksonPropertyNameResolver implements PropertyNameResolver {
+	@SuppressWarnings("methodref.return")
 	@Override
 	public String resolve(Property property) {
 		return property.getAnnotation(JsonProperty.class)

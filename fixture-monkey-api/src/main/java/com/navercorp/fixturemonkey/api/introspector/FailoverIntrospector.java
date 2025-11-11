@@ -79,6 +79,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 		return new ArbitraryIntrospectorResult(
 			new CombinableArbitrary() {
 				@Override
+				@SuppressWarnings({"return", "argument"})
 				public Object combined() {
 					Iterator<FailoverIntrospectorResult> iterator = results.iterator();
 					FailoverIntrospectorResult result = null;
@@ -109,6 +110,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					);
 				}
 
+				@SuppressWarnings("argument")
 				@Override
 				public Object rawValue() {
 					Iterator<FailoverIntrospectorResult> iterator = results.iterator();

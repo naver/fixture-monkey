@@ -16,6 +16,7 @@ public final class PropertyPath implements Comparable<PropertyPath> {
 	private final PropertyPath parentPropertyPath;
 	private final int depth;
 
+	@SuppressWarnings("nullness")
 	private final LazyArbitrary<String> expression = LazyArbitrary.lazy(this::initExpression);
 
 	public PropertyPath(Property property, @Nullable PropertyPath parentPropertyPath, int depth) {
@@ -33,7 +34,7 @@ public final class PropertyPath implements Comparable<PropertyPath> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -66,7 +67,7 @@ public final class PropertyPath implements Comparable<PropertyPath> {
 			+ getCurrentPropertyExpression();
 	}
 
-	private String getCurrentPropertyExpression() {
+	private @Nullable String getCurrentPropertyExpression() {
 		if (property instanceof TreeRootProperty || property instanceof MapEntryElementProperty) {
 			return "";
 		} else if (property instanceof MapKeyElementProperty) {
