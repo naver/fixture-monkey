@@ -98,7 +98,7 @@ class KotlinInnerSpec {
      *
      * @param key value of the map key to set
      */
-    fun key(key: Any): KotlinInnerSpec {
+    fun key(key: Any?): KotlinInnerSpec {
         return applyToSpec { it.key(key) }
     }
 
@@ -116,7 +116,7 @@ class KotlinInnerSpec {
      *
      * @param keys The keys to set in the map. Can be empty.
      */
-    fun keys(vararg keys: Any): KotlinInnerSpec {
+    fun keys(vararg keys: Any?): KotlinInnerSpec {
         return applyToSpec { it.keys(*keys) }
     }
 

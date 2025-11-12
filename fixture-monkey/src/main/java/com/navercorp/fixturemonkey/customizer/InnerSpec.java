@@ -160,7 +160,7 @@ public final class InnerSpec {
 	 *
 	 * @param key value of the map key to set
 	 */
-	public InnerSpec key(Object key) {
+	public InnerSpec key(@Nullable Object key) {
 		entrySize++;
 		setMapKey(key);
 		return this;
@@ -182,7 +182,7 @@ public final class InnerSpec {
 	 *
 	 * @param keys The keys to set in the map. Can be empty.
 	 */
-	public InnerSpec keys(Object... keys) {
+	public InnerSpec keys(@Nullable Object... keys) {
 		Arrays.stream(keys).forEach(this::key);
 		return this;
 	}
@@ -538,7 +538,7 @@ public final class InnerSpec {
 		return newSpec;
 	}
 
-	private void setMapKey(Object mapKey) {
+	private void setMapKey(@Nullable Object mapKey) {
 		if (mapKey == null) {
 			throw new IllegalArgumentException(
 				"Map key cannot be null."
