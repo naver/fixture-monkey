@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
+import org.jspecify.annotations.NonNull;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -43,6 +44,7 @@ public final class FunctionalInterfaceArbitraryIntrospector implements Arbitrary
 		FUNCTIONAL_INVOKE_METHOD_NAMES_BY_ASSIGNABLE_TYPE.put(Supplier.class, "get");
 	}
 
+	@SuppressWarnings("argument")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
@@ -59,7 +61,7 @@ public final class FunctionalInterfaceArbitraryIntrospector implements Arbitrary
 		return new ArbitraryIntrospectorResult(result);
 	}
 
-	private <T> Object toFunctionalInterface(Class<?> type, T value) {
+	private <T> Object toFunctionalInterface(Class<?> type, @NonNull T value) {
 		InvocationHandlerBuilder invocationHandlerBuilder = new InvocationHandlerBuilder(
 			type,
 			new HashMap<>()

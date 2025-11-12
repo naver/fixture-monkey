@@ -133,7 +133,7 @@ public interface ArbitraryBuilder<T> {
 	 * {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object, int)
 	 */
-	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier);
+	ArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier);
 
 	/**
 	 * Set the number of {@code limit} properties referenced by expression to a result of {@link Supplier}.
@@ -148,7 +148,7 @@ public interface ArbitraryBuilder<T> {
 	 * {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object, int)
 	 */
-	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit);
+	ArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier, int limit);
 
 	/**
 	 * Set one or more properties referenced by expression to a result of {@link Supplier}.
@@ -161,7 +161,7 @@ public interface ArbitraryBuilder<T> {
 	 * {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object)
 	 */
-	ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier);
+	ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier);
 
 	/**
 	 * Set the number of {@code limit} properties referenced by expression to a result of {@link Supplier}.
@@ -175,7 +175,7 @@ public interface ArbitraryBuilder<T> {
 	 * {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object, int)
 	 */
-	ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier, int limit);
+	ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier, int limit);
 
 	/**
 	 * Set one or more properties referenced by expression to null.

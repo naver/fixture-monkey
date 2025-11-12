@@ -40,6 +40,7 @@ final class UniqueCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public T combined() {
 		return combinableArbitrary.filter(
 			it -> {
@@ -53,6 +54,7 @@ final class UniqueCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public Object rawValue() {
 		return combinableArbitrary.filter(
 			it -> {

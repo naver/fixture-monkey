@@ -40,7 +40,7 @@ abstract class JavaGetterPropertySelectors {
 	/**
 	 * It is for internal use only. It can be changed or removed at any time.
 	 **/
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "dereference.of.nullable", "argument"})
 	static <T, R> JavaGetterMethodPropertySelector<T, R> resolvePropertySelector(
 		JavaGetterMethodReference<T, R> methodRef
 	) {

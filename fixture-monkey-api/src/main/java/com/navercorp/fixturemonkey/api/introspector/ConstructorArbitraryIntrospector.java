@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -61,7 +62,7 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		List<String> parameterNames = constructorWithParamNames.getParameterNames().isEmpty()
+		List<@Nullable String> parameterNames = constructorWithParamNames.getParameterNames().isEmpty()
 			? Arrays.asList(getParameterNames(constructorWithParamNames.getConstructor()))
 			: constructorWithParamNames.getParameterNames();
 
@@ -103,9 +104,10 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 		);
 	}
 
+	@SuppressWarnings({"argument", "return"})
 	private static Function<Map<ArbitraryProperty, Object>, Object> combine(
 		Constructor<?> constructor,
-		List<String> parameterNames
+		List<@Nullable String> parameterNames
 	) {
 		int parameterSize = parameterNames.size();
 
@@ -133,9 +135,9 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 
 	public static class ConstructorWithParameterNames<T> {
 		private final Constructor<T> constructor;
-		private final List<String> parameterNames;
+		private final List<@Nullable String> parameterNames;
 
-		public ConstructorWithParameterNames(Constructor<T> constructor, List<String> parameterNames) {
+		public ConstructorWithParameterNames(Constructor<T> constructor, List<@Nullable String> parameterNames) {
 			this.constructor = constructor;
 			this.parameterNames = parameterNames;
 		}
@@ -144,7 +146,7 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 			return constructor;
 		}
 
-		public List<String> getParameterNames() {
+		public List<@Nullable String> getParameterNames() {
 			return parameterNames;
 		}
 	}

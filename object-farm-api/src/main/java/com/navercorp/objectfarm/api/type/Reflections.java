@@ -43,7 +43,7 @@ public abstract class Reflections {
 		}
 	}
 
-	public static Object invokeMethod(Method method, Object target, Object... args) {
+	public static @Nullable Object invokeMethod(Method method, Object target, Object... args) {
 		if (!method.isAccessible()) {
 			method.setAccessible(true);
 		}
@@ -153,7 +153,7 @@ public abstract class Reflections {
 	}
 
 	private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-		Set<Object> seen = ConcurrentHashMap.newKeySet();
+		Set<@Nullable Object> seen = ConcurrentHashMap.newKeySet();
 		return t -> seen.add(keyExtractor.apply(t));
 	}
 

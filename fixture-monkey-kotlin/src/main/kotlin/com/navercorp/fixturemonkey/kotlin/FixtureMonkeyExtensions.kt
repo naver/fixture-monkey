@@ -193,7 +193,7 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
 
     override fun <R> zipWith(
         others: List<ArbitraryBuilder<*>>,
-        combinator: Function<List<*>, R>?,
+        combinator: Function<List<*>, R>,
     ): KotlinTypeDefaultArbitraryBuilder<R> =
         InternalKotlinTypeDefaultArbitraryBuilder(delegate.zipWith(others, combinator))
 
@@ -231,7 +231,7 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
 
     override fun instantiate(
         type: TypeReference<*>,
-        instantiator: Instantiator?,
+        instantiator: Instantiator,
     ): KotlinTypeDefaultArbitraryBuilder<T> =
         this.apply { delegate.instantiate(type, instantiator) }
 

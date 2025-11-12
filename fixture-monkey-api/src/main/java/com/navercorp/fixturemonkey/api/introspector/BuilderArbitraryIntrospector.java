@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apiguardian.api.API;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		BUILD_METHOD_CACHE.clear();
 	}
 
+	@SuppressWarnings({"argument", "return", "dereference.of.nullable"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
@@ -154,9 +156,10 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		clearMethodCache();
 	}
 
-	private Class<?> getBuilderType(Class<?> objectType) {
+	@SuppressWarnings({"return", "argument"})
+	private @Nullable Class<?> getBuilderType(Class<?> objectType) {
 		String builderMethodName = typedBuilderMethodName.getOrDefault(objectType, defaultBuilderMethodName);
-		Method builderMethod = BUILDER_CACHE.computeIfAbsent(objectType, t -> {
+		Method builderMethod = BUILDER_CACHE.computeIfAbsent(objectType,  t -> {
 			Method method = Reflections.findMethod(t, builderMethodName);
 			if (method != null) {
 				method.setAccessible(true);
@@ -177,6 +180,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		});
 	}
 
+	@SuppressWarnings("return")
 	private String getFieldName(Property property) {
 		return getActualProperty(property).getName();
 	}

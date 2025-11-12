@@ -172,17 +172,17 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
+	public ArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier, int limit) {
 		return this.setLazy(toExpressionGenerator(expression), supplier, limit);
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier) {
+	public ArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier) {
 		return this.setLazy(expression, supplier, MAX_MANIPULATION_COUNT);
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier, int limit) {
+	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier, int limit) {
 		NodeResolver nodeResolver = toMonkeyExpression(propertySelector).toNodeResolver();
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator(nodeResolver, supplier, limit);
@@ -191,7 +191,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier) {
+	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier) {
 		return this.setLazy(propertySelector, supplier, MAX_MANIPULATION_COUNT);
 	}
 
@@ -532,6 +532,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		return this.activeContext;
 	}
 
+	@SuppressWarnings("return")
 	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext activeContext) {
 		if (activeContext.isFixed()) {
 			if (activeContext.getFixedCombinableArbitrary() == null || activeContext.fixedExpired()) {

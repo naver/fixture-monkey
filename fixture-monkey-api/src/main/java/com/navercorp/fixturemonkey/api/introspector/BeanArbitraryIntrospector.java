@@ -52,6 +52,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BeanArbitraryIntrospector.class);
 
 	@Override
+	@SuppressWarnings({"argument", "methodref.return", ""})
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
@@ -95,6 +96,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 		}
 	}
 
+	@SuppressWarnings({"dereference.of.nullable", "argument"})
 	private Function<Map<ArbitraryProperty, Object>, Object> combine(
 		Supplier<Object> instance,
 		Map<String, PropertyDescriptor> propertyDescriptorsByPropertyName

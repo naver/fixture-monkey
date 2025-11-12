@@ -40,6 +40,7 @@ public final class EnumIntrospector implements ArbitraryIntrospector, Matcher {
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> type = Types.getActualType(context.getResolvedType());
 		if (!type.isEnum()) {

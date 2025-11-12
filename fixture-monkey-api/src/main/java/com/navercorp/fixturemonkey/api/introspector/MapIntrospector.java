@@ -65,6 +65,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 		);
 	}
 
+	@SuppressWarnings("argument")
 	private static Function<List<Object>, Object> combine(ArbitraryGeneratorContext context) {
 		return elements -> {
 			Map<Object, Object> map = new HashMap<>();

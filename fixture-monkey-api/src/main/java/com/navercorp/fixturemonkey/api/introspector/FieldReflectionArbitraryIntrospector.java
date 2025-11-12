@@ -47,6 +47,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 	public static final FieldReflectionArbitraryIntrospector INSTANCE = new FieldReflectionArbitraryIntrospector();
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldReflectionArbitraryIntrospector.class);
 
+	@SuppressWarnings("methodref.return")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
@@ -90,6 +91,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		}
 	}
 
+	@SuppressWarnings("argument")
 	private Function<Map<ArbitraryProperty, Object>, Object> combine(
 		Supplier<Object> instance,
 		Map<String, Field> fieldsByPropertyName

@@ -123,7 +123,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		throw newRetryableFilterMissException(lastException);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "override.return", "argument"})
 	@Override
 	public T rawValue() {
 		T returned;
@@ -205,6 +205,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		return combinableArbitrary.unique();
 	}
 
+	@SuppressWarnings("argument")
 	private RetryableFilterMissException newRetryableFilterMissException(@Nullable Throwable throwable) {
 		if (!(throwable instanceof RetryableFilterMissException)) {
 			return new RetryableFilterMissException(throwable);

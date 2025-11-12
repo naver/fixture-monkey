@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -108,6 +109,7 @@ public final class PriorityConstructorArbitraryIntrospector implements Arbitrary
 		return getConstructorArbitraryIntrospector(property).getRequiredPropertyGenerator(property);
 	}
 
+	@SuppressWarnings("assignment")
 	private ConstructorArbitraryIntrospector getConstructorArbitraryIntrospector(Property property) {
 		Class<?> actualType = Types.getActualType(property.getType());
 
@@ -121,7 +123,7 @@ public final class PriorityConstructorArbitraryIntrospector implements Arbitrary
 						"No matching constructor given type: " + actualType.getTypeName())
 					);
 
-				List<String> parameterNames = parameterNamesResolver.apply(constructor);
+				List<@Nullable String> parameterNames = parameterNamesResolver.apply(constructor);
 
 				if (!parameterNames.isEmpty() && parameterNames.size() != constructor.getParameterCount()) {
 					throw new IllegalArgumentException(

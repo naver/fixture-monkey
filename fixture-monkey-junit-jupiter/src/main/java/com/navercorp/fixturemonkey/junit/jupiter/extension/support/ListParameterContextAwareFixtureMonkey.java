@@ -39,6 +39,7 @@ final class ListParameterContextAwareFixtureMonkey implements ParameterContextAw
 		this.fixtureMonkey = fixtureMonkey;
 	}
 
+	@SuppressWarnings("dereference.of.nullable")
 	@Override
 	public List<?> giveMe() {
 		Parameter parameter = parameterContext.getParameter();

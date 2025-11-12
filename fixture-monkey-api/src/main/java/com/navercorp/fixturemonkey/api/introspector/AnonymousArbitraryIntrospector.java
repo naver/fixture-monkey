@@ -57,6 +57,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 	 * @param context introspector context
 	 * @return an anonymous object of the interface
 	 */
+	@SuppressWarnings("argument")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
