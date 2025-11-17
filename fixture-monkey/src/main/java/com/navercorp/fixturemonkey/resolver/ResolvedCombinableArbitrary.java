@@ -32,6 +32,7 @@ import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
@@ -42,7 +43,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final LazyArbitrary<ObjectTree> objectTree;
 	private final int generateMaxTries;
 	private final LazyArbitrary<CombinableArbitrary<T>> arbitrary;
-	private final ArbitraryValidator validator;
+	private final FilteringArbitraryValidator filteringValidator;
 	private final Supplier<Boolean> validOnly;
 
 	private Exception lastException = null;
@@ -64,7 +65,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				return generateArbitrary.apply(objectTree);
 			}
 		);
-		this.validator = validator;
+		this.filteringValidator = new FilteringArbitraryValidator(validator);
 		this.validOnly = validOnly;
 	}
 
@@ -73,7 +74,11 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		for (int i = 0; i < generateMaxTries; i++) {
 			try {
 				return arbitrary.getValue()
-					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
+					.filter(
+						VALIDATION_ANNOTATION_FILTERING_COUNT,
+						this.validateFilter(validOnly.get()),
+						filteringValidator
+					)
 					.combined();
 			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;
@@ -100,7 +105,11 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		for (int i = 0; i < generateMaxTries; i++) {
 			try {
 				return arbitrary.getValue()
-					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
+					.filter(
+						VALIDATION_ANNOTATION_FILTERING_COUNT,
+						this.validateFilter(validOnly.get()),
+						filteringValidator
+					)
 					.rawValue();
 			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;
@@ -147,8 +156,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				return true;
 			}
 
-			this.validator.validate(fixture);
-			return true;
+			return this.filteringValidator.validateSafely(fixture);
 		};
 	}
 }
