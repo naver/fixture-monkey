@@ -582,13 +582,16 @@ public final class FixtureMonkeyBuilder {
 		}
 
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
+
+		MonkeyExpressionFactory monkeyExpressionFactory = newExpressionFactory(fixtureMonkeyOptions);
+
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
-			fixtureMonkeyOptions.getContainerPropertyGenerators()
+			fixtureMonkeyOptions.getContainerPropertyGenerators(),
+			expressionStrictMode ? monkeyExpressionFactory : null,
+			expressionStrictMode ? fixtureMonkeyOptions.getDefaultPropertyNameResolver() : null
 		);
-
-		MonkeyExpressionFactory monkeyExpressionFactory = newExpressionFactory(fixtureMonkeyOptions);
 
 		Randoms.setSeed(seed);
 		return new FixtureMonkey(
