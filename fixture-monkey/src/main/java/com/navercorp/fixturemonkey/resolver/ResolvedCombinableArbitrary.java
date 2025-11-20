@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
@@ -45,7 +46,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final ArbitraryValidator validator;
 	private final Supplier<Boolean> validOnly;
 
-	private Exception lastException = null;
+	private @Nullable Exception lastException = null;
 
 	public ResolvedCombinableArbitrary(
 		TreeRootProperty rootProperty,

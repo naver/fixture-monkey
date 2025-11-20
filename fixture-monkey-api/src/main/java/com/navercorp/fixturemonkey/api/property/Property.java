@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -79,7 +80,7 @@ public interface Property {
 	default <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
 		return this.getAnnotations().stream()
 			.filter(it -> it.annotationType() == annotationClass)
-			.map(annotationClass::cast)
+			.<@NonNull T>map(annotationClass::cast)
 			.findFirst();
 	}
 
@@ -99,9 +100,8 @@ public interface Property {
 	 * {@code true} represents it is nullable.
 	 * {@code false} represents it is not nullable.
 	 */
-	@Nullable
 	@SuppressFBWarnings("NP_BOOLEAN_RETURN_NULL")
-	default Boolean isNullable() {
+	default @Nullable Boolean isNullable() {
 		return null;
 	}
 }

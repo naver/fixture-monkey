@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class PropertyJsonSubTypesConcreteTypeResolver implements CandidateConcretePropertyResolver {
 	public static final CandidateConcretePropertyResolver INSTANCE = new PropertyJsonSubTypesConcreteTypeResolver();
 
+	@SuppressWarnings("argument")
 	@Override
 	public List<Property> resolve(Property property) {
 		JsonSubTypes jsonSubTypes = getJacksonAnnotation(property, JsonSubTypes.class);

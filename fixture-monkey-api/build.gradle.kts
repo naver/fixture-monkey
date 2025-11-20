@@ -19,6 +19,9 @@ multiReleaseVersions.forEach { releaseVersion ->
                 .replaceFirstChar { it.lowercase() }
 
             configuration.extendsFrom(configurations.getByName(defaultVersionConfigurationName))
+
+            val checkerFrameworkExtension = project.extensions.findByType<org.checkerframework.gradle.plugin.CheckerFrameworkExtension>()
+            checkerFrameworkExtension?.skipCheckerFramework = true
         }
 }
 

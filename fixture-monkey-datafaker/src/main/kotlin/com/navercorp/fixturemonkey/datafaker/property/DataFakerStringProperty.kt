@@ -27,7 +27,7 @@ class DataFakerStringProperty(private val originalProperty: Property) : Property
     override fun getAnnotatedType() = originalProperty.annotatedType
     override fun getName() = originalProperty.name
     override fun getAnnotations() = originalProperty.annotations
-    override fun getValue(instance: Any?) = originalProperty.getValue(instance)
+    override fun getValue(instance: Any) = originalProperty.getValue(instance)
     override fun isNullable() = originalProperty.isNullable
 
     override fun hashCode(): Int = uniqueId.hashCode()

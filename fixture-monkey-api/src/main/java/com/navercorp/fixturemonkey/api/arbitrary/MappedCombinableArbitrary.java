@@ -43,9 +43,9 @@ final class MappedCombinableArbitrary<T, U> implements CombinableArbitrary<U> {
 		return mapper.apply(combinableArbitrary.combined());
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "return"})
 	@Override
-	public U rawValue() {
+	public Object rawValue() {
 		try {
 			return mapper.apply((T)combinableArbitrary.rawValue());
 		} catch (ClassCastException ex) {

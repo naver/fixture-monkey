@@ -160,7 +160,7 @@ public final class InnerSpec {
 	 *
 	 * @param key value of the map key to set
 	 */
-	public InnerSpec key(Object key) {
+	public InnerSpec key(@Nullable Object key) {
 		entrySize++;
 		setMapKey(key);
 		return this;
@@ -171,6 +171,7 @@ public final class InnerSpec {
 	 *
 	 * @param keys The Collection of keys to set in the map. Can be empty.
 	 */
+	@SuppressWarnings("methodref.param")
 	public InnerSpec keys(Collection<?> keys) {
 		keys.forEach(this::key);
 		return this;
@@ -181,7 +182,7 @@ public final class InnerSpec {
 	 *
 	 * @param keys The keys to set in the map. Can be empty.
 	 */
-	public InnerSpec keys(Object... keys) {
+	public InnerSpec keys(@Nullable Object... keys) {
 		Arrays.stream(keys).forEach(this::key);
 		return this;
 	}
@@ -203,6 +204,7 @@ public final class InnerSpec {
 	 *
 	 * @param values The Collection of values to set in the map. Can be empty.
 	 */
+	@SuppressWarnings("methodref.param")
 	public InnerSpec values(Collection<?> values) {
 		values.forEach(this::value);
 		return this;
@@ -213,7 +215,7 @@ public final class InnerSpec {
 	 *
 	 * @param value value of the map value to set
 	 */
-	public InnerSpec value(Object value) {
+	public InnerSpec value(@Nullable Object value) {
 		entrySize++;
 		setMapValue(value);
 		return this;
@@ -224,7 +226,7 @@ public final class InnerSpec {
 	 *
 	 * @param values The values to be added to the map. Can be empty.
 	 */
-	public InnerSpec values(Object... values) {
+	public InnerSpec values(@Nullable Object... values) {
 		Arrays.stream(values).forEach(this::value);
 		return this;
 	}
@@ -258,6 +260,7 @@ public final class InnerSpec {
 	 *
 	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
 	 */
+	@SuppressWarnings("argument")
 	public InnerSpec entries(Collection<?> entries) {
 		if (entries.size() % 2 != 0) {
 			throw new IllegalArgumentException("key-value pairs for the Map should be entered");
@@ -275,7 +278,8 @@ public final class InnerSpec {
 	 *
 	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
 	 */
-	public InnerSpec entries(Object... entries) {
+	@SuppressWarnings("argument")
+	public InnerSpec entries(@Nullable Object... entries) {
 		if (entries.length % 2 != 0) {
 			throw new IllegalArgumentException("key-value pairs for the Map should be entered");
 		}
@@ -415,7 +419,7 @@ public final class InnerSpec {
 	 * @param keySupplier a supplier function that provides the value of the map keys to set.
 	 * @param value       the value to set
 	 */
-	public InnerSpec allEntry(Supplier<?> keySupplier, Object value) {
+	public InnerSpec allEntry(Supplier<?> keySupplier, @Nullable Object value) {
 		LazyArbitrary<?> keyLazyArbitrary = LazyArbitrary.lazy(keySupplier);
 
 		setMapAllKey(keyLazyArbitrary);
@@ -534,7 +538,7 @@ public final class InnerSpec {
 		return newSpec;
 	}
 
-	private void setMapKey(Object mapKey) {
+	private void setMapKey(@Nullable Object mapKey) {
 		if (mapKey == null) {
 			throw new IllegalArgumentException(
 				"Map key cannot be null."
@@ -582,7 +586,7 @@ public final class InnerSpec {
 		setValue(this.declarativeExpression.element(index), value);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "argument"})
 	private void setValue(DefaultDeclarativeExpression defaultDeclarativeExpression, @Nullable Object nextValue) {
 		int nextSequence = this.sequence + manipulateSize;
 
@@ -636,16 +640,19 @@ public final class InnerSpec {
 		List<ContainerInfoSnapshot> containerInfoManipulators = new ArrayList<>();
 		List<FilterSnapshot> postConditionManipulators = new ArrayList<>();
 
-		if (innerSpec.state.getNodeManipulatorSnapshot() != null) {
-			nodeSetManipulatorSnapshots.add(innerSpec.state.getNodeManipulatorSnapshot());
+		NodeSetManipulatorSnapshot nodeManipulatorSnapshot = innerSpec.state.getNodeManipulatorSnapshot();
+		if (nodeManipulatorSnapshot != null) {
+			nodeSetManipulatorSnapshots.add(nodeManipulatorSnapshot);
 		}
 
-		if (innerSpec.state.getContainerInfoHolder() != null) {
-			containerInfoManipulators.add(innerSpec.state.getContainerInfoHolder());
+		ContainerInfoSnapshot containerInfoHolder = innerSpec.state.getContainerInfoHolder();
+		if (containerInfoHolder != null) {
+			containerInfoManipulators.add(containerInfoHolder);
 		}
 
-		if (innerSpec.state.getFilterHolder() != null) {
-			postConditionManipulators.add(innerSpec.state.getFilterHolder());
+		FilterSnapshot filterHolder = innerSpec.state.getFilterHolder();
+		if (filterHolder != null) {
+			postConditionManipulators.add(filterHolder);
 		}
 
 		for (InnerSpec spec : innerSpec.innerSpecs) {

@@ -41,6 +41,7 @@ public final class JavaGetterPropertyFieldNameResolver {
 		return null;
 	}
 
+	@Nullable
 	private static String stripPrefixPropertyName(Class<?> targetClass, String methodName, int prefixLength) {
 		char[] ch = methodName.toCharArray();
 		ch[prefixLength] = Character.toLowerCase(ch[prefixLength]);

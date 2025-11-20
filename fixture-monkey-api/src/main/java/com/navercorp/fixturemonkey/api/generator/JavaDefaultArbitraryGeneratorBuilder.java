@@ -97,7 +97,9 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
 	private ArbitraryIntrospector fallbackIntrospector = DEFAULT_FALLBACK_INTROSPECTOR;
+	@SuppressWarnings("assignment")
 	private JavaTypeArbitraryGeneratorSet javaTypeArbitraryGeneratorSet = null;
+	@SuppressWarnings("assignment")
 	private JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet = null;
 
 	JavaDefaultArbitraryGeneratorBuilder() {
