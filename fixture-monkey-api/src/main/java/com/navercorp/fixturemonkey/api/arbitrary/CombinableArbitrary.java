@@ -242,6 +242,7 @@ public interface CombinableArbitrary<T> {
 	static LongCombinableArbitrary longs() {
 		return LONG_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}
+
 	/**
 	 * Generates a {@link ShortCombinableArbitrary} which returns a randomly generated Short.
 	 * You can customize the generated Short by using {@link ShortCombinableArbitrary}.
