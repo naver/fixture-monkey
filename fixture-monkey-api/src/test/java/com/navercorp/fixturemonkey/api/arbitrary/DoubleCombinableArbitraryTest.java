@@ -50,34 +50,28 @@ class DoubleCombinableArbitraryTest {
 	@Test
 	void positive() {
 		// when
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().positive().combined())
-			.allMatch(d -> d > 0.0);
+		Double actual = CombinableArbitrary.doubles().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isPositive();
 	}
 
 	@Test
 	void negative() {
 		// when
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().negative().combined())
-			.allMatch(d -> d < 0.0);
+		Double actual = CombinableArbitrary.doubles().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isNegative();
 	}
 
 	@Test
 	void nonZero() {
 		// when
-		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().nonZero().combined())
-			.allMatch(d -> d != 0.0);
+		Double actual = CombinableArbitrary.doubles().nonZero().combined();
 
 		// then
-		then(allNonZero).isTrue();
+		then(actual).isNotEqualTo(0.0);
 	}
 
 	@Test
@@ -100,12 +94,10 @@ class DoubleCombinableArbitraryTest {
 	@Test
 	void finite() {
 		// when
-		boolean allFinite = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().finite().combined())
-			.allMatch(Double::isFinite);
+		Double actual = CombinableArbitrary.doubles().finite().combined();
 
 		// then
-		then(allFinite).isTrue();
+		then(Double.isFinite(actual)).isTrue();
 	}
 
 	@Test
@@ -120,12 +112,10 @@ class DoubleCombinableArbitraryTest {
 	@Test
 	void normalized() {
 		// when
-		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().normalized().combined())
-			.allMatch(d -> d >= 0.0 && d <= 1.0);
+		Double actual = CombinableArbitrary.doubles().normalized().combined();
 
 		// then
-		then(allNormalized).isTrue();
+		then(actual).isBetween(0.0, 1.0);
 	}
 
 	@Test
@@ -140,23 +130,19 @@ class DoubleCombinableArbitraryTest {
 	@Test
 	void percentage() {
 		// when
-		boolean allPercentage = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().percentage().combined())
-			.allMatch(d -> d >= 0.0 && d <= 100.0);
+		Double actual = CombinableArbitrary.doubles().percentage().combined();
 
 		// then
-		then(allPercentage).isTrue();
+		then(actual).isBetween(0.0, 100.0);
 	}
 
 	@Test
 	void score() {
 		// when
-		boolean allScore = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().score().combined())
-			.allMatch(d -> d >= 0.0 && d <= 100.0);
+		Double actual = CombinableArbitrary.doubles().score().combined();
 
 		// then
-		then(allScore).isTrue();
+		then(actual).isBetween(0.0, 100.0);
 	}
 
 	@Test
@@ -191,23 +177,19 @@ class DoubleCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsPositiveOverNegative() {
 		// when - negative().positive() => positive()
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().negative().positive().combined())
-			.allMatch(d -> d > 0.0);
+		Double actual = CombinableArbitrary.doubles().negative().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isPositive();
 	}
 
 	@Test
 	void lastMethodWinsRangeOverPositive() {
 		// when - positive().withRange(-10, -1) => withRange(-10, -1)
-		boolean allInRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.doubles().positive().withRange(-10.0, -1.0).combined())
-			.allMatch(d -> d >= -10.0 && d <= -1.0);
+		Double actual = CombinableArbitrary.doubles().positive().withRange(-10.0, -1.0).combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween(-10.0, -1.0);
 	}
 
 	@Test
