@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.math.BigDecimal;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -51,46 +50,37 @@ class BigDecimalCombinableArbitraryTest {
 	@Test
 	void positive() {
 		// when
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().positive().combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) > 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isGreaterThan(BigDecimal.ZERO);
 	}
 
 	@Test
 	void negative() {
 		// when
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().negative().combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) < 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isLessThan(BigDecimal.ZERO);
 	}
 
 	@Test
 	void nonZero() {
 		// when
-		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().nonZero().combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) != 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals().nonZero().combined();
 
 		// then
-		then(allNonZero).isTrue();
+		then(actual).isNotEqualTo(BigDecimal.ZERO);
 	}
 
 	@Test
 	void percentage() {
 		// when
-		boolean allInPercentageRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().percentage().combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) >= 0
-				&& b.compareTo(BigDecimal.valueOf(100)) <= 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals().percentage().combined();
 
 		// then
-		then(allInPercentageRange).isTrue();
+		then(actual).isBetween(BigDecimal.ZERO, BigDecimal.valueOf(100));
 	}
 
 	@Test
@@ -100,12 +90,10 @@ class BigDecimalCombinableArbitraryTest {
 		BigDecimal max = BigDecimal.valueOf(100.0);
 
 		// when
-		boolean allInScoreRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals().score(min, max).combined())
-			.allMatch(b -> b.compareTo(min) >= 0 && b.compareTo(max) <= 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals().score(min, max).combined();
 
 		// then
-		then(allInScoreRange).isTrue();
+		then(actual).isBetween(min, max);
 	}
 
 	@Test
@@ -114,14 +102,12 @@ class BigDecimalCombinableArbitraryTest {
 		int precision = 3;
 
 		// when
-		boolean allWithCorrectPrecision = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.withPrecision(precision)
-				.combined())
-			.allMatch(b -> b.precision() <= precision);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.withPrecision(precision)
+			.combined();
 
 		// then
-		then(allWithCorrectPrecision).isTrue();
+		then(actual.precision()).isLessThanOrEqualTo(precision);
 	}
 
 	@Test
@@ -130,27 +116,23 @@ class BigDecimalCombinableArbitraryTest {
 		int scale = 2;
 
 		// when
-		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.withScale(scale)
-				.combined())
-			.allMatch(b -> b.scale() == scale);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.withScale(scale)
+			.combined();
 
 		// then
-		then(allWithCorrectScale).isTrue();
+		then(actual.scale()).isEqualTo(scale);
 	}
 
 	@Test
 	void normalized() {
 		// when
-		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.normalized()
-				.combined())
-			.allMatch(b -> b.equals(b.stripTrailingZeros()));
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.normalized()
+			.combined();
 
 		// then
-		then(allNormalized).isTrue();
+		then(actual).isEqualTo(actual.stripTrailingZeros());
 	}
 
 	@Test
@@ -276,146 +258,125 @@ class BigDecimalCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsRangeOverPositive() {
 		// when - positive().withRange() => withRange()
-		boolean allInRange = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.positive()
-				.withRange(BigDecimal.valueOf(-10.5), BigDecimal.valueOf(-1.5))
-				.combined())
-			.allMatch(b -> b.compareTo(BigDecimal.valueOf(-10.5)) >= 0
-				&& b.compareTo(BigDecimal.valueOf(-1.5)) <= 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.positive()
+			.withRange(BigDecimal.valueOf(-10.5), BigDecimal.valueOf(-1.5))
+			.combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween(BigDecimal.valueOf(-10.5), BigDecimal.valueOf(-1.5));
 	}
 
 	@Test
 	void lastMethodWinsPrecisionOverScale() {
 		// when - withPrecision().withScale() => withScale()
-		boolean allWithCorrectScale = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.withPrecision(5)
-				.withScale(2)
-				.combined())
-			.allMatch(b -> b.scale() == 2);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.withPrecision(5)
+			.withScale(2)
+			.combined();
 
 		// then
-		then(allWithCorrectScale).isTrue();
+		then(actual.scale()).isEqualTo(2);
 	}
 
 	@Test
 	void bigDecimalFilterWithPositiveAndScale() {
 		// when - filter positive with specific scale
-		boolean allPositiveWithScale = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.positive()
-				.withScale(2)
-				.filter(b -> b.compareTo(BigDecimal.valueOf(10)) >= 0)
-				.combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) > 0
-				&& b.scale() == 2
-				&& b.compareTo(BigDecimal.valueOf(10)) >= 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.positive()
+			.withScale(2)
+			.filter(b -> b.compareTo(BigDecimal.valueOf(10)) >= 0)
+			.combined();
 
 		// then
-		then(allPositiveWithScale).isTrue();
+		then(actual).isGreaterThan(BigDecimal.ZERO);
+		then(actual.scale()).isEqualTo(2);
+		then(actual).isGreaterThanOrEqualTo(BigDecimal.valueOf(10));
 	}
 
 	@Test
 	void nonZeroWithPrecision() {
 		// when - nonZero().withPrecision() => withPrecision()
-		boolean allWithCorrectPrecision = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.nonZero()
-				.withPrecision(3)
-				.combined())
-			.allMatch(b -> b.precision() <= 3);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.nonZero()
+			.withPrecision(3)
+			.combined();
 
 		// then
-		then(allWithCorrectPrecision).isTrue();
+		then(actual.precision()).isLessThanOrEqualTo(3);
 	}
 
 	@Test
 	void nonZeroWithScale() {
 		// when - nonZero().withScale() => withScale()
-		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.nonZero()
-				.withScale(2)
-				.combined())
-			.allMatch(b -> b.scale() == 2);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.nonZero()
+			.withScale(2)
+			.combined();
 
 		// then
-		then(allWithCorrectScale).isTrue();
+		then(actual.scale()).isEqualTo(2);
 	}
 
 	@Test
 	void nonZeroWithPositive() {
 		// when
-		boolean allNonZeroAndPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.nonZero()
-				.positive()
-				.combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) > 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.nonZero()
+			.positive()
+			.combined();
 
 		// then
-		then(allNonZeroAndPositive).isTrue();
+		then(actual).isGreaterThan(BigDecimal.ZERO);
 	}
 
 	@Test
 	void nonZeroWithNegative() {
 		// when - nonZero().negative() => negative()
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.nonZero()
-				.negative()
-				.combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) < 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.nonZero()
+			.negative()
+			.combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isLessThan(BigDecimal.ZERO);
 	}
 
 	@Test
 	void negativeWithNonZero() {
 		// when - negative().nonZero() => nonZero()
-		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.negative()
-				.nonZero()
-				.combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) != 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.negative()
+			.nonZero()
+			.combined();
 
 		// then
-		then(allNonZero).isTrue();
+		then(actual).isNotEqualTo(BigDecimal.ZERO);
 	}
 
 	@Test
 	void positiveWithNegativeCombination() {
 		// when - positive().negative() => negative()
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.positive()
-				.negative()
-				.combined())
-			.allMatch(b -> b.compareTo(BigDecimal.ZERO) < 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.positive()
+			.negative()
+			.combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isLessThan(BigDecimal.ZERO);
 	}
 
 	@Test
 	void complexApiCombination() {
 		// when - nonZero().positive().withScale() => withScale()
-		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.nonZero()
-				.positive()
-				.withScale(2)
-				.combined())
-			.allMatch(b -> b.scale() == 2);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.nonZero()
+			.positive()
+			.withScale(2)
+			.combined();
 
 		// then
-		then(allWithCorrectScale).isTrue();
+		then(actual.scale()).isEqualTo(2);
 	}
 
 	@Test
@@ -423,72 +384,62 @@ class BigDecimalCombinableArbitraryTest {
 		// when
 		BigDecimal min = BigDecimal.valueOf(-50.5);
 		BigDecimal max = BigDecimal.valueOf(-10.5);
-		boolean allInRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.nonZero()
-				.positive()
-				.withScale(3)
-				.withRange(min, max)
-				.combined())
-			.allMatch(b -> b.compareTo(min) >= 0 && b.compareTo(max) <= 0);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.nonZero()
+			.positive()
+			.withScale(3)
+			.withRange(min, max)
+			.combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween(min, max);
 	}
 
 	@Test
 	void normalizedWithScale() {
 		// when - normalized().withScale() => withScale()
-		boolean allWithCorrectScale = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.normalized()
-				.withScale(2)
-				.combined())
-			.allMatch(b -> b.scale() == 2);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.normalized()
+			.withScale(2)
+			.combined();
 
 		// then
-		then(allWithCorrectScale).isTrue();
+		then(actual.scale()).isEqualTo(2);
 	}
 
 	@Test
 	void scaleWithNormalized() {
 		// when - withScale().normalized() => normalized()
-		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.withScale(2)
-				.normalized()
-				.combined())
-			.allMatch(b -> b.equals(b.stripTrailingZeros()));
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.withScale(2)
+			.normalized()
+			.combined();
 
 		// then
-		then(allNormalized).isTrue();
+		then(actual).isEqualTo(actual.stripTrailingZeros());
 	}
 
 	@Test
 	void precisionWithNormalized() {
 		// when - withPrecision().normalized() => normalized()
-		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.withPrecision(5)
-				.normalized()
-				.combined())
-			.allMatch(b -> b.equals(b.stripTrailingZeros()));
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.withPrecision(5)
+			.normalized()
+			.combined();
 
 		// then
-		then(allNormalized).isTrue();
+		then(actual).isEqualTo(actual.stripTrailingZeros());
 	}
 
 	@Test
 	void normalizedWithPrecision() {
 		// when - normalized().withPrecision() => withPrecision()
-		boolean allWithCorrectPrecision = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigDecimals()
-				.normalized()
-				.withPrecision(3)
-				.combined())
-			.allMatch(b -> b.precision() <= 3);
+		BigDecimal actual = CombinableArbitrary.bigDecimals()
+			.normalized()
+			.withPrecision(3)
+			.combined();
 
 		// then
-		then(allWithCorrectPrecision).isTrue();
+		then(actual.precision()).isLessThanOrEqualTo(3);
 	}
 }
