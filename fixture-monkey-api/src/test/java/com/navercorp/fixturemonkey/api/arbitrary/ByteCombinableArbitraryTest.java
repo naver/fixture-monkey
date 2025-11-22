@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.util.stream.IntStream;
-
 import org.junit.jupiter.api.Test;
 
 class ByteCombinableArbitraryTest {
@@ -50,56 +48,46 @@ class ByteCombinableArbitraryTest {
 	@Test
 	void positive() {
 		// when
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().positive().combined())
-			.allMatch(b -> b > 0);
+		Byte actual = CombinableArbitrary.bytes().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isPositive();
 	}
 
 	@Test
 	void negative() {
 		// when
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().negative().combined())
-			.allMatch(b -> b < 0);
+		Byte actual = CombinableArbitrary.bytes().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isNegative();
 	}
 
 	@Test
 	void even() {
 		// when
-		boolean allEven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().even().combined())
-			.allMatch(b -> b % 2 == 0);
+		Byte actual = CombinableArbitrary.bytes().even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual % 2).isEqualTo(0);
 	}
 
 	@Test
 	void odd() {
 		// when
-		boolean allOdd = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().odd().combined())
-			.allMatch(b -> b % 2 != 0);
+		Byte actual = CombinableArbitrary.bytes().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual % 2).isNotEqualTo(0);
 	}
 
 	@Test
 	void ascii() {
 		// when
-		boolean allAscii = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().ascii().combined())
-			.allMatch(b -> b >= 0 && b <= 127);
+		Byte actual = CombinableArbitrary.bytes().ascii().combined();
 
 		// then
-		then(allAscii).isTrue();
+		then(actual).isBetween((byte)0, (byte)127);
 	}
 
 	@Test
@@ -220,124 +208,102 @@ class ByteCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsRangeOverPositive() {
 		// when - positive().withRange() => withRange()
-		boolean allInRange = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bytes().positive().withRange((byte)-10, (byte)-1).combined())
-			.allMatch(b -> b >= -10 && b <= -1);
+		Byte actual = CombinableArbitrary.bytes().positive().withRange((byte)-10, (byte)-1).combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween((byte)-10, (byte)-1);
 	}
 
 	@Test
 	void lastMethodWinsOddOverEven() {
 		// when - even().odd() => odd()
-		boolean allOdd = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bytes().even().odd().combined())
-			.allMatch(b -> b % 2 != 0);
+		Byte actual = CombinableArbitrary.bytes().even().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual % 2).isNotEqualTo(0);
 	}
 
 	@Test
 	void byteFilterWithMultipleOfFive() {
 		// when - filter multiples of 5
-		boolean allMultipleOfFive = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bytes()
+		Byte actual = CombinableArbitrary.bytes()
 				.withRange((byte)0, (byte)100)
-				.filter(b -> b % 5 == 0).combined())
-			.allMatch(b -> b % 5 == 0);
+				.filter(b -> b % 5 == 0).combined();
 
 		// then
-		then(allMultipleOfFive).isTrue();
+		then(actual % 5).isEqualTo(0);
 	}
 
 	@Test
 	void asciiWithOdd() {
 		// when - ascii().odd() => odd()
-		boolean allOdd = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().ascii().odd().combined())
-			.allMatch(b -> b % 2 != 0);
+		Byte actual = CombinableArbitrary.bytes().ascii().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual % 2).isNotEqualTo(0);
 	}
 
 	@Test
 	void asciiWithEven() {
 		// when - ascii().even() => even()
-		boolean allEven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().ascii().even().combined())
-			.allMatch(b -> b % 2 == 0);
+		Byte actual = CombinableArbitrary.bytes().ascii().even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual % 2).isEqualTo(0);
 	}
 
 	@Test
 	void asciiWithPositive() {
 		// when
-		boolean allAsciiAndPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().ascii().positive().combined())
-			.allMatch(b -> b >= 1 && b <= 127);
+		Byte actual = CombinableArbitrary.bytes().ascii().positive().combined();
 
 		// then
-		then(allAsciiAndPositive).isTrue();
+		then(actual).isBetween((byte)1, (byte)127);
 	}
 
 	@Test
 	void asciiWithNegative() {
 		// when - ascii().negative() => negative()
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().ascii().negative().combined())
-			.allMatch(b -> b < 0);
+		Byte actual = CombinableArbitrary.bytes().ascii().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isNegative();
 	}
 
 	@Test
 	void negativeWithAscii() {
 		// when - negative().ascii() => ascii()
-		boolean allAscii = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().negative().ascii().combined())
-			.allMatch(b -> b >= 0 && b <= 127);
+		Byte actual = CombinableArbitrary.bytes().negative().ascii().combined();
 
 		// then
-		then(allAscii).isTrue();
+		then(actual).isBetween((byte)0, (byte)127);
 	}
 
 	@Test
 	void oddWithEvenCombination() {
 		// when - odd().even() => even()
-		boolean allEven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().odd().even().combined())
-			.allMatch(b -> b % 2 == 0);
+		Byte actual = CombinableArbitrary.bytes().odd().even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual % 2).isEqualTo(0);
 	}
 
 	@Test
 	void positiveWithNegativeCombination() {
 		// when - positive().negative() => negative()
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().positive().negative().combined())
-			.allMatch(b -> b < 0);
+		Byte actual = CombinableArbitrary.bytes().positive().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isNegative();
 	}
 
 	@Test
 	void complexApiCombination() {
 		// when - ascii().positive().odd() => odd()
-		boolean allOdd = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().ascii().positive().odd().combined())
-			.allMatch(b -> b % 2 != 0);
+		Byte actual = CombinableArbitrary.bytes().ascii().positive().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual % 2).isNotEqualTo(0);
 	}
 
 	@Test
@@ -345,11 +311,9 @@ class ByteCombinableArbitraryTest {
 		// when
 		byte min = -50;
 		byte max = -10;
-		boolean allInRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bytes().ascii().positive().odd().withRange(min, max).combined())
-			.allMatch(b -> b >= min && b <= max);
+		Byte actual = CombinableArbitrary.bytes().ascii().positive().odd().withRange(min, max).combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween(min, max);
 	}
 }
