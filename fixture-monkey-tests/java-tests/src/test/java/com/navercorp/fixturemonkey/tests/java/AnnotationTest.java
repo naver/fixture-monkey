@@ -28,6 +28,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.specs.ValidationSpecs.CustomAnnotationStringObject;
 import com.navercorp.fixturemonkey.tests.java.specs.ValidationSpecs.StringNotNullAnnotationObject;
+import com.navercorp.fixturemonkey.tests.java.specs.ValidationSpecs.StringSizeBetween1And5Object;
 
 class AnnotationTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -64,5 +65,19 @@ class AnnotationTest {
 			.getValue();
 
 		then(actual).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleSizeAnnotationGeneratesValidString() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.plugin(new JavaxValidationPlugin())
+			.defaultNotNull(true)
+			.build();
+
+		StringSizeBetween1And5Object actual = sut.giveMeOne(StringSizeBetween1And5Object.class);
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getValue().length()).isBetween(1, 5);
 	}
 }
