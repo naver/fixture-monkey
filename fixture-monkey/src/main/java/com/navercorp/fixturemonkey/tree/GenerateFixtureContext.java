@@ -52,8 +52,8 @@ import com.navercorp.fixturemonkey.api.tree.TraverseNode;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeContext;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeMetadata;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
+import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 /**
  * It is used to generate an instance of the JVM class.
