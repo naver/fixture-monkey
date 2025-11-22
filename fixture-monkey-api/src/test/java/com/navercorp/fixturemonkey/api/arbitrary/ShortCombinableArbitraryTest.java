@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.util.stream.IntStream;
-
 import org.junit.jupiter.api.Test;
 
 class ShortCombinableArbitraryTest {
@@ -50,56 +48,46 @@ class ShortCombinableArbitraryTest {
 	@Test
 	void positive() {
 		// when
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().positive().combined())
-			.allMatch(s -> s > 0);
+		Short actual = CombinableArbitrary.shorts().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isPositive();
 	}
 
 	@Test
 	void negative() {
 		// when
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().negative().combined())
-			.allMatch(s -> s < 0);
+		Short actual = CombinableArbitrary.shorts().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isNegative();
 	}
 
 	@Test
 	void even() {
 		// when
-		boolean allEven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().even().combined())
-			.allMatch(s -> s % 2 == 0);
+		Short actual = CombinableArbitrary.shorts().even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual % 2).isEqualTo(0);
 	}
 
 	@Test
 	void odd() {
 		// when
-		boolean allOdd = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().odd().combined())
-			.allMatch(s -> s % 2 != 0);
+		Short actual = CombinableArbitrary.shorts().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual % 2).isNotEqualTo(0);
 	}
 
 	@Test
 	void nonZero() {
 		// when
-		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().nonZero().combined())
-			.allMatch(s -> s != 0);
+		Short actual = CombinableArbitrary.shorts().nonZero().combined();
 
 		// then
-		then(allNonZero).isTrue();
+		then(actual).isNotEqualTo((short)0);
 	}
 
 	@Test
@@ -108,100 +96,83 @@ class ShortCombinableArbitraryTest {
 		short multiplier = 7;
 
 		// when
-		boolean allMultiplesOfSeven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().multipleOf(multiplier).combined())
-			.allMatch(s -> s % multiplier == 0);
+		Short actual = CombinableArbitrary.shorts().multipleOf(multiplier).combined();
 
 		// then
-		then(allMultiplesOfSeven).isTrue();
+		then(actual % multiplier).isEqualTo(0);
 	}
 
 	@Test
 	void multipleOfRespectsRange() {
 		// when
-		boolean allWithinRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().withRange((short)10, (short)14).multipleOf((short)6).combined())
-			.allMatch(value -> value >= 10 && value <= 14 && value % 6 == 0);
+		Short actual = CombinableArbitrary.shorts().withRange((short)10, (short)14).multipleOf((short)6).combined();
 
 		// then
-		then(allWithinRange).isTrue();
+		then(actual).isBetween((short)10, (short)14);
+		then(actual % 6).isEqualTo(0);
 	}
 
 	@Test
 	void percentage() {
 		// when
-		boolean allPercentage = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().percentage().combined())
-			.allMatch(s -> s >= 0 && s <= 100);
+		Short actual = CombinableArbitrary.shorts().percentage().combined();
 
 		// then
-		then(allPercentage).isTrue();
+		then(actual).isBetween((short)0, (short)100);
 	}
 
 	@Test
 	void score() {
 		// when
-		boolean allScore = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().score().combined())
-			.allMatch(s -> s >= 0 && s <= 100);
+		Short actual = CombinableArbitrary.shorts().score().combined();
 
 		// then
-		then(allScore).isTrue();
+		then(actual).isBetween((short)0, (short)100);
 	}
 
 	@Test
 	void year() {
 		// when
-		boolean allYear = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().year().combined())
-			.allMatch(s -> s >= 1900 && s <= 2100);
+		Short actual = CombinableArbitrary.shorts().year().combined();
 
 		// then
-		then(allYear).isTrue();
+		then(actual).isBetween((short)1900, (short)2100);
 	}
 
 	@Test
 	void month() {
 		// when
-		boolean allMonth = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().month().combined())
-			.allMatch(s -> s >= 1 && s <= 12);
+		Short actual = CombinableArbitrary.shorts().month().combined();
 
 		// then
-		then(allMonth).isTrue();
+		then(actual).isBetween((short)1, (short)12);
 	}
 
 	@Test
 	void day() {
 		// when
-		boolean allDay = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().day().combined())
-			.allMatch(s -> s >= 1 && s <= 31);
+		Short actual = CombinableArbitrary.shorts().day().combined();
 
 		// then
-		then(allDay).isTrue();
+		then(actual).isBetween((short)1, (short)31);
 	}
 
 	@Test
 	void hour() {
 		// when
-		boolean allHour = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().hour().combined())
-			.allMatch(s -> s >= 0 && s <= 23);
+		Short actual = CombinableArbitrary.shorts().hour().combined();
 
 		// then
-		then(allHour).isTrue();
+		then(actual).isBetween((short)0, (short)23);
 	}
 
 	@Test
 	void minute() {
 		// when
-		boolean allMinute = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().minute().combined())
-			.allMatch(s -> s >= 0 && s <= 59);
+		Short actual = CombinableArbitrary.shorts().minute().combined();
 
 		// then
-		then(allMinute).isTrue();
+		then(actual).isBetween((short)0, (short)59);
 	}
 
 	@Test
@@ -324,45 +295,37 @@ class ShortCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsNegativeOverPositive() {
 		// when - positive().negative() => negative()
-		boolean allNegative = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.shorts().positive().negative().combined())
-			.allMatch(s -> s < 0);
+		Short actual = CombinableArbitrary.shorts().positive().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isNegative();
 	}
 
 	@Test
 	void lastMethodWinsEvenOverRange() {
 		// when -.withRange((min, max).even() => .even()
-		boolean allEven = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.shorts().withRange((short)1, (short)1000).even().combined())
-			.allMatch(s -> s % 2 == 0);
+		Short actual = CombinableArbitrary.shorts().withRange((short)1, (short)1000).even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual % 2).isEqualTo(0);
 	}
 
 	@Test
 	void shortFilterWithHundredMultiple() {
 		// when
-		boolean allMultipleOfHundred = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.shorts().withRange((short)0, (short)1000)
-				.filter(s -> s % 100 == 0).combined())
-			.allMatch(s -> s % 100 == 0);
+		Short actual = CombinableArbitrary.shorts().withRange((short)0, (short)1000)
+				.filter(s -> s % 100 == 0).combined();
 
 		// then
-		then(allMultipleOfHundred).isTrue();
+		then(actual % 100).isEqualTo(0);
 	}
 
 	@Test
 	void lastMethodWinsEvenOverOdd() {
 		// even().odd() => odd()
-		boolean allOdd = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.shorts().even().odd().combined())
-			.allMatch(s -> s % 2 != 0);
+		Short actual = CombinableArbitrary.shorts().even().odd().combined();
 
-		then(allOdd).isTrue();
+		then(actual % 2).isNotEqualTo(0);
 	}
 
 	@Test
@@ -379,46 +342,38 @@ class ShortCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsPositiveOverRange() {
 		// withRange().positive() => positive()
-		boolean allPositive = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.shorts()
+		Short actual = CombinableArbitrary.shorts()
 				.withRange((short)-1000, (short)-100)
 				.positive()
-				.combined())
-			.allMatch(s -> s > 0);
+				.combined();
 
-		then(allPositive).isTrue();
+		then(actual).isPositive();
 	}
 
 	@Test
 	void nonZeroWithMultipleOf() {
 		// when - nonZero().multipleOf((short)5) => multipleOf((short)5)
-		boolean allNonZeroMultiplesOfFive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().nonZero().multipleOf((short)5).combined())
-			.allMatch(s -> s != 0 && s % 5 == 0);
+		Short actual = CombinableArbitrary.shorts().nonZero().multipleOf((short)5).combined();
 
 		// then
-		then(allNonZeroMultiplesOfFive).isFalse();
+		then(actual % 5).isEqualTo(0);
 	}
 
 	@Test
 	void lastMethodWinsYearOverPercentage() {
 		// when - percentage().year() => year()
-		boolean allYear = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().percentage().year().combined())
-			.allMatch(s -> s >= 1900 && s <= 2100);
+		Short actual = CombinableArbitrary.shorts().percentage().year().combined();
 
 		// then
-		then(allYear).isTrue();
+		then(actual).isBetween((short)1900, (short)2100);
 	}
 
 	@Test
 	void lastMethodWinsMultipleOfOverEven() {
 		// when - even().multipleOf(3) => multipleOf(3)
-		boolean allMultiplesOfThree = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.shorts().even().multipleOf((short)3).combined())
-			.allMatch(s -> s % 3 == 0);
+		Short actual = CombinableArbitrary.shorts().even().multipleOf((short)3).combined();
 
 		// then
-		then(allMultiplesOfThree).isTrue();
+		then(actual % 3).isEqualTo(0);
 	}
 }
