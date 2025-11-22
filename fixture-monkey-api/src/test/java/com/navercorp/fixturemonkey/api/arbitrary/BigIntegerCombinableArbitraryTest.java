@@ -22,7 +22,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -53,45 +52,37 @@ class BigIntegerCombinableArbitraryTest {
 	@Test
 	void positive() {
 		// when
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().positive().combined())
-			.allMatch(b -> b.compareTo(BigInteger.ZERO) > 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isGreaterThan(BigInteger.ZERO);
 	}
 
 	@Test
 	void negative() {
 		// when
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().negative().combined())
-			.allMatch(b -> b.compareTo(BigInteger.ZERO) < 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isLessThan(BigInteger.ZERO);
 	}
 
 	@Test
 	void nonZero() {
 		// when
-		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().nonZero().combined())
-			.noneMatch(b -> b.equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().nonZero().combined();
 
 		// then
-		then(allNonZero).isTrue();
+		then(actual).isNotEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	void percentage() {
 		// when
-		boolean allInPercentageRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().percentage().combined())
-			.allMatch(b -> b.compareTo(BigInteger.ZERO) >= 0 && b.compareTo(BigInteger.valueOf(100)) <= 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().percentage().combined();
 
 		// then
-		then(allInPercentageRange).isTrue();
+		then(actual).isBetween(BigInteger.ZERO, BigInteger.valueOf(100));
 	}
 
 	@Test
@@ -101,34 +92,28 @@ class BigIntegerCombinableArbitraryTest {
 		BigInteger max = BigInteger.valueOf(100);
 
 		// when
-		boolean allInScoreRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().score(min, max).combined())
-			.allMatch(b -> b.compareTo(min) >= 0 && b.compareTo(max) <= 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().score(min, max).combined();
 
 		// then
-		then(allInScoreRange).isTrue();
+		then(actual).isBetween(min, max);
 	}
 
 	@Test
 	void even() {
 		// when
-		boolean allEven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().even().combined())
-			.allMatch(b -> b.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual.remainder(BigInteger.valueOf(2))).isEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	void odd() {
 		// when
-		boolean allOdd = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().odd().combined())
-			.noneMatch(b -> b.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual.remainder(BigInteger.valueOf(2))).isNotEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
@@ -137,27 +122,23 @@ class BigIntegerCombinableArbitraryTest {
 		BigInteger divisor = BigInteger.valueOf(5);
 
 		// when
-		boolean allMultipleOfFive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().multipleOf(divisor).combined())
-			.allMatch(b -> b.remainder(divisor).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().multipleOf(divisor).combined();
 
 		// then
-		then(allMultipleOfFive).isTrue();
+		then(actual.remainder(divisor)).isEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	@Timeout(value = 10, unit = TimeUnit.SECONDS)
 	void prime() {
 		// when
-		boolean allPrime = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers()
-				.withRange(BigInteger.valueOf(2), BigInteger.valueOf(100))
-				.prime()
-				.combined())
-			.allMatch(this::isPrime);
+		BigInteger actual = CombinableArbitrary.bigIntegers()
+			.withRange(BigInteger.valueOf(2), BigInteger.valueOf(100))
+			.prime()
+			.combined();
 
 		// then
-		then(allPrime).isTrue();
+		then(isPrime(actual)).isTrue();
 	}
 
 	@Test
@@ -279,127 +260,106 @@ class BigIntegerCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsRangeOverPositive() {
 		// when - positive().withRange() => withRange()
-		boolean allInRange = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers()
-				.positive()
-				.withRange(BigInteger.valueOf(-10), BigInteger.valueOf(-1))
-				.combined())
-			.allMatch(b -> b.compareTo(BigInteger.valueOf(-10)) >= 0 && b.compareTo(BigInteger.valueOf(-1)) <= 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers()
+			.positive()
+			.withRange(BigInteger.valueOf(-10), BigInteger.valueOf(-1))
+			.combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween(BigInteger.valueOf(-10), BigInteger.valueOf(-1));
 	}
 
 	@Test
 	void lastMethodWinsOddOverEven() {
 		// when - even().odd() => odd()
-		boolean allOdd = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().even().odd().combined())
-			.noneMatch(b -> b.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().even().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual.remainder(BigInteger.valueOf(2))).isNotEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	void bigIntegerFilterWithMultipleOfFive() {
 		// when - filter multiples of 5
-		boolean allMultipleOfFive = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers()
-				.withRange(BigInteger.ZERO, BigInteger.valueOf(100))
-				.filter(b -> b.remainder(BigInteger.valueOf(5)).equals(BigInteger.ZERO)).combined())
-			.allMatch(b -> b.remainder(BigInteger.valueOf(5)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers()
+			.withRange(BigInteger.ZERO, BigInteger.valueOf(100))
+			.filter(b -> b.remainder(BigInteger.valueOf(5)).equals(BigInteger.ZERO)).combined();
 
 		// then
-		then(allMultipleOfFive).isTrue();
+		then(actual.remainder(BigInteger.valueOf(5))).isEqualTo(BigInteger.ZERO);
+		then(actual).isBetween(BigInteger.ZERO, BigInteger.valueOf(100));
 	}
 
 	@Test
 	void nonZeroWithOdd() {
 		// when - nonZero().odd() => odd()
-		boolean allOdd = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().nonZero().odd().combined())
-			.noneMatch(b -> b.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().nonZero().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual.remainder(BigInteger.valueOf(2))).isNotEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	void nonZeroWithEven() {
 		// when - nonZero().even() => even()
-		boolean allEven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().nonZero().even().combined())
-			.allMatch(b -> b.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().nonZero().even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual.remainder(BigInteger.valueOf(2))).isEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	void nonZeroWithPositive() {
 		// when
-		boolean allNonZeroAndPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().nonZero().positive().combined())
-			.allMatch(b -> b.compareTo(BigInteger.ZERO) > 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().nonZero().positive().combined();
 
 		// then
-		then(allNonZeroAndPositive).isTrue();
+		then(actual).isGreaterThan(BigInteger.ZERO);
 	}
 
 	@Test
 	void nonZeroWithNegative() {
 		// when - nonZero().negative() => negative()
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().nonZero().negative().combined())
-			.allMatch(b -> b.compareTo(BigInteger.ZERO) < 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().nonZero().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isLessThan(BigInteger.ZERO);
 	}
 
 	@Test
 	void negativeWithNonZero() {
 		// when - negative().nonZero() => nonZero()
-		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().negative().nonZero().combined())
-			.noneMatch(b -> b.equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().negative().nonZero().combined();
 
 		// then
-		then(allNonZero).isTrue();
+		then(actual).isNotEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	void oddWithEvenCombination() {
 		// when - odd().even() => even()
-		boolean allEven = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().odd().even().combined())
-			.allMatch(b -> b.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().odd().even().combined();
 
 		// then
-		then(allEven).isTrue();
+		then(actual.remainder(BigInteger.valueOf(2))).isEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
 	void positiveWithNegativeCombination() {
 		// when - positive().negative() => negative()
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().positive().negative().combined())
-			.allMatch(b -> b.compareTo(BigInteger.ZERO) < 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().positive().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isLessThan(BigInteger.ZERO);
 	}
 
 	@Test
 	void complexApiCombination() {
 		// when - nonZero().positive().odd() => odd()
-		boolean allOdd = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().nonZero().positive().odd().combined())
-			.noneMatch(b -> b.remainder(BigInteger.valueOf(2)).equals(BigInteger.ZERO));
+		BigInteger actual = CombinableArbitrary.bigIntegers().nonZero().positive().odd().combined();
 
 		// then
-		then(allOdd).isTrue();
+		then(actual.remainder(BigInteger.valueOf(2))).isNotEqualTo(BigInteger.ZERO);
 	}
 
 	@Test
@@ -407,12 +367,10 @@ class BigIntegerCombinableArbitraryTest {
 		// when
 		BigInteger min = BigInteger.valueOf(-50);
 		BigInteger max = BigInteger.valueOf(-10);
-		boolean allInRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.bigIntegers().nonZero().positive().odd().withRange(min, max).combined())
-			.allMatch(b -> b.compareTo(min) >= 0 && b.compareTo(max) <= 0);
+		BigInteger actual = CombinableArbitrary.bigIntegers().nonZero().positive().odd().withRange(min, max).combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween(min, max);
 	}
 
 	private boolean isPrime(BigInteger number) {
