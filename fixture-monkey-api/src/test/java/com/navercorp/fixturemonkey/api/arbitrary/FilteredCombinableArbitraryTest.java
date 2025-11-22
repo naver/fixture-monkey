@@ -44,4 +44,19 @@ class FilteredCombinableArbitraryTest {
 			.hasCause(failure)
 			.hasMessageContaining("value");
 	}
+
+	@Test
+	void throwsRetryableMissWhenValidatorRecordsFailure() {
+		FilteringArbitraryValidator filteringValidator = new FilteringArbitraryValidator(arbitrary -> { });
+
+		thenThrownBy(() -> CombinableArbitrary.from("candidate")
+			.filter(5, candidate -> {
+				filteringValidator.markFailure("validation failed", Collections.singleton("value"));
+				return false;
+			}, filteringValidator)
+			.combined())
+			.isInstanceOf(RetryableFilterMissException.class)
+			.hasMessageContaining("value")
+			.hasRootCauseInstanceOf(ValidationFailedException.class);
+	}
 }

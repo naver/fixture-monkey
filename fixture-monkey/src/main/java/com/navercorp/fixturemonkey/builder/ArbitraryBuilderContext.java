@@ -48,6 +48,7 @@ import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.tree.TraverseContext;
 import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
@@ -283,7 +284,8 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public GenerateFixtureContext newGenerateFixtureContext(
-		Map<Class<?>, ArbitraryIntrospector> registeredArbitraryIntrospectorsByType
+		Map<Class<?>, ArbitraryIntrospector> registeredArbitraryIntrospectorsByType,
+		FilteringArbitraryValidator filteringValidator
 	) {
 		Map<Class<?>, ArbitraryIntrospector> concat = new HashMap<>(arbitraryIntrospectorsByType);
 		concat.putAll(registeredArbitraryIntrospectorsByType);
@@ -292,7 +294,8 @@ public final class ArbitraryBuilderContext {
 		return new GenerateFixtureContext(
 			concat,
 			this::isValidOnly,
-			monkeyContext
+			monkeyContext,
+			filteringValidator
 		);
 	}
 

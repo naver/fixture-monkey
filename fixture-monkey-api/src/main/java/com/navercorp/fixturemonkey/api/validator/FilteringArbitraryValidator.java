@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.validator;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -54,5 +55,13 @@ public final class FilteringArbitraryValidator implements ArbitraryValidator {
 		ValidationFailedException failure = lastFailure;
 		lastFailure = null;
 		return Optional.ofNullable(failure);
+	}
+
+	public void markFailure(ValidationFailedException failure) {
+		lastFailure = failure;
+	}
+
+	public void markFailure(String message, Set<String> constraintViolationPropertyNames) {
+		this.lastFailure = new ValidationFailedException(message, constraintViolationPropertyNames);
 	}
 }

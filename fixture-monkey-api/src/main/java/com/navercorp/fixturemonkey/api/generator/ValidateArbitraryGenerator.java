@@ -57,8 +57,8 @@ import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
-import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
@@ -66,13 +66,23 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 
 	private final JavaConstraintGenerator constraintGenerator;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
+	private final FilteringArbitraryValidator filteringValidator;
 
 	public ValidateArbitraryGenerator(
 		JavaConstraintGenerator constraintGenerator,
 		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
+		this(constraintGenerator, decomposedContainerValueFactory, new FilteringArbitraryValidator(it -> { }));
+	}
+
+	public ValidateArbitraryGenerator(
+		JavaConstraintGenerator constraintGenerator,
+		DecomposedContainerValueFactory decomposedContainerValueFactory,
+		FilteringArbitraryValidator filteringValidator
+	) {
 		this.constraintGenerator = constraintGenerator;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
+		this.filteringValidator = filteringValidator;
 	}
 
 	@Override
@@ -91,17 +101,15 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 			if (javaStringConstraint != null) {
 				String violationProperty = resolveViolationProperty(context);
 
-				if (generated.fixed()) {
-					String string = (String)generated.rawValue();
-					enforceMandatoryStringConstraints(javaStringConstraint, string, violationProperty);
-					validateStringLengthOrThrow(javaStringConstraint, string, violationProperty);
-				} else {
-					generated = generated.filter(it -> {
+				generated = generated.filter(
+					CombinableArbitrary.DEFAULT_MAX_TRIES,
+					it -> {
 						String string = (String)it;
-						enforceMandatoryStringConstraints(javaStringConstraint, string, violationProperty);
-						return isStringLengthWithinBounds(javaStringConstraint, string);
-					});
-				}
+						return validateMandatoryStringConstraints(javaStringConstraint, string, violationProperty)
+							&& validateStringLength(javaStringConstraint, string, violationProperty);
+					},
+					filteringValidator
+				);
 			}
 		}
 
@@ -361,46 +369,63 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 		return value.length() == length;
 	}
 
-	private void enforceMandatoryStringConstraints(
+	private boolean validateMandatoryStringConstraints(
 		JavaStringConstraint constraint,
 		@Nullable String value,
 		String violationProperty
 	) {
 		if (value == null) {
-			if (constraint.isNotNull()) {
-				throw new ValidationFailedException(
-					"Given value is null but annotated with @NotNull.",
-					Collections.singleton(violationProperty)
-				);
-			}
-			if (constraint.isNotBlank()) {
-				throw new ValidationFailedException(
-					"Given value is null but annotated with @NotBlank.",
-					Collections.singleton(violationProperty)
-				);
-			}
-			if (constraint.isNotEmpty()) {
-				throw new ValidationFailedException(
-					"Given value is null but annotated with @NotEmpty.",
-					Collections.singleton(violationProperty)
-				);
-			}
-			return;
+			return validateNullString(constraint, violationProperty);
 		}
 
+		return validateNonNullString(constraint, value, violationProperty);
+	}
+
+	private boolean validateNullString(
+		JavaStringConstraint constraint,
+		String violationProperty
+	) {
+		if (constraint.isNotNull()) {
+			return recordStringValidationFailure(
+				"Given value is null but annotated with @NotNull.",
+				violationProperty
+			);
+		}
+		if (constraint.isNotBlank()) {
+			return recordStringValidationFailure(
+				"Given value is null but annotated with @NotBlank.",
+				violationProperty
+			);
+		}
+		if (constraint.isNotEmpty()) {
+			return recordStringValidationFailure(
+				"Given value is null but annotated with @NotEmpty.",
+				violationProperty
+			);
+		}
+		return true;
+	}
+
+	private boolean validateNonNullString(
+		JavaStringConstraint constraint,
+		String value,
+		String violationProperty
+	) {
 		if (constraint.isNotBlank() && isBlank(value)) {
-			throw new ValidationFailedException(
+			return recordStringValidationFailure(
 				"Given value is blank but annotated with @NotBlank.",
-				Collections.singleton(violationProperty)
+				violationProperty
 			);
 		}
 
 		if (constraint.isNotEmpty() && value.isEmpty()) {
-			throw new ValidationFailedException(
+			return recordStringValidationFailure(
 				"Given value is empty but annotated with @NotEmpty.",
-				Collections.singleton(violationProperty)
+				violationProperty
 			);
 		}
+
+		return true;
 	}
 
 	private String resolveViolationProperty(ArbitraryGeneratorContext context) {
@@ -435,16 +460,23 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 		return true;
 	}
 
-	private void validateStringLengthOrThrow(
+	private boolean recordStringValidationFailure(String message, String violationProperty) {
+		filteringValidator.markFailure(message, Collections.singleton(violationProperty));
+		return false;
+	}
+
+	private boolean validateStringLength(
 		JavaStringConstraint constraint,
 		@Nullable String value,
 		String violationProperty
 	) {
 		if (!isStringLengthWithinBounds(constraint, value)) {
-			throw new ValidationFailedException(
+			return recordStringValidationFailure(
 				"Given value does not satisfy @Size constraints.",
-				Collections.singleton(violationProperty)
+				violationProperty
 			);
 		}
+
+		return true;
 	}
 }

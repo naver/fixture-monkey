@@ -31,7 +31,6 @@ import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
-import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
@@ -53,7 +52,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		Supplier<ObjectTree> regenerateTree,
 		Function<ObjectTree, CombinableArbitrary<T>> generateArbitrary,
 		int generateMaxTries,
-		ArbitraryValidator validator,
+		FilteringArbitraryValidator filteringValidator,
 		Supplier<Boolean> validOnly
 	) {
 		this.rootProperty = rootProperty;
@@ -65,7 +64,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				return generateArbitrary.apply(objectTree);
 			}
 		);
-		this.filteringValidator = new FilteringArbitraryValidator(validator);
+		this.filteringValidator = filteringValidator;
 		this.validOnly = validOnly;
 	}
 
