@@ -51,34 +51,28 @@ class FloatCombinableArbitraryTest {
 	@Test
 	void positive() {
 		// when
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().positive().combined())
-			.allMatch(f -> f > 0.0f);
+		Float actual = CombinableArbitrary.floats().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isPositive();
 	}
 
 	@Test
 	void negative() {
 		// when
-		boolean allNegative = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().negative().combined())
-			.allMatch(f -> f < 0.0f);
+		Float actual = CombinableArbitrary.floats().negative().combined();
 
 		// then
-		then(allNegative).isTrue();
+		then(actual).isNegative();
 	}
 
 	@Test
 	void nonZero() {
 		// when
-		boolean allNonZero = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().nonZero().combined())
-			.allMatch(f -> f != 0.0f);
+		Float actual = CombinableArbitrary.floats().nonZero().combined();
 
 		// then
-		then(allNonZero).isTrue();
+		then(actual).isNotEqualTo(0.0f);
 	}
 
 	@Test
@@ -101,12 +95,10 @@ class FloatCombinableArbitraryTest {
 	@Test
 	void finite() {
 		// when
-		boolean allFinite = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().finite().combined())
-			.allMatch(Float::isFinite);
+		Float actual = CombinableArbitrary.floats().finite().combined();
 
 		// then
-		then(allFinite).isTrue();
+		then(Float.isFinite(actual)).isTrue();
 	}
 
 	@Test
@@ -121,12 +113,10 @@ class FloatCombinableArbitraryTest {
 	@Test
 	void normalized() {
 		// when
-		boolean allNormalized = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().normalized().combined())
-			.allMatch(f -> f >= 0.0f && f <= 1.0f);
+		Float actual = CombinableArbitrary.floats().normalized().combined();
 
 		// then
-		then(allNormalized).isTrue();
+		then(actual).isBetween(0.0f, 1.0f);
 	}
 
 	@Test
@@ -141,23 +131,19 @@ class FloatCombinableArbitraryTest {
 	@Test
 	void percentage() {
 		// when
-		boolean allPercentage = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().percentage().combined())
-			.allMatch(f -> f >= 0.0f && f <= 100.0f);
+		Float actual = CombinableArbitrary.floats().percentage().combined();
 
 		// then
-		then(allPercentage).isTrue();
+		then(actual).isBetween(0.0f, 100.0f);
 	}
 
 	@Test
 	void score() {
 		// when
-		boolean allScore = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().score().combined())
-			.allMatch(f -> f >= 0.0f && f <= 100.0f);
+		Float actual = CombinableArbitrary.floats().score().combined();
 
 		// then
-		then(allScore).isTrue();
+		then(actual).isBetween(0.0f, 100.0f);
 	}
 
 	@Test
@@ -193,23 +179,19 @@ class FloatCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsPositiveOverNegative() {
 		// when - negative().positive() => positive()
-		boolean allPositive = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().negative().positive().combined())
-			.allMatch(f -> f > 0.0f);
+		Float actual = CombinableArbitrary.floats().negative().positive().combined();
 
 		// then
-		then(allPositive).isTrue();
+		then(actual).isPositive();
 	}
 
 	@Test
 	void lastMethodWinsRangeOverPositive() {
 		// when - positive().withRange(-10, -1) => withRange(-10, -1)
-		boolean allInRange = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.floats().positive().withRange(-10.0f, -1.0f).combined())
-			.allMatch(f -> f >= -10.0f && f <= -1.0f);
+		Float actual = CombinableArbitrary.floats().positive().withRange(-10.0f, -1.0f).combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween(-10.0f, -1.0f);
 	}
 
 	@Test
