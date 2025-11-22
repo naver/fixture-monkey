@@ -11,8 +11,8 @@ import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikByteCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikLongCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikShortCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 
 class CombinableArbitraryTest {
 	@Test
@@ -444,7 +444,10 @@ class CombinableArbitraryTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void shortCombinableArbitraryWithRangeAndFilter() {
-		Short actual = CombinableArbitrary.shorts().withRange((short) 10, (short) 100).filter(it -> 75 <= it).combined();
+		Short actual = CombinableArbitrary.shorts()
+			.withRange((short) 10, (short) 100)
+			.filter(it -> 75 <= it)
+			.combined();
 
 		then(actual).isBetween((short) 75, (short) 100);
 	}
