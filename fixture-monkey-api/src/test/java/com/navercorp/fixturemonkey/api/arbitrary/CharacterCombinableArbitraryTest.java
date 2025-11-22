@@ -21,8 +21,6 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
-import java.util.stream.IntStream;
-
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
@@ -53,100 +51,82 @@ class CharacterCombinableArbitraryTest {
 	@Test
 	void alphabetic() {
 		// when
-		boolean allAlpha = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().alphabetic().combined())
-			.allMatch(Character::isLetter);
+		Character actual = CombinableArbitrary.chars().alphabetic().combined();
 
 		// then
-		then(allAlpha).isTrue();
+		then(Character.isLetter(actual)).isTrue();
 	}
 
 	@Test
 	void numeric() {
 		// when
-		boolean allNumeric = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().numeric().combined())
-			.allMatch(c -> c >= '0' && c <= '9');
+		Character actual = CombinableArbitrary.chars().numeric().combined();
 
 		// then
-		then(allNumeric).isTrue();
+		then(actual).isBetween('0', '9');
 	}
 
 	@Test
 	void alphaNumeric() {
 		// when
-		boolean allAlphaNumeric = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().alphaNumeric().combined())
-			.allMatch(Character::isLetterOrDigit);
+		Character actual = CombinableArbitrary.chars().alphaNumeric().combined();
 
 		// then
-		then(allAlphaNumeric).isTrue();
+		then(Character.isLetterOrDigit(actual)).isTrue();
 	}
 
 	@Test
 	void ascii() {
 		// when
-		boolean allAscii = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().ascii().combined())
-			.allMatch(c -> c >= '\u0020' && c <= '\u007E');
+		Character actual = CombinableArbitrary.chars().ascii().combined();
 
 		// then
-		then(allAscii).isTrue();
+		then(actual).isBetween('\u0020', '\u007E');
 	}
 
 	@Test
 	void uppercase() {
 		// when
-		boolean allUppercase = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().uppercase().combined())
-			.allMatch(c -> c >= 'A' && c <= 'Z');
+		Character actual = CombinableArbitrary.chars().uppercase().combined();
 
 		// then
-		then(allUppercase).isTrue();
+		then(actual).isBetween('A', 'Z');
 	}
 
 	@Test
 	void lowercase() {
 		// when
-		boolean allLowercase = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().lowercase().combined())
-			.allMatch(c -> c >= 'a' && c <= 'z');
+		Character actual = CombinableArbitrary.chars().lowercase().combined();
 
 		// then
-		then(allLowercase).isTrue();
+		then(actual).isBetween('a', 'z');
 	}
 
 	@Test
 	void korean() {
 		// when
-		boolean allKorean = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().korean().combined())
-			.allMatch(c -> c >= '\uAC00' && c <= '\uD7AF');
+		Character actual = CombinableArbitrary.chars().korean().combined();
 
 		// then
-		then(allKorean).isTrue();
+		then(actual).isBetween('\uAC00', '\uD7AF');
 	}
 
 	@Test
 	void emoji() {
 		// when
-		boolean allEmoji = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().emoji().combined())
-			.allMatch(c -> c >= '\uD83D' && c <= '\uD83F');
+		Character actual = CombinableArbitrary.chars().emoji().combined();
 
 		// then
-		then(allEmoji).isTrue();
+		then(actual).isBetween('\uD83D', '\uD83F');
 	}
 
 	@Test
 	void whitespace() {
 		// when
-		boolean allWhitespace = IntStream.range(0, 100)
-			.mapToObj(i -> CombinableArbitrary.chars().whitespace().combined())
-			.allMatch(Character::isWhitespace);
+		Character actual = CombinableArbitrary.chars().whitespace().combined();
 
 		// then
-		then(allWhitespace).isTrue();
+		then(Character.isWhitespace(actual)).isTrue();
 	}
 
 	@Test
@@ -277,33 +257,27 @@ class CharacterCombinableArbitraryTest {
 	@Test
 	void lastMethodWinsKoreanOverAscii() {
 		// when - korean() should take precedence over ascii()
-		boolean allKorean = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.chars().ascii().korean().combined())
-			.allMatch(c -> c >= '\uAC00' && c <= '\uD7AF');
+		Character actual = CombinableArbitrary.chars().ascii().korean().combined();
 
 		// then
-		then(allKorean).isTrue();
+		then(actual).isBetween('\uAC00', '\uD7AF');
 	}
 
 	@Test
 	void lastMethodWinsRangeOverAlpha() {
 		// when - withRange() should take precedence over alpha()
-		boolean allInRange = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.chars().alphabetic().withRange('0', '9').combined())
-			.allMatch(c -> c >= '0' && c <= '9');
+		Character actual = CombinableArbitrary.chars().alphabetic().withRange('0', '9').combined();
 
 		// then
-		then(allInRange).isTrue();
+		then(actual).isBetween('0', '9');
 	}
 
 	@Test
 	void characterFilterWithSpecificCondition() {
 		// when - filtering uppercase only
-		boolean allUppercase = IntStream.range(0, 30)
-			.mapToObj(i -> CombinableArbitrary.chars().alphabetic().filter(Character::isUpperCase).combined())
-			.allMatch(Character::isUpperCase);
+		Character actual = CombinableArbitrary.chars().alphabetic().filter(Character::isUpperCase).combined();
 
 		// then
-		then(allUppercase).isTrue();
+		then(Character.isUpperCase(actual)).isTrue();
 	}
 }
