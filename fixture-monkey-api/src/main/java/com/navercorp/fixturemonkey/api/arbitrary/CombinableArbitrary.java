@@ -48,6 +48,8 @@ public interface CombinableArbitrary<T> {
 		ServiceLoader.load(ByteCombinableArbitrary.class);
 	ServiceLoader<LongCombinableArbitrary> LONG_COMBINABLE_ARBITRARY_SERVICE_LOADER =
 		ServiceLoader.load(LongCombinableArbitrary.class);
+	ServiceLoader<ShortCombinableArbitrary> SHORT_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(ShortCombinableArbitrary.class);
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -240,4 +242,16 @@ public interface CombinableArbitrary<T> {
 	static LongCombinableArbitrary longs() {
 		return LONG_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}
+
+	/**
+	 * Generates a {@link ShortCombinableArbitrary} which returns a randomly generated Short.
+	 * You can customize the generated Short by using {@link ShortCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated Short
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static ShortCombinableArbitrary shorts() {
+		return SHORT_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
 }

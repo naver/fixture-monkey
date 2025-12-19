@@ -11,6 +11,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikByteCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikLongCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikShortCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 
 class CombinableArbitraryTest {
@@ -398,4 +399,92 @@ class CombinableArbitraryTest {
 			it -> then(it).isNullOrEmpty()
 		);
 	}
+
+	@Test
+	void shortCombinableArbitraryIsJqwik() {
+		CombinableArbitrary<Short> actual = CombinableArbitrary.shorts();
+
+		then(actual).isInstanceOf(JqwikShortCombinableArbitrary.class);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryInjectNull() {
+		Short actual = CombinableArbitrary.shorts().injectNull(1).combined();
+
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryFilter() {
+		Short actual = CombinableArbitrary.shorts().filter(it -> it > 100).combined();
+
+		then(actual).isGreaterThan((short) 100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryPositive() {
+		Short actual = CombinableArbitrary.shorts().positive().combined();
+
+		then(actual).isPositive();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryNegative() {
+		Short actual = CombinableArbitrary.shorts().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryWithRange() {
+		Short actual = CombinableArbitrary.shorts().withRange((short) 10, (short) 100).combined();
+
+		then(actual).isBetween((short) 10, (short) 100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryWithRangeAndFilter() {
+		Short actual = CombinableArbitrary.shorts()
+			.withRange((short) 10, (short) 100)
+			.filter(it -> 75 <= it)
+			.combined();
+
+		then(actual).isBetween((short) 75, (short) 100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryEven() {
+		Short actual = CombinableArbitrary.shorts().even().combined();
+
+		then(actual % 2).isEqualTo(0);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryOdd() {
+		Short actual = CombinableArbitrary.shorts().odd().combined();
+
+		then(actual % 2 != 0).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
+		Short actual = CombinableArbitrary.shorts().positive().negative().combined();
+
+		then(actual).isNegative();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
+		Short actual = CombinableArbitrary.shorts().even().odd().combined();
+
+		then(actual % 2 != 0).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void shortCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
+		Short actual = CombinableArbitrary.shorts().negative().withRange((short) 100, (short) 1000).combined();
+
+		then(actual).isBetween((short) 100, (short) 1000);
+	}
+
 }
