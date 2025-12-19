@@ -34,6 +34,7 @@ final class DefaultParameterContextAwareFixtureMonkey implements ParameterContex
 		this.fixtureMonkey = fixtureMonkey;
 	}
 
+	@SuppressWarnings("return")
 	@Override
 	public Object giveMe() {
 		Class<?> type = parameterContext.getParameter().getType();

@@ -44,6 +44,7 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		return property.getClass() == MapEntryElementProperty.class;
 	}
 
+	@SuppressWarnings("argument")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();

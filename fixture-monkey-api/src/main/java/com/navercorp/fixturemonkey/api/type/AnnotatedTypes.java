@@ -52,7 +52,7 @@ public abstract class AnnotatedTypes {
 			}
 
 			@Override
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			public @Nullable <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
 				return Arrays.stream(annotations)
 					.filter(it -> it.getClass() == annotationClass)
 					.findAny()
@@ -130,7 +130,7 @@ public abstract class AnnotatedTypes {
 			}
 
 			@Override
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			public @Nullable <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
 				return currentAnnotatedType.getAnnotation(annotationClass);
 			}
 

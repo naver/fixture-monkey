@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 /**
  * It is the Concurrent Least Recently Used cache.
@@ -32,8 +33,8 @@ import org.apiguardian.api.API.Status;
  * @param <K> key of the cache
  * @param <V> value of the cache
  */
-@SuppressWarnings("NullableProblems")
 @API(since = "0.5.10", status = Status.MAINTAINED)
+@SuppressWarnings({"contracts", "override", "return"})
 public final class ConcurrentLruCache<K, V> implements Map<K, V> {
 	private final Map<K, V> lruCache;
 
@@ -62,7 +63,7 @@ public final class ConcurrentLruCache<K, V> implements Map<K, V> {
 	}
 
 	@Override
-	public V get(Object key) {
+	public @Nullable V get(Object key) {
 		return lruCache.get(key);
 	}
 

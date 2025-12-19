@@ -68,6 +68,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		this.value = value;
 	}
 
+	@SuppressWarnings("dereference.of.nullable")
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		Class<?> actualType = Types.getActualType(objectNode.getOriginalProperty().getType());

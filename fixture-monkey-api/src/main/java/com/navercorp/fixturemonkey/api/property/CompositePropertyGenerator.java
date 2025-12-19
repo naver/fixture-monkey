@@ -50,6 +50,7 @@ public final class CompositePropertyGenerator implements PropertyGenerator {
 		this.propertyGenerators = propertyGenerators;
 	}
 
+	@SuppressWarnings("argument")
 	public List<Property> generateChildProperties(Property property) {
 		Map<String, List<Property>> propertyListsByPropertyName = new HashMap<>();
 

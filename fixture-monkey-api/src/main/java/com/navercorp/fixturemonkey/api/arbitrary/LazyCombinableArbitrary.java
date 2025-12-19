@@ -43,6 +43,7 @@ final class LazyCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	@SuppressWarnings("return")
 	public Object rawValue() {
 		Object rawValue = introspected.getValue();
 		introspected.clear();

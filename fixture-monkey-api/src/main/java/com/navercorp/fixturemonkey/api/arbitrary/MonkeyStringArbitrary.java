@@ -32,6 +32,8 @@ import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.EdgeCases;
@@ -57,8 +59,9 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 	private CharacterArbitrary characterArbitrary = new DefaultCharacterArbitrary();
 
 	private int minLength = 0;
-	private Integer maxLength = null;
+	private @Nullable Integer maxLength = null;
 	private Predicate<Character> filter = c -> true;
+	@SuppressWarnings("assignment")
 	private RandomDistribution lengthDistribution = null;
 	private double repeatChars = 0.0;
 
@@ -66,7 +69,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 	public RandomGenerator<String> generator(int genSize) {
 		long maxUniqueChars = characterArbitrary
 			.exhaustive(maxLength())
-			.map(ExhaustiveGenerator::maxCount)
+			.<@NonNull Long>map(ExhaustiveGenerator::maxCount)
 			.orElse((long)maxLength());
 		return RandomGenerators.strings(
 			randomCharacterGenerator(),
@@ -82,6 +85,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 		return this.generator(genSize);
 	}
 
+	@SuppressWarnings("argument")
 	private int maxLength() {
 		return RandomGenerators.collectionMaxSize(minLength, maxLength);
 	}
@@ -250,7 +254,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

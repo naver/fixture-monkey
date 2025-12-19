@@ -33,7 +33,8 @@ public final class NodeElementPredicate implements NextNodePredicate {
 
 	@Override
 	public boolean test(ObjectProperty currentObjectProperty) {
-		if (currentObjectProperty.getElementIndex() == null) {
+		Integer elementIndex = currentObjectProperty.getElementIndex();
+		if (elementIndex == null) {
 			throw new IllegalArgumentException(
 				"It is not an element property. now type : " + currentObjectProperty.getProperty()
 					.getType()
@@ -41,7 +42,6 @@ public final class NodeElementPredicate implements NextNodePredicate {
 			);
 		}
 
-		int elementIndex = currentObjectProperty.getElementIndex();
-		return elementIndex == index;
+		return index == elementIndex;
 	}
 }

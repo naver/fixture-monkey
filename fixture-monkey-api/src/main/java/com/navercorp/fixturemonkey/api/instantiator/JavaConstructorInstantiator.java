@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 @API(since = "0.6.12", status = Status.MAINTAINED)
 public final class JavaConstructorInstantiator<T> implements ConstructorInstantiator<T> {
 	private final List<TypeReference<?>> inputTypes;
-	private final List<String> inputParameterNames;
+	private final List<@Nullable String> inputParameterNames;
 	@Nullable
 	private PropertyInstantiator<T> propertyInstantiator = null;
 
@@ -94,7 +94,7 @@ public final class JavaConstructorInstantiator<T> implements ConstructorInstanti
 		return inputTypes;
 	}
 
-	public List<String> getInputParameterNames() {
+	public List<@Nullable String> getInputParameterNames() {
 		return inputParameterNames;
 	}
 

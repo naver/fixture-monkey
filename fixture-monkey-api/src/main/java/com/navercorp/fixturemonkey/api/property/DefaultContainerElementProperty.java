@@ -139,6 +139,7 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 	}
 
 	@Nullable
+	@SuppressWarnings("argument")
 	private Object getOptionalValue(Object obj) {
 		Class<?> actualType = Types.getActualType(obj.getClass());
 		if (Optional.class.isAssignableFrom(actualType)) {
@@ -161,7 +162,7 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

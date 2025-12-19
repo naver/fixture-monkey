@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInstantiator<T> {
 	private final String factoryMethodName;
 	private final List<TypeReference<?>> types;
-	private final List<String> parameterNames;
+	private final List<@Nullable String> parameterNames;
 	@Nullable
 	private PropertyInstantiator<T> propertyInstantiator = null;
 
@@ -102,7 +102,7 @@ public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInst
 		return types;
 	}
 
-	public List<String> getInputParameterNames() {
+	public List<@Nullable String> getInputParameterNames() {
 		return parameterNames;
 	}
 

@@ -43,6 +43,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateConcretePropertyResolver {
 	public static final CandidateConcretePropertyResolver INSTANCE = new ElementJsonSubTypesConcreteTypeResolver();
 
+	@SuppressWarnings("argument")
 	@Override
 	public List<Property> resolve(Property property) {
 		Property containerProperty = ((ContainerElementProperty)property).getContainerProperty();

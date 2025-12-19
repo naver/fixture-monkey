@@ -62,13 +62,14 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 
 	@Nullable
 	private TraverseNode parent = null;
-	private List<TraverseNode> children;
+	private @Nullable List<TraverseNode> children;
 	@Nullable
 	private TypeDefinition expandedTypeDefinition = null;
 
 	private double nullInject;
 	private final List<TreeNodeManipulator> containerInfoManipulators = new ArrayList<>();
 
+	@SuppressWarnings("nullness")
 	private final LazyArbitrary<PropertyPath> lazyPropertyPath = LazyArbitrary.lazy(() -> {
 		Property resolvedProperty = this.resolvedTypeDefinition.getResolvedProperty();
 		if (parent == null) {
@@ -97,6 +98,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 		this.treeProperty = treeProperty;
 		this.nullInject = nullInject;
 		this.traverseContext = traverseContext;
+		this.children = null;
 	}
 
 	@Nullable
@@ -385,7 +387,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 
 		List<TypeDefinition> typeDefinitions = candidateProperties.stream()
 			.map(concreteProperty -> {
-				if (!container) {
+				if (containerPropertyGenerator == null) {
 					LazyPropertyGenerator lazyPropertyGenerator = context.getResolvedPropertyGenerator();
 
 					return new DefaultTypeDefinition(

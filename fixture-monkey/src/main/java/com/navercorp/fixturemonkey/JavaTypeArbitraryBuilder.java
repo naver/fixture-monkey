@@ -64,16 +64,16 @@ public interface JavaTypeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 	JavaTypeArbitraryBuilder<T> setInner(InnerSpec innerSpec);
 
 	@Override
-	JavaTypeArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier);
+	JavaTypeArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier);
 
 	@Override
-	JavaTypeArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit);
+	JavaTypeArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier, int limit);
 
 	@Override
-	JavaTypeArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier);
+	JavaTypeArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier);
 
 	@Override
-	JavaTypeArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier, int limit);
+	JavaTypeArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier, int limit);
 
 	@Override
 	JavaTypeArbitraryBuilder<T> setNull(String expression);

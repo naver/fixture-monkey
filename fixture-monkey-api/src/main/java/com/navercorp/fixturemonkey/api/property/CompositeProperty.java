@@ -61,6 +61,7 @@ public final class CompositeProperty implements Property {
 	}
 
 	@Override
+	@SuppressWarnings("return")
 	public String getName() {
 		return this.primaryProperty.getName();
 	}
@@ -96,7 +97,7 @@ public final class CompositeProperty implements Property {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

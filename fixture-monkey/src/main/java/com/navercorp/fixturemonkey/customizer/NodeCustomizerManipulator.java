@@ -37,7 +37,7 @@ public final class NodeCustomizerManipulator<T> implements NodeManipulator {
 		this.arbitraryCustomizer = arbitraryCustomizer;
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({"rawtypes", "unchecked", "argument"})
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		GenerateFixtureContext generateFixtureContext = (GenerateFixtureContext)objectNode.getObjectNodeContext();

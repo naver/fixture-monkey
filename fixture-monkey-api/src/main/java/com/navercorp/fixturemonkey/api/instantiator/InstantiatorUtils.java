@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
@@ -41,7 +42,7 @@ public abstract class InstantiatorUtils {
 	 */
 	public static List<String> resolvedParameterNames(
 		List<String> parameterNames,
-		List<String> inputParameterNames
+		List<@Nullable String> inputParameterNames
 	) {
 		List<String> resolvedParameterNames = new ArrayList<>();
 		for (int i = 0; i < parameterNames.size(); i++) {
