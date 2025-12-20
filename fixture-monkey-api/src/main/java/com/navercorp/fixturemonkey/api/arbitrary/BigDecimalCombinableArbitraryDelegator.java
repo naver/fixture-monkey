@@ -67,6 +67,11 @@ final class BigDecimalCombinableArbitraryDelegator implements BigDecimalCombinab
 	}
 
 	@Override
+	public BigDecimalCombinableArbitrary score() {
+		return CombinableArbitrary.bigDecimals().score();
+	}
+
+	@Override
 	public BigDecimalCombinableArbitrary score(BigDecimal min, BigDecimal max) {
 		return CombinableArbitrary.bigDecimals().score(min, max);
 	}
@@ -84,6 +89,11 @@ final class BigDecimalCombinableArbitraryDelegator implements BigDecimalCombinab
 	@Override
 	public BigDecimalCombinableArbitrary normalized() {
 		return CombinableArbitrary.bigDecimals().normalized();
+	}
+
+	@Override
+	public BigDecimalCombinableArbitrary stripTrailingZeros() {
+		return CombinableArbitrary.bigDecimals().stripTrailingZeros();
 	}
 
 	@Override

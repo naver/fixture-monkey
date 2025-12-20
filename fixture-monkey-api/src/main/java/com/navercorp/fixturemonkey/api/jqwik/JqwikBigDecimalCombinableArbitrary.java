@@ -87,6 +87,13 @@ public final class JqwikBigDecimalCombinableArbitrary implements BigDecimalCombi
 	}
 
 	@Override
+	public BigDecimalCombinableArbitrary score() {
+		return new JqwikBigDecimalCombinableArbitrary(
+			Arbitraries.bigDecimals().between(BigDecimal.ZERO, BigDecimal.valueOf(100))
+		);
+	}
+
+	@Override
 	public BigDecimalCombinableArbitrary score(BigDecimal min, BigDecimal max) {
 		return withRange(min, max);
 	}
@@ -107,6 +114,13 @@ public final class JqwikBigDecimalCombinableArbitrary implements BigDecimalCombi
 
 	@Override
 	public BigDecimalCombinableArbitrary normalized() {
+		return new JqwikBigDecimalCombinableArbitrary(
+			Arbitraries.bigDecimals().between(BigDecimal.ZERO, BigDecimal.ONE)
+		);
+	}
+
+	@Override
+	public BigDecimalCombinableArbitrary stripTrailingZeros() {
 		return new JqwikBigDecimalCombinableArbitrary(
 			this.bigDecimalArbitrary.map(BigDecimal::stripTrailingZeros)
 		);
