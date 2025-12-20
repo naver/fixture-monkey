@@ -70,6 +70,13 @@ public interface BigIntegerCombinableArbitrary extends CombinableArbitrary<BigIn
 	BigIntegerCombinableArbitrary percentage();
 
 	/**
+	 * Generates a BigIntegerCombinableArbitrary which produces BigIntegers as score values (0-100).
+	 *
+	 * @return the BigIntegerCombinableArbitrary producing score BigIntegers
+	 */
+	BigIntegerCombinableArbitrary score();
+
+	/**
 	 * Generates a BigIntegerCombinableArbitrary which produces BigIntegers as score values within the specified range.
 	 *
 	 * @param min the minimum score (inclusive)

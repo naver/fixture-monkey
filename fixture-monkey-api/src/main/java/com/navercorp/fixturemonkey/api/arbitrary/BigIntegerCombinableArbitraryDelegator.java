@@ -67,6 +67,11 @@ final class BigIntegerCombinableArbitraryDelegator implements BigIntegerCombinab
 	}
 
 	@Override
+	public BigIntegerCombinableArbitrary score() {
+		return CombinableArbitrary.bigIntegers().score();
+	}
+
+	@Override
 	public BigIntegerCombinableArbitrary score(BigInteger min, BigInteger max) {
 		return CombinableArbitrary.bigIntegers().score(min, max);
 	}
