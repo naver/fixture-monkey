@@ -50,6 +50,14 @@ public interface CombinableArbitrary<T> {
 		ServiceLoader.load(LongCombinableArbitrary.class);
 	ServiceLoader<ShortCombinableArbitrary> SHORT_COMBINABLE_ARBITRARY_SERVICE_LOADER =
 		ServiceLoader.load(ShortCombinableArbitrary.class);
+	ServiceLoader<FloatCombinableArbitrary> FLOAT_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(FloatCombinableArbitrary.class);
+	ServiceLoader<DoubleCombinableArbitrary> DOUBLE_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(DoubleCombinableArbitrary.class);
+	ServiceLoader<BigIntegerCombinableArbitrary> BIG_INTEGER_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(BigIntegerCombinableArbitrary.class);
+	ServiceLoader<BigDecimalCombinableArbitrary> BIG_DECIMAL_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(BigDecimalCombinableArbitrary.class);
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -252,6 +260,50 @@ public interface CombinableArbitrary<T> {
 	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 	static ShortCombinableArbitrary shorts() {
 		return SHORT_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
+	/**
+	 * Generates a {@link FloatCombinableArbitrary} which returns a randomly generated Float.
+	 * You can customize the generated Float by using {@link FloatCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated Float
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static FloatCombinableArbitrary floats() {
+		return FLOAT_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
+	/**
+	 * Generates a {@link DoubleCombinableArbitrary} which returns a randomly generated Double.
+	 * You can customize the generated Double by using {@link DoubleCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated Double
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static DoubleCombinableArbitrary doubles() {
+		return DOUBLE_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
+	/**
+	 * Generates a {@link BigIntegerCombinableArbitrary} which returns a randomly generated BigInteger.
+	 * You can customize the generated BigInteger by using {@link BigIntegerCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated BigInteger
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static BigIntegerCombinableArbitrary bigIntegers() {
+		return BIG_INTEGER_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
+	/**
+	 * Generates a {@link BigDecimalCombinableArbitrary} which returns a randomly generated BigDecimal.
+	 * You can customize the generated BigDecimal by using {@link BigDecimalCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated BigDecimal
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static BigDecimalCombinableArbitrary bigDecimals() {
+		return BIG_DECIMAL_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}
 
 }
