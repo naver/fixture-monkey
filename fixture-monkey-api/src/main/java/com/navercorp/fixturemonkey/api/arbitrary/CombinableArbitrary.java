@@ -52,6 +52,8 @@ public interface CombinableArbitrary<T> {
 		ServiceLoader.load(ShortCombinableArbitrary.class);
 	ServiceLoader<CharacterCombinableArbitrary> CHARACTER_COMBINABLE_ARBITRARY_SERVICE_LOADER =
 		ServiceLoader.load(CharacterCombinableArbitrary.class);
+	ServiceLoader<FloatCombinableArbitrary> FLOAT_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(FloatCombinableArbitrary.class);
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -265,6 +267,17 @@ public interface CombinableArbitrary<T> {
 	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 	static CharacterCombinableArbitrary chars() {
 		return CHARACTER_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
+	/**
+	 * Generates a {@link FloatCombinableArbitrary} which returns a randomly generated Float.
+	 * You can customize the generated Float by using {@link FloatCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated Float
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static FloatCombinableArbitrary floats() {
+		return FLOAT_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}
 
 }
