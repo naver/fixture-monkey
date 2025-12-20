@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
+import com.navercorp.fixturemonkey.kotest.KotestBigIntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestIntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestByteCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestLongCombinableArbitrary
@@ -1216,6 +1217,37 @@ class KotestInJunitTest {
 
         then(actual).isBetween(100, 1000)
     }
+
+    @Test
+    fun bigIntegerCombinableArbitrary() {
+        val actual = CombinableArbitrary.bigIntegers()
+
+        then(actual).isInstanceOf(KotestBigIntegerCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigIntegerCombinableArbitraryPositive() {
+        val actual = CombinableArbitrary.bigIntegers().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigIntegerCombinableArbitraryNegative() {
+        val actual = CombinableArbitrary.bigIntegers().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigIntegerCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.bigIntegers().withRange(
+            BigInteger.valueOf(100), BigInteger.valueOf(1000)
+        ).combined()
+
+        then(actual).isBetween(BigInteger.valueOf(100), BigInteger.valueOf(1000))
+    }
+
 
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
