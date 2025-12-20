@@ -52,6 +52,8 @@ public interface CombinableArbitrary<T> {
 		ServiceLoader.load(ShortCombinableArbitrary.class);
 	ServiceLoader<FloatCombinableArbitrary> FLOAT_COMBINABLE_ARBITRARY_SERVICE_LOADER =
 		ServiceLoader.load(FloatCombinableArbitrary.class);
+	ServiceLoader<DoubleCombinableArbitrary> DOUBLE_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(DoubleCombinableArbitrary.class);
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -265,6 +267,17 @@ public interface CombinableArbitrary<T> {
 	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
 	static FloatCombinableArbitrary floats() {
 		return FLOAT_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
+
+	/**
+	 * Generates a {@link DoubleCombinableArbitrary} which returns a randomly generated Double.
+	 * You can customize the generated Double by using {@link DoubleCombinableArbitrary}.
+	 *
+	 * @return a {@link CombinableArbitrary} returns a randomly generated Double
+	 */
+	@API(since = "1.1.16", status = Status.EXPERIMENTAL)
+	static DoubleCombinableArbitrary doubles() {
+		return DOUBLE_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
 	}
 
 }
