@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikByteCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikCharacterCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikLongCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikShortCombinableArbitrary;
@@ -319,6 +320,97 @@ class CombinableArbitraryTest {
 
 	// More comprehensive conflict API tests for Byte can be found in ByteCombinableArbitraryTest
 	// which demonstrates extensive last-method-wins behavior patterns
+
+	@Test
+	void characterCombinableArbitraryIsJqwik() {
+		CombinableArbitrary<Character> actual = CombinableArbitrary.chars();
+
+		then(actual).isInstanceOf(JqwikCharacterCombinableArbitrary.class);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryInjectNull() {
+		Character actual = CombinableArbitrary.chars().injectNull(1).combined();
+
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryFilter() {
+		Character actual = CombinableArbitrary.chars().filter(it -> it > 'A').combined();
+
+		then(actual).isGreaterThan('A');
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryWithRange() {
+		Character actual = CombinableArbitrary.chars().withRange('A', 'Z').combined();
+
+		then(actual).isBetween('A', 'Z');
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryAlpha() {
+		Character actual = CombinableArbitrary.chars().alphabetic().combined();
+
+		then(Character.isLetter(actual)).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryNumeric() {
+		Character actual = CombinableArbitrary.chars().numeric().combined();
+
+		then(Character.isDigit(actual)).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryAlphaNumeric() {
+		Character actual = CombinableArbitrary.chars().alphaNumeric().combined();
+
+		then(Character.isLetterOrDigit(actual)).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryAscii() {
+		Character actual = CombinableArbitrary.chars().ascii().combined();
+
+		then((int)actual).isLessThanOrEqualTo(127);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryUppercase() {
+		Character actual = CombinableArbitrary.chars().uppercase().combined();
+
+		then(Character.isUpperCase(actual)).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryLowercase() {
+		Character actual = CombinableArbitrary.chars().lowercase().combined();
+
+		then(Character.isLowerCase(actual)).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryKorean() {
+		Character actual = CombinableArbitrary.chars().korean().combined();
+
+		then(actual).isBetween('가', '힣');
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryWhitespace() {
+		Character actual = CombinableArbitrary.chars().whitespace().combined();
+
+		then(Character.isWhitespace(actual)).isTrue();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void characterCombinableArbitraryLastOperationWinsWithAlphaAndNumeric() {
+		Character actual = CombinableArbitrary.chars().alphabetic().numeric().combined();
+
+		then(Character.isDigit(actual)).isTrue();
+	}
 
 	@Test
 	void stringCombinableArbitraryIsJqwik() {
