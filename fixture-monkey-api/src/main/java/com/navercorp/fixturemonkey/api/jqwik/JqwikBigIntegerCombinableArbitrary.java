@@ -88,6 +88,13 @@ public final class JqwikBigIntegerCombinableArbitrary implements BigIntegerCombi
 	}
 
 	@Override
+	public BigIntegerCombinableArbitrary score() {
+		return new JqwikBigIntegerCombinableArbitrary(
+			Arbitraries.bigIntegers().between(BigInteger.ZERO, BigInteger.valueOf(100))
+		);
+	}
+
+	@Override
 	public BigIntegerCombinableArbitrary score(BigInteger min, BigInteger max) {
 		return withRange(min, max);
 	}

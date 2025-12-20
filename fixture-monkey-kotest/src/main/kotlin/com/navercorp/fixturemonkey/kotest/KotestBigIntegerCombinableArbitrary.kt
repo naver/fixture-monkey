@@ -63,6 +63,11 @@ class KotestBigIntegerCombinableArbitrary(
             Arb.int(0..100).map { BigInteger.valueOf(it.toLong()) }
         )
 
+    override fun score(): BigIntegerCombinableArbitrary =
+        KotestBigIntegerCombinableArbitrary(
+            Arb.int(0..100).map { BigInteger.valueOf(it.toLong()) }
+        )
+
     override fun score(min: BigInteger, max: BigInteger): BigIntegerCombinableArbitrary =
         withRange(min, max)
 
