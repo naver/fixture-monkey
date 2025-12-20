@@ -124,7 +124,7 @@ public interface FloatCombinableArbitrary extends CombinableArbitrary<Float> {
 
 	/**
 	 * Injects a selection of standard special values:
-	 * Float.NaN, Float.MIN_VALUE, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY
+	 * Float.NaN, Float.MIN_VALUE, Float.MIN_NORMAL, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY
 	 *
 	 * @return the FloatCombinableArbitrary with standard special values
 	 */
