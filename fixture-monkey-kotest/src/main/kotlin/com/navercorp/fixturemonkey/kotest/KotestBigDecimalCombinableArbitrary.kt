@@ -65,6 +65,11 @@ class KotestBigDecimalCombinableArbitrary(
             Arb.bigDecimal().filter { it >= BigDecimal.ZERO && it <= BigDecimal.valueOf(100) }
         )
 
+    override fun score(): BigDecimalCombinableArbitrary =
+        KotestBigDecimalCombinableArbitrary(
+            Arb.bigDecimal().filter { it >= BigDecimal.ZERO && it <= BigDecimal.valueOf(100) }
+        )
+
     override fun score(min: BigDecimal, max: BigDecimal): BigDecimalCombinableArbitrary =
         withRange(min, max)
 
@@ -79,6 +84,11 @@ class KotestBigDecimalCombinableArbitrary(
         )
 
     override fun normalized(): BigDecimalCombinableArbitrary =
+        KotestBigDecimalCombinableArbitrary(
+            Arb.bigDecimal().filter { it >= BigDecimal.ZERO && it <= BigDecimal.ONE }
+        )
+
+    override fun stripTrailingZeros(): BigDecimalCombinableArbitrary =
         KotestBigDecimalCombinableArbitrary(
             Arb.bigDecimal().map { it.stripTrailingZeros() }
         )

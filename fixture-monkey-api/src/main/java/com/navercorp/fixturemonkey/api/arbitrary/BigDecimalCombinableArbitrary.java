@@ -70,6 +70,13 @@ public interface BigDecimalCombinableArbitrary extends CombinableArbitrary<BigDe
 	BigDecimalCombinableArbitrary percentage();
 
 	/**
+	 * Generates a BigDecimalCombinableArbitrary which produces BigDecimals as score values (0-100).
+	 *
+	 * @return the BigDecimalCombinableArbitrary producing score BigDecimals
+	 */
+	BigDecimalCombinableArbitrary score();
+
+	/**
 	 * Generates a BigDecimalCombinableArbitrary which produces BigDecimals as score values within the specified range.
 	 *
 	 * @param min the minimum score (inclusive)
@@ -95,12 +102,18 @@ public interface BigDecimalCombinableArbitrary extends CombinableArbitrary<BigDe
 	BigDecimalCombinableArbitrary withScale(int scale);
 
 	/**
-	 * Generates a BigDecimalCombinableArbitrary which produces normalized BigDecimals.
-	 * Normalized BigDecimals have trailing zeros removed and scale adjusted accordingly.
+	 * Generates a BigDecimalCombinableArbitrary which produces normalized BigDecimals (0.0 to 1.0).
 	 *
 	 * @return the BigDecimalCombinableArbitrary producing normalized BigDecimals
 	 */
 	BigDecimalCombinableArbitrary normalized();
+
+	/**
+	 * Generates a BigDecimalCombinableArbitrary which produces BigDecimals with trailing zeros removed.
+	 *
+	 * @return the BigDecimalCombinableArbitrary producing BigDecimals without trailing zeros
+	 */
+	BigDecimalCombinableArbitrary stripTrailingZeros();
 
 	@Override
 	default BigDecimalCombinableArbitrary filter(Predicate<BigDecimal> predicate) {
