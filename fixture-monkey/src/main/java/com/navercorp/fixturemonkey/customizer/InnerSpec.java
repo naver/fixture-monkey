@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.customizer;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
+import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -516,8 +517,15 @@ public final class InnerSpec {
 	}
 
 	public ManipulatorSet getManipulatorSet(MonkeyManipulatorFactory monkeyManipulatorFactory) {
+		return getManipulatorSet(monkeyManipulatorFactory, null);
+	}
+
+	public ManipulatorSet getManipulatorSet(
+		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		@Nullable AnnotatedType rootAnnotatedType
+	) {
 		ManipulatorHolderSet manipulatorHolderSet = traverse(this);
-		return monkeyManipulatorFactory.newManipulatorSet(manipulatorHolderSet);
+		return monkeyManipulatorFactory.newManipulatorSet(manipulatorHolderSet, rootAnnotatedType);
 	}
 
 	private InnerSpec newNextInnerSpec(InnerSpec innerSpec, DefaultDeclarativeExpression parentDeclarativeExpression) {

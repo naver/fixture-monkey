@@ -102,7 +102,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
-	private final Class<?> rootClass;
+	private final AnnotatedType rootAnnotatedType;
 
 	public DefaultArbitraryBuilder(
 		TreeRootProperty rootProperty,
@@ -122,7 +122,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.monkeyContext = monkeyContext;
 		this.standbyContexts = standbyContexts;
 		this.instantiatorProcessor = instantiatorProcessor;
-		this.rootClass = Types.getActualType(rootProperty.getType());
+		this.rootAnnotatedType = rootProperty.getAnnotatedType();
 	}
 
 	@Override
@@ -197,7 +197,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
-		ManipulatorSet manipulatorSet = innerSpec.getManipulatorSet(monkeyManipulatorFactory);
+		ManipulatorSet manipulatorSet = innerSpec.getManipulatorSet(monkeyManipulatorFactory, rootAnnotatedType);
 		List<ArbitraryManipulator> arbitraryManipulators = manipulatorSet.getArbitraryManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorSet.getContainerInfoManipulators();
 
@@ -588,7 +588,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				return propertyNameResolver.resolve(property);
 			});
 
-			return monkeyExpressionFactory.from(stringExpression, rootClass);
+			return monkeyExpressionFactory.from(stringExpression, rootAnnotatedType);
 		}
 
 		throw new UnsupportedOperationException(

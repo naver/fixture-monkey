@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.customizer;
 
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,12 +46,14 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.customizer.Values.Unique;
+import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodePredicateResolver;
@@ -66,15 +69,31 @@ public final class MonkeyManipulatorFactory {
 	private final AtomicInteger sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
+	@Nullable
+	private final MonkeyExpressionFactory monkeyExpressionFactory;
+	@Nullable
+	private final PropertyNameResolver propertyNameResolver;
 
 	public MonkeyManipulatorFactory(
 		AtomicInteger sequence,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators
 	) {
+		this(sequence, decomposedContainerValueFactory, containerPropertyGenerators, null, null);
+	}
+
+	public MonkeyManipulatorFactory(
+		AtomicInteger sequence,
+		DecomposedContainerValueFactory decomposedContainerValueFactory,
+		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
+		@Nullable MonkeyExpressionFactory monkeyExpressionFactory,
+		@Nullable PropertyNameResolver propertyNameResolver
+	) {
 		this.sequence = sequence;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.containerPropertyGenerators = containerPropertyGenerators;
+		this.monkeyExpressionFactory = monkeyExpressionFactory;
+		this.propertyNameResolver = propertyNameResolver;
 	}
 
 	public ArbitraryManipulator newArbitraryManipulator(
@@ -215,6 +234,13 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
+		return newManipulatorSet(manipulatorHolderSet, null);
+	}
+
+	public ManipulatorSet newManipulatorSet(
+		ManipulatorHolderSet manipulatorHolderSet,
+		@Nullable AnnotatedType rootAnnotatedType
+	) {
 		int baseSequence = sequence.getAndIncrement();
 
 		List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
@@ -223,7 +249,13 @@ public final class MonkeyManipulatorFactory {
 			.stream()
 			.map(
 				it -> {
-					List<NodeResolver> nextNodeResolvers = it.getNextNodePredicates().stream()
+					List<NextNodePredicate> nextNodePredicates = it.getNextNodePredicates();
+
+					if (monkeyExpressionFactory != null && propertyNameResolver != null) {
+						nextNodePredicates = applyStrictModeValidation(nextNodePredicates, rootAnnotatedType);
+					}
+
+					List<NodeResolver> nextNodeResolvers = nextNodePredicates.stream()
 						.map(NodePredicateResolver::new)
 						.collect(toList());
 
@@ -274,11 +306,27 @@ public final class MonkeyManipulatorFactory {
 		);
 	}
 
+	private List<NextNodePredicate> applyStrictModeValidation(
+		List<NextNodePredicate> predicates,
+		@Nullable AnnotatedType rootAnnotatedType
+	) {
+		if (monkeyExpressionFactory != null && propertyNameResolver != null && rootAnnotatedType != null) {
+			return new com.navercorp.fixturemonkey.expression.StrictModeNextNodePredicateContainer(
+				predicates,
+				rootAnnotatedType,
+				propertyNameResolver
+			);
+		}
+		return predicates;
+	}
+
 	public MonkeyManipulatorFactory copy() {
 		return new MonkeyManipulatorFactory(
 			new AtomicInteger(sequence.get()),
 			decomposedContainerValueFactory,
-			containerPropertyGenerators
+			containerPropertyGenerators,
+			monkeyExpressionFactory,
+			propertyNameResolver
 		);
 	}
 
