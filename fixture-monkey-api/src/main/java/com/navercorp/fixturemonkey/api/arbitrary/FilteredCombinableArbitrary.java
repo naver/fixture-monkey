@@ -31,6 +31,7 @@ import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.Traceable;
+import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
 
 /**
  * It would generate an object satisfied given {@code predicate}.
@@ -41,6 +42,8 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final int maxMisses;
 	private final CombinableArbitrary<T> combinableArbitrary;
 	private final Predicate<T> predicate;
+	@Nullable
+	private final FilteringArbitraryValidator filteringValidator;
 
 	private Exception lastException;
 
@@ -49,9 +52,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		CombinableArbitrary<T> combinableArbitrary,
 		Predicate<T> predicate
 	) {
-		this.maxMisses = maxMisses;
-		this.combinableArbitrary = combinableArbitrary;
-		this.predicate = predicate;
+		this(maxMisses, combinableArbitrary, predicate, null);
 	}
 
 	FilteredCombinableArbitrary(
@@ -59,9 +60,33 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		FilteredCombinableArbitrary<T> filteredCombinableArbitrary,
 		Predicate<T> predicate
 	) {
+		this(maxMisses, filteredCombinableArbitrary, predicate, null);
+	}
+
+	FilteredCombinableArbitrary(
+		int maxMisses,
+		CombinableArbitrary<T> combinableArbitrary,
+		Predicate<T> predicate,
+		@Nullable FilteringArbitraryValidator filteringValidator
+	) {
+		this.maxMisses = maxMisses;
+		this.combinableArbitrary = combinableArbitrary;
+		this.predicate = predicate;
+		this.filteringValidator = filteringValidator;
+	}
+
+	FilteredCombinableArbitrary(
+		int maxMisses,
+		FilteredCombinableArbitrary<T> filteredCombinableArbitrary,
+		Predicate<T> predicate,
+		@Nullable FilteringArbitraryValidator filteringValidator
+	) {
 		this.maxMisses = maxMisses;
 		this.combinableArbitrary = filteredCombinableArbitrary.combinableArbitrary;
 		this.predicate = predicate.and(filteredCombinableArbitrary.predicate);
+		this.filteringValidator = filteringValidator != null
+			? filteringValidator
+			: filteredCombinableArbitrary.filteringValidator;
 	}
 
 	@Override
@@ -74,6 +99,8 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 					return returned;
 				}
 
+				throwIfValidationFailed();
+
 				if (fixed()) {
 					throw new FixedValueFilterMissException("Fixed value can not satisfy given filter.");
 				}
@@ -82,6 +109,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 					lastException = ex;
 				}
 				combinableArbitrary.clear();
+				if (ex instanceof ValidationFailedException
+					|| (ex.getCause() instanceof ValidationFailedException)) {
+					break;
+				}
 			}
 		}
 
@@ -89,38 +120,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			lastException = ((FilteredCombinableArbitrary<T>)combinableArbitrary).lastException;
 		}
 
-		if (lastException instanceof ValidationFailedException) {
-			String failedConcatProperties = String.join(", ",
-				((ValidationFailedException)lastException).getConstraintViolationPropertyNames());
-
-			throw new RetryableFilterMissException(
-				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
-				lastException
-			);
-		}
-
-		if (lastException != null) {
-			throw newRetryableFilterMissException(lastException);
-		}
-
-		if (combinableArbitrary instanceof Traceable) {
-			PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
-			String generateType = propertyPath.getProperty().getType().getTypeName();
-			String expression = "".equals(propertyPath.getExpression())
-				? "$"
-				: propertyPath.getExpression();
-
-			throw new RetryableFilterMissException(
-				String.format(
-					"Generate type \"%s\" is failed due to property \"%s\".",
-					generateType,
-					expression
-				),
-				lastException
-			);
-		}
-
-		throw newRetryableFilterMissException(lastException);
+		return throwLastException();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -134,6 +134,8 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 					return returned;
 				}
 
+				throwIfValidationFailed();
+
 				if (fixed()) {
 					throw new FixedValueFilterMissException("Fixed value can not satisfy given filter.");
 				}
@@ -142,6 +144,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 					lastException = ex;
 				}
 				combinableArbitrary.clear();
+				if (ex instanceof ValidationFailedException
+					|| (ex.getCause() instanceof ValidationFailedException)) {
+					break;
+				}
 			} catch (ClassCastException ex) {
 				throw new ClassCastException(
 					String.format(
@@ -156,6 +162,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			lastException = ((FilteredCombinableArbitrary<T>)combinableArbitrary).lastException;
 		}
 
+		return throwLastException();
+	}
+
+	private T throwLastException() {
 		if (lastException instanceof ValidationFailedException) {
 			String failedConcatProperties = String.join(", ",
 				((ValidationFailedException)lastException).getConstraintViolationPropertyNames());
@@ -211,5 +221,15 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		}
 
 		return (RetryableFilterMissException)throwable;
+	}
+
+	private void throwIfValidationFailed() {
+		if (filteringValidator == null) {
+			return;
+		}
+
+		filteringValidator.consumeFailure().ifPresent(ex -> {
+			throw ex;
+		});
 	}
 }
