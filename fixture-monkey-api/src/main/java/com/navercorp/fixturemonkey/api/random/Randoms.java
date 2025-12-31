@@ -35,7 +35,9 @@ import com.navercorp.fixturemonkey.api.engine.EngineUtils;
 @API(since = "0.4.0", status = Status.INTERNAL)
 @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
 public abstract class Randoms {
+	@SuppressWarnings("type.argument")
 	private static final ThreadLocal<Random> CURRENT;
+	@SuppressWarnings("type.argument")
 	private static final ThreadLocal<Long> SEED;
 
 	static {

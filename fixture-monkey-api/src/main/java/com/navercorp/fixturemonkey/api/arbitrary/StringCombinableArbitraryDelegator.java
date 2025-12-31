@@ -68,6 +68,7 @@ final class StringCombinableArbitraryDelegator implements StringCombinableArbitr
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public StringCombinableArbitrary filterCharacter(int tries, Predicate<Character> predicate) {
 		return this.filter(tries, it -> it.chars().mapToObj(Character.class::cast).allMatch(predicate));
 	}

@@ -63,7 +63,9 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 	private final MonkeyContext monkeyContext;
 	private final Supplier<Boolean> validOnly;
 
+	@SuppressWarnings("assignment")
 	private ObjectNode objectNode = null;
+	@SuppressWarnings("assignment")
 	private LazyArbitrary<Boolean> childNotCacheable = null;
 
 	private final List<NodeManipulator> manipulators = new ArrayList<>();
@@ -84,6 +86,7 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		this.monkeyContext = monkeyContext;
 	}
 
+	@SuppressWarnings("dereference.of.nullable")
 	private static boolean initializeChildNotCacheable(ObjectNode objectNode) {
 		objectNode.expand();
 		for (ObjectNode child : objectNode.getChildren().asList()) {
@@ -145,7 +148,7 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		this.arbitrary = arbitrary;
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({"rawtypes", "unchecked", "dereference.of.nullable"})
 	public CombinableArbitrary<?> generate(@Nullable ArbitraryGeneratorContext parentContext) {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
 
@@ -219,6 +222,7 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		return arbitraryGenerator;
 	}
 
+	@SuppressWarnings("dereference.of.nullable")
 	public ArbitraryGeneratorContext generateContext(
 		@Nullable ArbitraryGeneratorContext parentContext
 	) {

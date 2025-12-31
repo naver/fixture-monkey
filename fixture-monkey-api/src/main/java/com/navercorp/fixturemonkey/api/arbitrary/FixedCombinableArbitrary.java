@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 /**
  * It would generate a fixed value {@code object}.
@@ -40,6 +41,7 @@ final class FixedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	@SuppressWarnings("override.return")
 	public T rawValue() {
 		return object;
 	}
@@ -54,7 +56,7 @@ final class FixedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

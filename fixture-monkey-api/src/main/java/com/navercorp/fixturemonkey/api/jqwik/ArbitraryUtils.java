@@ -31,6 +31,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 @SuppressWarnings("NullableProblems")
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public abstract class ArbitraryUtils {
+	@SuppressWarnings("return")
 	public static <T> CombinableArbitrary<T> toCombinableArbitrary(Arbitrary<T> arbitrary) {
 		return CombinableArbitrary.from(LazyArbitrary.lazy(
 			() -> {

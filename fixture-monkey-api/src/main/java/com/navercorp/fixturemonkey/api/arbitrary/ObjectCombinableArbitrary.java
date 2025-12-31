@@ -43,6 +43,7 @@ final class ObjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		this.combinator = combinator;
 	}
 
+	@SuppressWarnings("argument")
 	@Override
 	public T combined() {
 		Map<ArbitraryProperty, Object> combinedPropertyValuesByArbitraryProperty = new HashMap<>();
@@ -54,6 +55,7 @@ final class ObjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		return combinator.apply(combinedPropertyValuesByArbitraryProperty);
 	}
 
+	@SuppressWarnings({"return", "argument"})
 	@Override
 	public Object rawValue() {
 		Map<ArbitraryProperty, Object> rawPropertyValuesByArbitraryProperty = new HashMap<>();

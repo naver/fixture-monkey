@@ -51,7 +51,7 @@ public interface FactoryMethodInstantiator<T> extends Instantiator {
 	 *
 	 * @return A list of strings representing the input parameter names of the factory method.
 	 */
-	List<String> getInputParameterNames();
+	List<@Nullable String> getInputParameterNames();
 
 	@Nullable
 	PropertyInstantiator<T> getPropertyInstantiator();

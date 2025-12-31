@@ -53,6 +53,7 @@ public final class ContainerPropertyGeneratorContext {
 		return null;
 	}
 
+	@SuppressWarnings("nullness")
 	public ArbitraryContainerInfo getContainerInfo() {
 		return containerInfo != null ? containerInfo : containerInfoGenerator.generate(this);
 	}

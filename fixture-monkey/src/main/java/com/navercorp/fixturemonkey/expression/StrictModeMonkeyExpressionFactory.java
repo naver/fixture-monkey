@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.expression;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
@@ -42,18 +44,18 @@ public final class StrictModeMonkeyExpressionFactory implements MonkeyExpression
 	}
 
 	@Override
-	public MonkeyExpression from(String expression, Class<?> rootClass) {
+	public MonkeyExpression from(String expression, @Nullable Class<?> rootClass) {
 		MonkeyExpression monkeyExpression = delegate.from(expression);
 		return new StrictModeMonkeyExpression(monkeyExpression, rootClass, propertyNameResolver);
 	}
 
 	private static final class StrictModeMonkeyExpression implements MonkeyExpression {
 		private final MonkeyExpression delegate;
-		private final Class<?> rootClass;
+		private final @Nullable Class<?> rootClass;
 		private final PropertyNameResolver propertyNameResolver;
 
 		public StrictModeMonkeyExpression(
-			MonkeyExpression delegate, Class<?> rootClass, PropertyNameResolver propertyNameResolver
+			MonkeyExpression delegate, @Nullable Class<?> rootClass, PropertyNameResolver propertyNameResolver
 		) {
 			this.delegate = delegate;
 			this.rootClass = rootClass;

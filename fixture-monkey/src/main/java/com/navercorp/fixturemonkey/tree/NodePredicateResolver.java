@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 
@@ -49,6 +50,7 @@ public final class NodePredicateResolver implements NodeResolver {
 	 * @return the next nodes that satisfy the given {@link NextNodePredicate},
 	 * or an empty list if there are no such nodes. {@link StartNodePredicate} always returns given {@code nextNode}.
 	 */
+	@SuppressWarnings("dereference.of.nullable")
 	@Override
 	public List<ObjectNode> resolve(ObjectNode nextNode) {
 		if (nextNodePredicate == StartNodePredicate.INSTANCE) {
@@ -69,7 +71,7 @@ public final class NodePredicateResolver implements NodeResolver {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

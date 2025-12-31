@@ -135,6 +135,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	private DefaultMatcherOperatorContainer<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 	private List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers = new ArrayList<>();
 
+	@SuppressWarnings({"argument"})
 	FixtureMonkeyOptionsBuilder() {
 		propertyGenerators = createMatcherOperatorRegistry(
 			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_PROPERTY_GENERATORS));

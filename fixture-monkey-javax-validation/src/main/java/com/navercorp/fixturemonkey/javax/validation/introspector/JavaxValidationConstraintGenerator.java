@@ -248,6 +248,7 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 		return new JavaIntegerConstraint(min, max);
 	}
 
+	@SuppressWarnings("unboxing.of.nullable")
 	@Override
 	@Nullable
 	public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {

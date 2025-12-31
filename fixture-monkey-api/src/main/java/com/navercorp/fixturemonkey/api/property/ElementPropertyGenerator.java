@@ -61,7 +61,7 @@ public final class ElementPropertyGenerator implements PropertyGenerator {
 		this.containerInfo = containerInfo;
 	}
 
-	public void updateContainerInfo(ArbitraryContainerInfo containerInfo) {
+	public void updateContainerInfo(@Nullable ArbitraryContainerInfo containerInfo) {
 		this.containerInfo = containerInfo;
 	}
 

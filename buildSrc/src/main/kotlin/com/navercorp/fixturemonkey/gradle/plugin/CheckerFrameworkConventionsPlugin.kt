@@ -18,14 +18,22 @@
 
 package com.navercorp.fixturemonkey.gradle.plugin
 
+import org.checkerframework.gradle.plugin.CheckerFrameworkExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getByType
 
-class JavaConventionsPlugin : Plugin<Project> {
+class CheckerFrameworkConventionsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        CheckerFrameworkConventionsPlugin().apply(project)
-        CheckstyleConventionsPlugin().apply(project)
-        SpotbugsConventionsPlugin().apply(project)
-        JacocoConventionsPlugin().apply(project)
+        project.plugins.apply("org.checkerframework")
+
+        project.extensions.getByType<CheckerFrameworkExtension>().apply {
+            checkers = listOf("org.checkerframework.checker.nullness.NullnessChecker")
+            extraJavacArgs = listOf(
+                "-AsuppressWarnings=initialization,method.invocation,type.arguments"
+            )
+            excludeTests = true
+        }
     }
 }
+

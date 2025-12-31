@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
@@ -47,6 +48,7 @@ public final class LazyAnnotatedType<T> implements AnnotatedType {
 	}
 
 	@Override
+	@Nullable
 	public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
 		return null;
 	}

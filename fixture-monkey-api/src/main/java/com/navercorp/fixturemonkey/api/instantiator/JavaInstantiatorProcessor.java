@@ -36,6 +36,7 @@ import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
@@ -106,7 +107,7 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			)
 		);
 
-		List<String> parameterNames = constructorParameterProperties.stream()
+		List<@Nullable String> parameterNames = constructorParameterProperties.stream()
 			.map(Property::getName)
 			.collect(toList());
 
@@ -137,7 +138,7 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 		Class<?> type = Types.getActualType(typeReference.getType());
 		String factoryMethodName = instantiator.getFactoryMethodName();
 		List<TypeReference<?>> inputTypeReferences = instantiator.getInputParameterTypes();
-		List<String> inputParameterNames = instantiator.getInputParameterNames();
+		List<@Nullable String> inputParameterNames = instantiator.getInputParameterNames();
 
 		Class<?>[] inputParameterTypes = inputTypeReferences.stream()
 			.map(it -> Types.getActualType(it.getType()))
@@ -215,7 +216,7 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 
 	private static List<Property> getMethodParameterProperties(
 		Method factoryMethod,
-		List<String> inputParameterNames,
+		List<@Nullable String> inputParameterNames,
 		List<TypeReference<?>> inputTypeReferences
 	) {
 		Parameter[] parameters = factoryMethod.getParameters();

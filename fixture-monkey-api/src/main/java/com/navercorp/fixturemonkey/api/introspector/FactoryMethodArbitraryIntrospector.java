@@ -64,6 +64,7 @@ public final class FactoryMethodArbitraryIntrospector implements ArbitraryIntros
 		);
 	}
 
+	@SuppressWarnings({"argument", "return"})
 	private static Function<Map<ArbitraryProperty, Object>, Object> combine(
 		Method factoryMethod,
 		List<String> parameterNames

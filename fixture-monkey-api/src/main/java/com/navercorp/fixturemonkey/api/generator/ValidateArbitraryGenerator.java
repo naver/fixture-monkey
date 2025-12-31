@@ -100,19 +100,21 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 							return !isBlank(string);
 						}
 
-						if (javaStringConstraint.getMinSize() != null) {
+						BigInteger minSize = javaStringConstraint.getMinSize();
+						if (minSize != null) {
 							if (string == null) {
 								return true;
 							}
-							return BigInteger.valueOf(string.length()).compareTo(javaStringConstraint.getMinSize())
+							return BigInteger.valueOf(string.length()).compareTo(minSize)
 								>= 0;
 						}
 
-						if (javaStringConstraint.getMaxSize() != null) {
+						BigInteger maxSize = javaStringConstraint.getMaxSize();
+						if (maxSize != null) {
 							if (string == null) {
 								return true;
 							}
-							return BigInteger.valueOf(string.length()).compareTo(javaStringConstraint.getMaxSize())
+							return BigInteger.valueOf(string.length()).compareTo(maxSize)
 								<= 0;
 						}
 
@@ -133,22 +135,24 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 
 						BigDecimal value = toBigDecimal(it);
 
-						if (javaDecimalConstraint.getMin() != null) {
-							if (value.compareTo(javaDecimalConstraint.getMin()) == 0
+						BigDecimal min = javaDecimalConstraint.getMin();
+						if (min != null) {
+							if (value.compareTo(min) == 0
 								&& Boolean.FALSE.equals(javaDecimalConstraint.getMinInclusive())) {
 								return false;
 							}
 
-							return value.compareTo(javaDecimalConstraint.getMin()) >= 0;
+							return value.compareTo(min) >= 0;
 						}
 
-						if (javaDecimalConstraint.getMax() != null) {
-							if (value.compareTo(javaDecimalConstraint.getMax()) == 0
+						BigDecimal max = javaDecimalConstraint.getMax();
+						if (max != null) {
+							if (value.compareTo(max) == 0
 								&& Boolean.FALSE.equals(javaDecimalConstraint.getMaxInclusive())) {
 								return false;
 							}
 
-							return value.compareTo(javaDecimalConstraint.getMax()) <= 0;
+							return value.compareTo(max) <= 0;
 						}
 
 						return true;
@@ -167,14 +171,16 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 					}
 
 					OffsetTime offsetTime = toOffsetTime(it);
-					if (javaDateTimeConstraint.getMin() != null) {
-						if (offsetTime.isBefore(javaDateTimeConstraint.getMin().atOffset(ZONE_OFFSET).toOffsetTime())) {
+					LocalDateTime min = javaDateTimeConstraint.getMin();
+					if (min != null) {
+						if (offsetTime.isBefore(min.atOffset(ZONE_OFFSET).toOffsetTime())) {
 							return false;
 						}
 					}
 
-					if (javaDateTimeConstraint.getMax() != null) {
-						if (offsetTime.isAfter(javaDateTimeConstraint.getMax().atOffset(ZONE_OFFSET).toOffsetTime())) {
+					LocalDateTime max = javaDateTimeConstraint.getMax();
+					if (max != null) {
+						if (offsetTime.isAfter(max.atOffset(ZONE_OFFSET).toOffsetTime())) {
 							return false;
 						}
 					}
@@ -192,14 +198,16 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 					}
 
 					LocalDateTime localDateTime = toLocalDateTime(it);
-					if (javaDateTimeConstraint.getMin() != null) {
-						if (localDateTime.isBefore(javaDateTimeConstraint.getMin())) {
+					LocalDateTime min = javaDateTimeConstraint.getMin();
+					if (min != null) {
+						if (localDateTime.isBefore(min)) {
 							return false;
 						}
 					}
 
-					if (javaDateTimeConstraint.getMax() != null) {
-						if (localDateTime.isAfter(javaDateTimeConstraint.getMax())) {
+					LocalDateTime max = javaDateTimeConstraint.getMax();
+					if (max != null) {
+						if (localDateTime.isAfter(max)) {
 							return false;
 						}
 					}
@@ -217,14 +225,16 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 					}
 
 					LocalDate localDate = toLocalDate(it);
-					if (javaDateConstraint.getMin() != null) {
-						if (!localDate.isAfter(javaDateConstraint.getMin().toLocalDate())) {
+					LocalDateTime min = javaDateConstraint.getMin();
+					if (min != null) {
+						if (!localDate.isAfter(min.toLocalDate())) {
 							return false;
 						}
 					}
 
-					if (javaDateConstraint.getMax() != null) {
-						if (!localDate.isBefore(javaDateConstraint.getMax().toLocalDate())) {
+					LocalDateTime max = javaDateConstraint.getMax();
+					if (max != null) {
+						if (!localDate.isBefore(max.toLocalDate())) {
 							return false;
 						}
 					}
@@ -244,13 +254,15 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 
 						BigInteger value = toBigInteger(it);
 
-						if (javaIntegerConstraint.getMin() != null
-							&& value.compareTo(javaIntegerConstraint.getMin()) < 0) {
+						BigInteger min = javaIntegerConstraint.getMin();
+						if (min != null
+							&& value.compareTo(min) < 0) {
 							return false;
 						}
 
-						if (javaIntegerConstraint.getMax() != null
-							&& value.compareTo(javaIntegerConstraint.getMax()) > 0) {
+						BigInteger max = javaIntegerConstraint.getMax();
+						if (max != null
+							&& value.compareTo(max) > 0) {
 							return false;
 						}
 
@@ -277,20 +289,22 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 						}
 					}
 
-					if (javaContainerConstraint.getMinSize() != null) {
+					Integer minSize = javaContainerConstraint.getMinSize();
+					if (minSize != null) {
 						DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(it);
-						if (decomposableJavaContainer.getSize() < javaContainerConstraint.getMinSize()) {
+						if (decomposableJavaContainer.getSize() < minSize) {
 							throw new ContainerSizeFilterMissException(
-								"Container size is should not be less than " + javaContainerConstraint.getMinSize()
+								"Container size is should not be less than " + minSize
 							);
 						}
 					}
 
-					if (javaContainerConstraint.getMaxSize() != null) {
+					Integer maxSize = javaContainerConstraint.getMaxSize();
+					if (maxSize != null) {
 						DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(it);
-						if (decomposableJavaContainer.getSize() > javaContainerConstraint.getMaxSize()) {
+						if (decomposableJavaContainer.getSize() > maxSize) {
 							throw new ContainerSizeFilterMissException(
-								"Container size is should not be greater than " + javaContainerConstraint.getMaxSize()
+								"Container size is should not be greater than " + maxSize
 							);
 						}
 					}

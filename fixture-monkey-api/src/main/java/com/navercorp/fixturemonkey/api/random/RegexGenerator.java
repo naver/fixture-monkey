@@ -47,6 +47,7 @@ public final class RegexGenerator {
 	private static final int FLAG_CASE_INSENSITIVE = 2;
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+	@SuppressWarnings("argument")
 	public String generate(String regex, int[] flags, Predicate<String> stringCondition) {
 		boolean caseInSensitive = Arrays.stream(flags).anyMatch(it -> it == FLAG_CASE_INSENSITIVE);
 

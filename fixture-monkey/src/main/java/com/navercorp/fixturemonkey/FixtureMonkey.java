@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.NonNull;
 
 import net.jqwik.api.Arbitrary;
 
@@ -186,11 +187,13 @@ public final class FixtureMonkey {
 		return this.giveMe(typeReference).limit(size).collect(toList());
 	}
 
-	public <T> T giveMeOne(Class<T> type) {
+	@SuppressWarnings("return")
+	public <T> @NonNull T giveMeOne(Class<T> type) {
 		return this.giveMe(type, 1).get(0);
 	}
 
-	public <T> T giveMeOne(TypeReference<T> typeReference) {
+	@SuppressWarnings("return")
+	public <T> @NonNull T giveMeOne(TypeReference<T> typeReference) {
 		return this.giveMe(typeReference, 1).get(0);
 	}
 

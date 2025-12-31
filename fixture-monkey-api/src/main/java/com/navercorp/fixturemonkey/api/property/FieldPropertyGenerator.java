@@ -53,6 +53,7 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public List<Property> generateChildProperties(Property property) {
 		Stream<FieldProperty> arbitraryfieldStream = TypeCache.getFieldsByName(Types.getActualType(property.getType()))
 			.values()

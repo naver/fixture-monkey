@@ -20,13 +20,14 @@ package com.navercorp.fixturemonkey.expression;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface MonkeyExpressionFactory {
 	MonkeyExpression from(String expression);
 
-	default MonkeyExpression from(String expression, Class<?> rootClass) {
+	default MonkeyExpression from(String expression, @Nullable Class<?> rootClass) {
 		return from(expression);
 	}
 }

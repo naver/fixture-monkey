@@ -36,6 +36,7 @@ public final class ConstantIntrospector implements ArbitraryIntrospector, Matche
 		return property instanceof ConstantProperty;
 	}
 
+	@SuppressWarnings("argument")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property constantProperty = context.getResolvedProperty();

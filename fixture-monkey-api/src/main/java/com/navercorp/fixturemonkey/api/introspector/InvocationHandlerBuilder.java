@@ -51,6 +51,7 @@ final class InvocationHandlerBuilder {
 		generatedValuesByMethodName.put(methodName, value);
 	}
 
+	@SuppressWarnings("return")
 	InvocationHandler build() {
 		return (proxy, method, args) -> {
 			if (method == null) {

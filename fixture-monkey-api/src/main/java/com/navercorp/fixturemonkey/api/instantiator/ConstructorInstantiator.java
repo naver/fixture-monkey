@@ -49,7 +49,7 @@ public interface ConstructorInstantiator<T> extends Instantiator {
 	 *
 	 * @return A list of strings representing the input parameter names of the constructor.
 	 */
-	List<String> getInputParameterNames();
+	List<@Nullable String> getInputParameterNames();
 
 	@Nullable
 	PropertyInstantiator<T> getPropertyInstantiator();

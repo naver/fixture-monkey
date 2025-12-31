@@ -27,6 +27,7 @@ final class IdentityPropertyNameResolver implements PropertyNameResolver {
 	}
 
 	@Override
+	@SuppressWarnings("return")
 	public String resolve(Property property) {
 		return property.getName();
 	}

@@ -62,6 +62,7 @@ public abstract class TypeCache {
 		return FIELD_ANNOTATED_TYPE_MAP.computeIfAbsent(field, Field::getAnnotatedType);
 	}
 
+	@SuppressWarnings("dereference.of.nullable")
 	public static AnnotatedType getAnnotatedType(PropertyDescriptor propertyDescriptor) {
 		return PROPERTY_DESCRIPTOR_ANNOTATED_TYPE_MAP.computeIfAbsent(
 			propertyDescriptor,
@@ -129,6 +130,7 @@ public abstract class TypeCache {
 			);
 	}
 
+	@SuppressWarnings("return")
 	@Nullable
 	public static Entry<Constructor<?>, String[]> getParameterNamesByConstructor(Class<?> clazz) {
 		return PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.computeIfAbsent(clazz,
@@ -210,9 +212,10 @@ public abstract class TypeCache {
 				.map(Parameter::getName)
 				.toArray(String[]::new);
 		} else {
+			AnnotatedType annotatedReceiverType = constructor.getAnnotatedReceiverType();
 			boolean anyReceiverParameter = Arrays.stream(constructor.getAnnotatedParameterTypes())
-				.anyMatch(it -> constructor.getAnnotatedReceiverType() != null
-					&& it.getType().equals(constructor.getAnnotatedReceiverType().getType()));
+				.anyMatch(it -> annotatedReceiverType != null
+					&& it.getType().equals(annotatedReceiverType.getType()));
 			ConstructorProperties constructorProperties = constructor.getAnnotation(ConstructorProperties.class);
 
 			if (constructorProperties == null) {

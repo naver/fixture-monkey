@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
@@ -108,7 +109,7 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -130,6 +131,7 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			.collect(Collectors.joining("."));
 	}
 
+	@SuppressWarnings("return")
 	public NodeResolver toNodeResolver() {
 		NodeResolver nodeResolver = null;
 
@@ -176,7 +178,7 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -301,7 +303,7 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (this == obj) {
 				return true;
 			}

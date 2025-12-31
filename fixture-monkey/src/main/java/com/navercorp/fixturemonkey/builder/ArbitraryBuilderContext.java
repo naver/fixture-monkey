@@ -196,10 +196,12 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public void markFixed() {
-		if (fixedState != null
-			&& fixedState.getFixedManipulateSize() == this.manipulators.size()
-			&& fixedState.getFixedContainerManipulatorSize() == this.containerInfoManipulators.size()) {
-			return;
+		FixedState fixedStateLocal = fixedState;
+		if (fixedStateLocal  != null
+			&& fixedStateLocal.getFixedManipulateSize() == this.manipulators.size()) {
+			if (fixedStateLocal.getFixedContainerManipulatorSize() == this.containerInfoManipulators.size()) {
+				return;
+			}
 		}
 
 		fixedState = new FixedState(this.manipulators.size(), this.containerInfoManipulators.size());
@@ -210,6 +212,7 @@ public final class ArbitraryBuilderContext {
 		return fixedState != null;
 	}
 
+	@SuppressWarnings({"dereference.of.nullable", "argument"})
 	public boolean fixedExpired() {
 		return manipulators.size() > Objects.requireNonNull(fixedState).getFixedManipulateSize()
 			|| containerInfoManipulators.size() > fixedState.getFixedContainerManipulatorSize();
