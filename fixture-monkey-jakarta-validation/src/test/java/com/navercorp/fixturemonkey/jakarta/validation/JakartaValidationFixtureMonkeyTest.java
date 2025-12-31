@@ -39,6 +39,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import org.junit.jupiter.api.condition.DisabledIf;
+
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -67,6 +69,16 @@ class JakartaValidationFixtureMonkeyTest {
 		.build();
 
 	private static final ZoneId ZONED_ID = ZoneId.systemDefault();
+	private static final MonthDay LAST_DAY_OF_YEAR = MonthDay.of(12, 31);
+	private static final MonthDay FIRST_DAY_OF_YEAR = MonthDay.of(1, 1);
+
+	static boolean isLastDayOfYear() {
+		return MonthDay.now().equals(LAST_DAY_OF_YEAR);
+	}
+
+	static boolean isFirstDayOfYear() {
+		return MonthDay.now().equals(FIRST_DAY_OF_YEAR);
+	}
 
 	@Property(tries = 100)
 	void sampleBigDecimal() {
@@ -239,6 +251,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getCalendarPastOrPresent().getTimeInMillis()).isLessThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureCalendar() {
 		Calendar now = Calendar.getInstance();
@@ -258,6 +271,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getDatePastOrPresent().getTime()).isLessThanOrEqualTo(now.getTime());
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureDate() {
 		Date now = new Date();
@@ -276,6 +290,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getInstantPastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureInstant() {
 		Instant now = Instant.now();
@@ -294,6 +309,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getLocalDatePastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureLocalDate() {
 		LocalDate now = LocalDate.now();
@@ -312,6 +328,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getLocalDateTimePastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureLocalDateTime() {
 		LocalDateTime now = LocalDateTime.now();
@@ -330,6 +347,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getLocalTimePastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureLocalTime() {
 		LocalTime now = LocalTime.now();
@@ -348,6 +366,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getZonedDateTimePastOrPresent().withZoneSameLocal(ZONED_ID)).isBeforeOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureZonedDateTime() {
 		ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(ZONED_ID);
@@ -357,15 +376,17 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getZonedDateTimeFutureOrPresent().withZoneSameLocal(ZONED_ID)).isAfterOrEqualTo(now);
 	}
 
+	@DisabledIf("isFirstDayOfYear")
 	@Property(tries = 100)
 	void samplePastMonthDay() {
+		MonthDay now = MonthDay.now();
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
-		MonthDay now = MonthDay.now();
 		then(actual.getMonthDayPast()).isLessThan(now);
 		then(actual.getMonthDayPastOrPresent()).isLessThanOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureMonthDay() {
 		MonthDay now = MonthDay.now();
@@ -384,6 +405,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getOffsetDateTimePastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureOffsetDateTime() {
 		OffsetDateTime now = OffsetDateTime.now();
@@ -403,6 +425,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getOffsetTimePastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureOffsetTime() {
 		OffsetTime now = OffsetTime.now();
@@ -422,6 +445,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getYearPastOrPresent()).isLessThanOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureYear() {
 		Year now = Year.now();
@@ -440,6 +464,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getYearMonthPastOrPresent()).isLessThanOrEqualTo(now);
 	}
 
+	@DisabledIf("isLastDayOfYear")
 	@Property(tries = 100)
 	void sampleFutureYearMonth() {
 		YearMonth now = YearMonth.now();
