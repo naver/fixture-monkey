@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
+import com.navercorp.fixturemonkey.kotest.KotestCharacterCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestIntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestByteCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestLongCombinableArbitrary
@@ -1110,6 +1111,76 @@ class KotestInJunitTest {
         val actual = CombinableArbitrary.shorts().withRange(10.toShort(), 20.toShort()).combined()
 
         then(actual).isBetween(10.toShort(), 20.toShort())
+    }
+
+    @Test
+    fun characterCombinableArbitrary() {
+        val actual = CombinableArbitrary.chars()
+
+        then(actual).isInstanceOf(KotestCharacterCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.chars().withRange('A', 'Z').combined()
+
+        then(actual).isBetween('A', 'Z')
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryAlpha() {
+        val actual = CombinableArbitrary.chars().alphabetic().combined()
+
+        then(actual.isLetter()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryNumeric() {
+        val actual = CombinableArbitrary.chars().numeric().combined()
+
+        then(actual.isDigit()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryAlphaNumeric() {
+        val actual = CombinableArbitrary.chars().alphaNumeric().combined()
+
+        then(actual.isLetterOrDigit()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryAscii() {
+        val actual = CombinableArbitrary.chars().ascii().combined()
+
+        then(actual.code).isLessThanOrEqualTo(127)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryUppercase() {
+        val actual = CombinableArbitrary.chars().uppercase().combined()
+
+        then(actual.isUpperCase()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryLowercase() {
+        val actual = CombinableArbitrary.chars().lowercase().combined()
+
+        then(actual.isLowerCase()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryKorean() {
+        val actual = CombinableArbitrary.chars().korean().combined()
+
+        then(actual).isBetween('가', '힣')
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryWhitespace() {
+        val actual = CombinableArbitrary.chars().whitespace().combined()
+
+        then(actual.isWhitespace()).isTrue()
     }
 
     @Test
