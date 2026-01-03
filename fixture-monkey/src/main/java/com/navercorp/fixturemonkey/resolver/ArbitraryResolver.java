@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
@@ -71,6 +72,9 @@ public final class ArbitraryResolver {
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts
 	) {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
+		FilteringArbitraryValidator filteringValidator = new FilteringArbitraryValidator(
+			fixtureMonkeyOptions.getDefaultArbitraryValidator()
+		);
 
 		List<ArbitraryManipulator> activeManipulators = activeContext.getManipulators();
 
@@ -101,7 +105,7 @@ public final class ArbitraryResolver {
 
 				ObjectTree objectTree = new ObjectTree(
 					rootProperty,
-					activeContext.newGenerateFixtureContext(registeredIntrospectors),
+					activeContext.newGenerateFixtureContext(registeredIntrospectors, filteringValidator),
 					activeContext.newTraverseContext(rootProperty, registeredPropertyConfigurer)
 				);
 
@@ -159,7 +163,7 @@ public final class ArbitraryResolver {
 				return objectTree.generate();
 			},
 			fixtureMonkeyOptions.getGenerateMaxTries(),
-			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
+			filteringValidator,
 			activeContext::isValidOnly
 		);
 	}

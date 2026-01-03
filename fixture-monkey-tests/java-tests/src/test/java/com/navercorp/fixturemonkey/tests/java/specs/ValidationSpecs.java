@@ -29,6 +29,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import lombok.Value;
 
@@ -44,6 +45,12 @@ public class ValidationSpecs {
 	@Value
 	public static class StringNotNullAnnotationObject {
 		@NotNull
+		String value;
+	}
+
+	@Value
+	public static class StringSizeBetween1And5Object {
+		@Size(min = 1, max = 5)
 		String value;
 	}
 

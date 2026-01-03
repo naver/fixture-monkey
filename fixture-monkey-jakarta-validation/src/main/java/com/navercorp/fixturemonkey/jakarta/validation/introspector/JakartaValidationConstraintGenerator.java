@@ -70,9 +70,10 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 		boolean digits = false;
 		boolean notNull = context.findAnnotation(NotNull.class).isPresent();
 		boolean notBlank = context.findAnnotation(NotBlank.class).isPresent();
+		boolean notEmpty = context.findAnnotation(NotEmpty.class).isPresent();
 		boolean email = context.findAnnotation(Email.class).isPresent();
 
-		if (notBlank || context.findAnnotation(NotEmpty.class).isPresent()) {
+		if (notBlank || notEmpty) {
 			min = BigInteger.ONE;
 		}
 
@@ -109,11 +110,12 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 			patternConstraint = new PatternConstraint(regexp, flags);
 		}
 
-		if (min == null && max == null && !digits && !notNull && !notBlank && patternConstraint == null && !email) {
+		if (min == null && max == null && !digits && !notNull && !notBlank && !notEmpty
+			&& patternConstraint == null && !email) {
 			return null;
 		}
 
-		return new JavaStringConstraint(min, max, digits, notNull, notBlank, patternConstraint, email);
+		return new JavaStringConstraint(min, max, digits, notNull, notBlank, notEmpty, patternConstraint, email);
 	}
 
 	@Override
