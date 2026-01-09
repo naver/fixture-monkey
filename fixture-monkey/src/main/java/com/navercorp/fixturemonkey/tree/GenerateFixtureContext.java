@@ -52,6 +52,7 @@ import com.navercorp.fixturemonkey.api.tree.TraverseNode;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeContext;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeMetadata;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 /**
@@ -71,17 +72,20 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
 	private final List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
 		new ArrayList<>();
+	private final FilteringArbitraryValidator filteringValidator;
 	@Nullable
 	private CombinableArbitrary<?> arbitrary;
 
 	public GenerateFixtureContext(
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer,
 		Supplier<Boolean> validOnly,
-		MonkeyContext monkeyContext
+		MonkeyContext monkeyContext,
+		FilteringArbitraryValidator filteringValidator
 	) {
 		this.arbitraryIntrospectorConfigurer = arbitraryIntrospectorConfigurer;
 		this.validOnly = validOnly;
 		this.monkeyContext = monkeyContext;
+		this.filteringValidator = filteringValidator;
 	}
 
 	private static boolean initializeChildNotCacheable(ObjectNode objectNode) {
@@ -210,7 +214,8 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 					arbitraryGenerator,
 					new ValidateArbitraryGenerator(
 						fixtureMonkeyOptions.getJavaConstraintGenerator(),
-						fixtureMonkeyOptions.getDecomposedContainerValueFactory()
+						fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
+						filteringValidator
 					)
 				)
 			);
@@ -284,7 +289,8 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		return new GenerateFixtureContext(
 			this.arbitraryIntrospectorConfigurer,
 			this.validOnly,
-			this.monkeyContext
+			this.monkeyContext,
+			this.filteringValidator
 		);
 	}
 }
