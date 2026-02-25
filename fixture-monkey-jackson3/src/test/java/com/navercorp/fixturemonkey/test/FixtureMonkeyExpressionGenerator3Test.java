@@ -18,7 +18,14 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static org.assertj.core.api.BDDAssertions.then;
+
+import net.jqwik.api.Property;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Value;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
@@ -26,10 +33,6 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.jackson3.plugin.Jackson3Plugin;
-import lombok.Value;
-import net.jqwik.api.Property;
-
-import static org.assertj.core.api.BDDAssertions.then;
 
 public class FixtureMonkeyExpressionGenerator3Test {
 	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();

@@ -38,9 +38,8 @@ import net.jqwik.api.Property;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
-import tools.jackson.databind.JsonNode;
-
 import lombok.Value;
+import tools.jackson.databind.JsonNode;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;

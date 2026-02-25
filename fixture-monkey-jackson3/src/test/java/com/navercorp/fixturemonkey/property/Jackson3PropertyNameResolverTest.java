@@ -18,16 +18,18 @@
 
 package com.navercorp.fixturemonkey.property;
 
+import static org.assertj.core.api.BDDAssertions.then;
+
+import java.lang.reflect.Field;
+
+import org.junit.jupiter.api.Test;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.jackson3.property.Jackson3PropertyNameResolver;
-import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
-
-import static org.assertj.core.api.BDDAssertions.then;
 
 class Jackson3PropertyNameResolverTest {
 	@Test
