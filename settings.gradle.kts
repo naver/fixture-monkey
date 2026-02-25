@@ -21,6 +21,7 @@ include(
         "fixture-monkey-javax-validation",
         "fixture-monkey-kotlin",
         "fixture-monkey-jackson",
+        "fixture-monkey-jackson3",
         "fixture-monkey-autoparams",
         "fixture-monkey-mockito",
         "fixture-monkey-starter",

@@ -6,6 +6,7 @@ datafaker = "1.9.0"
 findbugs-annotations = "3.0.1"
 findbugs-jsr305 = "3.0.2"
 jackson = "2.14.2"
+jackson3 = "3.0.0"
 jmh = "1.37"
 jmh-plugin = "0.7.2"
 jqwik = "1.7.3"
@@ -37,6 +38,7 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jackson3-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson3" }
 jakarta-el3 = "org.glassfish:jakarta.el:3.0.4"
 jakarta-el4 = "org.glassfish:jakarta.el:4.0.2"
 jakarta-validation-api = "jakarta.validation:jakarta.validation-api:3.0.2"
