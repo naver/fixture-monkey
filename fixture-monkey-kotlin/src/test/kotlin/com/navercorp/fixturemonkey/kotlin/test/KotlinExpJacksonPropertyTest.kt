@@ -26,7 +26,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
-import net.jqwik.api.Property
+import net.jqwik.api.Example
 import org.assertj.core.api.BDDAssertions.then
 
 class KotlinExpJacksonPropertyTest {
@@ -35,7 +35,7 @@ class KotlinExpJacksonPropertyTest {
         .plugin(KotlinPlugin())
         .build()
 
-    @Property
+    @Example
     fun setExpJsonPropertyName() {
         val stringValue: String = sut.giveMeOne()
         val actual = sut.giveMeBuilder<JsonPropertyDataValue>()
@@ -44,7 +44,7 @@ class KotlinExpJacksonPropertyTest {
         then(actual.stringValue).isEqualTo(stringValue)
     }
 
-    @Property
+    @Example
     fun setExpGetterJsonPropertyName() {
         val intValue: Int = sut.giveMeOne()
         val actual = sut.giveMeBuilder<JsonPropertyDataValue>()

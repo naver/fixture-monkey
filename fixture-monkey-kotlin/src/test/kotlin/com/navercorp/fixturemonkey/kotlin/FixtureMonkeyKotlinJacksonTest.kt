@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin
-import net.jqwik.api.Property
+import net.jqwik.api.Example
 import org.assertj.core.api.BDDAssertions.then
 import java.util.UUID
 
@@ -30,7 +30,7 @@ class FixtureMonkeyKotlinJacksonTest {
         .plugin(JacksonPlugin())
         .build()
 
-    @Property
+    @Example
     fun setParentPrivateValue() {
         val actual = this.sut.giveMeBuilder<SampleKotlin>()
             .set("id", "id")

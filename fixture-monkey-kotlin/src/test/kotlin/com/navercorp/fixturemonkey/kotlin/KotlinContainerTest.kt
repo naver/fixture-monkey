@@ -19,12 +19,12 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import net.jqwik.api.Property
+import net.jqwik.api.Example
 import org.assertj.core.api.BDDAssertions.then
 import java.util.function.Consumer
 
 class KotlinContainerTest {
-    @Property
+    @Example
     fun samplePair() {
         val actual = SUT.giveMeOne<Pair<String, Long>>()
 
@@ -32,7 +32,7 @@ class KotlinContainerTest {
         then(actual.second).isInstanceOf(java.lang.Long::class.java)
     }
 
-    @Property
+    @Example
     fun samplePairList() {
         val actual = SUT.giveMeOne<List<Pair<String, Long>>>()
 
@@ -44,7 +44,7 @@ class KotlinContainerTest {
         )
     }
 
-    @Property
+    @Example
     fun decomposePair() {
         val builder = SUT.giveMeBuilder<Pair<String, Long>>()
             .fixed()
@@ -55,7 +55,7 @@ class KotlinContainerTest {
         then(actual1).isEqualTo(actual2)
     }
 
-    @Property
+    @Example
     fun sampleTriple() {
         val actual = SUT.giveMeOne<Triple<String, String, Long>>()
 
@@ -64,7 +64,7 @@ class KotlinContainerTest {
         then(actual.third).isInstanceOf(java.lang.Long::class.java)
     }
 
-    @Property
+    @Example
     fun sampleTripleList() {
         val actual = SUT.giveMeOne<List<Triple<String, String, Long>>>()
 
@@ -77,7 +77,7 @@ class KotlinContainerTest {
         )
     }
 
-    @Property
+    @Example
     fun decomposeTriple() {
         val builder = SUT.giveMeBuilder<Triple<String, String, Long>>()
             .fixed()

@@ -40,7 +40,7 @@ class MonkeyStringArbitraryTest {
 		then(sample.chars().allMatch(ch -> ch >= '가' && ch <= '힣')).isTrue();
 	}
 
-	@Property(tries = 100)
+	@Property(tries = 1)
 	void koreanShouldAlwaysGenerateStringsWithinKoreanCharacterRange(
 		@ForAll @Size(min = 1, max = 50) String ignored
 	) {

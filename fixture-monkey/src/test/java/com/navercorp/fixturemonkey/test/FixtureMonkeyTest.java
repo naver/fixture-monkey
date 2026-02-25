@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Property;
+import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
@@ -84,7 +84,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
 class FixtureMonkeyTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.create();
 
-	@Property
+	@Example
 	void sampleWithType() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class).sample();
@@ -95,7 +95,7 @@ class FixtureMonkeyTest {
 		then(actual.getMapEntry()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleWithTypeReference() {
 		TypeReference<ComplexObject> type = new TypeReference<ComplexObject>() {
 		};
@@ -109,7 +109,7 @@ class FixtureMonkeyTest {
 		then(actual.getMapEntry()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void set() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -120,7 +120,7 @@ class FixtureMonkeyTest {
 		then(actual.getStr()).isEqualTo("str");
 	}
 
-	@Property
+	@Example
 	void setDecomposedValue() {
 		// given
 		SimpleObject expected = new SimpleObject();
@@ -140,7 +140,7 @@ class FixtureMonkeyTest {
 		then(actual.getStr()).isEqualTo("str");
 	}
 
-	@Property
+	@Example
 	void setArbitrary() {
 		// given
 		SimpleObject expected = new SimpleObject();
@@ -160,7 +160,7 @@ class FixtureMonkeyTest {
 		then(actual.getStr()).isEqualTo("str");
 	}
 
-	@Property
+	@Example
 	void setOptional() {
 		// given
 		Optional<String> optional = Optional.of("test");
@@ -175,7 +175,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(optional);
 	}
 
-	@Property
+	@Example
 	void setDecomposedList() {
 		// given
 		List<String> expected = new ArrayList<>();
@@ -194,7 +194,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedSet() {
 		// given
 		Set<String> expected = new HashSet<>();
@@ -213,7 +213,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedMap() {
 		// given
 		Map<String, SimpleObject> expected = new HashMap<>();
@@ -232,7 +232,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedMapEntry() {
 		// given
 		Map.Entry<String, SimpleObject> expected = new SimpleEntry<>("a", new SimpleObject());
@@ -246,7 +246,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedOptional() {
 		// given
 		Optional<String> expected = Optional.of("test");
@@ -260,7 +260,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedOptionalEmpty() {
 		// given
 		Optional<String> expected = Optional.empty();
@@ -274,7 +274,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedOptionalInt() {
 		// given
 		OptionalInt expected = OptionalInt.of(0);
@@ -288,7 +288,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedOptionalLong() {
 		// given
 		OptionalLong expected = OptionalLong.of(0L);
@@ -302,7 +302,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedOptionalDouble() {
 		// given
 		OptionalDouble expected = OptionalDouble.of(0.d);
@@ -316,7 +316,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setDecomposedSupplier() {
 		// given
 		Supplier<String> expected = () -> "test";
@@ -330,7 +330,7 @@ class FixtureMonkeyTest {
 		then(actual.get()).isEqualTo(expected.get());
 	}
 
-	@Property
+	@Example
 	void setDecomposedNestedStrSupplier() {
 		// given
 		Supplier<Supplier<String>> expected = () -> () -> "test";
@@ -344,7 +344,7 @@ class FixtureMonkeyTest {
 		then(actual.get()).isEqualTo(expected.get());
 	}
 
-	@Property
+	@Example
 	void setAllFields() {
 		// when
 		StringPair actual = SUT.giveMeBuilder(StringPair.class)
@@ -355,7 +355,7 @@ class FixtureMonkeyTest {
 		then(actual.getValue2()).isEqualTo("str");
 	}
 
-	@Property
+	@Example
 	void sizeZero() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -366,7 +366,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrList()).hasSize(0);
 	}
 
-	@Property
+	@Example
 	void size() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -377,7 +377,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrList()).hasSize(10);
 	}
 
-	@Property
+	@Example
 	void sizeArray() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -388,7 +388,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrArray()).hasSize(10);
 	}
 
-	@Property
+	@Example
 	void sizeMinMax() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -399,7 +399,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrList()).hasSizeBetween(3, 8);
 	}
 
-	@Property
+	@Example
 	void sizeMinIsBiggerThanMax() {
 		// when
 		thenThrownBy(() ->
@@ -410,7 +410,7 @@ class FixtureMonkeyTest {
 			.hasMessageContaining("should be min > max");
 	}
 
-	@Property
+	@Example
 	void minSize() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -421,7 +421,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrList()).hasSizeGreaterThanOrEqualTo(10);
 	}
 
-	@Property
+	@Example
 	void maxSize() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -432,7 +432,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrList()).hasSizeLessThanOrEqualTo(10);
 	}
 
-	@Property
+	@Example
 	void maxSizeZero() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -443,7 +443,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrList()).hasSizeLessThanOrEqualTo(0);
 	}
 
-	@Property(tries = 1)
+	@Example
 	void notFixedSampleReturnsDiff() {
 		// when
 		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class);
@@ -454,7 +454,7 @@ class FixtureMonkeyTest {
 		then(sample1).isNotEqualTo(sample2);
 	}
 
-	@Property
+	@Example
 	void fixedSampleReturnsSame() {
 		// when
 		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
@@ -466,7 +466,7 @@ class FixtureMonkeyTest {
 		then(sample1).isEqualTo(sample2);
 	}
 
-	@Property
+	@Example
 	void arbitraryFixedSampleReturnsSame() {
 		// when
 		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
@@ -479,7 +479,7 @@ class FixtureMonkeyTest {
 		then(sample1).isEqualTo(sample2);
 	}
 
-	@Property
+	@Example
 	void apply() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -495,7 +495,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Example
 	void applyWithoutAnyManipulators() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -512,7 +512,7 @@ class FixtureMonkeyTest {
 		then(actualStrList.get(0)).isEqualTo(actualStr);
 	}
 
-	@Property
+	@Example
 	void applyNotAffectedManipulatorsAfterApply() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -529,7 +529,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Example
 	void acceptIfAlwaysTrue() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -543,7 +543,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Example
 	void acceptIf() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -561,7 +561,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Example
 	void setRootJavaType() {
 		// given
 		String expected = "test";
@@ -574,7 +574,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setRootComplexType() {
 		ComplexObject expected = new ComplexObject();
 		expected.setStr("test");
@@ -587,7 +587,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setWithLimit() {
 		// when
 		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -601,7 +601,7 @@ class FixtureMonkeyTest {
 		then(actual).anyMatch(it -> !"test".equals(it));
 	}
 
-	@Property
+	@Example
 	void setNull() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -613,7 +613,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setNullList() {
 		// when
 		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -625,7 +625,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setNullMap() {
 		// when
 		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -637,7 +637,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setNullMapEntry() {
 		// when
 		Map.Entry<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -649,7 +649,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setNullSupplier() {
 		// when
 		Supplier<String> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -661,7 +661,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setNotNullString() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -673,7 +673,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setNotNullList() {
 		// when
 		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -685,7 +685,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setNotNullMap() {
 		// when
 		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -697,7 +697,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setNotNullMapEntry() {
 		// when
 		Map.Entry<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -709,7 +709,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setNotNullSupplier() {
 		// when
 		Supplier<String> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -721,7 +721,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setPostCondition() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -733,7 +733,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSizeGreaterThan(5);
 	}
 
-	@Property
+	@Example
 	void setPostConditionRoot() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -745,7 +745,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSizeGreaterThan(5);
 	}
 
-	@Property
+	@Example
 	void setPostConditionWrongTypeThrows() {
 		thenThrownBy(
 			() -> SUT.giveMeBuilder(ComplexObject.class)
@@ -755,7 +755,7 @@ class FixtureMonkeyTest {
 			.hasMessageContaining("Wrong type filter is applied.");
 	}
 
-	@Property
+	@Example
 	void mapWhenNull() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -766,7 +766,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void mapWhenNotNull() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -777,7 +777,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void mapToFixedValue() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -787,7 +787,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Property
+	@Example
 	void mapKeyIsNotNull() {
 		// when
 		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Map<String, String>>() {
@@ -798,7 +798,7 @@ class FixtureMonkeyTest {
 		then(actual).allMatch(Objects::nonNull);
 	}
 
-	@Property(tries = 1)
+	@Example
 	void sampleAfterMapTwiceReturnsDiff() {
 		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))
@@ -812,7 +812,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotEqualTo(notExpected);
 	}
 
-	@Property
+	@Example
 	void giveMeBuilderWithValue() {
 		SimpleObject expected = new SimpleObject();
 		expected.setStr("test");
@@ -824,7 +824,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void zipList() {
 		// given
 		List<ArbitraryBuilder<?>> list = new ArrayList<>();
@@ -846,7 +846,7 @@ class FixtureMonkeyTest {
 		then(actual.getValue2()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void zipEmptyListThrows() {
 		// given
 		List<ArbitraryBuilder<?>> list = new ArrayList<>();
@@ -860,7 +860,7 @@ class FixtureMonkeyTest {
 			.hasMessageContaining("zip should be used in more than two ArbitraryBuilders, given size");
 	}
 
-	@Property
+	@Example
 	void zipThree() {
 		// given
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
@@ -888,7 +888,7 @@ class FixtureMonkeyTest {
 		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
 	}
 
-	@Property
+	@Example
 	void zipWithThree() {
 		// given
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
@@ -916,7 +916,7 @@ class FixtureMonkeyTest {
 		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
 	}
 
-	@Property
+	@Example
 	void zipFour() {
 		// given
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
@@ -948,7 +948,7 @@ class FixtureMonkeyTest {
 		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
 	}
 
-	@Property
+	@Example
 	void zipWithFour() {
 		// given
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
@@ -980,7 +980,7 @@ class FixtureMonkeyTest {
 		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
 	}
 
-	@Property
+	@Example
 	void zipWith() {
 		// given
 		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
@@ -993,7 +993,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void zipTwo() {
 		// given
 		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
@@ -1009,7 +1009,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void zipReturnsNew() {
 		// given
 		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
@@ -1028,7 +1028,7 @@ class FixtureMonkeyTest {
 		then(result1).isNotEqualTo(result2);
 	}
 
-	@Property(tries = 10)
+	@Example
 	void supplierReturnsNew() {
 		// given
 		TypeReference<Supplier<String>> supplierTypeReference = new TypeReference<Supplier<String>>() {
@@ -1044,7 +1044,7 @@ class FixtureMonkeyTest {
 		then(result1).isNotEqualTo(result2);
 	}
 
-	@Property
+	@Example
 	void setNullFixedReturnsNull() {
 		// when
 		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
@@ -1055,7 +1055,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setNullFixedAndNotNullReturnsNotNull() {
 		// when
 		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
@@ -1067,7 +1067,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setListElement() {
 		String expected = "test";
 
@@ -1081,7 +1081,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void sizeSmallerRemains() {
 		String expected = "test";
 
@@ -1097,7 +1097,7 @@ class FixtureMonkeyTest {
 		then(actual.get(0)).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void applySetElementNull() {
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
 			.thenApply((obj, builder) -> builder.size("strList", 1)
@@ -1110,7 +1110,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setAndSetNull() {
 		// when
 		String actual = SUT.giveMeBuilder(SimpleObject.class)
@@ -1122,7 +1122,7 @@ class FixtureMonkeyTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Example
 	void setAfterBuildNotAffected() {
 		// given
 		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class);
@@ -1138,7 +1138,7 @@ class FixtureMonkeyTest {
 		then(actualSample.getStr()).isEqualTo("set");
 	}
 
-	@Property(tries = 1)
+	@Example
 	void applySampleTwiceReturnsDiff() {
 		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class)
 			.thenApply((obj, b) -> {
@@ -1150,7 +1150,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setPrimitiveToReference() {
 		// when
 		int integer = SUT.giveMeBuilder(SimpleObject.class)
@@ -1161,7 +1161,7 @@ class FixtureMonkeyTest {
 		then(integer).isEqualTo(1234);
 	}
 
-	@Property
+	@Example
 	void setReferenceToPrimitive() {
 		// when
 		int integer = SUT.giveMeBuilder(SimpleObject.class)
@@ -1172,7 +1172,7 @@ class FixtureMonkeyTest {
 		then(integer).isEqualTo(1234);
 	}
 
-	@Property
+	@Example
 	void copyValidOnly() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeBuilder(ListStringObject.class)
@@ -1182,7 +1182,7 @@ class FixtureMonkeyTest {
 				.sample());
 	}
 
-	@Property
+	@Example
 	void generatePrimitiveArray() {
 		// when
 		int[] actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -1193,7 +1193,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setFieldWhichObjectIsFixedNull() {
 		String expected = "test";
 
@@ -1207,7 +1207,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setFieldWhichRootIsFixedNull() {
 		String expected = "test";
 
@@ -1220,7 +1220,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setLazyValue() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
@@ -1232,7 +1232,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Property
+	@Example
 	void setLazyValueWithLimit() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 
@@ -1248,7 +1248,7 @@ class FixtureMonkeyTest {
 		then(actual).anyMatch(it -> !"test".equals(it));
 	}
 
-	@Property(tries = 1)
+	@Example
 	void setLazyValueSampleReturnsDifferentValue() {
 		// when
 		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
@@ -1259,7 +1259,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setArbitraryBuilder() {
 		String expected = "test";
 
@@ -1271,7 +1271,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void giveMeListTypeApply() {
 		// when
 		SimpleObject actual = SUT.giveMeBuilder(new TypeReference<List<SimpleObject>>() {
@@ -1284,7 +1284,7 @@ class FixtureMonkeyTest {
 		then(actual.getStr()).isEqualTo(actual.getInteger() + "");
 	}
 
-	@Property
+	@Example
 	void setIterable() {
 		String expected = "test";
 
@@ -1296,7 +1296,7 @@ class FixtureMonkeyTest {
 		then(actual.iterator().next()).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setIterator() {
 		String expected = "test";
 
@@ -1308,7 +1308,7 @@ class FixtureMonkeyTest {
 		then(actual.next()).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void setStream() {
 		String expected = "test";
 
@@ -1320,7 +1320,7 @@ class FixtureMonkeyTest {
 		then(actual.collect(Collectors.toList()).get(0)).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void sampleListWildcardEnum() {
 		// when
 		List<? extends EnumObject> actual = SUT.giveMeOne(new TypeReference<List<? extends EnumObject>>() {
@@ -1329,7 +1329,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void fixedRangedSizeReturnsSameSize() {
 		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
 			.size("strList", 1, 5)
@@ -1345,7 +1345,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void giveMeManipulatedObjectRemainsManipulator() {
 		ListStringObject expected = SUT.giveMeBuilder(ListStringObject.class)
 			.size("values", 2, 2)
@@ -1358,13 +1358,13 @@ class FixtureMonkeyTest {
 		then(actual.getValues().get(1)).isEqualTo("test");
 	}
 
-	@Property
+	@Example
 	void sampleNotGeneratingStaticField() {
 		// when, then
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(StaticFieldObject.class));
 	}
 
-	@Property
+	@Example
 	void setDecomposeContainerTwice() {
 		List<String> strings = new ArrayList<>();
 		strings.add("test");
@@ -1378,7 +1378,7 @@ class FixtureMonkeyTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Example
 	void setEmptyMap() {
 		Map<String, SimpleObject> map = new HashMap<>();
 		map.put("test", new SimpleObject());
@@ -1392,7 +1392,7 @@ class FixtureMonkeyTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Example
 	void sampleEnumSet() {
 		// when
 		Set<TwoEnum> actual = SUT.giveMeOne(new TypeReference<Set<TwoEnum>>() {
@@ -1401,7 +1401,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Property
+	@Example
 	void setNullFixed() {
 		String expected = "test";
 
@@ -1417,7 +1417,7 @@ class FixtureMonkeyTest {
 
 	}
 
-	@Property
+	@Example
 	void applyFixedSize() {
 		String expectedElement = "test";
 
@@ -1430,7 +1430,7 @@ class FixtureMonkeyTest {
 		then(actual).allMatch(expectedElement::equals);
 	}
 
-	@Property
+	@Example
 	void sizeNotSetEmptyList() {
 		// when
 		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -1442,7 +1442,7 @@ class FixtureMonkeyTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Example
 	void sampleNullableContainerReturnsNotNull() {
 		// when
 		List<String> values = SUT.giveMeOne(NullableObject.class)
@@ -1451,7 +1451,7 @@ class FixtureMonkeyTest {
 		then(values).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleUniqueSet() {
 		// when
 		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
@@ -1462,7 +1462,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSize(200);
 	}
 
-	@Property
+	@Example
 	void sampleUniqueMap() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(new TypeReference<Map<String, String>>() {
@@ -1473,7 +1473,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSize(200);
 	}
 
-	@Property
+	@Example
 	void sampleEnumMap() {
 		Map<TwoEnum, String> values = SUT.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
 		});
@@ -1481,7 +1481,7 @@ class FixtureMonkeyTest {
 		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Property
+	@Example
 	void sizeEnumSetGreaterThanEnumSizeNotThrows() {
 		Set<TwoEnum> actual = SUT.giveMeBuilder(new TypeReference<Set<TwoEnum>>() {
 			})
@@ -1491,7 +1491,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSize(2);
 	}
 
-	@Property
+	@Example
 	void sizeEnumMapGreaterThanEnumSizeNotThrows() {
 		Map<TwoEnum, String> actual = SUT.giveMeBuilder(new TypeReference<Map<TwoEnum, String>>() {
 			})
@@ -1501,7 +1501,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSize(2);
 	}
 
-	@Property
+	@Example
 	void sampleEnumMapInMap() {
 		thenNoException().isThrownBy(
 			() -> SUT.giveMeOne(
@@ -1510,7 +1510,7 @@ class FixtureMonkeyTest {
 		);
 	}
 
-	@Property
+	@Example
 	void setInterface() {
 		InterfaceImplementation expected = new InterfaceImplementation();
 		expected.setValue("test");
@@ -1523,7 +1523,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Example
 	void sampleEnumSetList() {
 		thenNoException().isThrownBy(
 			() -> SUT.giveMeBuilder(new TypeReference<List<Set<TwoEnum>>>() {
@@ -1533,7 +1533,7 @@ class FixtureMonkeyTest {
 		);
 	}
 
-	@Property
+	@Example
 	void sampleSupplier() {
 		Supplier<String> actual = SUT.giveMeBuilder(new TypeReference<Supplier<String>>() {
 			})
@@ -1543,7 +1543,7 @@ class FixtureMonkeyTest {
 		then(actual.get()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleNestedStrSupplier() {
 		Supplier<Supplier<String>> actual = SUT.giveMeBuilder(new TypeReference<Supplier<Supplier<String>>>() {
 			})
@@ -1554,7 +1554,7 @@ class FixtureMonkeyTest {
 		then(actual.get().get()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleSelfRecursiveObject() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -1567,7 +1567,7 @@ class FixtureMonkeyTest {
 		then(actual.getRecursive().getValue()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleSelfRecursiveList() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -1579,7 +1579,7 @@ class FixtureMonkeyTest {
 		then(actual.getRecursives()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleRecursiveSupplier() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -1592,7 +1592,7 @@ class FixtureMonkeyTest {
 		then(actual.getRecursive().get()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleRecursiveObject() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -1605,7 +1605,7 @@ class FixtureMonkeyTest {
 		then(actual.getRecursive().getValue()).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleGeneric() {
 		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<String>>() {
 			})
@@ -1616,7 +1616,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleGenericWildcardExtends() {
 		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<? extends String>>() {
 			})
@@ -1627,14 +1627,14 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleStringGenericField() {
 		GenericStringWrapperValue actual = SUT.giveMeOne(GenericStringWrapperValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleGenericField() {
 		GenericWrapperValue<String> actual = SUT.giveMeOne(new TypeReference<GenericWrapperValue<String>>() {
 		});
@@ -1642,42 +1642,42 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleGenericChild() {
 		GenericChildValue actual = SUT.giveMeOne(GenericChildValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleTwoGenericChild() {
 		GenericChildTwoValue actual = SUT.giveMeOne(GenericChildTwoValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleObjectField() {
 		ObjectValue actual = SUT.giveMeOne(ObjectValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleChildValue() {
 		ChildValue actual = SUT.giveMeOne(ChildValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void sampleWildcard() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<List<? extends SimpleObject>>() {
 			}));
 	}
 
-	@Property
+	@Example
 	void nestedSize() {
 		// when
 		List<List<String>> actual = SUT.giveMeBuilder(new TypeReference<List<List<String>>>() {
@@ -1691,21 +1691,21 @@ class FixtureMonkeyTest {
 		then(actual.get(0)).hasSize(10);
 	}
 
-	@Property
+	@Example
 	void sampleMapValueWildcardListString() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<Map<String, ? extends List<String>>>() {
 			}));
 	}
 
-	@Property
+	@Example
 	void sampleGenericSimpleObject() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<GenericSimpleObject>() {
 			}));
 	}
 
-	@Property
+	@Example
 	void sizeThirdNestedNested() {
 		List<String> actual = SUT.giveMeBuilder(ThirdNestedListStringObject.class)
 			.size("values", 1)
@@ -1721,7 +1721,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSize(1);
 	}
 
-	@Property
+	@Example
 	void sizeAfterSetReturnsSet() {
 		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
 			})
@@ -1732,7 +1732,7 @@ class FixtureMonkeyTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Example
 	void sizeAfterSetEmptyListReturnsSized() {
 		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
 			})
@@ -1743,7 +1743,7 @@ class FixtureMonkeyTest {
 		then(actual).hasSize(3);
 	}
 
-	@Property
+	@Example
 	void greaterSizeAfterSetReturnsSizeRemainsSet() {
 		List<String> set = new ArrayList<>();
 		set.add("1");
@@ -1758,7 +1758,7 @@ class FixtureMonkeyTest {
 		then(actual.get(0)).isEqualTo("1");
 	}
 
-	@Property
+	@Example
 	void smallerSizeAfterSetReturnsSizeRemainsSet() {
 		List<String> set = new ArrayList<>();
 		set.add("1");
@@ -1779,7 +1779,7 @@ class FixtureMonkeyTest {
 		then(actual.get(2)).isEqualTo("3");
 	}
 
-	@Property
+	@Example
 	void setNotNull() {
 		String actual = SUT.giveMeBuilder(SimpleObject.class)
 			.set("str", NOT_NULL)
@@ -1789,7 +1789,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setNotNullZoneId() {
 		ZoneId actual = SUT.giveMeBuilder(SimpleObject.class)
 			.setNotNull("zoneId")
@@ -1799,7 +1799,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Example
 	void setJustSubPropertyNotChanged() {
 		String notExpected = "test";
 
@@ -1812,7 +1812,7 @@ class FixtureMonkeyTest {
 		then(actual).isNotEqualTo(notExpected);
 	}
 
-	@Property
+	@Example
 	void setPostConditionPrimitiveType() {
 		int actual = SUT.giveMeBuilder(SimpleObject.class)
 			.setPostCondition("integer", Integer.class, i -> i > 0)
@@ -1822,7 +1822,7 @@ class FixtureMonkeyTest {
 		then(actual).isGreaterThan(0);
 	}
 
-	@Property
+	@Example
 	void setSupplierObjectField() {
 		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
 			})
@@ -1834,7 +1834,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("expected");
 	}
 
-	@Property
+	@Example
 	void setNestedSupplierObjectField() {
 		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<Supplier<SimpleObject>>>() {
 			})
@@ -1847,7 +1847,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("expected");
 	}
 
-	@Property
+	@Example
 	void setSupplierObjectFieldUsingRootExp() {
 		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
 			})
@@ -1859,7 +1859,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("expected");
 	}
 
-	@Property
+	@Example
 	void setOptionalObjectField() {
 		String actual = SUT.giveMeBuilder(new TypeReference<Optional<SimpleObject>>() {
 			})
@@ -1871,7 +1871,7 @@ class FixtureMonkeyTest {
 		then(actual).isEqualTo("expected");
 	}
 
-	@Property
+	@Example
 	void setOptionalObjectFieldUsingRootExp() {
 		String actual = SUT.giveMeBuilder(new TypeReference<Optional<SimpleObject>>() {
 			})
