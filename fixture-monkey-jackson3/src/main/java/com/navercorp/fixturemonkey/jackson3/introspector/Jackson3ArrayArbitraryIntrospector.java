@@ -18,6 +18,17 @@
 
 package com.navercorp.fixturemonkey.jackson3.introspector;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.ArrayType;
+import tools.jackson.databind.type.TypeFactory;
+
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
@@ -27,15 +38,6 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson3.FixtureMonkeyJackson3;
 import com.navercorp.fixturemonkey.jackson3.type.Jackson3TypeReference;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-import tools.jackson.databind.JavaType;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.type.ArrayType;
-import tools.jackson.databind.type.TypeFactory;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public final class Jackson3ArrayArbitraryIntrospector implements ArbitraryIntrospector, Matcher {

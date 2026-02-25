@@ -18,25 +18,7 @@
 
 package com.navercorp.fixturemonkey.jackson3.introspector;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
-import com.navercorp.fixturemonkey.api.property.*;
-import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.jackson3.FixtureMonkeyJackson3;
-import com.navercorp.fixturemonkey.jackson3.type.Jackson3TypeReference;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-import tools.jackson.databind.JavaType;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.type.TypeFactory;
+import static com.navercorp.fixturemonkey.jackson3.property.Jackson3Annotations.getJacksonAnnotation;
 
 import java.lang.reflect.Type;
 import java.time.ZoneId;
@@ -47,7 +29,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.navercorp.fixturemonkey.jackson3.property.Jackson3Annotations.getJacksonAnnotation;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.TypeFactory;
+
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.property.CompositeProperty;
+import com.navercorp.fixturemonkey.api.property.ConstructorProperty;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.jackson3.FixtureMonkeyJackson3;
+import com.navercorp.fixturemonkey.jackson3.type.Jackson3TypeReference;
 
 @API(since = "1.1.0", status = Status.EXPERIMENTAL)
 public final class Jackson3ObjectArbitraryIntrospector implements ArbitraryIntrospector {

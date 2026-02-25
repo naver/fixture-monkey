@@ -18,11 +18,12 @@
 
 package com.navercorp.fixturemonkey.jackson3.introspector;
 
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import java.util.function.Function;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import java.util.function.Function;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
 /**
  * It is a {@link CombinableArbitrary} for Jackson library.

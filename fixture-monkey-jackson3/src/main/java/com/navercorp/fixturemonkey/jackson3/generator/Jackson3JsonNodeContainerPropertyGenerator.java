@@ -37,7 +37,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public final class Jackson3JsonNodeContainerPropertyGenerator implements ContainerPropertyGenerator {
-	public static final Jackson3JsonNodeContainerPropertyGenerator INSTANCE = new Jackson3JsonNodeContainerPropertyGenerator();
+	public static final Jackson3JsonNodeContainerPropertyGenerator INSTANCE =
+		new Jackson3JsonNodeContainerPropertyGenerator();
 	private static final TypeReference<String> KEY_VALUE_TYPE = new TypeReference<>() {
 	};
 
