@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.jackson3.property;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -30,7 +28,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public final class Jackson3PropertyNameResolver implements PropertyNameResolver {
-	@Nullable
+	@SuppressWarnings("methodref.return")
 	@Override
 	public String resolve(Property property) {
 		return property.getAnnotation(JsonProperty.class)
