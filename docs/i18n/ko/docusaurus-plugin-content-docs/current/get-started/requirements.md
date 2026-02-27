@@ -41,7 +41,7 @@ Gradle 9 이전은 런타임 의존성이 없어도 동작하나 Gradle 9부터 
 
 ```groovy
 testRuntimeOnly("org.junit.platform:junit-platform-launcher:{version}")
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.16")
 ```
 
 #### Maven
@@ -51,7 +51,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.15")
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>1.1.15
+    <version>1.1.16
     </version>
     <scope>test</scope>
 </dependency>

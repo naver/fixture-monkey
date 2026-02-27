@@ -42,7 +42,7 @@ class ObjectFarmMavenPublishConventionsPlugin : Plugin<Project> {
                 register<MavenPublication>("objectFarmApi") {
                     from(project.components["java"])
 
-                    val objectFarmVersion = "0.0.1"
+                    val objectFarmVersion = "0.0.2"
                     version = objectFarmVersion
 
                     pom {

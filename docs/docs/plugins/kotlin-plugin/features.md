@@ -20,7 +20,7 @@ Use **fixture-monkey-starter-kotlin** for new projects. It includes `fixture-mon
 
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.16")
 ```
 
 #### Maven
@@ -28,7 +28,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-starter-kotlin</artifactId>
-  <version>1.1.15</version>
+  <version>1.1.16</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -36,7 +36,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 If you only need the core Kotlin support without the starter bundle:
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:1.1.16")
 ```
 
 ## Plugin Setup
