@@ -6,7 +6,7 @@ weight = 10
 [[docs]]
 name = "Introduction"
 weight = 10
-identifier = "get-started"
+identifier = "introduction"
 url = "/docs/introduction/"
 
 [[docs]]

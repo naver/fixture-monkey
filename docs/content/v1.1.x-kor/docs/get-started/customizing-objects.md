@@ -4,7 +4,7 @@ weight: 26
 menu:
 docs:
 parent: "get-started"
-identifier: "customizing objects"
+identifier: "customizing-objects"
 ---
 
 Fixture Monkey를 사용하면 테스트 요구사항에 맞게 테스트 객체를 커스터마이즈할 수 있습니다. 실제 예제를 통해 살펴보겠습니다.

@@ -4,7 +4,7 @@ weight: 26
 menu:
 docs:
 parent: "get-started"
-identifier: "customizing objects"
+identifier: "customizing-objects"
 ---
 
 Fixture Monkey allows you to customize test objects to match your specific test requirements. Let's see how it works with a real-world example.

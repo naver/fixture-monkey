@@ -49,7 +49,7 @@ noUgly = true
 rel  = "sitemap"
 
 [caches]
-  [caches.getjson]
+  [caches.getresource]
     dir = ":cacheDir/:project"
     maxAge = "10s"
 

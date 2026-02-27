@@ -4,7 +4,7 @@ weight: 25
 menu:
 docs:
 parent: "get-started"
-identifier: "customizing objects"
+identifier: "customizing-objects"
 ---
 
 특정 단위 테스트에 맞게 테스트 픽스처를 조정해야할 수 있습니다.

@@ -33,4 +33,5 @@ out/
 node_modules
 resources
 docs/.netlify
+docs/public
 .hugo_build.lock

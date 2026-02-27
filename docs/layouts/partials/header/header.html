@@ -81,7 +81,7 @@
 
           {{ with .Site }}
             {{ with .Language }}
-              {{ if and (eq .Lang "v1-0-0") .Params.options.flexSearch }}
+              {{ if .Params.options.flexSearch }}
                 {{ if and (isset .Params.options "searchsectionsshow") (not (eq .Params.options.searchSectionsShow "ALL")) }}
                   {{ if or (eq (len .Params.options.searchSectionsShow) 0) (in .Params.options.searchSectionsShow .Section) (and .IsHome (in .Params.options.searchSectionsShow "HomePage")) }}
                     {{- $showFlexSearch = true -}}

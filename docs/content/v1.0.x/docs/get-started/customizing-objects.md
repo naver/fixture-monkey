@@ -4,7 +4,7 @@ weight: 25
 menu:
 docs:
 parent: "get-started"
-identifier: "customizing objects"
+identifier: "customizing-objects"
 ---
 
 Suppose you need to customize your test fixture for a specific unit test.

@@ -3,6 +3,48 @@ name = "문서"
 url = "/docs/introduction/overview/"
 weight = 10
 
+[[docs]]
+name = "소개"
+weight = 10
+identifier = "introduction"
+url = "/docs/introduction/"
+
+[[docs]]
+name = "시작하기"
+weight = 20
+identifier = "get-started"
+url = "/docs/get-started/"
+
+[[docs]]
+name = "객체 생성"
+weight = 30
+identifier = "generating-objects"
+url = "/docs/generating-objects/"
+
+[[docs]]
+name = "객체 커스터마이징"
+weight = 40
+identifier = "customizing-objects"
+url = "/docs/customizing-objects/"
+
+[[docs]]
+name = "옵션"
+weight = 50
+identifier = "fixture-monkey-options"
+url = "/docs/fixture-monkey-options/"
+
+[[docs]]
+name = "플러그인"
+weight = 60
+identifier = "plugins"
+url = "/docs/plugins/"
+
+[[docs]]
+name = "IntelliJ 플러그인"
+weight = 70
+identifier = "intellij-plugin"
+url = "/docs/intellij-plugin/"
+
 [[main]]
 name = "릴리즈 노트"
 weight = 20

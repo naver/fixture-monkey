@@ -25,7 +25,7 @@
   package = "netlify-plugin-submit-sitemap"
 
 	[plugins.inputs]
-    baseUrl = "https://doks.netlify.app/"
+    baseUrl = "https://naver.github.io/fixture-monkey/"
     sitemapPath = "/sitemap.xml"
     ignorePeriod = 0
     providers = [

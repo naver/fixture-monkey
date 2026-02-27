@@ -28,15 +28,6 @@
     languageTag = "ko-KR"
     getStartedPage = "/v1-0-0-kor/docs/get-started/requirements/"
 
-[v0-6-0-kor]
-  languageName = "v0.6.x"
-  contentDir = "content/v0.6.x-kor"
-  weight = 20
-  translation = false
-  [v0-6-0-kor.params]
-    languageISO = "KOR"
-    languageTag = "ko-KR"
-    getStartedPage = "/v0-6-0/docs/getting-started/java/"
 
 [v1-1-0]
 languageName = "v1.1.x"

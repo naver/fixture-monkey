@@ -7,7 +7,7 @@ titleAddition = ""
 description = ""
 
 ## Documentation
-docsVersion = "1.0.0"
+docsVersion = "1.1.0"
 fixtureMonkeyVersion = "1.1.15"
 
 ## Open Graph
@@ -23,21 +23,21 @@ titleHome = "Fixture Monkey Document"
 ## JSON-LD
 # schemaType = "Person"
 schemaType = "Organization"
-schemaName = "Doks"
-schemaAuthor = "Henk Verlinde"
-schemaAuthorTwitter = "https://twitter.com/henkverlinde"
-schemaAuthorLinkedIn = "https://www.linkedin.com/in/henkverlinde/"
-schemaAuthorGitHub = "https://github.com/h-enk"
+schemaName = "Fixture Monkey"
+schemaAuthor = "Naver Corp."
+schemaAuthorTwitter = ""
+schemaAuthorLinkedIn = ""
+schemaAuthorGitHub = "https://github.com/naver"
 schemaLocale = "en-US"
-schemaLogo = "logo-doks.png"
+schemaLogo = "fixtureMonkey.png"
 schemaLogoWidth = 512
 schemaLogoHeight = 512
-schemaImage = "doks.png"
+schemaImage = "fixtureMonkey.png"
 schemaImageWidth = 1280
 schemaImageHeight = 640
-schemaTwitter = "https://twitter.com/getdoks"
+schemaTwitter = ""
 schemaLinkedIn = ""
-schemaGitHub = "https://github.com/h-enk/doks"
+schemaGitHub = "https://github.com/naver/fixture-monkey"
 schemaSection = "blog"
 
 ## Sitelinks Search Box
@@ -69,7 +69,7 @@ fillImage = "1270x740 Center" # normalize image size
 footer = ""
 
 # Feed
-copyRight = "Copyright (c) 2020-2021 Henk Verlinde"
+copyRight = "Copyright (c) 2021-present Naver Corp."
 
 # Alert
 alert = false
@@ -81,8 +81,8 @@ alertText = "Introducing the Doks child theme, several DX + UX updates, and more
 # repoHost [Github | Gitea | GitLab | Bitbucket | BitbucketServer ] is used for building the edit link based on git hoster
 repoHost = "GitHub"
 #repoHost = "Gitea"
-docsRepo = "https://github.com/h-enk/doks"
-docsRepoBranch = "master"
+docsRepo = "https://github.com/naver/fixture-monkey"
+docsRepoBranch = "main"
 docsRepoSubPath = ""
 editPage = false
 lastMod = false
@@ -114,5 +114,3 @@ lastMod = false
     auto = true
     collapsibleSidebar = true
 
-[[params.versions]]
-version = "1.1.15"
