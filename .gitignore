@@ -31,7 +31,6 @@ out/
 
 ### Doc ###
 node_modules
-resources
-docs/.netlify
-docs/public
-.hugo_build.lock
+docs/build
+docs/.docusaurus
+docs/.cache-loader

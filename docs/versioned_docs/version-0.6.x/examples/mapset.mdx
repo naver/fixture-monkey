@@ -1,0 +1,132 @@
+---
+title: "Setting Map"
+sidebar_position: 26
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+:::tip[Tip]
+This practice deals with manipulation `setInner`
+:::
+
+## 0. Class
+
+```java
+public class Generate {
+    Map<String, String> namesById;
+}
+```
+
+## 1. Generating ArbitraryBuilder
+
+```java
+ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generate.class);
+```
+
+## 2. Altering map size
+:::tip[Tip]
+Setting map without size would result in no change. 
+
+Please check out if using `size` before setting value
+:::
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.size(5))
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.size(5) }
+)
+```
+
+</TabItem>
+</Tabs>
+
+
+## 3. Setting field
+### Setting entry
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.entry("key", "value"))
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.entry("key", "value") }
+)
+```
+
+</TabItem>
+</Tabs>
+
+
+### Setting map key
+Setting Map key
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.key("key"))
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.key("key") }
+)
+```
+
+</TabItem>
+</Tabs>
+
+
+### Setting map value 
+Setting Map value
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.value("value"))
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.value("value") }
+)
+```
+
+</TabItem>
+</Tabs>
+
+

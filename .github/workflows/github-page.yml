@@ -11,28 +11,27 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - name: fetch Hugo
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive  # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-          ref: main
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          hugo-version: '0.107.0'
-          extended: true
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
 
       - name: Build
         working-directory: docs
-        run: |
-          npm install postcss postcss-cli autoprefixer mermaid
-          hugo --minify
+        run: npm run build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/public
+          publish_dir: ./docs/build

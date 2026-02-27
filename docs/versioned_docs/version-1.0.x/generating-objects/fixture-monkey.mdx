@@ -1,0 +1,264 @@
+---
+title: "FixtureMonkey"
+sidebar_position: 31
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+To generate test fixtures, the first step is to create a `FixtureMonkey` instance, which facilitates the creation of test fixtures.
+
+You can use the `create()` method to generate a `FixtureMonkey` instance with default options.
+For Kotlin environments, add the Kotlin plugin.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey
+  .plugin(KotlinPlugin())
+  .build()
+```
+
+</TabItem>
+</Tabs>
+
+
+If you want to add some options for creating or customizing the test fixtures, you can add them using the FixtureMonkey builder.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    + options...
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    + options...
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+
+For information on what options are available, see the [Fixture Monkey Options section](../fixture-monkey-options/concepts/).
+
+## Generating instances
+
+The `FixtureMonkey` class provides several methods to help create test objects of the required type.
+
+
+### giveMeOne()
+If you need an instance of a certain type, you can use `giveMeOne()`. Pass either a class or a type reference.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+Product product = fixtureMonkey.giveMeOne(Product.class);
+
+List<String> strList = fixtureMonkey.giveMeOne(new TypeReference<List<String>>() {});
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val product: Product = fixtureMonkey.giveMeOne()
+
+val strList: List<String> = fixtureMonkey.giveMeOne()
+```
+
+</TabItem>
+</Tabs>
+
+
+
+### giveMe()
+If you need multiple instances of a certain type, you can use the `giveMe()` method.
+You can choose to generate either a stream of instances or a list by specifying the desired size.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+Stream<Product> productStream = fixtureMonkey.giveMe(Product.class);
+
+Stream<List<String>> strListStream = fixtureMonkey.giveMe(new TypeReference<List<String>>() {});
+
+List<Product> productList = fixtureMonkey.giveMe(Product.class, 3);
+
+List<List<String>> strListList = fixtureMonkey.giveMe(new TypeReference<List<String>>() {}, 3);
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val productSequence: Sequence<Product> = fixtureMonkey.giveMe()
+
+val strListSequence: Sequence<List<String>> = fixtureMonkey.giveMe()
+
+val productList: List<Product> = fixtureMonkey.giveMe(3)
+
+val strListList: List<List<String>> = fixtureMonkey.giveMe(3)
+```
+
+</TabItem>
+</Tabs>
+
+
+### giveMeBuilder()
+If you need to further customize the instance to be created, you can use `giveMeBuilder()`. This will return an `ArbitraryBuilder` of the given type.
+An `ArbitraryBuilder` is a class in Fixture Monkey that acts as a builder for an [`Arbitrary`](../customizing-objects/arbitrary/) object of the given class.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+ArbitraryBuilder<Product> productBuilder = fixtureMonkey.giveMeBuilder(Product.class);
+
+ArbitraryBuilder<List<String>> strListBuilder = fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {});
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val productBuilder: ArbitraryBuilder<Product> = fixtureMonkey.giveMeBuilder()
+
+val strListBuilder: ArbitraryBuilder<List<String>> = fixtureMonkey.giveMeBuilder()
+```
+
+</TabItem>
+</Tabs>
+
+
+For cases where you already have a generated instance and want to customize it further, you can also use `giveMeBuilder()`.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+Product product = new Product(1L, "Book", ...);
+
+ArbitraryBuilder<Product> productBuilder = fixtureMonkey.giveMeBuilder(product);
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val product = Product(1L, "Book", ...)
+
+val productBuilder = fixtureMonkey.giveMeBuilder(product)
+```
+
+</TabItem>
+</Tabs>
+
+
+The generated `ArbitraryBuilder` can be used for further customization of your fixture. For more information on customization options, see the [section on customization objects](../customizing-objects/apis).
+
+To obtain an instance from the `ArbitraryBuilder`, you can use the `sample()`, `sampleList()`, `sampleStream()` methods of the `ArbitraryBuilder`.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+ArbitraryBuilder<Product> productBuilder = fixtureMonkey.giveMeBuilder(Product.class);
+
+Product product = productBuilder.sample();
+List<Product> productList = productBuilder.sampleList(3);
+Stream<Product> productStream = productBuilder.sampleStream();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val productBuilder: ArbitraryBuilder<Product> = fixtureMonkey.giveMeBuilder()
+
+val product = productBuilder.sample()
+val productList = productBuilder.sampleList(3)
+val productStream = productBuilder.sampleStream()
+```
+
+</TabItem>
+</Tabs>
+
+
+In cases where you need an `Arbitrary` itself rather than an instance, you can simply call the `build()` method.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+ArbitraryBuilder<Product> productBuilder = fixtureMonkey.giveMeBuilder(Product.class);
+
+Arbitrary<Product> productArbitrary = productBuilder.build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val productBuilder: ArbitraryBuilder<Product> = fixtureMonkey.giveMeBuilder()
+
+val productArbitrary = productBuilder.build()
+```
+
+</TabItem>
+</Tabs>
+
+
+### giveMeArbitrary()
+To get an `Arbitrary` of the specified type, you can use the `giveMeArbitrary()` method.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+Arbitrary<Product> productArbitrary = fixtureMonkey.giveMeArbitrary(Product.class);
+
+Arbitrary<List<String>> strListArbitrary = fixtureMonkey.giveMeArbitrary(new TypeReference<List<String>>() {});
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val productArbitrary: Arbitrary<Product> = fixtureMonkey.giveMeArbitrary()
+
+val strListArbitrary: Arbitrary<List<String>> = fixtureMonkey.giveMeArbitrary()
+```
+
+</TabItem>
+</Tabs>
+
+
+

@@ -1,0 +1,103 @@
+---
+title: "Altering Container Size"
+sidebar_position: 28
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+:::note[Background]
+In Fixture Monkey Container means data structures including Collection.
+ex. Map, Optional, Set, List...
+
+user-defined data structures are also considered as a Container
+:::
+
+:::tip[Tip]
+This practice deals with manipulation `size`.
+:::
+
+
+## 0. Class
+
+```java
+public class Generate {
+	List<GenerateElement> values;
+}
+
+public class GenerateElement {
+	List<String> values;
+}
+```
+
+## 1. Generating ArbitraryBuilder
+
+```java
+ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generate.class);
+```
+
+## 2-1. Alter field size
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.size("values", 5);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.sizeExp(Generate::values, 5);
+```
+
+</TabItem>
+</Tabs>
+
+
+
+## 2-2. Alter field n-th element size
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.size("values[n]", 5);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.sizeExp(Generate::values[n], 5);
+```
+
+</TabItem>
+</Tabs>
+
+
+## 2-3. Alter field all elements size
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.size("values[*]", 5);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.sizeExp(Generate::values["*"], 5);
+```
+
+</TabItem>
+</Tabs>
+
+

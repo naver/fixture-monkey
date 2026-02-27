@@ -1,0 +1,424 @@
+/* ══════════════════════════════════════════
+   Fixture Monkey — Global Theme
+   ══════════════════════════════════════════ */
+
+:root {
+  /* Brand */
+  --fm-green: #92FF1F;
+  --fm-blue: #49C3FD;
+  --fm-dark: #080B17;
+  --fm-dark-surface: #0C1023;
+
+  /* Docusaurus primary */
+  --ifm-color-primary: #2196F3;
+  --ifm-color-primary-dark: #0c83e2;
+  --ifm-color-primary-darker: #0b7cd5;
+  --ifm-color-primary-darkest: #0966af;
+  --ifm-color-primary-light: #42a7f5;
+  --ifm-color-primary-lighter: #55b1f6;
+  --ifm-color-primary-lightest: #82c8f9;
+
+  /* Typography */
+  --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ifm-heading-font-weight: 700;
+  --ifm-font-weight-semibold: 600;
+  --ifm-line-height-base: 1.75;
+  --ifm-leading: 1.5rem;
+
+  /* Code */
+  --ifm-code-font-size: 90%;
+  --ifm-code-border-radius: 4px;
+  --ifm-code-padding-horizontal: 0.35rem;
+  --ifm-code-padding-vertical: 0.15rem;
+  --prism-background-color: #f8f9fb;
+
+  /* Layout */
+  --ifm-global-radius: 8px;
+  --ifm-spacing-horizontal: 1.25rem;
+  --doc-sidebar-width: 280px;
+
+  /* Highlight */
+  --docusaurus-highlighted-code-line-bg: rgba(73, 195, 253, 0.08);
+}
+
+/* ── Dark mode overrides ── */
+[data-theme='dark'] {
+  --ifm-color-primary: #5bc0f8;
+  --ifm-color-primary-dark: #34b0f6;
+  --ifm-color-primary-darker: #1fa8f5;
+  --ifm-color-primary-darkest: #0889d2;
+  --ifm-color-primary-light: #82d0fa;
+  --ifm-color-primary-lighter: #99d9fb;
+  --ifm-color-primary-lightest: #c9eafd;
+
+  --ifm-background-color: #080B17;
+  --ifm-background-surface-color: #0C1023;
+  --ifm-navbar-background-color: rgba(8, 11, 23, 0.85);
+  --ifm-footer-background-color: #060912;
+  --prism-background-color: #0d1117;
+  --docusaurus-highlighted-code-line-bg: rgba(73, 195, 253, 0.12);
+}
+
+/* ══════════════════════════════════════════
+   Navbar
+   ══════════════════════════════════════════ */
+.navbar {
+  backdrop-filter: blur(12px);
+  box-shadow: none;
+  border-bottom: 1px solid transparent;
+}
+
+[data-theme='dark'] .navbar {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.navbar__title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.navbar__link {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* ══════════════════════════════════════════
+   Sidebar
+   ══════════════════════════════════════════ */
+.theme-doc-sidebar-menu .menu__link {
+  font-size: 0.88rem;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  transition: background-color 0.15s ease;
+}
+
+.theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist) {
+  background: rgba(73, 195, 253, 0.1);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist) {
+  background: rgba(73, 195, 253, 0.08);
+}
+
+.theme-doc-sidebar-menu .menu__list-item-collapsible:hover {
+  background: transparent;
+}
+
+/* ══════════════════════════════════════════
+   Doc content — Typography
+   ══════════════════════════════════════════ */
+.markdown {
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.markdown h1 {
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.markdown h2 {
+  font-size: 1.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  letter-spacing: -0.01em;
+}
+
+[data-theme='dark'] .markdown h2 {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.markdown h3 {
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdown p {
+  margin-bottom: 1.25rem;
+}
+
+.markdown > ul,
+.markdown > ol {
+  margin-bottom: 1.25rem;
+}
+
+.markdown li + li {
+  margin-top: 0.35rem;
+}
+
+/* ══════════════════════════════════════════
+   Inline code
+   ══════════════════════════════════════════ */
+.markdown code {
+  background: rgba(73, 195, 253, 0.08);
+  color: var(--ifm-color-primary-darkest);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-weight: 500;
+}
+
+[data-theme='dark'] .markdown code {
+  background: rgba(73, 195, 253, 0.1);
+  color: var(--ifm-color-primary-lighter);
+}
+
+/* Don't style code inside code blocks */
+.markdown pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* ══════════════════════════════════════════
+   Code blocks
+   ══════════════════════════════════════════ */
+.prism-code {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  border-radius: 8px;
+}
+
+div[class*='codeBlockContainer'] {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+[data-theme='dark'] div[class*='codeBlockContainer'] {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+div[class*='codeBlockTitle'] {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+[data-theme='dark'] div[class*='codeBlockTitle'] {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ══════════════════════════════════════════
+   Admonitions
+   ══════════════════════════════════════════ */
+.admonition {
+  border-radius: 8px;
+  border-left-width: 4px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.92rem;
+}
+
+.admonition .admonition-heading h5 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ══════════════════════════════════════════
+   Tables
+   ══════════════════════════════════════════ */
+.markdown table {
+  display: table;
+  width: 100%;
+  font-size: 0.9rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  margin-bottom: 1.5rem;
+}
+
+[data-theme='dark'] .markdown table {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.markdown table thead tr {
+  background: var(--ifm-color-emphasis-100);
+}
+
+[data-theme='dark'] .markdown table thead tr {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.markdown table th {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+[data-theme='dark'] .markdown table th {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.markdown table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-100);
+}
+
+[data-theme='dark'] .markdown table td {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+.markdown table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown table tbody tr:hover {
+  background: var(--ifm-color-emphasis-50);
+}
+
+[data-theme='dark'] .markdown table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ══════════════════════════════════════════
+   TOC (table of contents)
+   ══════════════════════════════════════════ */
+.table-of-contents__link {
+  font-size: 0.82rem;
+  color: var(--ifm-color-emphasis-600);
+  transition: color 0.15s ease;
+}
+
+.table-of-contents__link--active {
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+}
+
+/* ══════════════════════════════════════════
+   Tabs
+   ══════════════════════════════════════════ */
+.tabs__item {
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px 6px 0 0;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.tabs__item--active {
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   Footer
+   ══════════════════════════════════════════ */
+.footer {
+  font-size: 0.85rem;
+}
+
+.footer__title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.footer__link-item {
+  font-size: 0.85rem;
+  line-height: 2;
+}
+
+/* ══════════════════════════════════════════
+   Blockquotes
+   ══════════════════════════════════════════ */
+.markdown blockquote {
+  border-left: 3px solid var(--ifm-color-primary);
+  background: rgba(73, 195, 253, 0.04);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.93rem;
+}
+
+[data-theme='dark'] .markdown blockquote {
+  background: rgba(73, 195, 253, 0.05);
+}
+
+/* ══════════════════════════════════════════
+   Links
+   ══════════════════════════════════════════ */
+.markdown a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.markdown a:hover {
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+/* ══════════════════════════════════════════
+   Scrollbar (dark mode)
+   ══════════════════════════════════════════ */
+[data-theme='dark'] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ══════════════════════════════════════════
+   Pagination
+   ══════════════════════════════════════════ */
+.pagination-nav__link {
+  border-radius: 8px;
+  border-color: var(--ifm-color-emphasis-200);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 2px 8px rgba(73, 195, 253, 0.08);
+}
+
+[data-theme='dark'] .pagination-nav__link {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.pagination-nav__sublabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pagination-nav__label {
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   Selection
+   ══════════════════════════════════════════ */
+::selection {
+  background: rgba(73, 195, 253, 0.25);
+}
