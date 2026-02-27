@@ -200,11 +200,11 @@ Originally developed at [Naver](https://www.navercorp.com/en), Fixture Monkey ha
 
 ## Documentation
 * [English](https://naver.github.io/fixture-monkey)
-* [Korean](https://naver.github.io/fixture-monkey/v1-1-0-kor/)
+* [Korean](https://naver.github.io/fixture-monkey/ko/)
 
 ## Additional Resources
 
-### [FAQ](https://naver.github.io/fixture-monkey/v1-0-0/docs/cheat-sheet/faq/)
+### [FAQ](https://naver.github.io/fixture-monkey/docs/cheat-sheet/faq/)
 
 ### [Third-party Modules](https://naver.github.io/fixture-monkey/docs/plugins/)
 
