@@ -55,6 +55,9 @@ const config: Config = {
           },
           lastVersion: 'current',
         },
+        gtag: {
+          trackingID: 'G-M1VQRZLNX1',
+        },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',
