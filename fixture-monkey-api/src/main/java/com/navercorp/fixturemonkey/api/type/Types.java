@@ -192,6 +192,7 @@ public abstract class Types {
 		);
 	}
 
+	@SuppressWarnings("nullness")
 	public static AnnotatedType resolveWithTypeReferenceGenerics(
 		AnnotatedType parentAnnotatedType,
 		AnnotatedType currentAnnotatedType
@@ -368,7 +369,7 @@ public abstract class Types {
 			}
 
 			@Override
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			public @Nullable <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
 				return null;
 			}
 
@@ -398,6 +399,7 @@ public abstract class Types {
 		}
 	}
 
+	@SuppressWarnings("nullness")
 	public static Class<?> primitiveToWrapper(final Class<?> cls) {
 		Class<?> convertedClass = cls;
 		if (cls != null && cls.isPrimitive()) {
@@ -406,7 +408,8 @@ public abstract class Types {
 		return convertedClass;
 	}
 
-	public static Class<?> wrapperToPrimitive(final Class<?> cls) {
+	@SuppressWarnings("nullness")
+	public static @Nullable Class<?> wrapperToPrimitive(@Nullable final Class<?> cls) {
 		return wrapperPrimitiveMap.get(cls);
 	}
 
@@ -417,7 +420,7 @@ public abstract class Types {
 		return isAssignable(cls, toClass, true);
 	}
 
-	public static boolean isAssignable(Class<?> cls, Class<?> toClass, boolean autoboxing) {
+	public static boolean isAssignable(@Nullable Class<?> cls, @Nullable Class<?> toClass, boolean autoboxing) {
 		if (toClass == null) {
 			return false;
 		}

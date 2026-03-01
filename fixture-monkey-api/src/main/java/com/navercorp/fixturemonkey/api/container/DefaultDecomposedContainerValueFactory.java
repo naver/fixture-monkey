@@ -50,6 +50,7 @@ public final class DefaultDecomposedContainerValueFactory implements DecomposedC
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public DecomposableJavaContainer from(Object container) {
 		Class<?> actualType = container.getClass();
 

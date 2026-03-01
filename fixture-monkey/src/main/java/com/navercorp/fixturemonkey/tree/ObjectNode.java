@@ -52,6 +52,7 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 	private ObjectNode parent;
 	private List<ObjectNode> children;
 
+	@SuppressWarnings("argument")
 	public ObjectNode(TraverseNode traverseNode, GenerateFixtureContext generateFixtureContext) {
 		this.traverseNode = traverseNode;
 		this.generateFixtureContext = generateFixtureContext;

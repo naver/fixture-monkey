@@ -45,8 +45,8 @@ data class KPropertyProperty(
         val javaMethod = this.kProperty.getter.javaMethod
 
         if (javaMethod != null) {
-            this.kProperty.isAccessible = true
-            return this.kProperty.getter.call(instance)
+            javaMethod.isAccessible = true
+            return javaMethod.invoke(instance)
         }
 
         val javaField = this.kProperty.javaField

@@ -1,0 +1,42 @@
+---
+title: "Other Options"
+sidebar_position: 53
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+This section explains some additional options that the `FixtureMonkeyBuilder` provide.
+
+### Add plugins
+
+Fixture Monkey offers several additional features, including support for third-party libraries through plugins.
+You can use the plugin option to use these additional features.
+
+For example, you can add the Jackson plugin as shown below.
+This will allow you to use Jackson features such as `JacksonObjectArbitraryIntrospector` and Jackson annotation support.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JacksonPlugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(JacksonPlugin())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+

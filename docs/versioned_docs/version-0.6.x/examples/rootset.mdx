@@ -1,0 +1,74 @@
+---
+title: "Setting object"
+sidebar_position: 36
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+:::tip[Tip]
+This practice deals with manipulation `set`
+:::
+
+## 0. Class
+
+```java
+public class Generate {
+	String value;
+}
+```
+
+## 1. Generating ArbitraryBuilder
+
+```java
+ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generate.class);
+```
+
+## 2. Setting object
+
+```java
+Generate generateObject = new Generate("test");
+```
+
+
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set(generateObject);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.set(generateObject);
+```
+
+</TabItem>
+</Tabs>
+
+
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set("$", generateObject);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+Not supporting yet
+```
+
+</TabItem>
+</Tabs>
+
+

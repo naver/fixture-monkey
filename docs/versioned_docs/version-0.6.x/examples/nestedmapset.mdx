@@ -1,0 +1,121 @@
+---
+title: "Setting Nested Map"
+sidebar_position: 27
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+:::tip[Tip]
+This practice deals with manipulation `setInner`
+:::
+
+## 0. Class
+It works even if key is map type or value is map type.
+
+```java
+public class Generate {
+	Map<Map<String, String>, String> mapByString;
+	Map<String, Map<String, String>> stringByMap;
+}
+```
+
+### Setting nested map key
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("mapByString", m -> m.key(k -> k.entry("key", "value")))
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("mapByString") { m -> m.key { k -> k.entry("key", "value") } }
+);
+```
+
+</TabItem>
+</Tabs>
+
+
+If setting value given key, check out `entry` just as shown below
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("mapByString", m -> m.entry(k -> k.entry("innerKey", "innerValue")), "value")
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("mapByString") { m -> m.entry({ k -> k.entry("innerKey", "innerValue") }, "value") }
+);
+```
+
+</TabItem>
+</Tabs>
+
+
+### Setting nested map value
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap", m -> m.value(v -> v.entry("key", "value")))
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap") { m -> m.value { v -> v.entry("key", "value") } }
+);
+```
+
+</TabItem>
+</Tabs>
+
+
+If setting key given value, check out `entry` just as shown below
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap", m -> m.entry("key", v -> v.entry("innerKey", "innerValue")))
+);
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```kotlin
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap") { m -> m.entry("key") {v -> v.entry("innerKey", "innerValue")} }
+);
+```
+
+</TabItem>
+</Tabs>
+
+

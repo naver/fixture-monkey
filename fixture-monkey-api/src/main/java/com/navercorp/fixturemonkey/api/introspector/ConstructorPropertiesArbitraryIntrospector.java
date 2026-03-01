@@ -90,6 +90,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 		);
 	}
 
+	@SuppressWarnings({"argument", "return"})
 	private static Function<Map<ArbitraryProperty, Object>, Object> combine(
 		Constructor<?> primaryConstructor,
 		String[] parameterNames

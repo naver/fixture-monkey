@@ -1,0 +1,89 @@
+---
+title: "기능"
+sidebar_position: 76
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+Fixture monkey supports [Jackson 3](https://github.com/FasterXML/jackson) with the Fixture Monkey Jackson3 plugin.
+
+Jackson 3 requires JDK 17 or higher. If you are using JDK 8, please use the [Jackson Plugin](../jackson-plugin/features) instead.
+
+- Supports the use of `Jackson3ObjectArbitraryIntrospector` as the default introspector to create objects using the Jackson 3 object mapper.
+- Supports Jackson Annotations such as, `@JsonIgnore`, `@JsonProperty`
+
+## Dependencies
+#### Gradle
+```groovy
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson3:1.1.15")
+```
+
+#### Maven
+```xml
+<dependency>
+  <groupId>com.navercorp.fixturemonkey</groupId>
+  <artifactId>fixture-monkey-jackson3</artifactId>
+  <version>1.1.15</version>
+  <scope>test</scope>
+</dependency>
+```
+
+## Plugin
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new Jackson3Plugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(Jackson3Plugin())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+
+Pass the object mapper to the Jackson3Plugin constructor if you are using Jackson 3 with a custom object mapper.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+ObjectMapper objectMapper = JsonMapper.builder()
+    .findAndAddModules()
+    .build();
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new Jackson3Plugin(objectMapper))
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val objectMapper = JsonMapper.builder()
+    .findAndAddModules()
+    .build()
+
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(Jackson3Plugin(objectMapper))
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+

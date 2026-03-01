@@ -106,6 +106,7 @@ public final class PropertyDescriptorProperty implements Property {
 
 	@Nullable
 	@Override
+	@SuppressWarnings("dereference.of.nullable")
 	public Object getValue(Object instance) {
 		try {
 			return this.propertyDescriptor.getReadMethod().invoke(instance);
@@ -119,7 +120,7 @@ public final class PropertyDescriptorProperty implements Property {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

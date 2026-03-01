@@ -48,6 +48,7 @@ final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	@SuppressWarnings("type.arguments.not.inferred")
 	public T combined() {
 		List<Object> combinedList = combinableArbitraryList.stream()
 			.map(CombinableArbitrary::combined)
@@ -57,6 +58,7 @@ final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	@SuppressWarnings({"return"})
 	public Object rawValue() {
 		List<Object> rawValues = combinableArbitraryList.stream()
 			.map(CombinableArbitrary::rawValue)
@@ -85,6 +87,7 @@ final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public CombinableArbitrary<T> unique() {
 		List<CombinableArbitrary<?>> uniqueCombinableArbitraryList = this.combinableArbitraryList.stream()
 			.map(arbitrary -> arbitrary.filter(it -> {

@@ -91,25 +91,29 @@ public final class JavaTypeDefaultTypeArbitraryBuilder<T>
 	}
 
 	@Override
-	public JavaTypeArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier) {
+	public JavaTypeArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier) {
 		delegate.setLazy(expression, supplier);
 		return this;
 	}
 
 	@Override
-	public JavaTypeArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
+	public JavaTypeArbitraryBuilder<T> setLazy(String expression, @Nullable Supplier<?> supplier, int limit) {
 		delegate.setLazy(expression, supplier, limit);
 		return this;
 	}
 
 	@Override
-	public JavaTypeArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier) {
+	public JavaTypeArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier) {
 		delegate.setLazy(propertySelector, supplier);
 		return this;
 	}
 
 	@Override
-	public JavaTypeArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier, int limit) {
+	public JavaTypeArbitraryBuilder<T> setLazy(
+		PropertySelector propertySelector,
+		@Nullable Supplier<?> supplier,
+		int limit
+	) {
 		delegate.setLazy(propertySelector, supplier, limit);
 		return this;
 	}

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +60,7 @@ public final class JsonNodeIntrospector implements ArbitraryIntrospector {
 				.elements(context.getElementCombinableArbitraryList())
 				.build(
 					elements -> {
-						Map<Object, Object> map = new HashMap<>();
+						Map<Object, @Nullable Object> map = new HashMap<>();
 						for (Object element : elements) {
 							MapEntryElementType mapEntryElementType = (MapEntryElementType)element;
 							if (mapEntryElementType.getKey() == null) {

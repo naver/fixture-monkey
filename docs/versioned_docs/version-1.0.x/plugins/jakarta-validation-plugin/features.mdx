@@ -1,0 +1,57 @@
+---
+title: "Features"
+sidebar_position: 81
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+Fixture monkey supports generating valid data based on [Jakarta Bean Validation 3.0 annotations](https://beanvalidation.org/) with the Fixture Monkey Jakarta Validation Plugin.
+
+:::tip
+Javax Bean Validation is also supported with the Fixture Monkey Javax Validation Plugin
+:::
+
+## Dependencies
+#### Gradle
+```groovy
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.0.20")
+```
+
+#### Maven
+```xml
+<dependency>
+  <groupId>com.navercorp.fixturemonkey</groupId>
+  <artifactId>fixture-monkey-jakarta-validation</artifactId>
+  <version>1.0.20</version>
+  <scope>test</scope>
+</dependency>
+```
+
+The jakarta validation API and the Hibernate validator are already provided as part of the dependency.
+
+## Plugin
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JakartaValidationPlugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(JakartaValidationPlugin())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+

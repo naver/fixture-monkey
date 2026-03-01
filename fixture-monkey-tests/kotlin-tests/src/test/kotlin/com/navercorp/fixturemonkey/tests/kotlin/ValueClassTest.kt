@@ -113,6 +113,21 @@ class ValueClassTest {
         then(actual).isNotNull
     }
 
+    @Test
+    fun nestedValueClassObject() {
+        class ValueClassObject(val foo: Foo?)
+
+        class NestedValueClassObject(val fooObject: ValueClassObject)
+
+        val actual = SUT.giveMeKotlinBuilder<NestedValueClassObject>()
+            .set(NestedValueClassObject::fooObject, ValueClassObject(foo = null))
+            .sample()
+
+        then(actual).isNotNull
+        then(actual.fooObject).isNotNull
+        then(actual.fooObject.foo).isNull()
+    }
+
     @JvmInline
     value class Foo(
         val bar: String,

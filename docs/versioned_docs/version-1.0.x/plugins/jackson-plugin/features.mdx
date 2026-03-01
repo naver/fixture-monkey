@@ -1,0 +1,87 @@
+---
+title: "Features"
+sidebar_position: 71
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+Fixture monkey supports [Jackson](https://github.com/FasterXML/jackson) with the Fixture Monkey Jackson plugin.
+
+- Supports the use of `JacksonObjectArbitraryIntrospector` as the default introspector to create objects using the Jackson object mapper.
+- Supports Jackson Annotations such as, `@JsonIgnore`, `@JsonProperty`
+
+## Dependencies
+#### Gradle
+```groovy
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:1.0.20")
+```
+
+#### Maven
+```xml
+<dependency>
+  <groupId>com.navercorp.fixturemonkey</groupId>
+  <artifactId>fixture-monkey-jackson</artifactId>
+  <version>1.0.20</version>
+  <scope>test</scope>
+</dependency>
+```
+
+## Plugin
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JacksonPlugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(JacksonPlugin())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+
+Pass the object mapper to the JacksonPlugin constructor if you are using Jackson with a custom object mapper.
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+ObjectMapper objectMapper = JsonMapper.builder()
+    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    .build()
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JacksonPlugin(objectMapper))
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val objectMapper = JsonMapper.builder()
+    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    .build()
+
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(JacksonPlugin(objectMapper))
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+

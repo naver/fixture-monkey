@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 /**
  * It is for internal use only. It can be changed or removed at any time.
@@ -59,7 +60,7 @@ public final class ConcreteTypeDefinition implements TypeDefinition {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

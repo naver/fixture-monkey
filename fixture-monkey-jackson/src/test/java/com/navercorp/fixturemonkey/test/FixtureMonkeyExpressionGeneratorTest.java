@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import net.jqwik.api.Property;
+import net.jqwik.api.Example;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -38,7 +38,7 @@ public class FixtureMonkeyExpressionGeneratorTest {
 	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
 
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
-	@Property
+	@Example
 	void setJsonPropertyWithExpressionGenerator() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()

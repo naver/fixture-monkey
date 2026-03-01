@@ -25,6 +25,7 @@ import java.util.TreeMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
@@ -69,7 +70,7 @@ public final class MonkeyContext {
 		return new MonkeyContextBuilder(fixtureMonkeyOptions);
 	}
 
-	public CombinableArbitrary<?> getCachedArbitrary(Property property) {
+	public @Nullable CombinableArbitrary<?> getCachedArbitrary(Property property) {
 		CombinableArbitrary<?> javaTypeCombinableArbitrary = javaArbitrariesByProperty.get(property);
 		if (javaTypeCombinableArbitrary != null) {
 			return javaTypeCombinableArbitrary;

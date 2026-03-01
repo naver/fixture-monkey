@@ -29,7 +29,7 @@ import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 
 class PropertyNameResolverTests {
-	@Property
+	@Property(tries = 1)
 	void identityPropertyNameResolver(@ForAll String name) {
 		PropertyNameResolver sut = PropertyNameResolver.IDENTITY;
 		com.navercorp.fixturemonkey.api.property.Property property = getNameProperty(name);

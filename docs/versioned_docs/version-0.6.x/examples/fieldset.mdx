@@ -1,0 +1,165 @@
+---
+title: "Setting field value"
+sidebar_position: 25
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+:::tip[Tip]
+This practice deals with manipulation `set`
+:::
+
+## 0. Class
+
+```java
+public class Generate {
+	String value;
+
+	List<String> values;
+}
+```
+
+## 1. Generating ArbitraryBuilder
+
+```java
+ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generate.class);
+```
+
+## 2. Setting value
+### Setting field
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set("value", "test");
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.setExp(Generate::value, "test");
+```
+
+</TabItem>
+</Tabs>
+
+
+
+### Setting field n-th element
+
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set("values[n]", "test");
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.setExp(Generate::values[n], "test");
+```
+
+</TabItem>
+</Tabs>
+
+
+
+### Setting field all elements
+
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set("values[*]", "test");
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.setExp(Generate::values["*"], "test");
+```
+
+</TabItem>
+</Tabs>
+
+
+
+### Setting field to arbitrary value
+
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set("value", Arbitraries.strings());
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.setExp(Generate::value, Arbitraries.strings());
+```
+
+</TabItem>
+</Tabs>
+
+
+
+### Setting field n-th element to arbitrary value
+
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set("values[n]", Arbitraries.strings());
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.setExp(Generate::values[n], Arbitraries.strings());
+```
+
+</TabItem>
+</Tabs>
+
+
+
+### Setting field all elements to arbitrary value
+
+
+
+<Tabs groupId="language">
+<TabItem value="general-expression" label="general expression">
+
+```java
+generateBuilder.set("values[*]", Arbitraries.strings());
+```
+
+</TabItem>
+<TabItem value="kotlin-exp" label="Kotlin Exp">
+
+```java
+generateBuilder.setExp(Generate::values["*"], Arbitraries.strings());
+```
+
+</TabItem>
+</Tabs>
+
+

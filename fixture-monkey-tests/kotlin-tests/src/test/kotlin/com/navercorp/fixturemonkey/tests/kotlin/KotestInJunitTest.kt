@@ -21,9 +21,14 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
+import com.navercorp.fixturemonkey.kotest.KotestBigDecimalCombinableArbitrary
+import com.navercorp.fixturemonkey.kotest.KotestBigIntegerCombinableArbitrary
+import com.navercorp.fixturemonkey.kotest.KotestCharacterCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestIntegerCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestByteCombinableArbitrary
+import com.navercorp.fixturemonkey.kotest.KotestLongCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestPlugin
+import com.navercorp.fixturemonkey.kotest.KotestShortCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.KotestStringCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.giveMeArb
 import com.navercorp.fixturemonkey.kotest.setArb
@@ -969,6 +974,218 @@ class KotestInJunitTest {
     }
 
     @Test
+    fun longCombinableArbitrary() {
+        val actual = CombinableArbitrary.longs()
+
+        then(actual).isInstanceOf(KotestLongCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryPositive() {
+        val actual = CombinableArbitrary.longs().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryNegative() {
+        val actual = CombinableArbitrary.longs().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryEven() {
+        val actual = CombinableArbitrary.longs().even().combined()
+
+        then(actual % 2).isEqualTo(0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryOdd() {
+        val actual = CombinableArbitrary.longs().odd().combined()
+
+        then(actual % 2 != 0.toLong()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.longs().withRange(10L, 20L).combined()
+
+        then(actual).isBetween(10L, 20L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryNonZero() {
+        val actual = CombinableArbitrary.longs().nonZero().combined()
+
+        then(actual).isNotEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryMultipleOf() {
+        val actual = CombinableArbitrary.longs().multipleOf(7L).combined()
+
+        then(actual % 7L).isEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryNonZeroWithRange() {
+        // withRange(-5L, 5L).nonZero() => nonZero()
+        val actual = CombinableArbitrary.longs().withRange(-5L, 5L).nonZero().combined()
+
+        then(actual).isNotEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryMultipleOfWithPositiveAndRange() {
+        // positive().withRange(1L, 50L).multipleOf(3L) => multipleOf(3L)
+        val actual = CombinableArbitrary.longs()
+            .positive()
+            .withRange(1L, 50L)
+            .multipleOf(3L)
+            .combined()
+
+        then(actual % 3L).isEqualTo(0L)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryLastMethodWinsWithPositiveAndNegative() {
+        // positive().negative() => negative()
+        val actual = CombinableArbitrary.longs().positive().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryLastMethodWinsWithEvenAndOdd() {
+        // even().odd() => odd()
+        val actual = CombinableArbitrary.longs().even().odd().combined()
+
+        then(actual.toInt() % 2 != 0).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun longCombinableArbitraryLastMethodWinsWithNegativeAndRange() {
+        // negative().withRange() => withRange()
+        val actual = CombinableArbitrary.longs().negative().withRange(100L, 1000L).combined()
+
+        then(actual).isBetween(100L, 1000L)
+    }
+
+
+    @Test
+    fun shortCombinableArbitrary() {
+        val actual = CombinableArbitrary.shorts()
+
+        then(actual).isInstanceOf(KotestShortCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun shortCombinableArbitraryPositive() {
+        val actual = CombinableArbitrary.shorts().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun shortCombinableArbitraryNegative() {
+        val actual = CombinableArbitrary.shorts().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun shortCombinableArbitraryEven() {
+        val actual = CombinableArbitrary.shorts().even().combined()
+
+        then(actual % 2).isEqualTo(0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun shortCombinableArbitraryOdd() {
+        val actual = CombinableArbitrary.shorts().odd().combined()
+        then(actual % 2 != 0).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun shortCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.shorts().withRange(10.toShort(), 20.toShort()).combined()
+
+        then(actual).isBetween(10.toShort(), 20.toShort())
+    }
+
+    @Test
+    fun characterCombinableArbitrary() {
+        val actual = CombinableArbitrary.chars()
+
+        then(actual).isInstanceOf(KotestCharacterCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.chars().withRange('A', 'Z').combined()
+
+        then(actual).isBetween('A', 'Z')
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryAlpha() {
+        val actual = CombinableArbitrary.chars().alphabetic().combined()
+
+        then(actual.isLetter()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryNumeric() {
+        val actual = CombinableArbitrary.chars().numeric().combined()
+
+        then(actual.isDigit()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryAlphaNumeric() {
+        val actual = CombinableArbitrary.chars().alphaNumeric().combined()
+
+        then(actual.isLetterOrDigit()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryAscii() {
+        val actual = CombinableArbitrary.chars().ascii().combined()
+
+        then(actual.code).isLessThanOrEqualTo(127)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryUppercase() {
+        val actual = CombinableArbitrary.chars().uppercase().combined()
+
+        then(actual.isUpperCase()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryLowercase() {
+        val actual = CombinableArbitrary.chars().lowercase().combined()
+
+        then(actual.isLowerCase()).isTrue()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryKorean() {
+        val actual = CombinableArbitrary.chars().korean().combined()
+
+        then(actual).isBetween('가', '힣')
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun characterCombinableArbitraryWhitespace() {
+        val actual = CombinableArbitrary.chars().whitespace().combined()
+
+        then(actual.isWhitespace()).isTrue()
+    }
+
+    @Test
     fun stringCombinableArbitrary() {
         val actual = CombinableArbitrary.strings()
 
@@ -1071,6 +1288,83 @@ class KotestInJunitTest {
         val actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined()
 
         then(actual).isBetween(100, 1000)
+    }
+
+    @Test
+    fun bigIntegerCombinableArbitrary() {
+        val actual = CombinableArbitrary.bigIntegers()
+
+        then(actual).isInstanceOf(KotestBigIntegerCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigIntegerCombinableArbitraryPositive() {
+        val actual = CombinableArbitrary.bigIntegers().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigIntegerCombinableArbitraryNegative() {
+        val actual = CombinableArbitrary.bigIntegers().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigIntegerCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.bigIntegers().withRange(
+            BigInteger.valueOf(100), BigInteger.valueOf(1000)
+        ).combined()
+
+        then(actual).isBetween(BigInteger.valueOf(100), BigInteger.valueOf(1000))
+    }
+
+    @Test
+    fun bigDecimalCombinableArbitrary() {
+        val actual = CombinableArbitrary.bigDecimals()
+
+        then(actual).isInstanceOf(KotestBigDecimalCombinableArbitrary::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryPositive() {
+        val actual = CombinableArbitrary.bigDecimals().positive().combined()
+
+        then(actual).isPositive()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryNegative() {
+        val actual = CombinableArbitrary.bigDecimals().negative().combined()
+
+        then(actual).isNegative()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryWithRange() {
+        val actual = CombinableArbitrary.bigDecimals().withRange(
+            BigDecimal("100.0"), BigDecimal("1000.0")
+        ).combined()
+
+        then(actual).isBetween(BigDecimal("100.0"), BigDecimal("1000.0"))
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryWithPrecision() {
+        val actual = CombinableArbitrary.bigDecimals().withPrecision(2).combined()
+
+        then(actual.precision()).isLessThanOrEqualTo(2)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun bigDecimalCombinableArbitraryLastMethodWins() {
+        val actual = CombinableArbitrary.bigDecimals()
+            .withRange(BigDecimal("10.0"), BigDecimal("20.0"))
+            .negative()
+            .combined()
+
+        then(actual).isNegative()
     }
 
     companion object {

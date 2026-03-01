@@ -24,6 +24,7 @@ import java.util.SortedMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
@@ -40,7 +41,8 @@ public final class MonkeyGeneratorContext {
 		this.uniqueSetsByProperty = uniqueSetsByProperty;
 	}
 
-	public synchronized boolean isUniqueAndCheck(PropertyPath property, Object value) {
+	@SuppressWarnings("argument")
+	public synchronized boolean isUniqueAndCheck(PropertyPath property, @Nullable Object value) {
 		Set<Object> set = uniqueSetsByProperty.computeIfAbsent(property, p -> new HashSet<>());
 		boolean unique = !set.contains(value);
 		if (unique) {

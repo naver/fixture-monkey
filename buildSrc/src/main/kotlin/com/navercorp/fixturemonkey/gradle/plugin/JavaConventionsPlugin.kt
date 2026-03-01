@@ -23,6 +23,7 @@ import org.gradle.api.Project
 
 class JavaConventionsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        CheckerFrameworkConventionsPlugin().apply(project)
         CheckstyleConventionsPlugin().apply(project)
         SpotbugsConventionsPlugin().apply(project)
         JacocoConventionsPlugin().apply(project)

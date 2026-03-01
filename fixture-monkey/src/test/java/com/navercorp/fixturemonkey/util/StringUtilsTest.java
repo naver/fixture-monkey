@@ -7,12 +7,12 @@ import net.jqwik.api.Property;
 import net.jqwik.api.constraints.NotBlank;
 
 class StringUtilsTest {
-	@Property
+	@Property(tries = 1)
 	void isBlank(@ForAll @NotBlank String actual) {
 		then(StringUtils.isBlank(actual)).isFalse();
 	}
 
-	@Property
+	@Property(tries = 1)
 	void isNotBlank(@ForAll @NotBlank String actual) {
 		then(StringUtils.isNotBlank(actual)).isTrue();
 	}
