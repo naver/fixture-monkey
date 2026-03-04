@@ -26,10 +26,20 @@ import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 public final class NodeNullityManipulator implements NodeManipulator {
+	private final int sequence;
 	private final boolean toNull;
 
-	public NodeNullityManipulator(boolean toNull) {
+	public NodeNullityManipulator(int sequence, boolean toNull) {
+		this.sequence = sequence;
 		this.toNull = toNull;
+	}
+
+	public int getSequence() {
+		return sequence;
+	}
+
+	public boolean isToNull() {
+		return toNull;
 	}
 
 	@Override

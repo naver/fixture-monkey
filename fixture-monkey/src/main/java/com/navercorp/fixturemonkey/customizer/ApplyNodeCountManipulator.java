@@ -29,6 +29,24 @@ public final class ApplyNodeCountManipulator implements NodeManipulator {
 		this.count = count;
 	}
 
+	/**
+	 * Returns the underlying node manipulator.
+	 *
+	 * @return the node manipulator being count-limited
+	 */
+	public NodeManipulator getNodeManipulator() {
+		return nodeManipulator;
+	}
+
+	/**
+	 * Returns the remaining count limit.
+	 *
+	 * @return the current count value
+	 */
+	public int getCount() {
+		return count;
+	}
+
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		if (count > 0) {

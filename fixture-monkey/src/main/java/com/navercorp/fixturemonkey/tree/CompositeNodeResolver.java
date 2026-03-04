@@ -56,6 +56,10 @@ public final class CompositeNodeResolver implements NodeResolver {
 		return nextNodes;
 	}
 
+	public List<NodeResolver> getNodeResolvers() {
+		return nodeResolvers;
+	}
+
 	public List<NodeResolver> flatten() {
 		List<NodeResolver> flatten = new ArrayList<>();
 

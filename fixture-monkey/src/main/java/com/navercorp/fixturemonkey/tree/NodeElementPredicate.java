@@ -44,4 +44,8 @@ public final class NodeElementPredicate implements NextNodePredicate {
 
 		return index == elementIndex;
 	}
+
+	public int getIndex() {
+		return index;
+	}
 }

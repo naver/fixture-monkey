@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.MatchPropertyGenerator
+import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator
 import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
@@ -42,6 +43,7 @@ import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.type.KotlinNullabilityUtils
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
@@ -127,5 +129,38 @@ class KotlinPlugin : Plugin {
                 TripleDecomposedContainerValueFactory(),
             )
             .instantiatorProcessor(KotlinInstantiatorProcessor())
+            // Register null inject generator for Kotlin non-nullable types (adapter path)
+            .insertFirstNullInjectGenerators(
+                MatcherOperator(
+                    { property -> isKotlinNonNullableProperty(property) },
+                    NullInjectGenerator { 0.0 }
+                )
+            )
+    }
+
+    private fun isKotlinNonNullableProperty(property: com.navercorp.fixturemonkey.api.property.Property): Boolean {
+        // Check for adapter path (ConstructorProperty from Kotlin class)
+        if (property is com.navercorp.fixturemonkey.api.property.ConstructorProperty) {
+            val constructor = property.constructor
+            if (com.navercorp.fixturemonkey.api.type.KotlinTypeDetector.isKotlinType(constructor.declaringClass)) {
+                return !KotlinNullabilityUtils.isNullableConstructorParamByName(constructor, property.name)
+            }
+        }
+
+        // Check for adapter path (FieldProperty from Kotlin class)
+        if (property is com.navercorp.fixturemonkey.api.property.FieldProperty) {
+            val field = property.field
+            if (com.navercorp.fixturemonkey.api.type.KotlinTypeDetector.isKotlinType(field.declaringClass)) {
+                return !KotlinNullabilityUtils.isNullableField(field)
+            }
+        }
+
+        // Check for legacy path (regular Kotlin property with isNullable)
+        val nullable = property.isNullable()
+        if (nullable == false) {
+            return true
+        }
+
+        return false
     }
 }

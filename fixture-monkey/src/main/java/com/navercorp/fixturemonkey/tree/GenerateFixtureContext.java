@@ -63,18 +63,15 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 	private final MonkeyContext monkeyContext;
 	private final Supplier<Boolean> validOnly;
 
-	@SuppressWarnings("assignment")
-	private ObjectNode objectNode = null;
-	@SuppressWarnings("assignment")
-	private LazyArbitrary<Boolean> childNotCacheable = null;
+	private @Nullable ObjectNode objectNode = null;
+	private @Nullable LazyArbitrary<Boolean> childNotCacheable = null;
 
 	private final List<NodeManipulator> manipulators = new ArrayList<>();
 	@SuppressWarnings("rawtypes")
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
 	private final List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
 		new ArrayList<>();
-	@Nullable
-	private CombinableArbitrary<?> arbitrary;
+	private @Nullable CombinableArbitrary<?> arbitrary;
 
 	public GenerateFixtureContext(
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer,
@@ -86,13 +83,17 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		this.monkeyContext = monkeyContext;
 	}
 
-	@SuppressWarnings("dereference.of.nullable")
 	private static boolean initializeChildNotCacheable(ObjectNode objectNode) {
 		objectNode.expand();
-		for (ObjectNode child : objectNode.getChildren().asList()) {
+		ObjectNodeList children = objectNode.getChildren();
+		if (children == null) {
+			return false;
+		}
+		for (ObjectNode child : children.asList()) {
 			GenerateFixtureContext childGenerateFixtureContext = child.getObjectNodeContext();
+			LazyArbitrary<Boolean> childCacheable = childGenerateFixtureContext.childNotCacheable;
 			if (childGenerateFixtureContext.manipulated()
-				|| childGenerateFixtureContext.childNotCacheable.getValue()
+				|| (childCacheable != null && childCacheable.getValue())
 				|| child.getMetadata().getTreeProperty().isContainer()) {
 				return true;
 			}
@@ -130,17 +131,25 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 	}
 
 	public boolean manipulated() {
-		return !manipulators.isEmpty() || objectNode.getMetadata().manipulated();
+		ObjectNode node = this.objectNode;
+		if (node == null) {
+			return false;
+		}
+		return !manipulators.isEmpty() || node.getMetadata().manipulated();
 	}
 
 	public boolean cacheable() {
+		ObjectNode node = this.objectNode;
+		LazyArbitrary<Boolean> notCacheable = this.childNotCacheable;
+		if (node == null || notCacheable == null) {
+			return false;
+		}
 		return !manipulated()
-			&& !objectNode.getMetadata().getTreeProperty().isContainer()
-			&& !childNotCacheable.getValue();
+			&& !node.getMetadata().getTreeProperty().isContainer()
+			&& !notCacheable.getValue();
 	}
 
-	@Nullable
-	public CombinableArbitrary<?> getArbitrary() {
+	public @Nullable CombinableArbitrary<?> getArbitrary() {
 		return this.arbitrary;
 	}
 
@@ -222,23 +231,29 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		return arbitraryGenerator;
 	}
 
-	@SuppressWarnings("dereference.of.nullable")
 	public ArbitraryGeneratorContext generateContext(
 		@Nullable ArbitraryGeneratorContext parentContext
 	) {
+		ObjectNode node = this.objectNode;
+		if (node == null) {
+			throw new IllegalStateException("objectNode is not initialized. setTraverseNode() must be called first.");
+		}
+
 		Map<ArbitraryProperty, ObjectNode> childNodesByArbitraryProperty = new HashMap<>();
 		List<ArbitraryProperty> childrenProperties = new ArrayList<>();
 
 		ArbitraryProperty arbitraryProperty =
-			objectNode.getMetadata().getTreeProperty()
-				.toArbitraryProperty(objectNode.getMetadata().getNullInject());
-		Property resolvedParentProperty = objectNode.getMetadata().getResolvedTypeDefinition().getResolvedProperty();
-		objectNode.expand();
-		List<ObjectNode> children = nullSafe(objectNode.getChildren()).asList().stream()
-			.filter(it -> Types.isAssignable(
-				Types.getActualType(resolvedParentProperty.getType()),
-				Types.getActualType(it.getMetadata().getResolvedParentProperty().getType()))
-			)
+			node.getMetadata().getTreeProperty()
+				.toArbitraryProperty(node.getMetadata().getNullInject());
+		Property resolvedParentProperty = node.getMetadata().getResolvedTypeDefinition().getResolvedProperty();
+		node.expand();
+		List<ObjectNode> children = nullSafe(node.getChildren()).asList().stream()
+			.filter(it -> {
+				Property resolvedParent = it.getMetadata().getResolvedParentProperty();
+				return resolvedParent != null && Types.isAssignable(
+					Types.getActualType(resolvedParentProperty.getType()),
+					Types.getActualType(resolvedParent.getType()));
+			})
 			.collect(Collectors.toList());
 
 		for (ObjectNode childNode : children) {
@@ -250,7 +265,7 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		}
 
 		MonkeyGeneratorContext monkeyGeneratorContext = monkeyContext.newGeneratorContext(
-			objectNode.getMetadata().getRootProperty()
+			node.getMetadata().getRootProperty()
 		);
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
 		ArbitraryGeneratorLoggingContext loggingContext = new ArbitraryGeneratorLoggingContext(
@@ -262,14 +277,14 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 			childrenProperties,
 			parentContext,
 			(currentContext, prop) -> {
-				ObjectNode node = childNodesByArbitraryProperty.get(prop);
-				if (node == null) {
+				ObjectNode childNode = childNodesByArbitraryProperty.get(prop);
+				if (childNode == null) {
 					return CombinableArbitrary.NOT_GENERATED;
 				}
 
-				return node.getObjectNodeContext().generate(currentContext);
+				return childNode.getObjectNodeContext().generate(currentContext);
 			},
-			objectNode.getMetadata().getLazyPropertyPath(),
+			node.getMetadata().getLazyPropertyPath(),
 			monkeyGeneratorContext,
 			fixtureMonkeyOptions.getGenerateUniqueMaxTries(),
 			arbitraryProperty.getNullInject(),
@@ -279,8 +294,9 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 
 	@Override
 	public void setTraverseNode(TraverseNode objectNode) {
-		this.objectNode = (ObjectNode)objectNode;
-		this.childNotCacheable = LazyArbitrary.lazy(() -> initializeChildNotCacheable(this.objectNode));
+		ObjectNode node = (ObjectNode)objectNode;
+		this.objectNode = node;
+		this.childNotCacheable = LazyArbitrary.lazy(() -> initializeChildNotCacheable(node));
 	}
 
 	@Override

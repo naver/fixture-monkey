@@ -64,8 +64,7 @@ public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator 
 		if (result != ArbitraryIntrospectorResult.NOT_INTROSPECTED && result.getValue() != null) {
 			double nullInject = context.getNullInject();
 			return new TraceableCombinableArbitrary<>(
-				result.getValue()
-					.injectNull(nullInject),
+				result.getValue().injectNull(nullInject),
 				context.getPropertyPath()
 			);
 		}

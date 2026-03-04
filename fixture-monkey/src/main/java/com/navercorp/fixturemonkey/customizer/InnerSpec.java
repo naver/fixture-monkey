@@ -260,15 +260,20 @@ public final class InnerSpec {
 	 *
 	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
 	 */
-	@SuppressWarnings("argument")
 	public InnerSpec entries(Collection<?> entries) {
 		if (entries.size() % 2 != 0) {
 			throw new IllegalArgumentException("key-value pairs for the Map should be entered");
 		}
 
-		IntStream.range(0, entries.size())
+		@Nullable Object[] array = entries.toArray();
+		IntStream.range(0, array.length)
 			.filter(i -> i % 2 == 0)
-			.forEach(i -> entry(entries.toArray()[i], entries.toArray()[i + 1]));
+			.forEach(i -> {
+				Object key = array[i];
+				if (key != null) {
+					entry(key, array[i + 1]);
+				}
+			});
 
 		return this;
 	}
@@ -278,7 +283,6 @@ public final class InnerSpec {
 	 *
 	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
 	 */
-	@SuppressWarnings("argument")
 	public InnerSpec entries(@Nullable Object... entries) {
 		if (entries.length % 2 != 0) {
 			throw new IllegalArgumentException("key-value pairs for the Map should be entered");
@@ -286,7 +290,12 @@ public final class InnerSpec {
 
 		IntStream.range(0, entries.length)
 			.filter(i -> i % 2 == 0)
-			.forEach(i -> entry(entries[i], entries[i + 1]));
+			.forEach(i -> {
+				Object key = entries[i];
+				if (key != null) {
+					entry(key, entries[i + 1]);
+				}
+			});
 
 		return this;
 	}

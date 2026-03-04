@@ -28,6 +28,16 @@ out/
 
 ### Etc ###
 .DS_Store
+history/
+guide/
+test-case/
+architecture/
+plans/
+.serena/
+.zed/
+.java-version
+object-farm-api/docs/
+article/
 
 ### Doc ###
 node_modules
