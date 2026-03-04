@@ -17,7 +17,7 @@ import org.apiguardian.api.API.Status;
  *
  * @see TraceContext#startTimer(String)
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface TimingSample {
 	/**

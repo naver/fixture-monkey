@@ -32,7 +32,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * Handles {@link Map.Entry} types by creating {@link JavaMapEntryNodeCandidate} with
  * key/value children, and all other types as plain {@link JavaNodeCandidate}.
  *
- * @since 1.2.0
+ * @since 1.1.17
  */
 public final class JavaNodeCandidateFactory implements JvmNodeCandidateFactory {
 	public static final JavaNodeCandidateFactory INSTANCE = new JavaNodeCandidateFactory();

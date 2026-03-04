@@ -114,7 +114,7 @@ import com.navercorp.objectfarm.api.type.WildcardRawType;
  * <p>
  * The transformation respects the manipulatingSequence order of ContainerInfoManipulators.
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class DefaultNodeTreeAdapter implements NodeTreeAdapter {
 	private static final ContainerDetector CONTAINER_DETECTOR = ContainerDetector.standard();
 

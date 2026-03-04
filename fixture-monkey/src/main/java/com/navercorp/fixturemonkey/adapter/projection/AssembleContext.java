@@ -79,7 +79,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * @see ValueProjection#assemble(AssembleContext)
  * @since 1.1.0
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class AssembleContext {
 	private final MonkeyContext monkeyContext;
 	private final TreeRootProperty rootProperty;

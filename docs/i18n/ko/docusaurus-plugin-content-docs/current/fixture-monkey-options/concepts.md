@@ -1,6 +1,6 @@
 ---
 title: "개념"
-sidebar_position: 52
+sidebar_position: 51
 ---
 
 

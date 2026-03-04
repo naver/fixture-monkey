@@ -30,7 +30,7 @@ import com.navercorp.objectfarm.api.tree.ResolutionListener;
  * This class bridges the resolution events from JvmNodeTreeTransformer to the tracing system
  * in fixture-monkey.
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class TraceContextResolutionListener implements ResolutionListener {
 	private final TraceContext traceContext;
 

@@ -23,7 +23,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * @see TraceContext
  * @see ResolutionTrace
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 final class ActiveTraceContext implements TraceContext {
 	private final ResolutionTrace.Builder builder;
 	private int pathMatchCount;

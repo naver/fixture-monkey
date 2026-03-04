@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class NodeTypePredicate implements NextNodePredicate {
 	private final Class<?> type;
 	private final boolean exact;

@@ -41,9 +41,9 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * The resolver takes the parent type, child type, and original candidate name
  * to look up the appropriate {@code PropertyNameResolver} and resolve the field name.
  *
- * @since 1.2.0
+ * @since 1.1.17
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class NameResolvingNodeCandidateGenerator implements JvmNodeCandidateGenerator {
 	private final JvmNodeCandidateGenerator delegate;
 	private final ChildNameResolver nameResolver;
@@ -97,7 +97,7 @@ public final class NameResolvingNodeCandidateGenerator implements JvmNodeCandida
 	/**
 	 * Resolves a child candidate's name.
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.17
 	 */
 	@FunctionalInterface
 	public interface ChildNameResolver {

@@ -3,6 +3,9 @@ title: "Path expressions"
 sidebar_position: 41
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 
 ## What you will learn in this document
 - How to select specific fields or properties of a test object
@@ -18,6 +21,10 @@ As a beginner, think of path expressions as a way to "navigate" through your obj
 ## Basic Object Structure Example
 
 To understand path expressions, let's use a simple example object:
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
 
 ```java
 @Value
@@ -35,12 +42,33 @@ public class JavaClass {
 }
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+data class KotlinClass(
+    val field: String,
+    val array: Array<String>,
+    val list: List<String>,
+    val `object`: Nested,
+    val objectList: List<Nested>
+) {
+    data class Nested(
+        val nestedField: String
+    )
+}
+```
+
+</TabItem>
+</Tabs>
+
+
 ## Visual Map of Path Expressions
 
 Think of your object as a tree structure. Each path expression is like directions to a specific location in that tree:
 
 ```
-JavaClass
+JavaClass / KotlinClass
 │
 ├── field → "field"               // Direct field access
 │
@@ -70,148 +98,198 @@ JavaClass
 
 ## Simple Path Expressions Guide
 
+String path expressions work identically in Java and Kotlin. The examples below show both languages.
+
 ### 1. Selecting the Root Object
 
-To select the entire object itself, use:
-```java
-"$"
-```
+To select the entire object itself, use `"$"`:
 
-**Example:**
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
 ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.class);
-// Select and manipulate the entire object
 builder.set("$", new JavaClass(...));
 ```
 
-### 2. Selecting a Direct Field
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-To select a simple field at the top level:
-```java
-"field"
+```kotlin
+val builder = fixtureMonkey.giveMeBuilder<KotlinClass>()
+builder.set("$", KotlinClass(...))
 ```
 
-**Example:**
+</TabItem>
+</Tabs>
+
+
+### 2. Selecting a Direct Field
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// Set the "field" property to "Hello World"
 builder.set("field", "Hello World");
 ```
 
-### 3. Selecting a Nested Field
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-To access a field inside a nested object:
-```java
-"object.nestedField"
+```kotlin
+builder.set("field", "Hello World")
 ```
 
-**Example:**
+</TabItem>
+</Tabs>
+
+
+### 3. Selecting a Nested Field
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// Set the nestedField inside the object to "Nested Value"
 builder.set("object.nestedField", "Nested Value");
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+builder.set("object.nestedField", "Nested Value")
+```
+
+</TabItem>
+</Tabs>
+
+
 ### 4. Working with Collections
 
-#### Selecting a specific item in a list:
-```java
-"list[0]"  // First item
-"list[1]"  // Second item
-```
 
-**Example:**
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// Set the first item in the list to "First Item"
+// Set the first item in the list
 builder.set("list[0]", "First Item");
-```
 
-#### Selecting ALL items in a list (wildcard):
-```java
-"list[*]"
-```
-
-**Example:**
-```java
-// Set ALL items in the list to "Same Value"
+// Set ALL items in the list (wildcard)
 builder.set("list[*]", "Same Value");
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+// Set the first item in the list
+builder.set("list[0]", "First Item")
+
+// Set ALL items in the list (wildcard)
+builder.set("list[*]", "Same Value")
+```
+
+</TabItem>
+</Tabs>
+
 
 ### 5. Working with Arrays
 
 Very similar to lists:
 
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-"array[0]"   // First element
-"array[*]"   // All elements
+builder.set("array[0]", "First Element");
+builder.set("array[*]", "All Elements");
 ```
 
-**Example:**
-```java
-// Set all array elements to "Array Item"
-builder.set("array[*]", "Array Item");
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+builder.set("array[0]", "First Element")
+builder.set("array[*]", "All Elements")
 ```
+
+</TabItem>
+</Tabs>
+
 
 ### 6. Complex Nested Paths
 
 You can combine these patterns to go as deep as you need:
 
-```java
-"objectList[0].nestedField"  // nestedField of first object in list
-"objectList[*].nestedField"  // nestedField of ALL objects in list
-```
 
-**Example:**
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// Set the nestedField of all objects in objectList to "All Nested"
+// nestedField of first object in list
+builder.set("objectList[0].nestedField", "First Nested");
+
+// nestedField of ALL objects in list
 builder.set("objectList[*].nestedField", "All Nested");
 ```
 
-## Type-Safe Selection with JavaGetter
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-If you prefer to avoid string-based expressions, you can use type-safe getters:
+```kotlin
+// nestedField of first object in list
+builder.set("objectList[0].nestedField", "First Nested")
 
-### 1. Selecting a Direct Field
-
-```java
-javaGetter(JavaClass::getField)
+// nestedField of ALL objects in list
+builder.set("objectList[*].nestedField", "All Nested")
 ```
 
-**Example:**
+</TabItem>
+</Tabs>
+
+
+## Type-Safe Selection
+
+### Java: JavaGetter
+
+If you prefer to avoid string-based expressions in Java, you can use type-safe getters:
+
 ```java
+// Direct field
 builder.set(javaGetter(JavaClass::getField), "Hello World");
-```
 
-### 2. Selecting a Nested Field
-
-```java
-javaGetter(JavaClass::getObject).into(Nested::getNestedField)
-```
-
-**Example:**
-```java
+// Nested field
 builder.set(
-    javaGetter(JavaClass::getObject).into(Nested::getNestedField), 
+    javaGetter(JavaClass::getObject).into(Nested::getNestedField),
     "Nested Value"
 );
+
+// Collection elements
+builder.set(javaGetter(JavaClass::getList).index(String.class, 0), "First");
+builder.set(javaGetter(JavaClass::getList).allIndex(String.class), "All");
 ```
 
-### 3. Working with Collections
+### Kotlin: DSL Exp
 
-```java
-// Select specific element
-javaGetter(JavaClass::getList).index(String.class, 0)
+Kotlin users can use property references for type-safe expressions:
 
-// Select all elements
-javaGetter(JavaClass::getList).allIndex(String.class)
+```kotlin
+// Direct field
+builder.setExp(KotlinClass::field, "Hello World")
+
+// Nested field
+builder.setExp(KotlinClass::`object` into KotlinClass.Nested::nestedField, "Nested Value")
+
+// Collection elements
+builder.setExp(KotlinClass::objectList["0"] into KotlinClass.Nested::nestedField, "First")
+builder.setExp(KotlinClass::objectList["*"] into KotlinClass.Nested::nestedField, "All")
 ```
 
-**Example:**
-```java
-// Set all list elements to "List Item"
-builder.set(
-    javaGetter(JavaClass::getList).allIndex(String.class), 
-    "List Item"
-);
-```
+For more details on Kotlin DSL Expressions, see the [Kotlin DSL Exp page](../plugins/kotlin-plugin/kotlin-exp).
 
 ## Common Beginner Questions
 
@@ -225,7 +303,11 @@ While you can't directly access map elements with path expressions, you can use 
 
 ### Can I use multiple path expressions at once?
 
-Yes! You can chain multiple `.set()` calls to configure different parts of your object:
+Yes! You can chain multiple `.set()` calls:
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
 
 ```java
 ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.class)
@@ -233,6 +315,20 @@ ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.clas
     .set("object.nestedField", "Value 2")
     .set("list[*]", "Value 3");
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val builder = fixtureMonkey.giveMeBuilder<KotlinClass>()
+    .set("field", "Value 1")
+    .set("object.nestedField", "Value 2")
+    .set("list[*]", "Value 3")
+```
+
+</TabItem>
+</Tabs>
+
 
 ## Advanced Options
 
@@ -248,17 +344,6 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 With strict mode enabled, invalid paths will throw exceptions, helping you catch mistakes early.
 
-### Kotlin Support
-
-If you're using Kotlin, you can use property references for even more elegant expressions:
-
-```kotlin
-// Instead of: "user.address.street"
-builder.setExp(User::address into Address::street, "Main Street")
-```
-
-For more details, see the [Kotlin DSL Exp page](../plugins/kotlin-plugin/kotlin-exp).
-
 ## Summary
 
 Path expressions are a powerful feature of Fixture Monkey that let you:
@@ -268,4 +353,3 @@ Path expressions are a powerful feature of Fixture Monkey that let you:
 - Keep your test code clean and readable
 
 Start with simple direct field access, then gradually explore collection access and nested properties as you grow comfortable with the syntax.
-

@@ -44,9 +44,9 @@ import com.navercorp.fixturemonkey.api.plugin.Plugin;
  *
  * @see NodeTreeAdapter
  * @see AdapterTracer
- * @since 1.2.0
+ * @since 1.1.17
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public class JavaNodeTreeAdapterPlugin implements Plugin {
 	private boolean enabled = true;
 	private long seed = System.nanoTime();

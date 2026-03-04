@@ -61,7 +61,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  *   <li>{@link NodeValuePredicate} → {@code [value]}</li>
  * </ul>
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class PredicatePathConverter {
 	private PredicatePathConverter() {
 	}

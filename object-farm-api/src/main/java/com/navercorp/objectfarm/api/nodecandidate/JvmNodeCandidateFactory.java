@@ -28,7 +28,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * Centralizes the decision of which candidate type to create based on the given type
  * (e.g., {@link JavaMapEntryNodeCandidate} for {@link java.util.Map.Entry} types).
  *
- * @since 1.2.0
+ * @since 1.1.17
  */
 public interface JvmNodeCandidateFactory {
 	JvmNodeCandidate create(JvmType type, String name, @Nullable CreationMethod creationMethod);

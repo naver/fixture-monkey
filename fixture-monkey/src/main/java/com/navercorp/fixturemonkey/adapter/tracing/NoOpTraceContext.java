@@ -17,7 +17,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  *
  * @see TraceContext
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 final class NoOpTraceContext implements TraceContext {
 	static final NoOpTraceContext INSTANCE = new NoOpTraceContext();
 

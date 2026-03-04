@@ -24,7 +24,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * @see AdapterTracer
  * @see TimingSample
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public interface TraceContext {
 	/**
 	 * Check if tracing is enabled.

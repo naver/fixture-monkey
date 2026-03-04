@@ -60,9 +60,9 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * continue to use the optimized default generators while custom container types (e.g., Kotlin lambdas)
  * are handled by delegating to the registered {@link ContainerPropertyGenerator}s.
  *
- * @since 1.2.0
+ * @since 1.1.17
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class ContainerPropertyGeneratorNodeGenerator implements JvmContainerNodeGenerator {
 	private final List<MatcherOperator<ContainerPropertyGenerator>> generators;
 

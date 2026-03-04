@@ -32,7 +32,7 @@ import com.navercorp.objectfarm.api.type.JvmType
  * this ensures Kotlin types use constructor-based generation while Java types
  * fall back to field-based generation.
  *
- * @since 1.2.0
+ * @since 1.1.17
  */
 class KotlinNodeCandidateGenerator(
     private val delegate: JvmNodeCandidateGenerator

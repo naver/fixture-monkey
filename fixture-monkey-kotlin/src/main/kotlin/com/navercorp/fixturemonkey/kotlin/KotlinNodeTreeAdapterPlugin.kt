@@ -46,9 +46,9 @@ import org.apiguardian.api.API.Status.EXPERIMENTAL
  *     .build()
  * ```
  *
- * @since 1.2.0
+ * @since 1.1.17
  */
-@API(since = "1.2.0", status = EXPERIMENTAL)
+@API(since = "1.1.17", status = EXPERIMENTAL)
 class KotlinNodeTreeAdapterPlugin : Plugin {
     private var enabled = true
     private var seed = System.nanoTime()

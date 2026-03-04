@@ -54,7 +54,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  *
  * @since 1.1.0
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCandidateGenerator {
 	private final PropertyGenerator propertyGenerator;
 

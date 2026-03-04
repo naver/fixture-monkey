@@ -52,7 +52,7 @@ import com.navercorp.objectfarm.api.type.JvmTypes;
  *
  * @since 1.1.0
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class InterfaceMethodNodeCandidateGenerator implements JvmNodeCandidateGenerator {
 	@Override
 	public boolean isSupported(JvmType jvmType) {

@@ -53,7 +53,7 @@ import com.navercorp.objectfarm.api.tree.JvmNodeTree;
  * @see JvmNodeTree
  * @see AssembleContext
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class ValueProjection implements NodeProjection<Object> {
 	private final JvmNodeTree structure;
 	private final Map<PathExpression, @Nullable Object> valuesByPath;

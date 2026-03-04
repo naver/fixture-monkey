@@ -59,9 +59,9 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * method reference for property caching (e.g., {@code computeIfAbsent(node, factory)}).
  * Subclasses can override {@link #apply(JvmNode)} to customize Property creation.
  *
- * @since 1.2.0
+ * @since 1.1.17
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 	private final Function<JvmNode, @Nullable JvmNode> parentLookup;
 

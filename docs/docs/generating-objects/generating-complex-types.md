@@ -200,51 +200,103 @@ public interface InheritedTwoInterface extends Interface, ContainerInterface {
 ```
 
 ## Kotlin
+
+:::tip
+Make sure to add the `KotlinPlugin` when working with Kotlin classes:
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .build()
+```
+:::
+
 ### Generic Objects
+
 ```kotlin
 class Generic<T>(val foo: T)
 
 class GenericImpl(val foo: Generic<String>)
+
+class TwoGenericObject<T, U>(val foo: T, val bar: U)
 ```
 
-Generating Kotlin generic objects:
+Kotlin's reified type inference makes generating generic objects simpler than Java:
 
 ```kotlin
-// Generate a Generic<Int>
+// Type is inferred - no TypeReference needed
 val genericInt: Generic<Int> = fixtureMonkey.giveMeOne()
 
-// Generate a GenericImpl with nested Generic<String>
 val genericImpl: GenericImpl = fixtureMonkey.giveMeOne()
+
+val twoParam: TwoGenericObject<String, Int> = fixtureMonkey.giveMeOne()
 ```
 
 ### SelfReference
+
 ```kotlin
 class SelfReference(val foo: String, val bar: SelfReference?)
 ```
 
-### Sealed class, Value class
+Generate self-referencing objects:
+
+```kotlin
+// Nullable `bar` prevents infinite recursion
+val selfRef: SelfReference = fixtureMonkey.giveMeOne()
+```
+
+### Sealed class
+
 ```kotlin
 sealed class SealedClass
 
 object ObjectSealedClass : SealedClass()
 
 class SealedClassImpl(val foo: String) : SealedClass()
+```
 
+Fixture Monkey automatically discovers sealed subclasses and randomly selects one:
+
+```kotlin
+// Will randomly generate ObjectSealedClass or SealedClassImpl
+val sealedClass: SealedClass = fixtureMonkey.giveMeOne()
+```
+
+### Value class
+
+```kotlin
 @JvmInline
 value class ValueClass(val foo: String)
 ```
 
-Generating sealed classes and value classes in Kotlin:
-
 ```kotlin
-// Fixture Monkey will choose a concrete implementation of the sealed class
-val sealedClass: SealedClass = fixtureMonkey.giveMeOne()
-
-// Generate a value class
 val valueClass: ValueClass = fixtureMonkey.giveMeOne()
 ```
 
-Kotlin sealed classes are handled similarly to interfaces. Fixture Monkey randomly selects one of the subclasses of the sealed class to generate.
+### Interface
+
+Kotlin interfaces work the same way as Java interfaces:
+
+```kotlin
+interface KotlinInterface {
+    val foo: String
+    val bar: Int
+}
+
+// Anonymous implementation is generated automatically
+val instance: KotlinInterface = fixtureMonkey.giveMeOne()
+
+// With specific implementations
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(
+        InterfacePlugin()
+            .interfaceImplements(
+                KotlinInterface::class.java,
+                listOf(KotlinInterfaceImpl::class.java)
+            )
+    )
+    .build()
+```
 
 ## Tips for Working with Complex Types
 

@@ -93,7 +93,7 @@ import com.navercorp.objectfarm.api.tree.PathResolver;
  *   <li>Paths that should be excluded (null paths or just-set paths)</li>
  * </ul>
  */
-@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class ManipulatorAnalyzer {
 	private ManipulatorAnalyzer() {
 	}
