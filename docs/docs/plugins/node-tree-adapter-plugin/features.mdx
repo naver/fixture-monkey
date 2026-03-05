@@ -1,0 +1,207 @@
+---
+title: "Features"
+sidebar_position: 45
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+The Node Tree Adapter Plugin provides an alternative object generation engine for Fixture Monkey.
+It replaces the default generation path with a **JvmNodeTree-based architecture** that delivers better performance and built-in debugging capabilities.
+
+:::info
+Starting from **v1.2.0**, the Node Tree Adapter will become the **default object generation engine**. We recommend adopting it early to prepare for the transition.
+:::
+
+## Why Use This Plugin?
+
+- **Zero overhead** — benchmark tests show no performance penalty compared to the default path
+- **Faster `thenApply`** — approximately 10% faster than the default engine for `thenApply` operations
+- **Built-in tracing** — debug exactly how values are resolved during fixture generation
+- **Deterministic output** — fixed seed support for reproducible test results
+
+## Setup
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin())
+    .build()
+```
+
+:::tip
+The Kotlin plugin requires `KotlinPlugin()` to be registered alongside `KotlinNodeTreeAdapterPlugin()`.
+:::
+
+</TabItem>
+</Tabs>
+
+Compatible with other plugins — just add it alongside your existing plugins:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin())
+    .plugin(new JakartaValidationPlugin())
+    .plugin(new SimpleValueJqwikPlugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin())
+    .plugin(JakartaValidationPlugin())
+    .plugin(SimpleValueJqwikPlugin())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+## Benchmark Results
+
+Measured with JMH (fork=1, warmup=3, iterations=10), generating 200 `OrderSheet` objects per iteration.
+
+| Scenario | Without Adapter (ms) | With Adapter (ms) | Overhead |
+|----------|---------------------|-------------------|----------|
+| Pure sample | 125.2 | 121.4 | **-3.1%** |
+| set | 121.7 | 120.7 | **-0.8%** |
+| size + setNull | 122.6 | 123.4 | +0.6% |
+| Nested set | 124.1 | 124.8 | +0.5% |
+| thenApply | 333.3 | 301.1 | **-9.7%** |
+
+> All scenarios show near-zero overhead. `thenApply` is consistently ~10% faster with the adapter.
+
+## Configuration
+
+### Seed
+
+Set a fixed seed for reproducible results:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin()
+        .seed(12345L))
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin()
+        .seed(12345L))
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+:::caution
+The seed feature is not yet fully supported. Reproducibility is not guaranteed in all scenarios. Full seed support is planned for a future release.
+:::
+
+### Tracer
+
+Enable tracing to debug how values are resolved during fixture generation:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin()
+        .tracer(AdapterTracer.console()))
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin()
+        .tracer(AdapterTracer.console()))
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+#### Available Tracers
+
+| Tracer | Description |
+|--------|-------------|
+| `AdapterTracer.noOp()` | No tracing (default) |
+| `AdapterTracer.console()` | Print tree-formatted trace to console |
+| `AdapterTracer.consoleJson()` | Print JSON-formatted trace to console |
+| `AdapterTracer.timing()` | Print timing information |
+| `AdapterTracer.file(path)` | Write trace to a file (append mode) |
+
+#### Example Trace Output
+
+```
+[AdapterTracer] ── OrderSheet ──────────────────
+  Resolution:
+    $.orderProducts  → container size = 2
+    $.orderProducts[0].productName  → set("product-0")
+  Assembly:
+    $ (OrderSheet) → BeanArbitraryIntrospector
+      $.id (String) → "aB3xK"
+      $.userNo (Long) → 42
+      $.orderProducts (List) → size=2
+        $.orderProducts[0] (OrderProduct)
+          $.orderProducts[0].productName → "product-0" [USER_SET]
+```
+
+### Enable / Disable
+
+The plugin is enabled by default. To disable it conditionally:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin()
+        .enabled(false))  // disables the adapter, uses default path
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin()
+        .enabled(false))  // disables the adapter, uses default path
+    .build()
+```
+
+</TabItem>
+</Tabs>
