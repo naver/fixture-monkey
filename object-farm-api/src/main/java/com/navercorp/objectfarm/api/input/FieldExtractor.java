@@ -32,21 +32,20 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.objectfarm.api.type.Types;
 
 /**
- * Extracts field values from an object.
+ * Extracts field information from an object.
  * <p>
  * This interface abstracts field extraction logic, allowing different implementations
  * for different contexts (e.g., reflection-based vs. Property-based extraction).
  */
-@FunctionalInterface
 public interface FieldExtractor {
 	/**
-	 * Extracts field values from an object.
+	 * Extracts fields from an object, returning both runtime values and declared types.
 	 *
 	 * @param value    the object to extract fields from
 	 * @param basePath the base path for field paths
-	 * @return a map of field paths to their values
+	 * @return a map of field paths to their extracted field information
 	 */
-	Map<String, @Nullable Object> extractFields(Object value, String basePath);
+	Map<String, ExtractedField> extractFields(Object value, String basePath);
 
 	/**
 	 * Returns a field extractor that uses reflection to extract fields.
@@ -83,8 +82,8 @@ public interface FieldExtractor {
 		}
 
 		@Override
-		public Map<String, @Nullable Object> extractFields(Object value, String basePath) {
-			Map<String, @Nullable Object> result = new HashMap<>();
+		public Map<String, ExtractedField> extractFields(Object value, String basePath) {
+			Map<String, ExtractedField> result = new HashMap<>();
 
 			if (value == null) {
 				return result;
@@ -92,19 +91,7 @@ public interface FieldExtractor {
 
 			Class<?> clazz = value.getClass();
 
-			if (clazz == String.class || clazz.isArray() || Types.isJdkValueType(clazz)
-				|| Number.class.isAssignableFrom(clazz)) {
-				return result;
-			}
-
-			if (
-				value instanceof Collection || value instanceof Map || value instanceof Iterator
-					|| value instanceof Stream
-			) {
-				return result;
-			}
-
-			if (Types.isJavaType(clazz)) {
+			if (isSkippable(clazz, value)) {
 				return result;
 			}
 
@@ -112,13 +99,50 @@ public interface FieldExtractor {
 			return result;
 		}
 
+		private static boolean isSkippable(Class<?> clazz, Object value) {
+			if (clazz == String.class || clazz.isArray() || Types.isJdkValueType(clazz)
+				|| Number.class.isAssignableFrom(clazz)) {
+				return true;
+			}
+
+			if (
+				value instanceof Collection || value instanceof Map || value instanceof Iterator
+					|| value instanceof Stream
+			) {
+				return true;
+			}
+
+			return Types.isJavaType(clazz);
+		}
+
 		private void extractFieldsRecursively(@Nullable Class<?> clazz, Object value, String basePath,
-			Map<String, Object> result) {
+			Map<String, ExtractedField> result) {
 			if (clazz == null || clazz == Object.class) {
 				return;
 			}
 
-			Field[] fields = DECLARED_FIELDS_CACHE.computeIfAbsent(clazz, c -> {
+			Field[] fields = getDeclaredFields(clazz);
+
+			for (Field field : fields) {
+				if (Modifier.isStatic(field.getModifiers())) {
+					continue;
+				}
+
+				String childPath = basePath + "." + field.getName();
+
+				try {
+					Object fieldValue = field.get(value);
+					result.put(childPath, new ExtractedField(fieldValue, field.getType()));
+				} catch (IllegalAccessException | SecurityException e) {
+					// Skip fields we can't access
+				}
+			}
+
+			extractFieldsRecursively(clazz.getSuperclass(), value, basePath, result);
+		}
+
+		private static Field[] getDeclaredFields(Class<?> clazz) {
+			return DECLARED_FIELDS_CACHE.computeIfAbsent(clazz, c -> {
 				Field[] declared = c.getDeclaredFields();
 				for (Field f : declared) {
 					if (!Modifier.isStatic(f.getModifiers())) {
@@ -131,23 +155,6 @@ public interface FieldExtractor {
 				}
 				return declared;
 			});
-
-			for (Field field : fields) {
-				if (Modifier.isStatic(field.getModifiers())) {
-					continue;
-				}
-
-				String childPath = basePath + "." + field.getName();
-
-				try {
-					Object fieldValue = field.get(value);
-					result.put(childPath, fieldValue);
-				} catch (IllegalAccessException | SecurityException e) {
-					// Skip fields we can't access
-				}
-			}
-
-			extractFieldsRecursively(clazz.getSuperclass(), value, basePath, result);
 		}
 	}
 }

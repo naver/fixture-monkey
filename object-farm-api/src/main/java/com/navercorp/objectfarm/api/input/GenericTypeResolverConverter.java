@@ -156,7 +156,10 @@ public final class GenericTypeResolverConverter {
 			return Collections.emptyList();
 		}
 
-		JvmType elementType = new JavaType(firstElement.getClass());
+		List<JvmType> elementTypeArgs = extractTypeArgumentsFromValue(firstElement);
+		JvmType elementType = elementTypeArgs.isEmpty()
+			? new JavaType(firstElement.getClass())
+			: new JavaType(firstElement.getClass(), elementTypeArgs, Collections.emptyList());
 		return Collections.singletonList(elementType);
 	}
 
@@ -180,8 +183,14 @@ public final class GenericTypeResolverConverter {
 		}
 
 		List<JvmType> typeArguments = new ArrayList<>();
-		typeArguments.add(new JavaType(key.getClass()));
-		typeArguments.add(new JavaType(entryValue.getClass()));
+		List<JvmType> keyTypeArgs = extractTypeArgumentsFromValue(key);
+		typeArguments.add(keyTypeArgs.isEmpty()
+			? new JavaType(key.getClass())
+			: new JavaType(key.getClass(), keyTypeArgs, Collections.emptyList()));
+		List<JvmType> valueTypeArgs = extractTypeArgumentsFromValue(entryValue);
+		typeArguments.add(valueTypeArgs.isEmpty()
+			? new JavaType(entryValue.getClass())
+			: new JavaType(entryValue.getClass(), valueTypeArgs, Collections.emptyList()));
 		return typeArguments;
 	}
 

@@ -102,11 +102,11 @@ public final class ObjectValueExtractor {
 		}
 
 		try {
-			Map<String, @Nullable Object> fields = fieldExtractor.extractFields(value, basePath.toExpression());
+			Map<String, ExtractedField> fields = fieldExtractor.extractFields(value, basePath.toExpression());
 
-			for (Map.Entry<String, @Nullable Object> entry : fields.entrySet()) {
+			for (Map.Entry<String, ExtractedField> entry : fields.entrySet()) {
 				PathExpression fieldPath = PathExpression.of(entry.getKey());
-				Object fieldValue = entry.getValue();
+				Object fieldValue = entry.getValue().getValue();
 				result.put(fieldPath, fieldValue);
 
 				if (fieldValue != null) {

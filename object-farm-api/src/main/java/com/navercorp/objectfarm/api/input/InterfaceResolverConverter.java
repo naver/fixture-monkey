@@ -18,8 +18,11 @@
 
 package com.navercorp.objectfarm.api.input;
 
+import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
@@ -62,12 +65,21 @@ public final class InterfaceResolverConverter {
 		PathExpression pattern = PathExpression.of(pathExpression);
 
 		InterfaceResolver interfaceResolver = interfaceType -> {
-			if (interfaceType.getRawType().isAssignableFrom(concreteType)) {
-				// Preserve type variables from the original interface type
-				// e.g., List<String> → ArrayList<String> (not raw ArrayList)
-				return new JavaType(concreteType, interfaceType.getTypeVariables(), interfaceType.getAnnotations());
+			if (!interfaceType.getRawType().isAssignableFrom(concreteType)) {
+				return null;
 			}
-			return null;
+
+			// Non-instantiable JDK types (e.g., Arrays$ArrayList, Collections$SingletonList)
+			// should be skipped only when a default resolver can handle the interface type.
+			// Collection/Map subtypes have default implementations (ArrayList, HashMap),
+			// but other interfaces (e.g., Iterable) do not.
+			if (!isInstantiable(concreteType) && hasDefaultContainerResolver(interfaceType.getRawType())) {
+				return null;
+			}
+
+			// Preserve type variables from the original interface type
+			// e.g., List<String> → ArrayList<String> (not raw ArrayList)
+			return new JavaType(concreteType, interfaceType.getTypeVariables(), interfaceType.getAnnotations());
 		};
 
 		return new PathInterfaceResolver(pattern, interfaceResolver);
@@ -140,5 +152,22 @@ public final class InterfaceResolverConverter {
 		);
 
 		return createResolver(pathExpression, resolvedType);
+	}
+
+	private static boolean hasDefaultContainerResolver(Class<?> interfaceType) {
+		return Iterable.class.isAssignableFrom(interfaceType)
+			|| Collection.class.isAssignableFrom(interfaceType)
+			|| Map.class.isAssignableFrom(interfaceType);
+	}
+
+	private static boolean isInstantiable(Class<?> type) {
+		if (Modifier.isPublic(type.getModifiers())) {
+			return true;
+		}
+
+		// Non-public JDK internal types (e.g., Arrays$ArrayList, Collections$SingletonList)
+		// cannot be instantiated by introspectors — skip them so the default resolver is used.
+		String name = type.getName();
+		return !name.startsWith("java.") && !name.startsWith("javax.") && !name.startsWith("sun.");
 	}
 }

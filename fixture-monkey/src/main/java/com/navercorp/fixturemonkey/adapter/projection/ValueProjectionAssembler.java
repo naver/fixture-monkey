@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.adapter.projection;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -297,8 +298,17 @@ final class ValueProjectionAssembler {
 				);
 				applyDecomposeResult(decomposeResult, state);
 				if (decomposeResult.hasEarlyReturn()) {
+					Object earlyValue = decomposeResult.getEarlyReturnValue();
+
+					// Apply wildcard overrides to container elements when a wildcard has higher order
+					if (isCurrentTypeContainer && earlyValue != null && !state.wildcardEntries.isEmpty()) {
+						earlyValue = applyWildcardOverridesToContainer(
+							earlyValue, currentPath, parentOrder, state
+						);
+					}
+
 					return wrapValueWithFiltersAndCustomizers(
-						decomposeResult.getEarlyReturnValue(),
+						earlyValue,
 						currentPath,
 						currentRawType,
 						state
@@ -576,6 +586,7 @@ final class ValueProjectionAssembler {
 			} else {
 				result = options.getDefaultArbitraryGenerator().generate(context);
 			}
+
 
 			result = applyFilters(result, currentPath, currentRawType, state);
 			result = applyCustomizers(result, currentPath, state);
@@ -1970,9 +1981,9 @@ final class ValueProjectionAssembler {
 			return null;
 		}
 		if (container.getClass().isArray()) {
-			int length = java.lang.reflect.Array.getLength(container);
+			int length = Array.getLength(container);
 			if (index >= 0 && index < length) {
-				return java.lang.reflect.Array.get(container, index);
+				return Array.get(container, index);
 			}
 			return null;
 		}
@@ -2096,6 +2107,66 @@ final class ValueProjectionAssembler {
 		if (limitPath != null) {
 			state.limitsByPath.put(limitPath, result.getLimitValue());
 		}
+	}
+
+	/**
+	 * Applies wildcard overrides to container elements when a wildcard has a higher order
+	 * than the container's own value. This handles the case where a container value is
+	 * returned via earlyReturn (all decomposed elements match), but a wildcard like
+	 * {@code $.values[*].values[*]} should override individual elements.
+	 */
+	private Object applyWildcardOverridesToContainer(
+		Object container,
+		PathExpression containerPath,
+		ValueOrder containerOrder,
+		AssemblyState state
+	) {
+		if (container instanceof List) {
+			List<?> list = (List<?>)container;
+			List<@Nullable Object> result = null;
+			for (int i = 0; i < list.size(); i++) {
+				PathExpression elementPath = containerPath.index(i);
+				for (Map.Entry<PathExpression, ValueCandidate> entry : state.wildcardEntries) {
+					if (entry.getKey().matches(elementPath)
+						&& entry.getValue().order.compareTo(containerOrder) > 0) {
+						if (result == null) {
+							result = new ArrayList<>(list);
+						}
+						result.set(i, resolveLazyValue(entry.getValue().value, false, state));
+						break;
+					}
+				}
+			}
+			return result != null ? result : container;
+		} else if (container.getClass().isArray()) {
+			int length = Array.getLength(container);
+			boolean modified = false;
+			for (int i = 0; i < length; i++) {
+				PathExpression elementPath = containerPath.index(i);
+				for (Map.Entry<PathExpression, ValueCandidate> entry : state.wildcardEntries) {
+					if (entry.getKey().matches(elementPath)
+						&& entry.getValue().order.compareTo(containerOrder) > 0) {
+						if (!modified) {
+							Class<?> componentType = container.getClass().getComponentType();
+							if (componentType == null) {
+								break;
+							}
+							Object copy = Array.newInstance(componentType, length);
+							//noinspection SuspiciousSystemArraycopy
+							System.arraycopy(container, 0, copy, 0, length);
+							container = copy;
+							modified = true;
+						}
+						Object resolved = resolveLazyValue(entry.getValue().value, false, state);
+						if (resolved != null) {
+							Array.set(container, i, resolved);
+						}
+						break;
+					}
+				}
+			}
+		}
+		return container;
 	}
 
 	private @Nullable Object resolveLazyValue(@Nullable Object value, boolean isFromRegister, AssemblyState state) {

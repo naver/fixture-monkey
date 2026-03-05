@@ -459,6 +459,17 @@ public final class JvmNodeTreeTransformer {
 			if (resolved != null) {
 				return resolved;
 			}
+			// Path-based resolver skipped (e.g., non-instantiable JDK type).
+			// For container types, fall through to the default resolver.
+			if (isContainerType) {
+				InterfaceResolver defaultResolver = context.getInterfaceResolver();
+				if (defaultResolver != null) {
+					JvmType fallback = defaultResolver.resolve(originalType);
+					if (fallback != null) {
+						return fallback;
+					}
+				}
+			}
 		} else if (!isAbstractType || isContainerType) {
 			InterfaceResolver defaultResolver = context.getInterfaceResolver();
 			if (defaultResolver != null) {

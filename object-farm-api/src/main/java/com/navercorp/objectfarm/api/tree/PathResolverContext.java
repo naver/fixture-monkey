@@ -207,11 +207,13 @@ public final class PathResolverContext {
 	 * @return an Optional containing the matching resolver, or empty if none match
 	 */
 	public Optional<InterfaceResolver> findInterfaceResolver(PathExpression path) {
-		return interfaceResolvers
-			.stream()
-			.filter(r -> r.matches(path))
-			.map(PathResolver::getCustomizer)
-			.findFirst();
+		InterfaceResolver last = null;
+		for (PathResolver<InterfaceResolver> r : interfaceResolvers) {
+			if (r.matches(path)) {
+				last = r.getCustomizer();
+			}
+		}
+		return Optional.ofNullable(last);
 	}
 
 	/**
@@ -221,11 +223,13 @@ public final class PathResolverContext {
 	 * @return an Optional containing the matching resolver, or empty if none match
 	 */
 	public Optional<GenericTypeResolver> findGenericTypeResolver(PathExpression path) {
-		return genericTypeResolvers
-			.stream()
-			.filter(r -> r.matches(path))
-			.map(PathResolver::getCustomizer)
-			.findFirst();
+		GenericTypeResolver last = null;
+		for (PathResolver<GenericTypeResolver> r : genericTypeResolvers) {
+			if (r.matches(path)) {
+				last = r.getCustomizer();
+			}
+		}
+		return Optional.ofNullable(last);
 	}
 
 	/**

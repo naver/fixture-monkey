@@ -74,6 +74,7 @@ import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.StaticNodeResolver;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
+import com.navercorp.objectfarm.api.input.ExtractedField;
 import com.navercorp.objectfarm.api.input.FieldExtractor;
 import com.navercorp.objectfarm.api.input.ValueAnalysisResult;
 import com.navercorp.objectfarm.api.input.ValueAnalyzer;
@@ -734,47 +735,57 @@ public final class ManipulatorAnalyzer {
 	 * @param nameResolver resolves property names for path expressions
 	 */
 	private static FieldExtractor createFieldExtractor(DecomposeNameResolver nameResolver) {
-		return (value, basePath) -> {
-			Map<String, @Nullable Object> result = new HashMap<>();
+		return new FieldExtractor() {
+			@Override
+			public Map<String, ExtractedField> extractFields(Object value, String basePath) {
+				List<Property> childProperties = getChildProperties(value);
+				if (childProperties == null) {
+					return new HashMap<>();
+				}
 
-			if (value == null) {
+				Map<String, ExtractedField> result = new HashMap<>();
+				for (Property childProperty : childProperties) {
+					String childPath = basePath + "." + nameResolver.resolve(childProperty);
+					Class<?> declaredType = com.navercorp.fixturemonkey.api.type.Types.getActualType(
+						childProperty.getType());
+					result.put(childPath, new ExtractedField(childProperty.getValue(value), declaredType));
+				}
 				return result;
 			}
 
-			Class<?> clazz = value.getClass();
+			private @Nullable List<Property> getChildProperties(Object value) {
+				if (value == null) {
+					return null;
+				}
 
-			if (clazz.isPrimitive() || clazz == String.class || clazz.isEnum() || clazz.isArray()) {
-				return result;
+				Class<?> clazz = value.getClass();
+
+				if (clazz.isPrimitive() || clazz == String.class || clazz.isEnum() || clazz.isArray()) {
+					return null;
+				}
+
+				if (isBoxedPrimitive(clazz)) {
+					return null;
+				}
+
+				if (
+					value instanceof Collection
+						|| value instanceof Map
+						|| value instanceof Iterator
+						|| value instanceof Stream
+				) {
+					return null;
+				}
+
+				if (isJavaType(clazz)) {
+					return null;
+				}
+
+				AnnotatedType annotatedType =
+					generateAnnotatedTypeWithoutAnnotation(clazz);
+				Property parentProperty = new TypeParameterProperty(annotatedType);
+				return FIELD_PROPERTY_GENERATOR.generateChildProperties(parentProperty);
 			}
-
-			if (isBoxedPrimitive(clazz)) {
-				return result;
-			}
-
-			if (
-				value instanceof Collection
-					|| value instanceof Map
-					|| value instanceof Iterator
-					|| value instanceof Stream
-			) {
-				return result;
-			}
-
-			if (isJavaType(clazz)) {
-				return result;
-			}
-
-			AnnotatedType annotatedType =
-				generateAnnotatedTypeWithoutAnnotation(clazz);
-			Property parentProperty = new TypeParameterProperty(annotatedType);
-			List<Property> childProperties = FIELD_PROPERTY_GENERATOR.generateChildProperties(parentProperty);
-
-			for (Property childProperty : childProperties) {
-				String childPath = basePath + "." + nameResolver.resolve(childProperty);
-				result.put(childPath, childProperty.getValue(value));
-			}
-
-			return result;
 		};
 	}
 
