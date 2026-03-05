@@ -34,10 +34,10 @@ Add Fixture Monkey to your project:
 
 ```groovy
 // Java
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.17")
 
 // Kotlin
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.17")
 ```
 
 ### Maven
@@ -47,7 +47,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>1.1.15</version>
+    <version>1.1.17</version>
     <scope>test</scope>
 </dependency>
 
@@ -55,7 +55,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter-kotlin</artifactId>
-    <version>1.1.15</version>
+    <version>1.1.17</version>
     <scope>test</scope>
 </dependency>
 ```
