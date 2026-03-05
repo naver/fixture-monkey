@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "com.navercorp.fixturemonkey"
-    version = "1.1.18-SNAPSHOT"
+    version = findProperty("fixtureMonkeyVersion") as String
 }
 
 subprojects {

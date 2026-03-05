@@ -4,6 +4,8 @@ plugins {
     id("com.navercorp.fixturemonkey.gradle.plugin.object-farm-maven-publish-conventions")
 }
 
+version = findProperty("objectFarmVersion") as String
+
 val multiReleaseVersions = intArrayOf(17)
 
 multiRelease {
