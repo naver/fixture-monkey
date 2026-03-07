@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -32,11 +34,32 @@ jobs:
           echo "${GRADLE_PROPERTIES}" > gradle.properties
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Publish package
+      - name: Check object-farm-api changes
+        id: check-object-farm
+        run: |
+          CURRENT_TAG=${GITHUB_REF_NAME}
+          PREV_TAG=$(git tag --sort=-v:refname | grep -v "^${CURRENT_TAG}$" | head -1)
+          if [ -n "$PREV_TAG" ]; then
+            CHANGES=$(git diff --name-only "$PREV_TAG".."$CURRENT_TAG" -- object-farm-api/)
+            if [ -n "$CHANGES" ]; then
+              echo "publish=true" >> $GITHUB_OUTPUT
+            else
+              echo "publish=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "publish=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Publish fixture-monkey modules
         env:
           OSSRH_USERNAME_TOKEN: ${{ secrets.OSSRHUSERNAME }}
           OSSRH_PASSWORD_TOKEN: ${{ secrets.OSSRHPASSWORD }}
-        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -x :object-farm-api:publishObjectFarmApiPublicationToSonatypeRepository
+      - name: Publish object-farm-api
+        if: steps.check-object-farm.outputs.publish == 'true'
+        env:
+          OSSRH_USERNAME_TOKEN: ${{ secrets.OSSRHUSERNAME }}
+          OSSRH_PASSWORD_TOKEN: ${{ secrets.OSSRHPASSWORD }}
+        run: ./gradlew :object-farm-api:publishObjectFarmApiPublicationToSonatypeRepository closeAndReleaseSonatypeStagingRepository
       - name: Close milestone
         uses: Beakyn/gha-close-milestone@v1.1.1
         env:
