@@ -1375,4 +1375,64 @@ class CustomizationAdapterTest {
 		then(actual.getValues()).hasSize(3);
 		then(actual.getValues().get(0)).isEqualTo("LAZY_FIRST");
 	}
+
+	@Property
+	void setNonPublicJdkListThenApplyOverridesElements() {
+		// given
+		List<String> arraysAsList = Arrays.asList("a", "b");
+
+		// when
+		List<String> actual = SUT.giveMeBuilder(StringListWrapper.class)
+			.set("values", arraysAsList)
+			.thenApply((obj, builder) ->
+				builder.set("values[0]", "override")
+			)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0)).isEqualTo("override");
+		then(actual.get(1)).isEqualTo("b");
+	}
+
+	@Property
+	void setCollectionsSingletonListThenApplyOverridesElements() {
+		// given
+		List<String> singletonList = Collections.singletonList("original");
+
+		// when
+		List<String> actual = SUT.giveMeBuilder(StringListWrapper.class)
+			.set("values", singletonList)
+			.thenApply((obj, builder) ->
+				builder.set("values[0]", "override")
+			)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(1);
+		then(actual.get(0)).isEqualTo("override");
+	}
+
+	@Property
+	void setIterableWithArraysAsListThenApplyOverridesElements() {
+		// given
+		List<String> arraysAsList = Arrays.asList("a", "b");
+
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strIterable", arraysAsList)
+			.thenApply((obj, builder) ->
+				builder.set("strIterable[0]", "override")
+			)
+			.sample();
+
+		// then
+		List<String> values = new ArrayList<>();
+		actual.getStrIterable().forEach(values::add);
+		then(values).hasSize(2);
+		then(values.get(0)).isEqualTo("override");
+		then(values.get(1)).isEqualTo("b");
+	}
 }

@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.adapter;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.jqwik.api.Property;
@@ -29,7 +31,10 @@ import net.jqwik.api.PropertyDefaults;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DoubleNestedStringListWrapper;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListListStringObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringArrayWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringListWrapper;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringArrayWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringListWrapper;
 
 @PropertyDefaults(tries = 10)
@@ -129,7 +134,7 @@ class ThenApplyOrderingAdapterTest {
 		then(actual.getStrList().get(1)).isEqualTo("second");
 	}
 
-	@Property(seed = "784162401591375688")
+	@Property
 	void nestedThenApplySetAfterNestedApply() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -729,7 +734,7 @@ class ThenApplyOrderingAdapterTest {
 		then(actual.get(1).getValues().get(1)).isEqualTo("y");
 	}
 
-	@Property(tries = 1000)
+	@Property
 	void setDecomposedThenApplyWildcardSetOverride() {
 		// given
 		List<String> innerList = new ArrayList<>();
@@ -740,6 +745,7 @@ class ThenApplyOrderingAdapterTest {
 		// when
 		List<StringListWrapper> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
 			.set("values[0].values", innerList)
+			.set("values[1].values", Arrays.asList("a", "b"))
 			.thenApply((obj, builder) ->
 				builder.size("values", 2).size("values[*].values", 2).set("values[*].values[*]", "override")
 			)
@@ -921,4 +927,185 @@ class ThenApplyOrderingAdapterTest {
 		// then
 		then(actual.getStrList()).isNull();
 	}
+
+	@Property
+	void setDecomposedThenApplyWildcardSetOverrideWithoutSizeChange() {
+		// given
+		List<String> innerList = Arrays.asList("1", "2", "3");
+
+		// when
+		List<StringListWrapper> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 2)
+			.size("values[*].values", 3)
+			.set("values[0].values", innerList)
+			.set("values[1].values", innerList)
+			.thenApply((obj, builder) ->
+				builder.set("values[*].values[*]", "override")
+			)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		for (int j = 0; j < 2; j++) {
+			then(actual.get(j).getValues()).hasSize(3);
+			for (int k = 0; k < 3; k++) {
+				then(actual.get(j).getValues().get(k)).isEqualTo("override");
+			}
+		}
+	}
+
+	@Property
+	void setDecomposedArrayThenApplyWildcardSetOverride() {
+		// given
+		StringArrayWrapper wrapper = new StringArrayWrapper();
+		wrapper.setValues(new String[]{"1", "2", "3"});
+
+		// when
+		List<StringArrayWrapper> actual = SUT.giveMeBuilder(NestedStringArrayWrapper.class)
+			.set("values", Collections.singletonList(wrapper))
+			.thenApply((obj, builder) ->
+				builder.size("values", 2)
+					.size("values[*].values", 2)
+					.set("values[*].values[*]", "override")
+			)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		for (int j = 0; j < 2; j++) {
+			then(actual.get(j).getValues()).hasSize(2);
+			for (int k = 0; k < 2; k++) {
+				then(actual.get(j).getValues()[k]).isEqualTo("override");
+			}
+		}
+	}
+
+	@Property
+	void setDecomposedAfterThenApplyWildcardSetOverride() {
+		// given
+		List<String> innerList = Arrays.asList("a", "b");
+
+		// when
+		List<StringListWrapper> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.thenApply((obj, builder) ->
+				builder.set("values[*].values[*]", "override")
+			)
+			.size("values", 2)
+			.size("values[*].values", 2)
+			.set("values[0].values", innerList)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0).getValues()).hasSize(2);
+		then(actual.get(0).getValues().get(0)).isEqualTo("a");
+		then(actual.get(0).getValues().get(1)).isEqualTo("b");
+	}
+
+	@Property
+	void setDecomposedObjectThenApplyWildcardSetOverride() {
+		// when
+		StringListWrapper stringListWrapper = new StringListWrapper();
+		stringListWrapper.setValues(Collections.singletonList("1"));
+		List<StringListWrapper> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.set("values", Collections.singletonList(stringListWrapper))
+			.thenApply((obj, builder) ->
+				builder.size("values", 2)
+					.size("values[*].values", 2)
+					.set("values[*].values[*]", "override")
+			)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0).getValues()).hasSize(2);
+		then(actual.get(0).getValues().get(0)).isEqualTo("override");
+		then(actual.get(0).getValues().get(1)).isEqualTo("override");
+		then(actual.get(1).getValues()).hasSize(2);
+		then(actual.get(1).getValues().get(0)).isEqualTo("override");
+		then(actual.get(1).getValues().get(1)).isEqualTo("override");
+	}
+
+	@Property
+	void setDecomposedNestedContainerThenApplyWildcardSetOverride() {
+		// given
+		List<List<String>> values = Arrays.asList(
+			Arrays.asList("a", "b"),
+			Arrays.asList("c", "d")
+		);
+
+		// when
+		List<List<String>> actual = SUT.giveMeBuilder(ListListStringObject.class)
+			.set("values", values)
+			.thenApply((obj, builder) ->
+				builder.size("values", 2)
+					.size("values[*]", 2)
+					.set("values[*][*]", "override")
+			)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		for (int i = 0; i < 2; i++) {
+			then(actual.get(i)).hasSize(2);
+			then(actual.get(i).get(0)).isEqualTo("override");
+			then(actual.get(i).get(1)).isEqualTo("override");
+		}
+	}
+
+	@Property
+	void listListStringSizeAndSet() {
+		// when
+		List<List<String>> actual = SUT.giveMeBuilder(ListListStringObject.class)
+			.size("values", 2)
+			.size("values[*]", 2)
+			.set("values[*][*]", "test")
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		for (int i = 0; i < 2; i++) {
+			then(actual.get(i)).hasSize(2);
+			then(actual.get(i).get(0)).isEqualTo("test");
+			then(actual.get(i).get(1)).isEqualTo("test");
+		}
+	}
+
+	@Property
+	void listListStringSetThenSize() {
+		// given
+		FixtureMonkey fm = FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.plugin(new JavaNodeTreeAdapterPlugin())
+			.build();
+
+		List<List<String>> values = Arrays.asList(
+			Arrays.asList("a", "b"),
+			Arrays.asList("c", "d")
+		);
+
+		// when
+		List<List<String>> actual = fm.giveMeBuilder(ListListStringObject.class)
+			.set("values", values)
+			.size("values", 2)
+			.size("values[*]", 2)
+			.set("values[*][*]", "override")
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		for (int i = 0; i < 2; i++) {
+			then(actual.get(i)).hasSize(2);
+			then(actual.get(i).get(0)).isEqualTo("override");
+			then(actual.get(i).get(1)).isEqualTo("override");
+		}
+	}
+
 }

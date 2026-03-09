@@ -237,12 +237,15 @@ class ManipulatorAnalyzerTest {
 
 		AnalysisResult result = ManipulatorAnalyzer.analyze(Collections.singletonList(manipulator));
 
-		assertThat(result.getInterfaceResolvers()).isEmpty();
+		// Person.hobbies (List -> ArrayList) generates an interface resolver for the container field
+		assertThat(result.getInterfaceResolvers()).hasSize(1);
+		PathExpression hobbiesPath = PathExpression.of("$.person.hobbies");
+		assertThat(result.getInterfaceResolvers().get(0).matches(hobbiesPath)).isTrue();
 	}
 
 	@Property
 	void analyzesListOfStrings() {
-		List<String> items = Arrays.asList("item1", "item2", "item3");
+		List<String> items = new ArrayList<>(Arrays.asList("item1", "item2", "item3"));
 
 		NodeResolver nodeResolver = createNodeResolver("items");
 		NodeManipulator nodeManipulator = new NodeSetDecomposedValueManipulator<>(
@@ -402,7 +405,8 @@ class ManipulatorAnalyzerTest {
 
 		AnalysisResult result = ManipulatorAnalyzer.analyze(Collections.singletonList(manipulator));
 
-		assertThat(result.getInterfaceResolvers()).isEmpty();
+		// Order.items (List -> ArrayList) and Order.metadata (Map -> HashMap) generate interface resolvers
+		assertThat(result.getInterfaceResolvers()).hasSize(2);
 	}
 
 	@Property
@@ -434,7 +438,7 @@ class ManipulatorAnalyzerTest {
 
 	@Property
 	void analyzesListOfInterfaceImplementations() {
-		List<Animal> animals = Arrays.asList(new Dog("Poodle"), new Cat());
+		List<Animal> animals = new ArrayList<>(Arrays.asList(new Dog("Poodle"), new Cat()));
 
 		NodeResolver nodeResolver = createNodeResolver("animals");
 		NodeManipulator nodeManipulator = new NodeSetDecomposedValueManipulator<>(
@@ -616,11 +620,15 @@ class ManipulatorAnalyzerTest {
 
 		AnalysisResult result = ManipulatorAnalyzer.analyze(manipulators);
 
-		assertThat(result.getInterfaceResolvers()).hasSize(1);
+		// Person.hobbies(1) + Order.items(1) + Order.metadata(1) + Cat/pet(1) = 4
+		assertThat(result.getInterfaceResolvers()).hasSize(4);
 
 		PathExpression petPath = PathExpression.root().child("pet");
-		PathResolver<InterfaceResolver> petResolver = result.getInterfaceResolvers().get(0);
-		assertThat(petResolver.matches(petPath)).isTrue();
+		PathResolver<InterfaceResolver> petResolver = result.getInterfaceResolvers().stream()
+			.filter(r -> r.matches(petPath))
+			.findFirst()
+			.orElse(null);
+		assertThat(petResolver).isNotNull();
 
 		JvmType resolvedPetType = petResolver.getCustomizer().resolve(new JavaType(Animal.class));
 		assertThat(resolvedPetType).isNotNull();
@@ -981,7 +989,7 @@ class ManipulatorAnalyzerTest {
 
 	@Property
 	void extractsBothInterfaceAndGenericResolversFromList() {
-		List<String> items = Arrays.asList("a", "b", "c");
+		List<String> items = new ArrayList<>(Arrays.asList("a", "b", "c"));
 
 		NodeResolver nodeResolver = createNodeResolver("items");
 		NodeManipulator nodeManipulator = new NodeSetDecomposedValueManipulator<>(
@@ -1293,7 +1301,7 @@ class ManipulatorAnalyzerTest {
 
 	@Property
 	void extractsAllThreeResolversFromList() {
-		List<String> items = Arrays.asList("a", "b", "c");
+		List<String> items = new ArrayList<>(Arrays.asList("a", "b", "c"));
 
 		NodeResolver nodeResolver = createNodeResolver("items");
 		NodeManipulator nodeManipulator = new NodeSetDecomposedValueManipulator<>(

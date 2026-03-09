@@ -334,6 +334,19 @@ public class FixtureMonkeyTestSpecs {
 		String childValue;
 	}
 
+	@Data
+	public static class StringArrayWrapper {
+
+		private String[] values;
+	}
+
+	@Setter
+	@Getter
+	public static class NestedStringArrayWrapper {
+
+		List<StringArrayWrapper> values;
+	}
+
 	@Setter
 	@Getter
 	public static class NestedStringListWrapper {
@@ -346,6 +359,27 @@ public class FixtureMonkeyTestSpecs {
 	public static class DoubleNestedStringListWrapper {
 
 		List<NestedStringListWrapper> values;
+	}
+
+	@Setter
+	@Getter
+	public static class ListListStringObject {
+
+		List<List<String>> values;
+	}
+
+	@Setter
+	@Getter
+	public static class MapStringListObject {
+
+		Map<String, List<String>> values;
+	}
+
+	@Setter
+	@Getter
+	public static class OptionalListStringObject {
+
+		Optional<List<String>> value;
 	}
 
 	@Getter

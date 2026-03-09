@@ -31,7 +31,10 @@ import net.jqwik.api.PropertyDefaults;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.EnumObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapEntryWrapper;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapStringListObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.OptionalListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
 
@@ -146,6 +149,54 @@ class ContainerAdapterTest {
 		then(actual.getComplexEntry()).isNotNull();
 		then(actual.getComplexEntry().getKey()).isNotNull();
 		then(actual.getComplexEntry().getValue()).isNotNull();
+	}
+
+	@Property
+	void sampleNestedListList() {
+		// when
+		ListListStringObject actual = SUT.giveMeBuilder(ListListStringObject.class)
+			.size("values", 2)
+			.size("values[*]", 2)
+			.sample();
+
+		// then
+		then(actual.getValues()).hasSize(2);
+		for (List<String> inner : actual.getValues()) {
+			then(inner).hasSize(2);
+			for (String s : inner) {
+				then(s).isNotNull();
+			}
+		}
+	}
+
+	@Property
+	void sampleMapWithListValue() {
+		// when
+		MapStringListObject actual = SUT.giveMeBuilder(MapStringListObject.class)
+			.size("values", 2)
+			.sample();
+
+		// then
+		then(actual.getValues()).hasSize(2);
+		for (Map.Entry<String, List<String>> entry : actual.getValues().entrySet()) {
+			then(entry.getKey()).isNotNull();
+			then(entry.getValue()).isNotNull();
+		}
+	}
+
+	@Property
+	void sampleOptionalWithList() {
+		// when
+		OptionalListStringObject actual = SUT.giveMeBuilder(OptionalListStringObject.class)
+			.size("value", 2)
+			.sample();
+
+		// then
+		then(actual.getValue()).isPresent();
+		then(actual.getValue().get()).hasSize(2);
+		for (String s : actual.getValue().get()) {
+			then(s).isNotNull();
+		}
 	}
 
 }

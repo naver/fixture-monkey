@@ -18,7 +18,6 @@
 
 package com.navercorp.objectfarm.api.node;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -114,7 +113,9 @@ public interface JvmNodeContext {
 	 */
 	default boolean isContainerType(JvmType jvmType) {
 		Class<?> rawType = jvmType.getRawType();
-		if (rawType.isArray() || Collection.class.isAssignableFrom(rawType) || Map.class.isAssignableFrom(rawType)) {
+		if (rawType.isArray()
+			|| Iterable.class.isAssignableFrom(rawType)
+			|| Map.class.isAssignableFrom(rawType)) {
 			return true;
 		}
 		for (JvmContainerNodeGenerator generator : getContainerNodeGenerators()) {

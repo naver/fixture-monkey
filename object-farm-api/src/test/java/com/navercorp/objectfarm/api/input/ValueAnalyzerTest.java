@@ -241,6 +241,133 @@ class ValueAnalyzerTest {
 		then(doubleResult.getInterfaceResolvers()).isEmpty();
 	}
 
+	@Test
+	void analyzeDecomposedInterfaceFieldGeneratesInterfaceResolver() {
+		// given
+		ObjectWithInterfaceField obj = new ObjectWithInterfaceField(
+			new ArrayList<>(Arrays.asList("a", "b"))
+		);
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(obj, "$");
+
+		// then
+		then(result.getInterfaceResolvers()).isNotEmpty();
+		boolean hasItemsResolver = result.getInterfaceResolvers().stream()
+			.anyMatch(r -> r.matches(com.navercorp.objectfarm.api.expression.PathExpression.of("$.items")));
+		then(hasItemsResolver).isTrue();
+	}
+
+	@Test
+	void analyzeDecomposedConcreteFieldDoesNotGenerateInterfaceResolver() {
+		// given
+		ObjectWithConcreteField obj = new ObjectWithConcreteField(
+			new ArrayList<>(Arrays.asList("a", "b"))
+		);
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(obj, "$");
+
+		// then
+		boolean hasItemsResolver = result.getInterfaceResolvers().stream()
+			.anyMatch(r -> r.matches(com.navercorp.objectfarm.api.expression.PathExpression.of("$.items")));
+		then(hasItemsResolver).isFalse();
+	}
+
+	@Test
+	void analyzeDecomposedMapInterfaceFieldGeneratesInterfaceResolver() {
+		// given
+		HashMap<String, String> map = new HashMap<>();
+		map.put("key", "value");
+		ObjectWithMapInterfaceField obj = new ObjectWithMapInterfaceField(map);
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(obj, "$");
+
+		// then
+		boolean hasMetadataResolver = result.getInterfaceResolvers().stream()
+			.anyMatch(r -> r.matches(com.navercorp.objectfarm.api.expression.PathExpression.of("$.metadata")));
+		then(hasMetadataResolver).isTrue();
+	}
+
+	@Test
+	void analyzeDecomposedConcreteMapFieldDoesNotGenerateInterfaceResolver() {
+		// given
+		HashMap<String, String> map = new HashMap<>();
+		map.put("key", "value");
+		ObjectWithConcreteMapField obj = new ObjectWithConcreteMapField(map);
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(obj, "$");
+
+		// then
+		boolean hasMetadataResolver = result.getInterfaceResolvers().stream()
+			.anyMatch(r -> r.matches(com.navercorp.objectfarm.api.expression.PathExpression.of("$.metadata")));
+		then(hasMetadataResolver).isFalse();
+	}
+
+	@Test
+	void analyzeNonPublicJdkContainerGeneratesResolverThatSkipsResolve() {
+		// given
+		List<String> list = Arrays.asList("a", "b"); // Arrays$ArrayList is a non-public JDK inner class
+
+		// when
+		ValueAnalysisResult result = analyzer.analyze(list, "$.values");
+
+		// then
+		then(result.getInterfaceResolvers()).hasSize(1);
+	}
+
+	@Test
+	void analyzeDecomposedNonPublicJdkContainerGeneratesResolverThatSkipsResolve() {
+		// given
+		List<String> list = Arrays.asList("a", "b"); // Arrays$ArrayList is a non-public JDK inner class
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(list, "$.values");
+
+		// then
+		then(result.getInterfaceResolvers()).hasSize(1);
+	}
+
+	@Test
+	void analyzePublicContainerGeneratesInterfaceResolver() {
+		// given
+		List<String> list = new ArrayList<>(Arrays.asList("a", "b")); // ArrayList is a public class
+
+		// when
+		ValueAnalysisResult result = analyzer.analyze(list, "$.values");
+
+		// then
+		then(result.getInterfaceResolvers()).hasSize(1);
+	}
+
+	@Test
+	void analyzeDecomposedPublicContainerGeneratesInterfaceResolver() {
+		// given
+		List<String> list = new ArrayList<>(Arrays.asList("a", "b")); // ArrayList is a public class
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(list, "$.values");
+
+		// then
+		then(result.getInterfaceResolvers()).hasSize(1);
+	}
+
+	@Test
+	void analyzeDecomposedAbstractFieldDoesNotUseElseIfBranch() {
+		// given - Number is abstract but Integer is not a container, so it goes through recursive analyze
+		ObjectWithAbstractField obj = new ObjectWithAbstractField(42);
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(obj, "$");
+
+		// then - Integer is a JDK value type, so no interface resolver is generated
+		boolean hasValueResolver = result.getInterfaceResolvers().stream()
+			.anyMatch(r -> r.matches(com.navercorp.objectfarm.api.expression.PathExpression.of("$.value")));
+		then(hasValueResolver).isFalse();
+	}
+
 	// Test helper classes
 	static class SimpleObject {
 		private final String name;
@@ -299,6 +426,46 @@ class ValueAnalyzerTest {
 		Person(String name, Address address) {
 			this.name = name;
 			this.address = address;
+		}
+	}
+
+	static class ObjectWithInterfaceField {
+		private final List<String> items;
+
+		ObjectWithInterfaceField(List<String> items) {
+			this.items = items;
+		}
+	}
+
+	static class ObjectWithConcreteField {
+		private final ArrayList<String> items;
+
+		ObjectWithConcreteField(ArrayList<String> items) {
+			this.items = items;
+		}
+	}
+
+	static class ObjectWithAbstractField {
+		private final Number value;
+
+		ObjectWithAbstractField(Number value) {
+			this.value = value;
+		}
+	}
+
+	static class ObjectWithMapInterfaceField {
+		private final Map<String, String> metadata;
+
+		ObjectWithMapInterfaceField(Map<String, String> metadata) {
+			this.metadata = metadata;
+		}
+	}
+
+	static class ObjectWithConcreteMapField {
+		private final HashMap<String, String> metadata;
+
+		ObjectWithConcreteMapField(HashMap<String, String> metadata) {
+			this.metadata = metadata;
 		}
 	}
 }

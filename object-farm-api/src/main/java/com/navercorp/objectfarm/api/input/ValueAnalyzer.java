@@ -21,6 +21,7 @@ package com.navercorp.objectfarm.api.input;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -168,10 +169,11 @@ public final class ValueAnalyzer {
 			);
 
 			// Recursively analyze non-container object fields for nested container CSRs
-			Map<String, @Nullable Object> fieldValues = fieldExtractor.extractFields(value, pathExpression);
-			for (Map.Entry<String, @Nullable Object> entry : fieldValues.entrySet()) {
+			Map<String, ExtractedField> extractedFields = fieldExtractor.extractFields(value, pathExpression);
+			for (Map.Entry<String, ExtractedField> entry : extractedFields.entrySet()) {
 				String fieldPath = entry.getKey();
-				Object fieldValue = entry.getValue();
+				ExtractedField extracted = entry.getValue();
+				Object fieldValue = extracted.getValue();
 				if (fieldValue != null && !containerDetector.isContainer(fieldValue)) {
 					ValueAnalysisResult nestedResult = analyzeInternalDeep(
 						fieldValue,
@@ -182,6 +184,15 @@ public final class ValueAnalyzer {
 					containerSizeResolvers.addAll(nestedResult.getContainerSizeResolvers());
 					interfaceResolvers.addAll(nestedResult.getInterfaceResolvers());
 					genericTypeResolvers.addAll(nestedResult.getGenericTypeResolvers());
+				} else if (fieldValue != null
+					&& isDeclaredAsInterfaceOrAbstract(extracted.getDeclaredType())) {
+					PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
+						fieldPath,
+						fieldValue
+					);
+					if (interfaceResolver != null) {
+						interfaceResolvers.add(interfaceResolver);
+					}
 				}
 			}
 		}
@@ -553,7 +564,11 @@ public final class ValueAnalyzer {
 	}
 
 	private void extractFieldValues(Object value, String basePath, ValueAnalysisResult.Builder builder) {
-		Map<String, @Nullable Object> fieldValues = fieldExtractor.extractFields(value, basePath);
+		Map<String, ExtractedField> extractedFields = fieldExtractor.extractFields(value, basePath);
+		Map<String, @Nullable Object> fieldValues = new HashMap<>();
+		for (Map.Entry<String, ExtractedField> entry : extractedFields.entrySet()) {
+			fieldValues.put(entry.getKey(), entry.getValue().getValue());
+		}
 		builder.putAllValues(fieldValues);
 	}
 
@@ -585,11 +600,11 @@ public final class ValueAnalyzer {
 		ValueAnalysisResult.Builder builder,
 		boolean storeContainerElements
 	) {
-		Map<String, @Nullable Object> fieldValues = fieldExtractor.extractFields(value, basePath);
+		Map<String, ExtractedField> extractedFields = fieldExtractor.extractFields(value, basePath);
 
-		for (Map.Entry<String, @Nullable Object> entry : fieldValues.entrySet()) {
+		for (Map.Entry<String, ExtractedField> entry : extractedFields.entrySet()) {
 			String fieldPath = entry.getKey();
-			Object fieldValue = entry.getValue();
+			Object fieldValue = entry.getValue().getValue();
 			if (fieldValue != null) {
 				extractContainerSizeResolverInternal(
 					fieldValue,
@@ -602,6 +617,10 @@ public final class ValueAnalyzer {
 				);
 			}
 		}
+	}
+
+	private static boolean isDeclaredAsInterfaceOrAbstract(Class<?> declaredType) {
+		return declaredType.isInterface() || java.lang.reflect.Modifier.isAbstract(declaredType.getModifiers());
 	}
 
 	private static boolean requiresInterfaceResolver(Object value) {
