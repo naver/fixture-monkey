@@ -31,7 +31,7 @@ jobs:
           GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
         shell: bash
         run: |
-          echo "${GRADLE_PROPERTIES}" > gradle.properties
+          echo "${GRADLE_PROPERTIES}" >> gradle.properties
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Check object-farm-api changes

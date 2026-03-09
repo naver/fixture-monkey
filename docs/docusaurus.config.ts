@@ -30,7 +30,7 @@ const config: Config = {
   },
 
   customFields: {
-    fixtureMonkeyVersion: '1.1.17',
+    fixtureMonkeyVersion: '1.1.18',
   },
 
   presets: [

@@ -16,7 +16,7 @@ The DataFaker plugin analyzes String field names and automatically generates app
 ## Dependencies
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-datafaker:1.1.17")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-datafaker:1.1.18")
 ```
 
 #### Maven
@@ -24,7 +24,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-datafaker:1.1.17"
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-datafaker</artifactId>
-  <version>1.1.17</version>
+  <version>1.1.18</version>
   <scope>test</scope>
 </dependency>
 ```
