@@ -388,7 +388,7 @@ class FixtureMonkeyTest {
 		// when
 		thenThrownBy(() -> SUT.giveMeBuilder(ComplexObject.class).size("strList", 5, 1).sample())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("should be min > max");
+			.hasMessageContaining("should be min <= max");
 	}
 
 	@Example

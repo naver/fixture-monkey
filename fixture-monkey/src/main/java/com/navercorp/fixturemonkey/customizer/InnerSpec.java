@@ -114,7 +114,7 @@ public final class InnerSpec {
 	 */
 	public InnerSpec size(int minSize, int maxSize) {
 		if (minSize > maxSize) {
-			throw new IllegalArgumentException("should be min > max, min : " + minSize + " max : " + maxSize);
+			throw new IllegalArgumentException("should be min <= max, min : " + minSize + " max : " + maxSize);
 		}
 
 		this.state.setContainerInfoSnapshot(
