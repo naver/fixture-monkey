@@ -245,7 +245,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	@Override
 	public ArbitraryBuilder<T> size(PropertySelector propertySelector, int minSize, int maxSize) {
 		if (minSize > maxSize) {
-			throw new IllegalArgumentException("should be min > max, min : " + minSize + " max : " + maxSize);
+			throw new IllegalArgumentException("should be min <= max, min : " + minSize + " max : " + maxSize);
 		}
 
 		List<NextNodePredicate> nextNodePredicates = toMonkeyExpression(propertySelector).toNextNodePredicate();

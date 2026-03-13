@@ -1058,7 +1058,7 @@ class ValueProjectionCustomizationTest {
 	void sizeMinIsBiggerThanMax() {
 		thenThrownBy(() -> SUT.giveMeBuilder(StringListHolder.class).size("values", 5, 1).sample())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("should be min > max");
+			.hasMessageContaining("should be min <= max");
 	}
 
 	@Property
