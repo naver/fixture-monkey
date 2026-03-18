@@ -20,10 +20,10 @@ package com.navercorp.objectfarm.api.expression;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.jspecify.annotations.Nullable;
 
@@ -43,12 +43,12 @@ public final class PathExpression implements Comparable<PathExpression> {
 	public static final String ROOT_EXPRESSION = "$";
 
 	private final List<Segment> segments;
-	private int cachedHashCode;
-	private String cachedExpression;
-	private PathExpression cachedParent;
-	private Map<String, PathExpression> cachedChildren;
-	private byte cachedHasWildcard; // 0=not computed, 1=false, 2=true
-	private byte cachedHasTypeSelector; // 0=not computed, 1=false, 2=true
+	private volatile int cachedHashCode;
+	private volatile String cachedExpression;
+	private volatile PathExpression cachedParent;
+	private final ConcurrentMap<String, PathExpression> cachedChildren = new ConcurrentHashMap<>(16);
+	private volatile byte cachedHasWildcard; // 0=not computed, 1=false, 2=true
+	private volatile byte cachedHasTypeSelector; // 0=not computed, 1=false, 2=true
 
 	private PathExpression(List<Segment> segments) {
 		this.segments = Collections.unmodifiableList(new ArrayList<>(segments));
@@ -204,12 +204,9 @@ public final class PathExpression implements Comparable<PathExpression> {
 	public PathExpression child(String propertyName) {
 		Objects.requireNonNull(propertyName, "propertyName must not be null");
 
-		Map<String, PathExpression> children = cachedChildren;
-		if (children != null) {
-			PathExpression cached = children.get(propertyName);
-			if (cached != null) {
-				return cached;
-			}
+		PathExpression cached = cachedChildren.get(propertyName);
+		if (cached != null) {
+			return cached;
 		}
 
 		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
@@ -217,13 +214,8 @@ public final class PathExpression implements Comparable<PathExpression> {
 		newSegments.add(Segment.ofName(propertyName));
 		PathExpression result = new PathExpression(newSegments, true);
 
-		if (children == null) {
-			children = new HashMap<>();
-			cachedChildren = children;
-		}
-		children.put(propertyName, result);
-
-		return result;
+		PathExpression existing = cachedChildren.putIfAbsent(propertyName, result);
+		return existing != null ? existing : result;
 	}
 
 	public PathExpression index(int index) {

@@ -90,7 +90,7 @@ public final class JvmNodeCandidateTreeContext {
 			new ArrayList<>(children),
 			new HashMap<>(parentChildMap)
 		);
-		subtreeCache.put(jvmType, snapshot);
+		subtreeCache.putIfAbsent(jvmType, snapshot);
 	}
 
 	/**
