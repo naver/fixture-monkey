@@ -21,29 +21,19 @@ package com.navercorp.fixturemonkey.api.validator;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 
-class FilteringArbitraryValidatorTest {
+class ValidationFailureRecorderTest {
 	@Test
-	void validateSafelyStoresAndClearsFailure() {
-		AtomicBoolean shouldFail = new AtomicBoolean(true);
-		FilteringArbitraryValidator validator = new FilteringArbitraryValidator(arbitrary -> {
-			if (shouldFail.getAndSet(false)) {
-				throw new ValidationFailedException("failed", Collections.singleton("candidate"));
-			}
-		});
+	void consumeReturnsAndClearsFailure() {
+		ValidationFailureRecorder recorder = new ValidationFailureRecorder();
+		recorder.record(new ValidationFailedException("failed", Collections.singleton("candidate")));
 
-		boolean firstAttempt = validator.validateSafely(new Object());
-		then(firstAttempt).isFalse();
-		then(validator.consumeFailure())
+		then(recorder.consume())
 			.hasValueSatisfying(ex -> then(ex.getConstraintViolationPropertyNames()).containsExactly("candidate"));
-
-		boolean secondAttempt = validator.validateSafely(new Object());
-		then(secondAttempt).isTrue();
-		then(validator.consumeFailure()).isEmpty();
+		then(recorder.consume()).isEmpty();
 	}
 }

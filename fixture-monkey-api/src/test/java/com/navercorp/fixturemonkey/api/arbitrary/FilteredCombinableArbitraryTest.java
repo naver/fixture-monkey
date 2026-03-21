@@ -26,19 +26,20 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
-import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 
 class FilteredCombinableArbitraryTest {
 	@Test
 	void throwsRetryableMissWhenValidationFails() {
 		ValidationFailedException failure =
 			new ValidationFailedException("validation failed", Collections.singleton("value"));
-		FilteringArbitraryValidator filteringValidator = new FilteringArbitraryValidator(arbitrary -> {
-			throw failure;
-		});
+		ValidationFailureRecorder validationFailureRecorder = new ValidationFailureRecorder();
 
 		thenThrownBy(() -> CombinableArbitrary.from("candidate")
-			.filter(5, candidate -> filteringValidator.validateSafely(candidate), filteringValidator)
+			.filter(5, candidate -> {
+				validationFailureRecorder.record(failure);
+				return false;
+			}, validationFailureRecorder)
 			.combined())
 			.isInstanceOf(RetryableFilterMissException.class)
 			.hasCause(failure)
@@ -47,13 +48,13 @@ class FilteredCombinableArbitraryTest {
 
 	@Test
 	void throwsRetryableMissWhenValidatorRecordsFailure() {
-		FilteringArbitraryValidator filteringValidator = new FilteringArbitraryValidator(arbitrary -> { });
+		ValidationFailureRecorder validationFailureRecorder = new ValidationFailureRecorder();
 
 		thenThrownBy(() -> CombinableArbitrary.from("candidate")
 			.filter(5, candidate -> {
-				filteringValidator.markFailure("validation failed", Collections.singleton("value"));
+				validationFailureRecorder.record("validation failed", Collections.singleton("value"));
 				return false;
-			}, filteringValidator)
+			}, validationFailureRecorder)
 			.combined())
 			.isInstanceOf(RetryableFilterMissException.class)
 			.hasMessageContaining("value")

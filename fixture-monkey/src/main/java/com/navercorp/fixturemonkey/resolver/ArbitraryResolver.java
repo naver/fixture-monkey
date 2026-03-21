@@ -42,7 +42,8 @@ import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
-import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
@@ -72,9 +73,9 @@ public final class ArbitraryResolver {
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts
 	) {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
-		FilteringArbitraryValidator filteringValidator = new FilteringArbitraryValidator(
-			fixtureMonkeyOptions.getDefaultArbitraryValidator()
-		);
+		ArbitraryValidator arbitraryValidator = fixtureMonkeyOptions.getDefaultArbitraryValidator();
+		ValidationFailureRecorder validationFailureRecorder = activeContext.getValidationFailureRecorder();
+		validationFailureRecorder.clear();
 
 		List<ArbitraryManipulator> activeManipulators = activeContext.getManipulators();
 
@@ -105,7 +106,7 @@ public final class ArbitraryResolver {
 
 				ObjectTree objectTree = new ObjectTree(
 					rootProperty,
-					activeContext.newGenerateFixtureContext(registeredIntrospectors, filteringValidator),
+					activeContext.newGenerateFixtureContext(registeredIntrospectors),
 					activeContext.newTraverseContext(rootProperty, registeredPropertyConfigurer)
 				);
 
@@ -163,7 +164,8 @@ public final class ArbitraryResolver {
 				return objectTree.generate();
 			},
 			fixtureMonkeyOptions.getGenerateMaxTries(),
-			filteringValidator,
+			arbitraryValidator,
+			validationFailureRecorder,
 			activeContext::isValidOnly
 		);
 	}

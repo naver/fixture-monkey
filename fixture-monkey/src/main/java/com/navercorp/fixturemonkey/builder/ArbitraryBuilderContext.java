@@ -48,7 +48,7 @@ import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.tree.TraverseContext;
 import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
@@ -69,6 +69,7 @@ public final class ArbitraryBuilderContext {
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
+	private final ValidationFailureRecorder validationFailureRecorder;
 	private final MonkeyContext monkeyContext;
 
 	@Nullable
@@ -87,6 +88,7 @@ public final class ArbitraryBuilderContext {
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
+		ValidationFailureRecorder validationFailureRecorder,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
 		MonkeyContext monkeyContext
@@ -95,6 +97,7 @@ public final class ArbitraryBuilderContext {
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.propertyConfigurers = propertyConfigurers;
 		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
+		this.validationFailureRecorder = validationFailureRecorder;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 		this.monkeyContext = monkeyContext;
@@ -111,6 +114,7 @@ public final class ArbitraryBuilderContext {
 			new ArrayList<>(),
 			new HashMap<>(),
 			new HashMap<>(),
+			new ValidationFailureRecorder(),
 			null, null,
 			monkeyContext
 		);
@@ -126,6 +130,7 @@ public final class ArbitraryBuilderContext {
 			copiedContainerInfoManipulators,
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
+			new ValidationFailureRecorder(),
 			fixedState,
 			fixedCombinableArbitrary,
 			monkeyContext
@@ -175,6 +180,10 @@ public final class ArbitraryBuilderContext {
 
 	public Map<Class<?>, List<Property>> getPropertyConfigurers() {
 		return propertyConfigurers;
+	}
+
+	public ValidationFailureRecorder getValidationFailureRecorder() {
+		return validationFailureRecorder;
 	}
 
 	public void setOptionValidOnly(@Nullable Boolean optionValidOnly) {
@@ -287,8 +296,7 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public GenerateFixtureContext newGenerateFixtureContext(
-		Map<Class<?>, ArbitraryIntrospector> registeredArbitraryIntrospectorsByType,
-		FilteringArbitraryValidator filteringValidator
+		Map<Class<?>, ArbitraryIntrospector> registeredArbitraryIntrospectorsByType
 	) {
 		Map<Class<?>, ArbitraryIntrospector> concat = new HashMap<>(arbitraryIntrospectorsByType);
 		concat.putAll(registeredArbitraryIntrospectorsByType);
@@ -298,7 +306,7 @@ public final class ArbitraryBuilderContext {
 			concat,
 			this::isValidOnly,
 			monkeyContext,
-			filteringValidator
+			validationFailureRecorder
 		);
 	}
 

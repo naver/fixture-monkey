@@ -23,45 +23,30 @@ import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
-public final class FilteringArbitraryValidator implements ArbitraryValidator {
-	private final ArbitraryValidator delegate;
+public final class ValidationFailureRecorder {
+	@Nullable
 	private ValidationFailedException lastFailure;
 
-	public FilteringArbitraryValidator(ArbitraryValidator delegate) {
-		this.delegate = delegate;
-	}
-
-	@Override
-	public void validate(Object arbitrary) {
-		delegate.validate(arbitrary);
-	}
-
-	public boolean validateSafely(Object arbitrary) {
-		try {
-			delegate.validate(arbitrary);
-			lastFailure = null;
-			return true;
-		} catch (ValidationFailedException ex) {
-			lastFailure = ex;
-			return false;
-		}
-	}
-
-	public Optional<ValidationFailedException> consumeFailure() {
+	public Optional<ValidationFailedException> consume() {
 		ValidationFailedException failure = lastFailure;
 		lastFailure = null;
 		return Optional.ofNullable(failure);
 	}
 
-	public void markFailure(ValidationFailedException failure) {
+	public void record(ValidationFailedException failure) {
 		lastFailure = failure;
 	}
 
-	public void markFailure(String message, Set<String> constraintViolationPropertyNames) {
-		this.lastFailure = new ValidationFailedException(message, constraintViolationPropertyNames);
+	public void record(String message, Set<String> constraintViolationPropertyNames) {
+		lastFailure = new ValidationFailedException(message, constraintViolationPropertyNames);
+	}
+
+	public void clear() {
+		lastFailure = null;
 	}
 }

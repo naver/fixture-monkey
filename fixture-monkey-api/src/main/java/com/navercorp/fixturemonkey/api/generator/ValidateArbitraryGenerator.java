@@ -58,7 +58,7 @@ import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
@@ -66,23 +66,23 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 
 	private final JavaConstraintGenerator constraintGenerator;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
-	private final FilteringArbitraryValidator filteringValidator;
+	private final ValidationFailureRecorder validationFailureRecorder;
 
 	public ValidateArbitraryGenerator(
 		JavaConstraintGenerator constraintGenerator,
 		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
-		this(constraintGenerator, decomposedContainerValueFactory, new FilteringArbitraryValidator(it -> { }));
+		this(constraintGenerator, decomposedContainerValueFactory, new ValidationFailureRecorder());
 	}
 
 	public ValidateArbitraryGenerator(
 		JavaConstraintGenerator constraintGenerator,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
-		FilteringArbitraryValidator filteringValidator
+		ValidationFailureRecorder validationFailureRecorder
 	) {
 		this.constraintGenerator = constraintGenerator;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
-		this.filteringValidator = filteringValidator;
+		this.validationFailureRecorder = validationFailureRecorder;
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 						return validateMandatoryStringConstraints(javaStringConstraint, string, violationProperty)
 							&& validateStringLength(javaStringConstraint, string, violationProperty);
 					},
-					filteringValidator
+					validationFailureRecorder
 				);
 			}
 		}
@@ -473,7 +473,7 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 	}
 
 	private boolean recordStringValidationFailure(String message, String violationProperty) {
-		filteringValidator.markFailure(message, Collections.singleton(violationProperty));
+		validationFailureRecorder.record(message, Collections.singleton(violationProperty));
 		return false;
 	}
 

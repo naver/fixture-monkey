@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.Traceable;
-import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 
 /**
  * It would generate an object satisfied given {@code predicate}.
@@ -43,7 +43,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final CombinableArbitrary<T> combinableArbitrary;
 	private final Predicate<T> predicate;
 	@Nullable
-	private final FilteringArbitraryValidator filteringValidator;
+	private final ValidationFailureRecorder validationFailureRecorder;
 
 	private Exception lastException;
 
@@ -67,26 +67,26 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		int maxMisses,
 		CombinableArbitrary<T> combinableArbitrary,
 		Predicate<T> predicate,
-		@Nullable FilteringArbitraryValidator filteringValidator
+		@Nullable ValidationFailureRecorder validationFailureRecorder
 	) {
 		this.maxMisses = maxMisses;
 		this.combinableArbitrary = combinableArbitrary;
 		this.predicate = predicate;
-		this.filteringValidator = filteringValidator;
+		this.validationFailureRecorder = validationFailureRecorder;
 	}
 
 	FilteredCombinableArbitrary(
 		int maxMisses,
 		FilteredCombinableArbitrary<T> filteredCombinableArbitrary,
 		Predicate<T> predicate,
-		@Nullable FilteringArbitraryValidator filteringValidator
+		@Nullable ValidationFailureRecorder validationFailureRecorder
 	) {
 		this.maxMisses = maxMisses;
 		this.combinableArbitrary = filteredCombinableArbitrary.combinableArbitrary;
 		this.predicate = predicate.and(filteredCombinableArbitrary.predicate);
-		this.filteringValidator = filteringValidator != null
-			? filteringValidator
-			: filteredCombinableArbitrary.filteringValidator;
+		this.validationFailureRecorder = validationFailureRecorder != null
+			? validationFailureRecorder
+			: filteredCombinableArbitrary.validationFailureRecorder;
 	}
 
 	@Override
@@ -225,11 +225,11 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	private void throwIfValidationFailed() {
-		if (filteringValidator == null) {
+		if (validationFailureRecorder == null) {
 			return;
 		}
 
-		filteringValidator.consumeFailure().ifPresent(ex -> {
+		validationFailureRecorder.consume().ifPresent(ex -> {
 			throw ex;
 		});
 	}

@@ -52,7 +52,7 @@ import com.navercorp.fixturemonkey.api.tree.TraverseNode;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeContext;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeMetadata;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.api.validator.FilteringArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 /**
@@ -74,7 +74,7 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
 	private final List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
 		new ArrayList<>();
-	private final FilteringArbitraryValidator filteringValidator;
+	private final ValidationFailureRecorder validationFailureRecorder;
 	@Nullable
 	private CombinableArbitrary<?> arbitrary;
 
@@ -82,12 +82,12 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer,
 		Supplier<Boolean> validOnly,
 		MonkeyContext monkeyContext,
-		FilteringArbitraryValidator filteringValidator
+		ValidationFailureRecorder validationFailureRecorder
 	) {
 		this.arbitraryIntrospectorConfigurer = arbitraryIntrospectorConfigurer;
 		this.validOnly = validOnly;
 		this.monkeyContext = monkeyContext;
-		this.filteringValidator = filteringValidator;
+		this.validationFailureRecorder = validationFailureRecorder;
 	}
 
 	@SuppressWarnings("dereference.of.nullable")
@@ -218,7 +218,7 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 					new ValidateArbitraryGenerator(
 						fixtureMonkeyOptions.getJavaConstraintGenerator(),
 						fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
-						filteringValidator
+						validationFailureRecorder
 					)
 				)
 			);
@@ -294,7 +294,7 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 			this.arbitraryIntrospectorConfigurer,
 			this.validOnly,
 			this.monkeyContext,
-			this.filteringValidator
+			this.validationFailureRecorder
 		);
 	}
 }
