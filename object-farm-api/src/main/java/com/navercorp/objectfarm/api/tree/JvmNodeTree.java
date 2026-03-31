@@ -282,8 +282,14 @@ public final class JvmNodeTree {
 		// Build paths by traversing the tree
 		buildPathsRecursive(rootNode, PathExpression.root(), paths, parents);
 
-		this.nodePaths = paths;
+		// IMPORTANT: nodePaths must be written LAST.
+		// It acts as the gate variable in ensurePathMappingsInitialized() —
+		// other threads skip the synchronized block when they see nodePaths != null.
+		// Writing childToParent before nodePaths ensures that the volatile write of
+		// nodePaths happens-after childToParent, so any thread that reads
+		// nodePaths != null is guaranteed to see childToParent != null by transitivity.
 		this.childToParent = parents;
+		this.nodePaths = paths;
 	}
 
 	private void buildPathsRecursive(
