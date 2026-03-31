@@ -33,7 +33,7 @@ To generate objects that satisfy these constraints, first add the appropriate de
 
 ##### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.18")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.19")
 ```
 
 ##### Maven
@@ -41,7 +41,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validatio
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jakarta-validation</artifactId>
-  <version>1.1.18</version>
+  <version>1.1.19</version>
   <scope>test</scope>
 </dependency>
 ```

@@ -16,7 +16,7 @@ Adding the Kotest Plugin doesn't mean you have to use Kotest as your testing fra
 
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotest:1.1.18")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotest:1.1.19")
 ```
 
 #### Maven
@@ -24,7 +24,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotest:1.1.18")
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-kotest</artifactId>
-  <version>1.1.18</version>
+  <version>1.1.19</version>
   <scope>test</scope>
 </dependency>
 ```
