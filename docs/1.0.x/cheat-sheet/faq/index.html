@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://www.googletagmanager.com">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M1VQRZLNX1"></script>
 <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-M1VQRZLNX1",{})</script><link rel="stylesheet" href="/fixture-monkey/assets/css/styles.c8fc5483.css">
-<script src="/fixture-monkey/assets/js/runtime~main.234caf08.js" defer="defer"></script>
+<script src="/fixture-monkey/assets/js/runtime~main.2e52d36f.js" defer="defer"></script>
 <script src="/fixture-monkey/assets/js/main.3df187a1.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -19,9 +19,9 @@
 <p>Related - How can I constrain the range of my generated Instant values?</p>
 </blockquote>
 <p>Normally, if you want to add constraints to your fixture, you can do so using the Fixture Customization APIs provided with the ArbitraryBuilder.
-However, in cases where you want each generated primitive type to adhere to specific constraints, you can use the <a class="" href="/fixture-monkey/docs/1.0.x/fixture-monkey-options/customization-options/#constrain-java-types"><code>javaTypeArbitaryGenerator</code>
+However, in cases where you want each generated primitive type to adhere to specific constraints, you can use the <a class="" href="/fixture-monkey/docs/1.0.x/fixture-monkey-options/customization-options/#constrain-java-types"><code>javaTypeArbitraryGenerator</code>
 and <code>javaTimeTypeArbitraryGenerator</code></a> options.</p>
-<p>The <code>javaTypeArbitaryGenerator</code> option allows you to customize the default values for primitive types such as Strings or Integers. For time types, such as Instant, you can use the <code>javaTimeTypeArbitraryGenerator</code> option.</p>
+<p>The <code>javaTypeArbitraryGenerator</code> option allows you to customize the default values for primitive types such as Strings or Integers. For time types, such as Instant, you can use the <code>javaTimeTypeArbitraryGenerator</code> option.</p>
 <p>This option is particularly useful if you want the generated strings to fall within a certain range of characters, or if you want your time types to be generated at predefined intervals.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="how-can-i-exclude-certain-values-from-being-generated">How can I exclude certain values from being generated?<a href="#how-can-i-exclude-certain-values-from-being-generated" class="hash-link" aria-label="Direct link to How can I exclude certain values from being generated?" title="Direct link to How can I exclude certain values from being generated?" translate="no">​</a></h3>
 <p>You can easily specify a value using <a class="" href="/fixture-monkey/docs/1.0.x/customizing-objects/apis/#set"><code>set()</code></a>, but there may be cases where you want to EXCLUDE certain values.</p>

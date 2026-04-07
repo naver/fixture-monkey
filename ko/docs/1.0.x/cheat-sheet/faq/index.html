@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://www.googletagmanager.com">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M1VQRZLNX1"></script>
 <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-M1VQRZLNX1",{})</script><link rel="stylesheet" href="/fixture-monkey/ko/assets/css/styles.1896cbec.css">
-<script src="/fixture-monkey/ko/assets/js/runtime~main.237ff26b.js" defer="defer"></script>
+<script src="/fixture-monkey/ko/assets/js/runtime~main.d221593d.js" defer="defer"></script>
 <script src="/fixture-monkey/ko/assets/js/main.b7ef8c77.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -19,8 +19,8 @@
 <p>관련 질문 - 생성된 인스턴트 값의 범위를 제한할 수 있나요?</p>
 </blockquote>
 <p>일반적으로 픽스처에 제약 조건을 추가하고자 한다면 ArbitraryBuilder와 함께 제공된 Fixture Customization API를 사용할 수 있습니다.
-그러나 각 생성된 기본 타입이 특정 제약 조건을 지키길 원하는 경우에는 <a class="" href="/fixture-monkey/ko/docs/1.0.x/fixture-monkey-options/customization-options/#java-%EA%B8%B0%EB%B3%B8-%ED%83%80%EC%9E%85-%EC%A0%9C%EC%95%BD-%EC%B6%94%EA%B0%80%ED%95%98%EA%B8%B0"><code>javaTypeArbitaryGenerator</code>와 <code>javaTimeTypeArbitraryGenerator</code></a>옵션을 사용할 수 있습니다.</p>
-<p><code>javaTypeArbitaryGenerator</code> 옵션을 사용하면 문자열 또는 정수와 같은 기본 타입의 초기값을 커스터마이징 할 수 있습니다. 인스턴트와 같은 시간 타입의 경우 <code>javaTimeTypeArbitaryGenerator</code> 옵션을 사용할 수 있습니다.</p>
+그러나 각 생성된 기본 타입이 특정 제약 조건을 지키길 원하는 경우에는 <a class="" href="/fixture-monkey/ko/docs/1.0.x/fixture-monkey-options/customization-options/#java-%EA%B8%B0%EB%B3%B8-%ED%83%80%EC%9E%85-%EC%A0%9C%EC%95%BD-%EC%B6%94%EA%B0%80%ED%95%98%EA%B8%B0"><code>javaTypeArbitraryGenerator</code>와 <code>javaTimeTypeArbitraryGenerator</code></a>옵션을 사용할 수 있습니다.</p>
+<p><code>javaTypeArbitraryGenerator</code> 옵션을 사용하면 문자열 또는 정수와 같은 기본 타입의 초기값을 커스터마이징 할 수 있습니다. 인스턴트와 같은 시간 타입의 경우 <code>javaTimeTypeArbitraryGenerator</code> 옵션을 사용할 수 있습니다.</p>
 <p>이 옵션은 문자열 생성시 특정 범위의 문자만 사용하려는 경우나 시간 타입을 특정한 범위 내로 생성하려는 경우에 특히 유용합니다.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="특정-값이-생성되지-않도록-하려면-어떻게-해야-하나요">특정 값이 생성되지 않도록 하려면 어떻게 해야 하나요?<a href="#특정-값이-생성되지-않도록-하려면-어떻게-해야-하나요" class="hash-link" aria-label="특정 값이 생성되지 않도록 하려면 어떻게 해야 하나요?에 대한 직접 링크" title="특정 값이 생성되지 않도록 하려면 어떻게 해야 하나요?에 대한 직접 링크" translate="no">​</a></h3>
 <p><a class="" href="/fixture-monkey/ko/docs/1.0.x/customizing-objects/apis/#set"><code>set()</code></a>을 사용하여 값을 쉽게 지정할 수 있지만, 값을 지정하는 것이 아니라 특정 값이 생성되지 않도록 제외하고 싶은 경우가 있을 수 있습니다.</p>
