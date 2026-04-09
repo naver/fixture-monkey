@@ -3,6 +3,8 @@ title: "Introspectors for Kotlin"
 sidebar_position: 62
 ---
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import IntrospectorsKotlinTest from '@examples-kotlin/plugins/IntrospectorsKotlinTest.kt';
 
 Fixture Monkey provides some additional introspectors that support the generation of Kotlin classes.
 

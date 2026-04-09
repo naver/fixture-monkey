@@ -68,6 +68,15 @@ import TabItem from '@theme/TabItem';
 
 ## 기본 API 사용하기
 
+:::tip[Kotlin 사용자: `giveMeBuilder` vs `giveMeKotlinBuilder`]
+이 페이지의 Kotlin 예제는 타입 안전한 속성 참조(예: `setExp(Product::name, "value")`)에는 **`giveMeKotlinBuilder`**를, 문자열 기반 API(예: `setLazy("orderId") { ... }`)에는 **`giveMeBuilder`**를 사용합니다.
+
+- `giveMeKotlinBuilder<T>()` — `setExp`, `sizeExp`, `setPostConditionExp`, `customizeProperty(KProperty)` 같은 타입 안전한 메서드를 제공합니다
+- `giveMeBuilder<T>()` — `set("name", value)`, `setLazy`, `setInner` 같은 문자열 기반 메서드를 제공합니다
+
+둘 다 유효하며, 용도에 맞게 선택해서 사용하세요. 문자열 기반 API로 빠르게 시작하려면 [빠른 시작 가이드](./quick-start-guide)를 참고하세요.
+:::
+
 ### set()
 `set()` 메서드는 객체의 특정 속성에 원하는 값을 설정할 때 사용합니다.
 가장 기본적이고 많이 사용되는 API입니다.

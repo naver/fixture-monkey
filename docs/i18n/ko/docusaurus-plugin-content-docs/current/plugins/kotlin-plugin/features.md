@@ -52,3 +52,29 @@ val fixtureMonkey = FixtureMonkey.builder()
     .build()
 ```
 
+## 빠른 예제
+
+```kotlin
+// given
+val product: Product = fixtureMonkey.giveMeOne()
+
+// then
+then(product).isNotNull
+```
+
+타입 안전 프로퍼티 참조를 사용한 커스터마이징:
+
+```kotlin
+// when
+val custom = fixtureMonkey.giveMeKotlinBuilder<Product>()
+    .setExp(Product::name, "Fixture Monkey")
+    .setExp(Product::price, 29_900L)
+    .sizeExp(Product::options, 3)
+    .sample()
+
+// then
+then(custom.name).isEqualTo("Fixture Monkey")
+then(custom.price).isEqualTo(29_900L)
+then(custom.options).hasSize(3)
+```
+

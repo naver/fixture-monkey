@@ -72,6 +72,10 @@ MyClass myObject = fixtureMonkey.giveMeOne(MyClass.class);
 | **빌더 패턴을 사용하는 클래스** | `BuilderArbitraryIntrospector` | `.builder()` 메서드가 있는 클래스 |
 | **다양한 패턴이 섞인 코드베이스** | `FailoverArbitraryIntrospector` | 다양한 클래스 타입이 있는 프로젝트 |
 
+:::note
+아래 예제에서는 assertion을 위해 `.defaultNotNull(true)`를 사용하여 생성된 프로퍼티가 null이 아님을 보장합니다. 이 설정은 선택 사항이며, 테스트에서 null 값이 허용되는 경우 제거해도 됩니다.
+:::
+
 ## 일반적인 클래스 타입 예제
 
 ### 예제 1: 표준 JavaBean 클래스 (getter/setter 있음)

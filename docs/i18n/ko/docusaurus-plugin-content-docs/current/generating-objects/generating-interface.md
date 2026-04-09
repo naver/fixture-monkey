@@ -17,6 +17,10 @@ Fixture Monkey는 간단한 인터페이스, 제네릭 인터페이스, sealed i
 
 인터페이스 생성을 시작하기 위한 간단한 예제입니다:
 
+:::note
+익명 인터페이스 생성은 `InterfacePlugin`에서 `useAnonymousArbitraryIntrospector(true)`를 활성화해야 합니다.
+:::
+
 ```java
 // 테스트하고 싶은 인터페이스 정의
 public interface StringSupplier {
@@ -325,6 +329,10 @@ void 커스텀_리스트_구현체_테스트() {
     assertThat(list).isInstanceOf(LinkedList.class);
 }
 ```
+
+:::note
+`interfaceImplements`로 커스텀 구현체를 추가하면, 기본 내장 구현체(예: `List`의 `ArrayList`)도 후보로 남아 있을 수 있습니다. Fixture Monkey는 기본 구현체와 커스텀 구현체를 포함한 모든 후보 중에서 랜덤으로 선택할 수 있습니다.
+:::
 
 ## 인터페이스 상속
 

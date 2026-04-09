@@ -3,6 +3,8 @@ title: "Introspector"
 sidebar_position: 42
 ---
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import IntrospectorTestJava from '@examples-java/generating/IntrospectorTest.java';
 
 ## What is an Introspector?
 
@@ -17,31 +19,7 @@ For example, it decides:
 
 If you're new to Fixture Monkey and want to get started quickly, here's the setup that works for most projects:
 
-```java
-// Recommended setup that handles most class types
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .objectIntrospector(new FailoverIntrospector(
-        Arrays.asList(
-            ConstructorPropertiesArbitraryIntrospector.INSTANCE,
-            BuilderArbitraryIntrospector.INSTANCE,
-            FieldReflectionArbitraryIntrospector.INSTANCE,
-            BeanArbitraryIntrospector.INSTANCE
-        ),
-        false // Disable logging for cleaner test output
-    ))
-    .build();
-
-// Use it in your tests
-@Test
-void testExample() {
-    // Generate a test object
-    MyClass myObject = fixtureMonkey.giveMeOne(MyClass.class);
-    
-    // Use the generated object in your test
-    assertThat(myObject).isNotNull();
-    // more assertions...
-}
-```
+<CodeSnippet src={IntrospectorTestJava} language="java" method="recommendedSetup" />
 
 This setup combines multiple strategies to handle different class types, so it works well for most real-world projects without additional configuration.
 
@@ -49,14 +27,7 @@ This setup combines multiple strategies to handle different class types, so it w
 
 If you prefer the simplest possible setup, you can use the default configuration:
 
-```java
-// Simplest approach with default settings
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .build();
-
-// Generate a test object
-MyClass myObject = fixtureMonkey.giveMeOne(MyClass.class);
-```
+<CodeSnippet src={IntrospectorTestJava} language="java" method="simplestApproach" />
 
 However, this basic approach only works well with simple JavaBean classes that have a no-arguments constructor and setter methods.
 
@@ -74,128 +45,21 @@ Different class types require different approaches to object creation. Here's a 
 
 ## Examples for Common Class Types
 
+:::note
+The examples below use `.defaultNotNull(true)` to ensure generated properties are non-null for assertion purposes. This is optional — remove it if null values are acceptable in your tests.
+:::
+
 ### Example 1: Standard JavaBean Class (with getters/setters)
 
-```java
-// Class definition
-public class Customer {
-    private String name;
-    private int age;
-    
-    // No-args constructor
-    public Customer() {}
-    
-    // Setters
-    public void setName(String name) { this.name = name; }
-    public void setAge(int age) { this.age = age; }
-    
-    // Getters
-    public String getName() { return name; }
-    public int getAge() { return age; }
-}
-
-// Test code
-@Test
-void testCustomer() {
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .objectIntrospector(BeanArbitraryIntrospector.INSTANCE) // Default, so optional
-        .build();
-    
-    Customer customer = fixtureMonkey.giveMeOne(Customer.class);
-    
-    assertThat(customer.getName()).isNotNull();
-    assertThat(customer.getAge()).isGreaterThanOrEqualTo(0);
-}
-```
+<CodeSnippet src={IntrospectorTestJava} language="java" method="testCustomer" />
 
 ### Example 2: Immutable Class with Constructor
 
-```java
-// Class definition (with @ConstructorProperties)
-public class Product {
-    private final String name;
-    private final double price;
-    
-    @ConstructorProperties({"name", "price"})
-    public Product(String name, double price) {
-        this.name = name;
-        this.price = price;
-    }
-    
-    public String getName() { return name; }
-    public double getPrice() { return price; }
-}
-
-// Test code
-@Test
-void testProduct() {
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-        .build();
-    
-    Product product = fixtureMonkey.giveMeOne(Product.class);
-    
-    assertThat(product.getName()).isNotNull();
-    assertThat(product.getPrice()).isGreaterThanOrEqualTo(0.0);
-}
-
-// Works with Java records too
-public record OrderItem(String productId, int quantity, double price) {}
-```
+<CodeSnippet src={IntrospectorTestJava} language="java" method="testProduct" />
 
 ### Example 3: Class with Builder Pattern
 
-```java
-// Class definition with builder
-public class User {
-    private final String username;
-    private final String email;
-    
-    private User(Builder builder) {
-        this.username = builder.username;
-        this.email = builder.email;
-    }
-    
-    public static Builder builder() {
-        return new Builder();
-    }
-    
-    public static class Builder {
-        private String username;
-        private String email;
-        
-        public Builder username(String username) {
-            this.username = username;
-            return this;
-        }
-        
-        public Builder email(String email) {
-            this.email = email;
-            return this;
-        }
-        
-        public User build() {
-            return new User(this);
-        }
-    }
-    
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
-}
-
-// Test code
-@Test
-void testUser() {
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
-        .build();
-    
-    User user = fixtureMonkey.giveMeOne(User.class);
-    
-    assertThat(user.getUsername()).isNotNull();
-    assertThat(user.getEmail()).isNotNull();
-}
-```
+<CodeSnippet src={IntrospectorTestJava} language="java" method="testUser" />
 
 ## Why Introspectors Matter
 
@@ -213,19 +77,7 @@ By choosing the right introspector, you can make Fixture Monkey work with your e
 ### Q: I'm not sure which introspector to use. What should I do?
 **A**: Start with the recommended setup (using `FailoverIntrospector` with multiple introspectors). It works for most projects and automatically tries different strategies.
 
-```java
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .objectIntrospector(new FailoverIntrospector(
-        Arrays.asList(
-            ConstructorPropertiesArbitraryIntrospector.INSTANCE,
-            BuilderArbitraryIntrospector.INSTANCE,
-            FieldReflectionArbitraryIntrospector.INSTANCE,
-            BeanArbitraryIntrospector.INSTANCE
-        ),
-        false // Disable logging for cleaner test output
-    ))
-    .build();
-```
+<CodeSnippet src={IntrospectorTestJava} language="java" method="failoverIntrospector" />
 
 ### Q: My objects aren't being generated. What should I check?
 **A**: Ensure your class has one of the following:
