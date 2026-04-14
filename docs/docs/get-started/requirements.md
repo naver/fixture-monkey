@@ -36,7 +36,7 @@ The dependency is optional below Gradle 9, but it will be mandatory from Gradle 
 
 ```groovy
 testRuntimeOnly("org.junit.platform:junit-platform-launcher:{version}")
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.19")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{fixtureMonkeyVersion}}")
 ```
 
 #### Maven
@@ -44,7 +44,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.19")
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-starter</artifactId>
-  <version>1.1.19</version>
+  <version>{{fixtureMonkeyVersion}}</version>
   <scope>test</scope>
 </dependency>
 ```

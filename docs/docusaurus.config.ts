@@ -1,6 +1,32 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import remarkVariableSubstitution from './src/plugins/remarkVariableSubstitution';
+
+function readGradleProperties(): Record<string, string> {
+  const filePath = path.resolve(__dirname, '..', 'gradle.properties');
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const props: Record<string, string> = {};
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const eqIndex = trimmed.indexOf('=');
+      if (eqIndex > 0) {
+        props[trimmed.substring(0, eqIndex).trim()] = trimmed.substring(eqIndex + 1).trim();
+      }
+    }
+  }
+  return props;
+}
+
+const gradleProps = readGradleProperties();
+const fixtureMonkeyVersion = gradleProps['fixtureMonkeyDocVersion'] ?? '0.0.0';
+
+const remarkPlugins: any[] = [
+  [remarkVariableSubstitution, {variables: {fixtureMonkeyVersion}}],
+];
 
 const config: Config = {
   title: 'Fixture Monkey',
@@ -30,7 +56,7 @@ const config: Config = {
   },
 
   customFields: {
-    fixtureMonkeyVersion: '1.1.19',
+    fixtureMonkeyVersion,
   },
 
   presets: [
@@ -39,6 +65,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          remarkPlugins,
           editUrl: 'https://github.com/naver/fixture-monkey/tree/main/docs-docusaurus/',
           versions: {
             current: {

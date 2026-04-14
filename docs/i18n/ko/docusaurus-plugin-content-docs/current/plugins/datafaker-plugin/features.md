@@ -16,7 +16,7 @@ DataFaker 플러그인은 String 타입 필드의 이름을 분석하여 적절�
 ## 의존성
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-datafaker:1.1.19")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-datafaker:{{fixtureMonkeyVersion}}")
 ```
 
 #### Maven
@@ -24,7 +24,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-datafaker:1.1.19"
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-datafaker</artifactId>
-  <version>1.1.19</version>
+  <version>{{fixtureMonkeyVersion}}</version>
   <scope>test</scope>
 </dependency>
 ```
