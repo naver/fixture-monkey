@@ -5,6 +5,9 @@ sidebar_position: 43
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import ArbitraryTestJava from '@examples-java/customizing/ArbitraryTest.java';
+import ArbitraryKotlinTest from '@examples-kotlin/customizing/ArbitraryKotlinTest.kt';
 
 
 ## What you will learn in this document
@@ -36,22 +39,12 @@ In Fixture Monkey, we use `Arbitrary` to create random values that follow rules.
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Create a member with age between 20 and 30
-Member member = fixtureMonkey.giveMeBuilder(Member.class)
-    .set("age", Arbitraries.integers().between(20, 30))  // Random age between 20-30
-    .sample();
-```
+<CodeSnippet src={ArbitraryTestJava} language="java" method="basicRange" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Create a member with age between 20 and 30
-val member = fixtureMonkey.giveMeBuilder<Member>()
-    .setExp(Member::age, Arbitraries.integers().between(20, 30))  // Random age between 20-30
-    .sample()
-```
+<CodeSnippet src={ArbitraryKotlinTest} language="kotlin" method="basicRange" />
 
 </TabItem>
 </Tabs>
@@ -63,28 +56,12 @@ val member = fixtureMonkey.giveMeBuilder<Member>()
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Create a user with valid username (lowercase letters, 5-10 characters)
-User user = fixtureMonkey.giveMeBuilder(User.class)
-    .set("username", Arbitraries.strings()
-        .withCharRange('a', 'z')  // Only lowercase letters
-        .ofMinLength(5)           // At least 5 characters
-        .ofMaxLength(10))         // At most 10 characters
-    .sample();
-```
+<CodeSnippet src={ArbitraryTestJava} language="java" method="stringPatterns" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Create a user with valid username (lowercase letters, 5-10 characters)
-val user = fixtureMonkey.giveMeBuilder<User>()
-    .setExp(User::username, Arbitraries.strings()
-        .withCharRange('a', 'z')  // Only lowercase letters
-        .ofMinLength(5)           // At least 5 characters
-        .ofMaxLength(10))         // At most 10 characters
-    .sample()
-```
+<CodeSnippet src={ArbitraryKotlinTest} language="kotlin" method="stringPatterns" />
 
 </TabItem>
 </Tabs>
@@ -96,28 +73,12 @@ val user = fixtureMonkey.giveMeBuilder<User>()
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Create an order with a valid status
-Order order = fixtureMonkey.giveMeBuilder(Order.class)
-    .set("status", Arbitraries.of(  // Randomly pick one of these values
-        OrderStatus.PENDING,
-        OrderStatus.PROCESSING,
-        OrderStatus.SHIPPED))
-    .sample();
-```
+<CodeSnippet src={ArbitraryTestJava} language="java" method="selectFromOptions" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Create an order with a valid status
-val order = fixtureMonkey.giveMeBuilder<Order>()
-    .setExp(Order::status, Arbitraries.of(  // Randomly pick one of these values
-        OrderStatus.PENDING,
-        OrderStatus.PROCESSING,
-        OrderStatus.SHIPPED))
-    .sample()
-```
+<CodeSnippet src={ArbitraryKotlinTest} language="kotlin" method="selectFromOptions" />
 
 </TabItem>
 </Tabs>
@@ -129,30 +90,12 @@ val order = fixtureMonkey.giveMeBuilder<Order>()
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Create a product with various constraints
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("id", Arbitraries.longs().greaterOrEqual(1000))  // ID at least 1000
-    .set("name", Arbitraries.strings().withCharRange('a', 'z').ofMaxLength(10))  // Name max 10 chars
-    .set("price", Arbitraries.bigDecimals()
-        .between(BigDecimal.valueOf(10.0), BigDecimal.valueOf(1000.0)))  // Price between 10-1000
-    .set("category", Arbitraries.of("Electronics", "Clothing", "Books"))  // One of these categories
-    .sample();
-```
+<CodeSnippet src={ArbitraryTestJava} language="java" method="multipleConstraints" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Create a product with various constraints
-val product = fixtureMonkey.giveMeBuilder<Product>()
-    .setExp(Product::id, Arbitraries.longs().greaterOrEqual(1000))  // ID at least 1000
-    .setExp(Product::name, Arbitraries.strings().withCharRange('a', 'z').ofMaxLength(10))  // Name max 10 chars
-    .setExp(Product::price, Arbitraries.bigDecimals()
-        .between(BigDecimal.valueOf(10.0), BigDecimal.valueOf(1000.0)))  // Price between 10-1000
-    .setExp(Product::category, Arbitraries.of("Electronics", "Clothing", "Books"))  // One of these categories
-    .sample()
-```
+<CodeSnippet src={ArbitraryKotlinTest} language="kotlin" method="multipleConstraints" />
 
 </TabItem>
 </Tabs>

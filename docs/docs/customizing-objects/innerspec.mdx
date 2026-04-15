@@ -5,6 +5,8 @@ sidebar_position: 45
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import InnerSpecTestJava from '@examples-java/customizing/InnerSpecTest.java';
 
 
 ## What you will learn in this document
@@ -26,20 +28,7 @@ Using the `setInner()` method within ArbitraryBuilder, you can apply customizati
 
 ### A Simple Example
 
-```java
-// Create an InnerSpec to customize product properties
-InnerSpec productSpec = new InnerSpec()
-    .property("id", 1000L)
-    .property("name", "Smartphone")
-    .property("price", new BigDecimal("499.99"));
-
-// Apply the InnerSpec to a Product builder
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .setInner(productSpec)
-    .sample();
-
-// Now product has id=1000, name="Smartphone", price=499.99
-```
+<CodeSnippet src={InnerSpecTestJava} language="java" method="simpleExample" />
 
 ### When to use InnerSpec vs Path Expressions
 

@@ -5,6 +5,8 @@ sidebar_position: 41
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import PathExpressionsTestJava from '@examples-java/customizing/PathExpressionsTest.java';
 
 
 ## What you will learn in this document
@@ -26,21 +28,7 @@ To understand path expressions, let's use a simple example object:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Value
-public class JavaClass {
-    String field;                // A simple string field
-    String[] array;              // An array of strings
-    List<String> list;           // A list of strings
-    Nested object;               // A nested object
-    List<Nested> objectList;     // A list of nested objects
-
-    @Value
-    public static class Nested {
-        String nestedField;      // A field inside the nested object
-    }
-}
-```
+<CodeSnippet src={PathExpressionsTestJava} language="java" showClass />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">

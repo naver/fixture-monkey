@@ -96,6 +96,7 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
 
   plugins: [
+    './plugins/source-code-loader',
     [
       '@docusaurus/plugin-client-redirects',
       {

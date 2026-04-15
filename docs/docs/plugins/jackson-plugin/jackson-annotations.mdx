@@ -5,6 +5,8 @@ sidebar_position: 73
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import JacksonAnnotationsTestJava from '@examples-java/plugins/JacksonAnnotationsTest.java';
 
 
 With the Jackson plugin, some Jackson annotations are also supported.
@@ -18,45 +20,14 @@ The property with @JsonIgnore will have a null value when Fixture Monkey generat
 The following example shows how @JsonProperty, @JsonIgnore works with Fixture Monkey.
 
 **Example Java Class :**
-```java
-@Value // lombok getter, setter
-public class Product {
-    long id;
 
-    @JsonProperty("name")
-    String productName;
-
-    long price;
-
-    @JsonIgnore
-    List<String> options;
-
-    Instant createdAt;
-}
-```
+<CodeSnippet src={JacksonAnnotationsTestJava} language="java" showClass />
 
 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void test() {
-    // given
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .plugin(new JacksonPlugin())
-        .build();
-
-    // when
-    Product actual = fixtureMonkey.giveMeBuilder(Product.class)
-        .set("name", "book")
-        .sample();
-
-    // then
-    then(actual.getProductName()).isEqualTo("book"); // @JsonProperty
-    then(actual.getOptions()).isNull(); // @JsonIgnore
-}
-```
+<CodeSnippet src={JacksonAnnotationsTestJava} language="java" method="test" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
@@ -75,8 +46,8 @@ fun test() {
         .sample()
 
     // then
-    then(actual.productName).isEqualTo("book") // @JsonProperty
-    then(actual.options).isNull() // @JsonIgnore
+    then(actual.productName).isEqualTo("book")
+    then(actual.options).isNull()
 }
 ```
 

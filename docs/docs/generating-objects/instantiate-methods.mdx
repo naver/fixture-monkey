@@ -5,6 +5,9 @@ sidebar_position: 44
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import InstantiateMethodsTestJava from '@examples-java/generating/InstantiateMethodsTest.java';
+import InstantiateMethodsKotlinTest from '@examples-kotlin/generating/InstantiateMethodsKotlinTest.kt';
 
 
 ## Overview: Why Specify Object Creation Methods
@@ -142,38 +145,12 @@ Using the constructor to create an object:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void usingSimpleConstructor() {
-    SimpleProduct product = fixtureMonkey.giveMeBuilder(SimpleProduct.class)
-        .instantiate(constructor())
-        .sample();
-    
-    // Verify the created object
-    assertThat(product).isNotNull();
-    assertThat(product.getName()).isNotNull();
-    assertThat(product.getPrice()).isNotNegative();
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="usingSimpleConstructor" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun usingSimpleConstructor() {
-    val product = fixtureMonkey.giveMeBuilder<SimpleProduct>()
-        .instantiateBy {
-            constructor()
-        }
-        .sample()
-    
-    // Verify the created object
-    assertThat(product).isNotNull()
-    assertThat(product.name).isNotNull()
-    assertThat(product.price).isNotNegative()
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="usingSimpleConstructor" />
 
 </TabItem>
 </Tabs>
@@ -276,34 +253,12 @@ To use the default constructor:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void usingDefaultConstructor() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(constructor())  // No parameters means default constructor
-        .sample();
-    
-    assertThat(product.getId()).isEqualTo(0);
-    assertThat(product.getName()).isEqualTo("defaultProduct");
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="usingDefaultConstructor" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun usingDefaultConstructor() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            constructor()  // No parameters means default constructor
-        }
-        .sample()
-    
-    assertThat(product.id).isEqualTo(0)
-    assertThat(product.name).isEqualTo("defaultProduct")
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="usingDefaultConstructor" />
 
 </TabItem>
 </Tabs>
@@ -319,68 +274,16 @@ When a class has multiple constructors, you can specify parameter types to selec
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void selectingConstructorWithoutOptions() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            constructor()
-                .parameter(String.class)  // First parameter type
-                .parameter(long.class)    // Second parameter type
-        )
-        .sample();
-    
-    assertThat(product.getOptions()).isEmpty();
-}
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="selectingConstructorWithoutOptions" />
 
-@Test
-void selectingConstructorWithOptions() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            constructor()
-                .parameter(String.class)
-                .parameter(long.class)
-                .parameter(new TypeReference<List<String>>(){})  // Generic type
-        )
-        .sample();
-    
-    assertThat(product.getOptions()).isNotNull();
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="selectingConstructorWithOptions" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun selectingConstructorWithoutOptions() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            constructor<Product> {
-                parameter<String>()  // First parameter type
-                parameter<Long>()    // Second parameter type
-            }
-        }
-        .sample()
-    
-    assertThat(product.options).isEmpty()
-}
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="selectingConstructorWithoutOptions" />
 
-@Test
-fun selectingConstructorWithOptions() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            constructor<Product> {
-                parameter<String>()
-                parameter<Long>()
-                parameter<List<String>>()  // Generic type
-            }
-        }
-        .sample()
-    
-    assertThat(product.options).isNotNull()
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="selectingConstructorWithOptions" />
 
 </TabItem>
 </Tabs>
@@ -396,41 +299,12 @@ To provide specific values for constructor parameters, you can use parameter nam
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void specifyingParameterValues() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            constructor()
-                .parameter(String.class, "productName")  // Parameter name hint
-                .parameter(long.class)
-        )
-        .set("productName", "specialProduct")  // Set value using the hint name
-        .sample();
-    
-    assertThat(product.getName()).isEqualTo("specialProduct");
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="specifyingParameterValues" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun specifyingParameterValues() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            constructor<Product> {
-                parameter<String>("productName")  // Parameter name hint
-                parameter<Long>()
-            }
-        }
-        .set("productName", "specialProduct")  // Set value using the hint name
-        .sample()
-    
-    assertThat(product.name).isEqualTo("specialProduct")
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="specifyingParameterValues" />
 
 </TabItem>
 </Tabs>
@@ -495,36 +369,12 @@ To create an object using a factory method:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void usingFactoryMethod() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            factoryMethod("create")  // Specify factory method name
-        )
-        .sample();
-    
-    assertThat(product).isNotNull();
-    assertThat(product.getOptions()).isEmpty();
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="usingFactoryMethod" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun usingFactoryMethod() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            factory<Product>("create")  // Specify factory method name
-        }
-        .sample()
-    
-    assertThat(product).isNotNull()
-    assertThat(product.options).isEmpty()
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="usingFactoryMethod" />
 
 </TabItem>
 </Tabs>
@@ -540,37 +390,12 @@ When there are multiple factory methods, you can specify parameter types to sele
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void selectingSpecificFactoryMethod() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            factoryMethod("createRecommended")
-                .parameter(long.class)  // Parameter type
-        )
-        .sample();
-    
-    assertThat(product.getName()).isEqualTo("recommendedProduct");
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="selectingSpecificFactoryMethod" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun selectingSpecificFactoryMethod() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            factory<Product>("createRecommended") {
-                parameter<Long>()  // Parameter type
-            }
-        }
-        .sample()
-    
-    assertThat(product.name).isEqualTo("recommendedProduct")
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="selectingSpecificFactoryMethod" />
 
 </TabItem>
 </Tabs>
@@ -584,45 +409,12 @@ To provide specific values for factory method parameters:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void specifyingFactoryMethodParameterValues() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            factoryMethod("create")
-                .parameter(String.class, "productName")  // Parameter name hint
-                .parameter(long.class, "productPrice")
-        )
-        .set("productName", "customProduct")
-        .set("productPrice", 9900L)
-        .sample();
-    
-    assertThat(product.getName()).isEqualTo("customProduct");
-    assertThat(product.getPrice()).isEqualTo(9900L);
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="specifyingFactoryMethodParameterValues" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun specifyingFactoryMethodParameterValues() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            factory<Product>("create") {
-                parameter<String>("productName")  // Parameter name hint
-                parameter<Long>("productPrice")
-            }
-        }
-        .set("productName", "customProduct")
-        .set("productPrice", 9900L)
-        .sample()
-    
-    assertThat(product.name).isEqualTo("customProduct")
-    assertThat(product.price).isEqualTo(9900L)
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="specifyingFactoryMethodParameterValues" />
 
 </TabItem>
 </Tabs>
@@ -660,18 +452,7 @@ To generate properties based on fields:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void fieldBasedPropertyGeneration() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            constructor().field()  // Field-based property generation
-        )
-        .sample();
-    
-    assertThat(product).isNotNull();
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="fieldBasedPropertyGeneration" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
@@ -682,11 +463,11 @@ fun fieldBasedPropertyGeneration() {
     val product = fixtureMonkey.giveMeBuilder<Product>()
         .instantiateBy {
             constructor {
-                javaField()  // Field-based property generation
+                javaField()
             }
         }
         .sample()
-    
+
     assertThat(product).isNotNull()
 }
 ```
@@ -705,18 +486,7 @@ To generate properties based on JavaBeansProperty:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void javaBeanPropertyBasedGeneration() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            constructor().javaBeansProperty()  // JavaBeansProperty-based generation
-        )
-        .sample();
-    
-    assertThat(product).isNotNull();
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="javaBeanPropertyBasedGeneration" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
@@ -727,11 +497,11 @@ fun javaBeanPropertyBasedGeneration() {
     val product = fixtureMonkey.giveMeBuilder<Product>()
         .instantiateBy {
             constructor {
-                javaBeansProperty()  // JavaBeansProperty-based generation
+                javaBeansProperty()
             }
         }
         .sample()
-    
+
     assertThat(product).isNotNull()
 }
 ```
@@ -763,62 +533,12 @@ Let's see an example:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-public class PartiallyInitializedObject {
-    private final String name;      // Initialized in constructor
-    private int count;              // Not initialized in constructor
-    private List<String> items;     // Not initialized in constructor
-    
-    public PartiallyInitializedObject(String name) {
-        this.name = name;
-    }
-    
-    // Getter/Setter
-    public String getName() { return name; }
-    public int getCount() { return count; }
-    public void setCount(int count) { this.count = count; }
-    public List<String> getItems() { return items; }
-    public void setItems(List<String> items) { this.items = items; }
-}
-
-@Test
-void propertySettingAfterConstructor() {
-    PartiallyInitializedObject obj = fixtureMonkey.giveMeBuilder(PartiallyInitializedObject.class)
-        .instantiate(constructor().parameter(String.class))
-        .sample();
-    
-    assertThat(obj.getName()).isNotNull();       // Initialized in constructor
-    assertThat(obj.getCount()).isNotZero();      // Initialized after constructor
-    assertThat(obj.getItems()).isNotNull();      // Initialized after constructor
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="propertySettingAfterConstructor" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-class PartiallyInitializedObject(
-    val name: String               // Initialized in constructor
-) {
-    var count: Int = 0             // Not initialized in constructor
-    var items: List<String>? = null // Not initialized in constructor
-}
-
-@Test
-fun propertySettingAfterConstructor() {
-    val obj = fixtureMonkey.giveMeBuilder<PartiallyInitializedObject>()
-        .instantiateBy {
-            constructor<PartiallyInitializedObject> {
-                parameter<String>()
-            }
-        }
-        .sample()
-    
-    assertThat(obj.name).isNotNull()       // Initialized in constructor
-    assertThat(obj.count).isNotZero()      // Initialized after constructor
-    assertThat(obj.items).isNotNull()      // Initialized after constructor
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="propertySettingAfterConstructor" />
 
 </TabItem>
 </Tabs>
@@ -844,43 +564,12 @@ You can solve this problem by explicitly setting important values:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void preservingConstructorSetValues() {
-    String specificName = "specificName";
-    
-    PartiallyInitializedObject obj = fixtureMonkey.giveMeBuilder(PartiallyInitializedObject.class)
-        .instantiate(
-            constructor()
-                .parameter(String.class, "name")
-        )
-        .set("name", specificName)  // Explicitly set constructor parameter value
-        .sample();
-    
-    assertThat(obj.getName()).isEqualTo(specificName);  // Explicitly set value is preserved
-}
-```
+<CodeSnippet src={InstantiateMethodsTestJava} language="java" method="preservingConstructorSetValues" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun preservingConstructorSetValues() {
-    val specificName = "specificName"
-    
-    val obj = fixtureMonkey.giveMeBuilder<PartiallyInitializedObject>()
-        .instantiateBy {
-            constructor<PartiallyInitializedObject> {
-                parameter<String>("name")
-            }
-        }
-        .set("name", specificName)  // Explicitly set constructor parameter value
-        .sample()
-    
-    assertThat(obj.name).isEqualTo(specificName)  // Explicitly set value is preserved
-}
-```
+<CodeSnippet src={InstantiateMethodsKotlinTest} language="kotlin" method="preservingConstructorSetValues" />
 
 </TabItem>
 </Tabs>

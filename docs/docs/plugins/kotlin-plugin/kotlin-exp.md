@@ -3,6 +3,8 @@ title: "Kotlin DSL Exp"
 sidebar_position: 63
 ---
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import KotlinExpTest from '@examples-kotlin/plugins/KotlinExpTest.kt';
 
 Fixture Monkey utilizes Kotlin's DSL feature to ensure type-safety with expressions.
 Let's explore how we can employ Kotlin Exp instead of the standard [Java String Expression](../../customizing-objects/path-expressions).

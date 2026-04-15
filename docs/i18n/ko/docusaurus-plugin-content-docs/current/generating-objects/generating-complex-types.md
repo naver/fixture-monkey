@@ -162,15 +162,33 @@ public class SelfReferenceList {
 깊이 제어와 함께 자기 참조 객체 생성:
 
 ```java
-// 기본 생성 (무한 재귀를 피하기 위한 제한된 중첩 깊이)
-SelfReference selfRef = fixtureMonkey.giveMeOne(SelfReference.class);
-
-// 재귀 깊이를 제어하기 위한 사용자 정의 구성
-FixtureMonkey customFixture = FixtureMonkey.builder()
-    .defaultArbitraryContainerInfo(new ContainerInfo(2, 2)) // 리스트 크기 제어
+// given
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
     .build();
 
+// when
+SelfReference selfRef = fixtureMonkey.giveMeOne(SelfReference.class);
+
+// then
+then(selfRef).isNotNull();
+```
+
+컨테이너 크기를 설정하여 자기 참조 리스트 구조의 깊이를 제어할 수도 있습니다.
+`ArbitraryContainerInfo(minSize, maxSize)`는 생성되는 모든 컬렉션의 크기 범위를 설정합니다 — 여기서는 각 리스트를 정확히 2개의 요소로 고정합니다:
+
+```java
+// given
+FixtureMonkey customFixture = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(2, 2))
+    .build();
+
+// when
 SelfReferenceList refList = customFixture.giveMeOne(SelfReferenceList.class);
+
+// then
+then(refList).isNotNull();
 ```
 
 ### Interface
@@ -235,13 +253,40 @@ val twoParam: TwoGenericObject<String, Int> = fixtureMonkey.giveMeOne()
 
 ```kotlin
 class SelfReference(val foo: String, val bar: SelfReference?)
+
+class SelfReferenceList(val foo: String, val bar: List<SelfReferenceList>)
 ```
 
 자기 참조 객체 생성:
 
 ```kotlin
-// Nullable `bar`가 무한 재귀를 방지
+// given
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .build()
+
+// when
 val selfRef: SelfReference = fixtureMonkey.giveMeOne()
+
+// then
+then(selfRef).isNotNull
+```
+
+컨테이너 크기를 설정하여 자기 참조 리스트 구조의 깊이를 제어할 수도 있습니다.
+`ArbitraryContainerInfo(minSize, maxSize)`는 생성되는 모든 컬렉션의 크기 범위를 설정합니다 — 여기서는 각 리스트를 정확히 2개의 요소로 고정합니다:
+
+```kotlin
+// given
+val customFixture = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .defaultArbitraryContainerInfoGenerator { ArbitraryContainerInfo(2, 2) }
+    .build()
+
+// when
+val refList: SelfReferenceList = customFixture.giveMeOne()
+
+// then
+then(refList).isNotNull
 ```
 
 ### Sealed class
