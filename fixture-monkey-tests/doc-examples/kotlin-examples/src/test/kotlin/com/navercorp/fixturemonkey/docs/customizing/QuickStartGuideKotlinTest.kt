@@ -10,7 +10,7 @@ import java.math.BigDecimal
 class QuickStartGuideKotlinTest {
 
 	data class Product(
-		val name: String,
+		val name: String?,
 		val price: BigDecimal,
 		val available: Boolean
 	)

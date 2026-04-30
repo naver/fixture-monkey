@@ -15,3 +15,9 @@ dependencies {
 	testImplementation(libs.lombok)
 	testAnnotationProcessor(libs.lombok)
 }
+
+tasks.withType<Test> {
+    useJUnitPlatform {
+        includeEngines("junit-jupiter")
+    }
+}

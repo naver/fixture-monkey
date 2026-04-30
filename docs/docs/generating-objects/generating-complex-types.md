@@ -209,7 +209,7 @@ Kotlin's reified type inference makes generating generic objects simpler than Ja
 ```kotlin
 class SelfReference(val foo: String, val bar: SelfReference?)
 
-class SelfReferenceList(val foo: String, val bar: List<SelfReferenceList>)
+class SelfReferenceList(val foo: String, val bar: List<SelfReferenceList>?)
 ```
 
 Generate self-referencing objects:

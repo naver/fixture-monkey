@@ -16,7 +16,7 @@ class ApisKotlinTest {
 	data class Member(
 		val name: String,
 		val age: Int,
-		val email: String,
+		val email: String?,
 		val grade: String,
 		val point: Int,
 		val joinDate: LocalDate
