@@ -2,6 +2,7 @@ package com.navercorp.fixturemonkey.docs.generating
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import org.assertj.core.api.BDDAssertions.then
@@ -21,7 +22,7 @@ class GeneratingComplexTypesKotlinTest {
 
 	class SelfReference(val foo: String, val bar: SelfReference?)
 
-	class SelfReferenceList(val foo: String, val bar: List<SelfReferenceList>)
+	class SelfReferenceList(val foo: String, val bar: List<SelfReferenceList>?)
 
 	sealed class SealedClass
 
@@ -108,10 +109,17 @@ class GeneratingComplexTypesKotlinTest {
 
 	@Test
 	fun generateInterface() {
+		// given
+		val customFixture = FixtureMonkey.builder()
+			.plugin(KotlinPlugin())
+			.plugin(InterfacePlugin())
+			.build()
+
 		// when
-		val instance: KotlinInterface = fixtureMonkey.giveMeOne()
+		val instance: KotlinInterface = customFixture.giveMeOne()
 
 		// then
 		then(instance).isNotNull
+		then(instance.foo).isNotNull
 	}
 }
