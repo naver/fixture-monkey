@@ -3,6 +3,9 @@ title: "경로 표현식"
 sidebar_position: 41
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 
 ## 이 문서에서 배우는 내용
 - 테스트 객체의 특정 필드나 속성을 선택하는 방법
@@ -18,6 +21,10 @@ sidebar_position: 41
 ## 기본 객체 구조 예제
 
 경로 표현식을 이해하기 위해 간단한 예제 객체를 사용해보겠습니다:
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
 
 ```java
 @Value
@@ -35,12 +42,33 @@ public class JavaClass {
 }
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+data class KotlinClass(
+    val field: String,
+    val array: Array<String>,
+    val list: List<String>,
+    val `object`: Nested,
+    val objectList: List<Nested>
+) {
+    data class Nested(
+        val nestedField: String
+    )
+}
+```
+
+</TabItem>
+</Tabs>
+
+
 ## 경로 표현식의 시각적 지도
 
 객체를 트리 구조로 생각해보세요. 각 경로 표현식은 그 트리에서 특정 위치로 가는 방향을 안내합니다:
 
 ```
-JavaClass
+JavaClass / KotlinClass
 │
 ├── field → "field"               // 직접 필드 접근
 │
@@ -70,148 +98,198 @@ JavaClass
 
 ## 간단한 경로 표현식 가이드
 
+문자열 경로 표현식은 Java와 Kotlin에서 동일하게 작동합니다. 아래 예제는 두 언어를 모두 보여줍니다.
+
 ### 1. 루트 객체 선택하기
 
-전체 객체 자체를 선택하려면 다음을 사용합니다:
-```java
-"$"
-```
+전체 객체 자체를 선택하려면 `"$"`를 사용합니다:
 
-**예제:**
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
 ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.class);
-// 전체 객체를 선택하고 조작
 builder.set("$", new JavaClass(...));
 ```
 
-### 2. 직접 필드 선택하기
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-최상위 레벨의 단순 필드를 선택하려면:
-```java
-"field"
+```kotlin
+val builder = fixtureMonkey.giveMeBuilder<KotlinClass>()
+builder.set("$", KotlinClass(...))
 ```
 
-**예제:**
+</TabItem>
+</Tabs>
+
+
+### 2. 직접 필드 선택하기
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// "field" 속성을 "Hello World"로 설정
 builder.set("field", "Hello World");
 ```
 
-### 3. 중첩된 필드 선택하기
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-중첩된 객체 내부의 필드에 접근하려면:
-```java
-"object.nestedField"
+```kotlin
+builder.set("field", "Hello World")
 ```
 
-**예제:**
+</TabItem>
+</Tabs>
+
+
+### 3. 중첩된 필드 선택하기
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// object 내부의 nestedField를 "Nested Value"로 설정
 builder.set("object.nestedField", "Nested Value");
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+builder.set("object.nestedField", "Nested Value")
+```
+
+</TabItem>
+</Tabs>
+
+
 ### 4. 컬렉션 다루기
 
-#### 리스트의 특정 항목 선택하기:
-```java
-"list[0]"  // 첫 번째 항목
-"list[1]"  // 두 번째 항목
-```
 
-**예제:**
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// 리스트의 첫 번째 항목을 "First Item"으로 설정
+// 리스트의 첫 번째 항목 설정
 builder.set("list[0]", "First Item");
-```
 
-#### 리스트의 모든 항목 선택하기 (와일드카드):
-```java
-"list[*]"
-```
-
-**예제:**
-```java
-// 리스트의 모든 항목을 "Same Value"로 설정
+// 리스트의 모든 항목 설정 (와일드카드)
 builder.set("list[*]", "Same Value");
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+// 리스트의 첫 번째 항목 설정
+builder.set("list[0]", "First Item")
+
+// 리스트의 모든 항목 설정 (와일드카드)
+builder.set("list[*]", "Same Value")
+```
+
+</TabItem>
+</Tabs>
+
 
 ### 5. 배열 다루기
 
 리스트와 매우 유사합니다:
 
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-"array[0]"   // 첫 번째 요소
-"array[*]"   // 모든 요소
+builder.set("array[0]", "First Element");
+builder.set("array[*]", "All Elements");
 ```
 
-**예제:**
-```java
-// 배열의 모든 요소를 "Array Item"으로 설정
-builder.set("array[*]", "Array Item");
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+builder.set("array[0]", "First Element")
+builder.set("array[*]", "All Elements")
 ```
+
+</TabItem>
+</Tabs>
+
 
 ### 6. 복잡한 중첩 경로
 
 이러한 패턴을 조합하여 필요한 만큼 깊이 들어갈 수 있습니다:
 
-```java
-"objectList[0].nestedField"  // 리스트의 첫 번째 객체의 nestedField
-"objectList[*].nestedField"  // 리스트의 모든 객체의 nestedField
-```
 
-**예제:**
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
 ```java
-// objectList의 모든 객체의 nestedField를 "All Nested"로 설정
+// 리스트의 첫 번째 객체의 nestedField
+builder.set("objectList[0].nestedField", "First Nested");
+
+// 리스트의 모든 객체의 nestedField
 builder.set("objectList[*].nestedField", "All Nested");
 ```
 
-## JavaGetter를 사용한 타입 안전 선택
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-문자열 기반 표현식을 사용하지 않으려면 타입 안전 getter를 사용할 수 있습니다:
+```kotlin
+// 리스트의 첫 번째 객체의 nestedField
+builder.set("objectList[0].nestedField", "First Nested")
 
-### 1. 직접 필드 선택하기
-
-```java
-javaGetter(JavaClass::getField)
+// 리스트의 모든 객체의 nestedField
+builder.set("objectList[*].nestedField", "All Nested")
 ```
 
-**예제:**
+</TabItem>
+</Tabs>
+
+
+## 타입 안전 선택
+
+### Java: JavaGetter
+
+문자열 기반 표현식을 사용하지 않으려면 Java에서 타입 안전 getter를 사용할 수 있습니다:
+
 ```java
+// 직접 필드
 builder.set(javaGetter(JavaClass::getField), "Hello World");
-```
 
-### 2. 중첩된 필드 선택하기
-
-```java
-javaGetter(JavaClass::getObject).into(Nested::getNestedField)
-```
-
-**예제:**
-```java
+// 중첩된 필드
 builder.set(
-    javaGetter(JavaClass::getObject).into(Nested::getNestedField), 
+    javaGetter(JavaClass::getObject).into(Nested::getNestedField),
     "Nested Value"
 );
+
+// 컬렉션 요소
+builder.set(javaGetter(JavaClass::getList).index(String.class, 0), "First");
+builder.set(javaGetter(JavaClass::getList).allIndex(String.class), "All");
 ```
 
-### 3. 컬렉션 다루기
+### Kotlin: DSL Exp
 
-```java
-// 특정 요소 선택
-javaGetter(JavaClass::getList).index(String.class, 0)
+Kotlin 사용자는 타입 안전 표현식을 위해 프로퍼티 참조를 사용할 수 있습니다:
 
-// 모든 요소 선택
-javaGetter(JavaClass::getList).allIndex(String.class)
+```kotlin
+// 직접 필드
+builder.setExp(KotlinClass::field, "Hello World")
+
+// 중첩된 필드
+builder.setExp(KotlinClass::`object` into KotlinClass.Nested::nestedField, "Nested Value")
+
+// 컬렉션 요소
+builder.setExp(KotlinClass::objectList["0"] into KotlinClass.Nested::nestedField, "First")
+builder.setExp(KotlinClass::objectList["*"] into KotlinClass.Nested::nestedField, "All")
 ```
 
-**예제:**
-```java
-// 리스트의 모든 요소를 "List Item"으로 설정
-builder.set(
-    javaGetter(JavaClass::getList).allIndex(String.class), 
-    "List Item"
-);
-```
+자세한 내용은 [Kotlin DSL Exp 페이지](../plugins/kotlin-plugin/kotlin-exp)를 참조하세요.
 
 ## 초보자를 위한 자주 묻는 질문
 
@@ -225,7 +303,11 @@ builder.set(
 
 ### 여러 경로 표현식을 한 번에 사용할 수 있나요?
 
-네! 여러 `.set()` 호출을 체이닝하여 객체의 다른 부분을 구성할 수 있습니다:
+네! 여러 `.set()` 호출을 체이닝할 수 있습니다:
+
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
 
 ```java
 ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.class)
@@ -233,6 +315,20 @@ ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.clas
     .set("object.nestedField", "Value 2")
     .set("list[*]", "Value 3");
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val builder = fixtureMonkey.giveMeBuilder<KotlinClass>()
+    .set("field", "Value 1")
+    .set("object.nestedField", "Value 2")
+    .set("list[*]", "Value 3")
+```
+
+</TabItem>
+</Tabs>
+
 
 ## 고급 옵션
 
@@ -248,17 +344,6 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 엄격 모드가 활성화되면 유효하지 않은 경로는 예외를 발생시켜 초기에 실수를 잡아낼 수 있습니다.
 
-### Kotlin 지원
-
-Kotlin을 사용하는 경우 더 우아한 표현식을 위해 속성 참조를 사용할 수 있습니다:
-
-```kotlin
-// 대신: "user.address.street"
-builder.set(User::address..Address::street, "Main Street")
-```
-
-자세한 내용은 [Kotlin DSL Exp 페이지](../plugins/kotlin-plugin/kotlin-exp)를 참조하세요.
-
 ## 요약
 
 경로 표현식은 Fixture Monkey의 강력한 기능으로 다음과 같은 작업을 수행할 수 있습니다:
@@ -268,4 +353,3 @@ builder.set(User::address..Address::street, "Main Street")
 - 테스트 코드를 깔끔하고 읽기 쉽게 유지
 
 직접 필드 접근부터 시작하여 구문에 익숙해지면서 점차 컬렉션 접근과 중첩된 속성으로 확장해 보세요.
-

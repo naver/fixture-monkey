@@ -18,23 +18,26 @@ import TabItem from '@theme/TabItem';
 
 ### 꼭 알아야 할 4가지 핵심 메서드
 
-시간이 없다면, 지금 꼭 알아야 할 내용은 다음과 같습니다:
+시간이 없다면, 지금 꼭 알아야 할 내용은 다음과 같습니다. 먼저 `FixtureMonkey` 인스턴스를 생성합니다:
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+```
+
+그런 다음 다음 핵심 메서드를 사용합니다:
 
 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
 ```java
-// 1. FixtureMonkey 인스턴스 생성
-FixtureMonkey fixtureMonkey = FixtureMonkey.create();
-
-// 2. 특정 속성 값으로 상품 생성
+// 특정 속성 값으로 상품 생성
 Product product = fixtureMonkey.giveMeBuilder(Product.class)
     .set("name", "스마트폰")            // 속성 설정
     .set("price", new BigDecimal(499)) // 다른 속성 설정
     .sample();                         // 실제 객체 생성
 
-// 3. 상품 목록이 있는 주문 생성
+// 상품 목록이 있는 주문 생성
 Order order = fixtureMonkey.giveMeBuilder(Order.class)
     .size("products", 2)               // 리스트 크기를 2로 설정
     .set("products[0].name", "노트북") // 리스트 요소 커스터마이징
@@ -45,16 +48,13 @@ Order order = fixtureMonkey.giveMeBuilder(Order.class)
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin
-// 1. FixtureMonkey 인스턴스 생성
-val fixtureMonkey = FixtureMonkey.create()
-
-// 2. 특정 속성 값으로 상품 생성
+// 특정 속성 값으로 상품 생성
 val product = fixtureMonkey.giveMeBuilder<Product>()
     .setExp(Product::name, "스마트폰")        // 속성 설정
     .setExp(Product::price, BigDecimal(499))  // 다른 속성 설정
     .sample()                                 // 실제 객체 생성
 
-// 3. 상품 목록이 있는 주문 생성
+// 상품 목록이 있는 주문 생성
 val order = fixtureMonkey.giveMeBuilder<Order>()
     .sizeExp(Order::products, 2)              // 리스트 크기를 2로 설정
     .set("products[0].name", "노트북")        // 리스트 요소 커스터마이징
@@ -224,8 +224,13 @@ val customer = fixtureMonkey.giveMeBuilder<Customer>()
 
 ### 요소를 커스터마이징하려고 했는데 컬렉션이 비어있는 이유는 무엇인가요?
 
-가장 흔한 실수는 먼저 컬렉션 크기를 설정하지 않는 것입니다:
+:::caution[흔한 실수]
+크기를 먼저 지정하지 않고 컬렉션 요소를 설정하면(예: `.size(...)` 없이 `.set("products[0].name", "노트북")` 사용), 컬렉션이 비어있어 해당 요소 설정이 무시될 수 있습니다.
 
+**컬렉션 요소를 커스터마이징하기 전에 반드시 컬렉션 크기를 먼저 설정하세요.**
+:::
+
+**해결 방법:**
 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">

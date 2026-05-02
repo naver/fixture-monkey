@@ -35,6 +35,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty
 import com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.Property
@@ -56,6 +57,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaConstructor
 
 class KotlinInstantiatorProcessor :
     InstantiatorProcessor {
@@ -250,10 +252,106 @@ class KotlinInstantiatorProcessor :
                             it.filterKeys { key -> key.objectProperty.property is KotlinConstructorParameterProperty }
                                 .mapKeys { entry -> (entry.key.objectProperty.property as KotlinConstructorParameterProperty).kParameter }
 
+                        // Java type fallback: if no KotlinConstructorParameterProperty found, use name or index based mapping
+                        val finalValues = if (valuesByParameter.isEmpty() && it.isNotEmpty()) {
+                            mapForJavaType(kotlinConstructor, it)
+                        } else {
+                            valuesByParameter
+                        }
+
                         kotlinConstructor.isAccessible = true
-                        kotlinConstructor.callBy(valuesByParameter)
+                        kotlinConstructor.callBy(sanitizeNullForPrimitives(kotlinConstructor, finalValues))
                     },
             )
+
+        private fun sanitizeNullForPrimitives(
+            constructor: KFunction<*>,
+            values: Map<KParameter, Any?>
+        ): Map<KParameter, Any?> {
+            val javaParamTypes = constructor.javaConstructor?.parameterTypes ?: return values
+            val valueParams = constructor.parameters.filter { it.kind == KParameter.Kind.VALUE }
+
+            val result = values.toMutableMap()
+            for ((i, param) in valueParams.withIndex()) {
+                if (i < javaParamTypes.size && values.containsKey(param) && values[param] == null) {
+                    if (javaParamTypes[i].isPrimitive) {
+                        result[param] = primitiveDefault(javaParamTypes[i])
+                    }
+                }
+            }
+            return result
+        }
+
+        private fun primitiveDefault(type: Class<*>): Any = when (type) {
+            java.lang.Boolean.TYPE -> false
+            java.lang.Byte.TYPE -> 0.toByte()
+            java.lang.Short.TYPE -> 0.toShort()
+            java.lang.Integer.TYPE -> 0
+            java.lang.Long.TYPE -> 0L
+            java.lang.Float.TYPE -> 0.0f
+            java.lang.Double.TYPE -> 0.0
+            java.lang.Character.TYPE -> '\u0000'
+            else -> 0
+        }
+
+        /**
+         * Maps values to constructor parameters for Java types.
+         * Tries name-based matching first, then falls back to index-based matching.
+         */
+        private fun mapForJavaType(
+            constructor: KFunction<*>,
+            args: Map<ArbitraryProperty, Any?>
+        ): Map<KParameter, Any?> {
+            val parameters = constructor.parameters.filter { it.kind == KParameter.Kind.VALUE }
+
+            // Create property name -> value map
+            val valuesByName = args.entries.associate { (key, value) ->
+                key.objectProperty.property.name to value
+            }
+
+            // Try name-based matching first
+            val resultByName = mutableMapOf<KParameter, Any?>()
+            for (param in parameters) {
+                val paramName = param.name ?: continue
+
+                val matchedName = when {
+                    valuesByName.containsKey(paramName) -> paramName
+                    valuesByName.containsKey(paramName.toSnakeCase()) -> paramName.toSnakeCase()
+                    valuesByName.containsKey(paramName.toCamelCase()) -> paramName.toCamelCase()
+                    else -> null
+                }
+
+                if (matchedName != null) {
+                    resultByName[param] = valuesByName[matchedName]
+                }
+            }
+
+            // If name-based matching covers all required parameters, use it
+            val requiredParams = parameters.filter { !it.isOptional && !it.type.isMarkedNullable }
+            if (requiredParams.all { resultByName.containsKey(it) }) {
+                return resultByName
+            }
+
+            // Fallback to index-based matching (preserves order from args map)
+            val sortedValues = args.values.toList()
+
+            val result = mutableMapOf<KParameter, Any?>()
+            for ((index, param) in parameters.withIndex()) {
+                if (index < sortedValues.size) {
+                    result[param] = sortedValues[index]
+                } else if (param.isOptional || param.type.isMarkedNullable) {
+                    result[param] = null
+                }
+            }
+
+            return result
+        }
+
+        private fun String.toSnakeCase(): String =
+            replace(Regex("([a-z])([A-Z])")) { "${it.groupValues[1]}_${it.groupValues[2]}" }.lowercase()
+
+        private fun String.toCamelCase(): String =
+            split("_").mapIndexed { i, s -> if (i == 0) s else s.replaceFirstChar { it.uppercase() } }.joinToString("")
     }
 }
 

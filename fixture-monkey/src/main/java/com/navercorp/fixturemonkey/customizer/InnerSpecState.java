@@ -30,12 +30,9 @@ import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 
 @API(since = "0.5.0", status = Status.MAINTAINED)
 final class InnerSpecState {
-	@Nullable
-	private NodeSetManipulatorSnapshot nodeSetManipulatorSnapshot;
-	@Nullable
-	private ContainerInfoSnapshot containerInfoSnapshot;
-	@Nullable
-	private FilterSnapshot filterSnapshot;
+	private @Nullable NodeSetManipulatorSnapshot nodeSetManipulatorSnapshot;
+	private @Nullable ContainerInfoSnapshot containerInfoSnapshot;
+	private @Nullable FilterSnapshot filterSnapshot;
 
 	void setNodeManipulatorSnapshot(@Nullable NodeSetManipulatorSnapshot nodeSetManipulatorSnapshot) {
 		this.nodeSetManipulatorSnapshot = nodeSetManipulatorSnapshot;

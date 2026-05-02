@@ -5,6 +5,9 @@ sidebar_position: 50
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import OverviewTestJava from '@examples-java/options/OverviewTest.java';
+import OverviewKotlinTest from '@examples-kotlin/options/OverviewKotlinTest.kt';
 
 
 When you're starting with Fixture Monkey, using options can seem overwhelming. This guide helps you understand how to navigate the options and where to start.
@@ -110,47 +113,20 @@ Here are the essential options you'll likely need first:
 
 The `defaultNotNull` option ensures that properties not explicitly marked as nullable (with annotations like `@Nullable` in Java or `?` in Kotlin) will not be null. This is useful when you want to avoid null-related issues in your tests.
 
+:::note
+The Java examples below also set `objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)` because the sample `Product` class uses Lombok `@Value` (which generates an all-args constructor with `@ConstructorProperties`). Choose the introspector that matches your class type.
+:::
+
 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void testDefaultNotNullOption() {
-    // Create a FixtureMonkey instance with defaultNotNull option
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .defaultNotNull(true)  // This option ensures properties without @Nullable annotation won't be null
-        .build();
-    
-    // Generate a Product - all properties without annotations will be non-null
-    Product product = fixtureMonkey.giveMeOne(Product.class);
-    
-    assertThat(product.getProductName()).isNotNull();
-    assertThat(product.getPrice()).isNotNull();
-    assertThat(product.getCategory()).isNotNull();
-}
-```
+<CodeSnippet src={OverviewTestJava} language="java" method="testDefaultNotNullOption" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun testDefaultNotNullOption() {
-    // Create a FixtureMonkey instance with defaultNotNull option
-    val fixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .defaultNotNull(true)  // This option ensures properties without ? marker won't be null
-        .build()
-    
-    // Generate a Product - all non-nullable properties will be non-null
-    val product = fixtureMonkey.giveMeOne<Product>()
-    
-    assertThat(product.productName).isNotNull()
-    assertThat(product.price).isNotNull()
-    assertThat(product.category).isNotNull()
-}
-```
+<CodeSnippet src={OverviewKotlinTest} language="kotlin" method="testDefaultNotNullOption" />
 
 </TabItem>
 </Tabs>
@@ -164,57 +140,12 @@ The `javaTypeArbitraryGenerator` option allows you to customize how basic Java t
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void testJavaTypeArbitraryGeneratorOption() {
-    // Create a FixtureMonkey with custom string generation
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .plugin(
-            new JqwikPlugin()  // JqwikPlugin provides integration with the Jqwik library
-                .javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-                    @Override
-                    public StringArbitrary strings() {
-                        // Customize to generate strings with only alphabetic characters
-                        return Arbitraries.strings().alpha().ofLength(10);
-                    }
-                })
-        )
-        .build();
-    
-    // All generated strings will be 10-character alphabetic strings
-    String generatedString = fixtureMonkey.giveMeOne(String.class);
-    
-    assertThat(generatedString).hasSize(10);
-    assertThat(generatedString).matches("[a-zA-Z]+");
-}
-```
+<CodeSnippet src={OverviewTestJava} language="java" method="testJavaTypeArbitraryGeneratorOption" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun testJavaTypeArbitraryGeneratorOption() {
-    // Create a FixtureMonkey with custom string generation
-    val fixtureMonkey = FixtureMonkey.builder()
-        .plugin(
-            JqwikPlugin()  // JqwikPlugin provides integration with the Jqwik library
-                .javaTypeArbitraryGenerator(object : JavaTypeArbitraryGenerator {
-                    override fun strings(): StringArbitrary {
-                        // Customize to generate strings with only alphabetic characters
-                        return Arbitraries.strings().alpha().ofLength(10)
-                    }
-                })
-        )
-        .build()
-    
-    // All generated strings will be 10-character alphabetic strings
-    val generatedString = fixtureMonkey.giveMeOne<String>()
-    
-    assertThat(generatedString).hasSize(10)
-    assertThat(generatedString).matches("[a-zA-Z]+")
-}
-```
+<CodeSnippet src={OverviewKotlinTest} language="kotlin" method="testJavaTypeArbitraryGeneratorOption" />
 
 </TabItem>
 </Tabs>
@@ -228,50 +159,12 @@ The `register` option allows you to configure default settings for specific type
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void testRegisterOption() {
-    // Create a FixtureMonkey with defaults for the Product class
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .register(
-            Product.class,
-            fm -> fm.giveMeBuilder(Product.class)
-                .set("price", Arbitraries.longs().greaterThan(0))  // Allow only positive prices
-                .set("category", "Electronics")  // Fixed category
-        )
-        .build();
-    
-    // All Products will have positive prices and 'Electronics' category
-    Product product = fixtureMonkey.giveMeOne(Product.class);
-    
-    assertThat(product.getPrice()).isPositive();
-    assertThat(product.getCategory()).isEqualTo("Electronics");
-}
-```
+<CodeSnippet src={OverviewTestJava} language="java" method="testRegisterOption" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun testRegisterOption() {
-    // Create a FixtureMonkey with defaults for the Product class
-    val fixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .register(Product::class.java) { builder ->
-            builder.giveMeBuilder<Product>()
-                .set("price", Arbitraries.longs().greaterThan(0))  // Allow only positive prices
-                .set("category", "Electronics")  // Fixed category
-        }
-        .build()
-    
-    // All Products will have positive prices and 'Electronics' category
-    val product = fixtureMonkey.giveMeOne<Product>()
-    
-    assertThat(product.price).isPositive()
-    assertThat(product.category).isEqualTo("Electronics")
-}
-```
+<CodeSnippet src={OverviewKotlinTest} language="kotlin" method="testRegisterOption" />
 
 </TabItem>
 </Tabs>
@@ -333,48 +226,12 @@ The `defaultArbitraryContainerInfoGenerator` option allows you to control the si
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-@Test
-void testContainerSizeOption() {
-    // Create a FixtureMonkey with fixed container sizes
-    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-        .defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))  // All containers will have exactly 3 elements
-        .build();
-    
-    // Generate a list with exactly 3 elements
-    List<String> stringList = fixtureMonkey.giveMeOne(new TypeReference<List<String>>() {});
-    
-    assertThat(stringList).hasSize(3);
-    
-    // Generate a map with exactly 3 entries
-    Map<Integer, String> map = fixtureMonkey.giveMeOne(new TypeReference<Map<Integer, String>>() {});
-    
-    assertThat(map).hasSize(3);
-}
-```
+<CodeSnippet src={OverviewTestJava} language="java" method="testContainerSizeOption" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-@Test
-fun testContainerSizeOption() {
-    // Create a FixtureMonkey with fixed container sizes
-    val fixtureMonkey = FixtureMonkey.builder()
-        .defaultArbitraryContainerInfoGenerator { context -> ArbitraryContainerInfo(3, 3) }  // All containers will have exactly 3 elements
-        .build()
-    
-    // Generate a list with exactly 3 elements
-    val stringList: List<String> = fixtureMonkey.giveMeOne()
-    
-    assertThat(stringList).hasSize(3)
-    
-    // Generate a map with exactly 3 entries
-    val map: Map<Int, String> = fixtureMonkey.giveMeOne()
-    
-    assertThat(map).hasSize(3)
-}
-```
+<CodeSnippet src={OverviewKotlinTest} language="kotlin" method="testContainerSizeOption" />
 
 </TabItem>
 </Tabs>

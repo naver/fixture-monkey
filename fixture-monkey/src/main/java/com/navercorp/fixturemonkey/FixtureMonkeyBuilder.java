@@ -32,6 +32,8 @@ import java.util.function.UnaryOperator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.adapter.NodeTreeAdapter;
+import com.navercorp.fixturemonkey.adapter.tracing.AdapterTracer;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -293,13 +295,12 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("dereference.of.nullable")
 	public FixtureMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
 		return pushExceptGenerateType(
-			property -> Types.primitiveToWrapper(Types.getActualType(property.getType()))
-				.getPackage()
-				.getName()
-				.startsWith(exceptGeneratePackage)
+			property -> {
+				Package pkg = Types.primitiveToWrapper(Types.getActualType(property.getType())).getPackage();
+				return pkg != null && pkg.getName().startsWith(exceptGeneratePackage);
+			}
 		);
 	}
 
@@ -375,7 +376,6 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("return")
 	public FixtureMonkeyBuilder registerGroup(Class<?>... arbitraryBuilderGroups) {
 		for (Class<?> arbitraryBuilderGroup : arbitraryBuilderGroups) {
 			Method[] methods = arbitraryBuilderGroup.getMethods();
@@ -393,7 +393,13 @@ public final class FixtureMonkeyBuilder {
 					Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registerArbitraryBuilder =
 						(fixtureMonkey) -> {
 							try {
-								return (ArbitraryBuilder<?>)method.invoke(noArgsInstance, fixtureMonkey);
+								Object result = method.invoke(noArgsInstance, fixtureMonkey);
+								if (result == null) {
+									throw new IllegalStateException(
+										"registerGroup method returned null: " + method
+									);
+								}
+								return (ArbitraryBuilder<?>)result;
 							} catch (IllegalAccessException | InvocationTargetException ex) {
 								ex.printStackTrace();
 								throw new RuntimeException(ex);
@@ -593,13 +599,21 @@ public final class FixtureMonkeyBuilder {
 		MonkeyExpressionFactory monkeyExpressionFactory = newExpressionFactory(fixtureMonkeyOptions);
 
 		Randoms.setSeed(seed);
+
+		Object rawTracer = fixtureMonkeyOptions.getAdapterTracer();
+		AdapterTracer adapterTracer = rawTracer instanceof AdapterTracer
+			? (AdapterTracer)rawTracer
+			: AdapterTracer.noOp();
+
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
 			registeredArbitraryBuildersWithPriority,
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
-			registeredPriorityMatchersByName
+			registeredPriorityMatchersByName,
+			(NodeTreeAdapter)fixtureMonkeyOptions.getNodeTreeAdapter(),
+			adapterTracer
 		);
 	}
 

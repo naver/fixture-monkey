@@ -72,16 +72,12 @@ public final class ArbitraryBuilderContext {
 	private final ValidationFailureRecorder validationFailureRecorder;
 	private final MonkeyContext monkeyContext;
 
-	@Nullable
-	private Boolean optionValidOnly;
+	private @Nullable Boolean optionValidOnly;
 
-	@Nullable
-	private Boolean customizedValidOnly;
+	private @Nullable Boolean customizedValidOnly;
 
-	@Nullable
-	private FixedState fixedState = null;
-	@Nullable
-	private CombinableArbitrary<?> fixedCombinableArbitrary;
+	private @Nullable FixedState fixedState = null;
+	private @Nullable CombinableArbitrary<?> fixedCombinableArbitrary;
 
 	private ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
@@ -233,8 +229,7 @@ public final class ArbitraryBuilderContext {
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 	}
 
-	@Nullable
-	public CombinableArbitrary<?> getFixedCombinableArbitrary() {
+	public @Nullable CombinableArbitrary<?> getFixedCombinableArbitrary() {
 		return fixedCombinableArbitrary;
 	}
 

@@ -1,0 +1,207 @@
+---
+title: "기능"
+sidebar_position: 45
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Node Tree Adapter 플러그인은 Fixture Monkey의 대체 객체 생성 엔진을 제공합니다.
+기본 생성 경로를 **JvmNodeTree 기반 아키텍처**로 대체하여 더 나은 성능과 내장 디버깅 기능을 제공합니다.
+
+:::info
+**v1.2.0부터 Node Tree Adapter가 기본 객체 생성 엔진이 됩니다.** 전환에 대비하여 미리 도입하는 것을 권장합니다.
+:::
+
+## 왜 이 플러그인을 사용하나요?
+
+- **제로 오버헤드** — 벤치마크 테스트에서 기본 경로 대비 성능 저하 없음
+- **더 빠른 `thenApply`** — `thenApply` 연산에서 기본 엔진보다 약 10% 빠름
+- **내장 트레이싱** — 픽스처 생성 중 값이 어떻게 해석되는지 정확히 디버깅
+- **결정적 출력** — 재현 가능한 테스트 결과를 위한 고정 시드 지원
+
+## 설정
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin())
+    .build()
+```
+
+:::tip
+Kotlin 플러그인은 `KotlinNodeTreeAdapterPlugin()`과 함께 `KotlinPlugin()`을 등록해야 합니다.
+:::
+
+</TabItem>
+</Tabs>
+
+다른 플러그인과 호환됩니다 — 기존 플러그인과 함께 추가하면 됩니다:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin())
+    .plugin(new JakartaValidationPlugin())
+    .plugin(new SimpleValueJqwikPlugin())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin())
+    .plugin(JakartaValidationPlugin())
+    .plugin(SimpleValueJqwikPlugin())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+## 벤치마크 결과
+
+JMH(fork=1, warmup=3, iterations=10)로 측정, iteration당 200개의 `OrderSheet` 객체 생성.
+
+| 시나리오 | Adapter 미사용 (ms) | Adapter 사용 (ms) | 오버헤드 |
+|---------|-------------------|------------------|---------|
+| 순수 sample | 125.2 | 121.4 | **-3.1%** |
+| set | 121.7 | 120.7 | **-0.8%** |
+| size + setNull | 122.6 | 123.4 | +0.6% |
+| 중첩 set | 124.1 | 124.8 | +0.5% |
+| thenApply | 333.3 | 301.1 | **-9.7%** |
+
+> 모든 시나리오에서 오버헤드가 거의 없습니다. `thenApply`는 adapter 사용 시 일관되게 ~10% 빠릅니다.
+
+## 설정 옵션
+
+### 시드
+
+재현 가능한 결과를 위해 고정 시드를 설정합니다:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin()
+        .seed(12345L))
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin()
+        .seed(12345L))
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+:::caution
+시드 기능은 현재 100% 지원되지 않습니다. 모든 시나리오에서 재현성이 보장되지 않습니다. 완전한 시드 지원은 향후 릴리즈에서 제공될 예정입니다.
+:::
+
+### 트레이서
+
+픽스처 생성 중 값이 어떻게 해석되는지 디버깅하려면 트레이싱을 활성화합니다:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin()
+        .tracer(AdapterTracer.console()))
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin()
+        .tracer(AdapterTracer.console()))
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+#### 사용 가능한 트레이서
+
+| 트레이서 | 설명 |
+|---------|------|
+| `AdapterTracer.noOp()` | 트레이싱 없음 (기본값) |
+| `AdapterTracer.console()` | 콘솔에 트리 형식으로 출력 |
+| `AdapterTracer.consoleJson()` | 콘솔에 JSON 형식으로 출력 |
+| `AdapterTracer.timing()` | 타이밍 정보 출력 |
+| `AdapterTracer.file(path)` | 파일에 트레이스 기록 (append 모드) |
+
+#### 트레이스 출력 예시
+
+```
+[AdapterTracer] ── OrderSheet ──────────────────
+  Resolution:
+    $.orderProducts  → container size = 2
+    $.orderProducts[0].productName  → set("product-0")
+  Assembly:
+    $ (OrderSheet) → BeanArbitraryIntrospector
+      $.id (String) → "aB3xK"
+      $.userNo (Long) → 42
+      $.orderProducts (List) → size=2
+        $.orderProducts[0] (OrderProduct)
+          $.orderProducts[0].productName → "product-0" [USER_SET]
+```
+
+### 활성화 / 비활성화
+
+플러그인은 기본적으로 활성화되어 있습니다. 조건부로 비활성화하려면:
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JavaNodeTreeAdapterPlugin()
+        .enabled(false))  // adapter를 비활성화, 기본 경로 사용
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(KotlinNodeTreeAdapterPlugin()
+        .enabled(false))  // adapter를 비활성화, 기본 경로 사용
+    .build()
+```
+
+</TabItem>
+</Tabs>

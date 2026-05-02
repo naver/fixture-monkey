@@ -29,15 +29,21 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ContainerElementPredicate implements NextNodePredicate {
+
 	private final int sequence;
 
 	public ContainerElementPredicate(int sequence) {
 		this.sequence = sequence;
 	}
 
+	public int getSequence() {
+		return sequence;
+	}
+
 	@Override
 	public boolean test(ObjectProperty currentObjectProperty) {
 		Property property = currentObjectProperty.getProperty();
+
 		if (!(property instanceof ContainerElementProperty)) {
 			throw new IllegalArgumentException("Resolved node is not element type. : " + property);
 		}

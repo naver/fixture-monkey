@@ -34,10 +34,10 @@ Add Fixture Monkey to your project:
 
 ```groovy
 // Java
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.19")
 
 // Kotlin
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.19")
 ```
 
 ### Maven
@@ -47,7 +47,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>1.1.15</version>
+    <version>1.1.19</version>
     <scope>test</scope>
 </dependency>
 
@@ -55,7 +55,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter-kotlin</artifactId>
-    <version>1.1.15</version>
+    <version>1.1.19</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -200,11 +200,11 @@ Originally developed at [Naver](https://www.navercorp.com/en), Fixture Monkey ha
 
 ## Documentation
 * [English](https://naver.github.io/fixture-monkey)
-* [Korean](https://naver.github.io/fixture-monkey/v1-1-0-kor/)
+* [Korean](https://naver.github.io/fixture-monkey/ko/)
 
 ## Additional Resources
 
-### [FAQ](https://naver.github.io/fixture-monkey/v1-0-0/docs/cheat-sheet/faq/)
+### [FAQ](https://naver.github.io/fixture-monkey/docs/cheat-sheet/faq/)
 
 ### [Third-party Modules](https://naver.github.io/fixture-monkey/docs/plugins/)
 

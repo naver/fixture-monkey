@@ -24,10 +24,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
@@ -38,76 +36,107 @@ public abstract class JvmTypes {
 		}
 
 		if (type instanceof TypeVariable) {
-			return new JavaType(resolveGenericTypes(parentType, type).get(0));
+			return resolveTypeVariable(parentType, (TypeVariable<?>)type);
 		}
 
-		List<Class<?>> actualGenericTypes = resolveGenericTypes(parentType, type);
-		List<JavaType> actualTypeVariables = actualGenericTypes.stream()
-			.map(JavaType::new)
-			.collect(Collectors.toList());
+		List<JvmType> typeArguments = resolveTypeArguments(parentType, type);
 
 		return new JavaType(
 			Types.getActualType(type),
-			actualTypeVariables,
+			typeArguments,
 			annotations
 		);
 	}
 
-	private static List<Class<?>> resolveGenericTypes(JvmType parentType, Type fieldGenericType) {
-		if (fieldGenericType instanceof ParameterizedType) {
-			ParameterizedType genericType = (ParameterizedType)fieldGenericType;
-			return Arrays.stream(genericType.getActualTypeArguments())
-				.map(Types::getActualType)
-				.collect(Collectors.toList());
+	/**
+	 * Resolves a TypeVariable to its actual JvmType using the parent type's type variables.
+	 */
+	private static JvmType resolveTypeVariable(JvmType parentType, TypeVariable<?> typeVariable) {
+		List<? extends JvmType> parentTypeVariables = parentType.getTypeVariables();
+		if (parentTypeVariables.isEmpty()) {
+			return new JavaType(Object.class);
+		}
+		return parentTypeVariables.get(0);
+	}
+
+	/**
+	 * Resolves type arguments preserving nested generic type information.
+	 */
+	private static List<JvmType> resolveTypeArguments(JvmType parentType, Type genericType) {
+		if (genericType instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType)genericType;
+			Type[] typeArgs = parameterizedType.getActualTypeArguments();
+
+			List<JvmType> result = new ArrayList<>();
+			for (Type typeArg : typeArgs) {
+				result.add(resolveType(parentType, typeArg));
+			}
+			return Collections.unmodifiableList(result);
 		}
 
-		if (fieldGenericType instanceof GenericArrayType) {
-			Type genericComponentType = ((GenericArrayType)fieldGenericType).getGenericComponentType();
-			if (genericComponentType instanceof ParameterizedType) {
-				ParameterizedType genericType = (ParameterizedType)genericComponentType;
+		if (genericType instanceof GenericArrayType) {
+			Type componentType = ((GenericArrayType)genericType).getGenericComponentType();
+			if (componentType instanceof ParameterizedType) {
+				ParameterizedType parameterizedType = (ParameterizedType)componentType;
 
-				List<? extends JvmType> parentTypeTypeVariables = parentType.getTypeVariables(); // It is not erased.
-				List<Type> erasedTypeVariableCandidates = Arrays.stream(genericType.getActualTypeArguments())
-					.collect(Collectors.toList());
+				List<? extends JvmType> parentTypeVariables = parentType.getTypeVariables();
+				Type[] typeArgs = parameterizedType.getActualTypeArguments();
 
-				List<Class<?>> resolvedErasedTypeVariables = new ArrayList<>();
-				for (int i = 0; i < erasedTypeVariableCandidates.size(); i++) {
-					resolvedErasedTypeVariables.add(
-						resolveErasedTypeVariableType(
-							erasedTypeVariableCandidates.get(i),
-							parentTypeTypeVariables.get(i)
-						)
-					);
+				List<JvmType> result = new ArrayList<>();
+				for (int i = 0; i < typeArgs.length; i++) {
+					JvmType parentTypeVar = i < parentTypeVariables.size()
+						? parentTypeVariables.get(i)
+						: null;
+					result.add(resolveErasedType(typeArgs[i], parentTypeVar));
 				}
-
-				return Collections.unmodifiableList(resolvedErasedTypeVariables);
+				return Collections.unmodifiableList(result);
 			}
 		}
 
-		if (fieldGenericType instanceof TypeVariable) {
+		if (genericType instanceof TypeVariable) {
 			return Collections.singletonList(
-				resolveErasedTypeVariableType(
-					fieldGenericType,
-					parentType.getTypeVariables().get(0)
-				)
+				resolveTypeVariable(parentType, (TypeVariable<?>)genericType)
 			);
 		}
 
-		throw new IllegalArgumentException("Unsupported generic type: " + fieldGenericType);
+		throw new IllegalArgumentException("Unsupported generic type: " + genericType);
 	}
 
-	private static Class<?> resolveErasedTypeVariableType(
-		Type erasedTypeVariableCandidate,
-		@Nullable JvmType parentTypeTypeVariable
-	) {
-		if (!(erasedTypeVariableCandidate instanceof TypeVariable)) {
-			return Types.getActualType(erasedTypeVariableCandidate);
+	/**
+	 * Resolves a Type to JvmType, recursively handling nested generic types.
+	 */
+	private static JvmType resolveType(JvmType parentType, Type type) {
+		if (type instanceof TypeVariable) {
+			return resolveTypeVariable(parentType, (TypeVariable<?>)type);
 		}
 
-		if (parentTypeTypeVariable == null) {
-			return Types.getActualType(erasedTypeVariableCandidate); // It is erased. So it always returns Object.class
+		if (type instanceof ParameterizedType) {
+			Class<?> rawType = Types.getActualType(type);
+			List<JvmType> typeArguments = resolveTypeArguments(parentType, type);
+			return new JavaType(rawType, typeArguments, Collections.emptyList());
 		}
 
-		return parentTypeTypeVariable.getRawType();
+		return new JavaType(Types.getActualType(type));
+	}
+
+	/**
+	 * Resolves an erased type with a specific parent type variable.
+	 */
+	private static JvmType resolveErasedType(Type type, @Nullable JvmType parentTypeVar) {
+		if (type instanceof TypeVariable) {
+			if (parentTypeVar == null) {
+				return new JavaType(Object.class);
+			}
+			return parentTypeVar;
+		}
+
+		if (type instanceof ParameterizedType) {
+			Class<?> rawType = Types.getActualType(type);
+			JvmType dummyParent = new JavaType(Object.class);
+			List<JvmType> typeArguments = resolveTypeArguments(dummyParent, type);
+			return new JavaType(rawType, typeArguments, Collections.emptyList());
+		}
+
+		return new JavaType(Types.getActualType(type));
 	}
 }

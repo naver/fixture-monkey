@@ -5,6 +5,9 @@ sidebar_position: 42
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import ApisTestJava from '@examples-java/customizing/ApisTest.java';
+import ApisKotlinTest from '@examples-kotlin/customizing/ApisKotlinTest.kt';
 
 
 :::tip Recommended Learning Order
@@ -72,6 +75,15 @@ Here are some common scenarios where you can use Fixture Monkey APIs:
 
 ## Using Basic APIs
 
+:::tip[Kotlin Users: `giveMeBuilder` vs `giveMeKotlinBuilder`]
+Kotlin examples in this page use **`giveMeKotlinBuilder`** for type-safe property references (e.g., `setExp(Product::name, "value")`), and **`giveMeBuilder`** for string-based APIs (e.g., `setLazy("orderId") { ... }`).
+
+- `giveMeKotlinBuilder<T>()` — provides type-safe methods like `setExp`, `sizeExp`, `setPostConditionExp`, `customizeProperty(KProperty)`
+- `giveMeBuilder<T>()` — provides string-based methods like `set("name", value)`, `setLazy`, `setInner`
+
+Both are valid — use whichever fits your use case. For getting started quickly with string-based APIs, see the [Quick Start Guide](./quick-start-guide).
+:::
+
 ### set()
 The `set()` method is used to set specific values for object properties.
 This is the most basic and commonly used API.
@@ -82,38 +94,12 @@ This is the most basic and commonly used API.
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Creating member data
-Member member = fixtureMonkey.giveMeBuilder(Member.class)
-    .set("name", "John Doe")        // Set name
-    .set("age", 25)                 // Set age
-    .set("email", "john@test.com")  // Set email
-    .sample();
-
-// Creating order data
-Order order = fixtureMonkey.giveMeBuilder(Order.class)
-    .set("orderId", "ORDER-001")           // Set order ID
-    .set("totalAmount", BigDecimal.valueOf(15000)) // Set order amount
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="setBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Creating member data
-val member = fixtureMonkey.giveMeBuilder<Member>()
-    .setExp(Member::name, "John Doe")        // Set name
-    .setExp(Member::age, 25)                 // Set age
-    .setExp(Member::email, "john@test.com")  // Set email
-    .sample()
-
-// Creating order data
-val order = fixtureMonkey.giveMeBuilder<Order>()
-    .setExp(Order::orderId, "ORDER-001")           // Set order ID
-    .setExp(Order::totalAmount, BigDecimal.valueOf(15000)) // Set order amount
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="setBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -144,32 +130,12 @@ You can set exact sizes or specify minimum/maximum sizes.
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Adding 3 items to cart
-Cart cart = fixtureMonkey.giveMeBuilder(Cart.class)
-    .size("items", 3)  // 3 items in cart
-    .sample();
-
-// Creating a product with 2-4 reviews
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .size("reviews", 2, 4)  // Min 2, max 4 reviews
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="sizeBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Adding 3 items to cart
-val cart = fixtureMonkey.giveMeBuilder<Cart>()
-    .sizeExp(Cart::items, 3)  // 3 items in cart
-    .sample()
-
-// Creating a product with 2-4 reviews
-val product = fixtureMonkey.giveMeBuilder<Product>()
-    .sizeExp(Product::reviews, 2, 4)  // Min 2, max 4 reviews
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="sizeBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -184,36 +150,12 @@ val product = fixtureMonkey.giveMeBuilder<Product>()
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Creating withdrawn member data (email is null)
-Member withdrawnMember = fixtureMonkey.giveMeBuilder(Member.class)
-    .set("name", "John Doe")
-    .setNull("email")      // Set email to null
-    .sample();
-
-// Creating order with required fields
-Order validOrder = fixtureMonkey.giveMeBuilder(Order.class)
-    .setNotNull("orderId")     // Order ID must exist
-    .setNotNull("orderDate")   // Order date must exist
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="setNullBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Creating withdrawn member data (email is null)
-val withdrawnMember = fixtureMonkey.giveMeBuilder<Member>()
-    .setExp(Member::name, "John Doe")
-    .setNullExp(Member::email)      // Set email to null
-    .sample()
-
-// Creating order with required fields
-val validOrder = fixtureMonkey.giveMeBuilder<Order>()
-    .setNotNullExp(Order::orderId)     // Order ID must exist
-    .setNotNullExp(Order::orderDate)   // Order date must exist
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="setNullBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -231,34 +173,12 @@ It's useful when you need the same member or order information across different 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Setting up VIP member info
-InnerSpec vipMemberSpec = new InnerSpec()
-    .property("grade", "VIP")
-    .property("point", 10000)
-    .property("joinDate", LocalDate.now().minusYears(1));
-
-// Reusing for VIP member creation
-Member vipMember = fixtureMonkey.giveMeBuilder(Member.class)
-    .setInner(vipMemberSpec)
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="setInnerBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Setting up VIP member info
-val vipMemberSpec = InnerSpec()
-    .property("grade", "VIP")
-    .property("point", 10000)
-    .property("joinDate", LocalDate.now().minusYears(1))
-
-// Reusing for VIP member creation
-val vipMember = fixtureMonkey.giveMeBuilder<Member>()
-    .setInner(vipMemberSpec)
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="setInnerBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -274,32 +194,12 @@ It's useful for creating sequential order numbers or using current timestamps.
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Generating sequential order numbers
-AtomicInteger orderCounter = new AtomicInteger(1);
-Order order = fixtureMonkey.giveMeBuilder(Order.class)
-    .setLazy("orderId", () -> "ORDER-" + orderCounter.getAndIncrement())
-    .sample();  // ORDER-1
-
-Order nextOrder = fixtureMonkey.giveMeBuilder(Order.class)
-    .setLazy("orderId", () -> "ORDER-" + orderCounter.getAndIncrement())
-    .sample();  // ORDER-2
-```
+<CodeSnippet src={ApisTestJava} language="java" method="setLazyBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Generating sequential order numbers
-var orderCounter = AtomicInteger(1)
-val order = fixtureMonkey.giveMeBuilder<Order>()
-    .setLazy("orderId") { "ORDER-${orderCounter.getAndIncrement()}" }
-    .sample()  // ORDER-1
-
-val nextOrder = fixtureMonkey.giveMeBuilder<Order>()
-    .setLazy("orderId") { "ORDER-${orderCounter.getAndIncrement()}" }
-    .sample()  // ORDER-2
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="setLazyBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -319,35 +219,12 @@ If conditions are too strict, finding values might take longer. Use set() when p
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Creating adult members only
-Member adultMember = fixtureMonkey.giveMeBuilder(Member.class)
-    .setPostCondition("age", Integer.class, age -> age >= 19)
-    .sample();
-
-// Creating large orders only
-Order largeOrder = fixtureMonkey.giveMeBuilder(Order.class)
-    .setPostCondition("totalAmount", BigDecimal.class, 
-        amount -> amount.compareTo(BigDecimal.valueOf(100000)) >= 0)
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="setPostConditionBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Creating adult members only
-val adultMember = fixtureMonkey.giveMeBuilder<Member>()
-    .setPostConditionExp(Member::age, Int::class.java) { it >= 19 }
-    .sample()
-
-// Creating large orders only
-val largeOrder = fixtureMonkey.giveMeBuilder<Order>()
-    .setPostConditionExp(Order::totalAmount, BigDecimal::class.java) { 
-        it >= BigDecimal.valueOf(100000) 
-    }
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="setPostConditionBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -362,26 +239,12 @@ val largeOrder = fixtureMonkey.giveMeBuilder<Order>()
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Testing with same member info
-Member member = fixtureMonkey.giveMeBuilder(Member.class)
-    .set("name", "John Doe")
-    .set("age", 30)
-    .fixed()  // Generate same data every time
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="fixedBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Testing with same member info
-val member = fixtureMonkey.giveMeBuilder<Member>()
-    .setExp(Member::name, "John Doe")
-    .setExp(Member::age, 30)
-    .fixed()  // Generate same data every time
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="fixedBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -396,24 +259,12 @@ val member = fixtureMonkey.giveMeBuilder<Member>()
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Applying discount to some cart items only
-Cart cart = fixtureMonkey.giveMeBuilder(Cart.class)
-    .size("items", 5)                    // 5 items
-    .set("items[*].onSale", true, 2)    // Only 2 items on sale
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="limitBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Applying discount to some cart items only
-val cart = fixtureMonkey.giveMeBuilder<Cart>()
-    .sizeExp(Cart::items, 5)                    // 5 items
-    .set("items[*].onSale", true, 2)    // Only 2 items on sale
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="limitBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -431,38 +282,12 @@ For example, setting an order's total amount based on its item prices.
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Setting order total as sum of item prices
-Order order = fixtureMonkey.giveMeBuilder(Order.class)
-    .size("items", 3)  // 3 items
-    .thenApply((tempOrder, orderBuilder) -> {
-        // Calculate total
-        BigDecimal total = tempOrder.getItems().stream()
-            .map(item -> item.getPrice())
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-        // Set calculated total
-        orderBuilder.set("totalAmount", total);
-    })
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="thenApplyBasicUsage" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Setting order total as sum of item prices
-val order = fixtureMonkey.giveMeBuilder<Order>()
-    .sizeExp(Order::items, 3)  // 3 items
-    .thenApply { tempOrder, orderBuilder ->
-        // Calculate total
-        val total = tempOrder.items
-            .map { it.price }
-            .fold(BigDecimal.ZERO, BigDecimal::add)
-        // Set calculated total
-        orderBuilder.set("totalAmount", total)
-    }
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="thenApplyBasicUsage" />
 
 </TabItem>
 </Tabs>
@@ -489,62 +314,16 @@ customizeProperty requires TypedPropertySelector. This is more complex than basi
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// You need to import the property selector
-import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
+<CodeSnippet src={ApisTestJava} language="java" method="customizePropertyTransform" />
 
-// Transform a property value
-String expected = "transformed";
-String actual = fixtureMonkey.giveMeBuilder(Member.class)
-    .customizeProperty(javaGetter(Member::getName), arb -> arb.map(name -> expected))
-    .sample()
-    .getName();
-
-// Filter values to meet conditions  
-Member adult = fixtureMonkey.giveMeBuilder(Member.class)
-    .customizeProperty(javaGetter(Member::getAge), arb -> arb.filter(age -> age >= 18))
-    .sample();
-
-// Combine filtering and transformation
-Member vipMember = fixtureMonkey.giveMeBuilder(Member.class)
-    .customizeProperty(javaGetter(Member::getEmail), arb -> 
-        arb.filter(email -> email.contains("@"))
-           .map(email -> "vip-" + email))
-    .sample();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="customizePropertyFilter" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Kotlin can use property references directly
-class StringObject(val string: String)
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="customizePropertyTransform" />
 
-val expected = "test"
-val actual = fixtureMonkey.giveMeKotlinBuilder<StringObject>()
-    .customizeProperty(StringObject::string) {
-        it.map { _ -> expected }
-    }
-    .sample()
-    .string
-
-// Filter values to meet conditions
-class Member(val name: String, val age: Int)
-
-val adult = fixtureMonkey.giveMeKotlinBuilder<Member>()
-    .customizeProperty(Member::age) { arb -> 
-        arb.filter { age -> age >= 18 }
-    }
-    .sample()
-
-// Combine filtering and transformation  
-val vipMember = fixtureMonkey.giveMeKotlinBuilder<Member>()
-    .customizeProperty(Member::name) { arb ->
-        arb.filter { name -> name.isNotBlank() }
-           .map { name -> "VIP-$name" }
-    }
-    .sample()
-```
+<CodeSnippet src={ApisKotlinTest} language="kotlin" method="customizePropertyFilter" />
 
 </TabItem>
 </Tabs>
@@ -556,26 +335,12 @@ val vipMember = fixtureMonkey.giveMeKotlinBuilder<Member>()
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Customize nested object properties
-String nestedValue = fixtureMonkey.giveMeBuilder(Order.class)
-    .customizeProperty(
-        javaGetter(Order::getCustomer).into(Customer::getName),
-        arb -> arb.map(name -> "Mr. " + name)
-    )
-    .sample()
-    .getCustomer()
-    .getName();
-```
+<CodeSnippet src={ApisTestJava} language="java" method="customizePropertyNested" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
 ```kotlin
-// Customize nested object properties
-class Customer(val name: String)
-class Order(val customer: Customer)
-
 val nestedValue = fixtureMonkey.giveMeKotlinBuilder<Order>()
     .customizeProperty(Order::customer into Customer::name) {
         it.map { name -> "Mr. $name" }

@@ -5,6 +5,9 @@ sidebar_position: 40
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import QuickStartGuideTestJava from '@examples-java/customizing/QuickStartGuideTest.java';
+import QuickStartGuideKotlinTest from '@examples-kotlin/customizing/QuickStartGuideKotlinTest.kt';
 
 
 ## What You'll Learn
@@ -18,48 +21,23 @@ import TabItem from '@theme/TabItem';
 
 ### 4 Key Methods You Must Know
 
-If you're short on time, here's what you need to know right now:
+If you're short on time, here's what you need to know right now. First, create a `FixtureMonkey` instance:
 
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+```
+
+Then use these core methods:
 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// 1. Create FixtureMonkey instance
-FixtureMonkey fixtureMonkey = FixtureMonkey.create();
-
-// 2. Create a product with specific property values
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("name", "Smartphone")         // Set property
-    .set("price", new BigDecimal(499)) // Set another property
-    .sample();                         // Create the actual object
-
-// 3. Create an order with a list of products
-Order order = fixtureMonkey.giveMeBuilder(Order.class)
-    .size("products", 2)               // Set list size to 2
-    .set("products[0].name", "Laptop") // Customize list element
-    .sample();
-```
+<CodeSnippet src={QuickStartGuideTestJava} language="java" method="keyMethods" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// 1. Create FixtureMonkey instance
-val fixtureMonkey = FixtureMonkey.create()
-
-// 2. Create a product with specific property values
-val product = fixtureMonkey.giveMeBuilder<Product>()
-    .setExp(Product::name, "Smartphone")        // Set property
-    .setExp(Product::price, BigDecimal(499))    // Set another property
-    .sample()                                   // Create the actual object
-
-// 3. Create an order with a list of products
-val order = fixtureMonkey.giveMeBuilder<Order>()
-    .sizeExp(Order::products, 2)                // Set list size to 2
-    .set("products[0].name", "Laptop")          // Customize list element
-    .sample()
-```
+<CodeSnippet src={QuickStartGuideKotlinTest} language="kotlin" method="keyMethods" />
 
 </TabItem>
 </Tabs>
@@ -100,24 +78,12 @@ The most basic way to customize an object is to set specific property values:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("name", "Smartphone")
-    .set("price", new BigDecimal("499.99"))
-    .set("available", true)
-    .sample();
-```
+<CodeSnippet src={QuickStartGuideTestJava} language="java" method="settingPropertyValues" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-val product = fixtureMonkey.giveMeBuilder<Product>()
-    .setExp(Product::name, "Smartphone")
-    .setExp(Product::price, BigDecimal("499.99"))
-    .setExp(Product::available, true)
-    .sample()
-```
+<CodeSnippet src={QuickStartGuideKotlinTest} language="kotlin" method="settingPropertyValues" />
 
 </TabItem>
 </Tabs>
@@ -131,20 +97,12 @@ When you need to test with null values:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-Product nullNameProduct = fixtureMonkey.giveMeBuilder(Product.class)
-    .setNull("name")  // Set name to null
-    .sample();
-```
+<CodeSnippet src={QuickStartGuideTestJava} language="java" method="settingNullValues" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-val nullNameProduct = fixtureMonkey.giveMeBuilder<Product>()
-    .setNullExp(Product::name)  // Set name to null
-    .sample()
-```
+<CodeSnippet src={QuickStartGuideKotlinTest} language="kotlin" method="settingNullValues" />
 
 </TabItem>
 </Tabs>
@@ -158,24 +116,12 @@ The most important thing when working with collections is to set the size first:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Create an order with 2 products
-Order orderWith2Products = fixtureMonkey.giveMeBuilder(Order.class)
-    .size("products", 2)               // Set size first
-    .set("products[0].name", "Laptop") // Then customize elements
-    .sample();
-```
+<CodeSnippet src={QuickStartGuideTestJava} language="java" method="workingWithCollections" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Create an order with 2 products
-val orderWith2Products = fixtureMonkey.giveMeBuilder<Order>()
-    .sizeExp(Order::products, 2)       // Set size first
-    .set("products[0].name", "Laptop") // Then customize elements
-    .sample()
-```
+<CodeSnippet src={QuickStartGuideKotlinTest} language="kotlin" method="workingWithCollections" />
 
 </TabItem>
 </Tabs>
@@ -191,26 +137,12 @@ You can access nested properties using dot notation:
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Create a customer with an address
-Customer customer = fixtureMonkey.giveMeBuilder(Customer.class)
-    .set("name", "John Doe")
-    .set("address.street", "123 Main Street")  // Nested property
-    .set("address.city", "New York")           // Nested property
-    .sample();
-```
+<CodeSnippet src={QuickStartGuideTestJava} language="java" method="customizingNestedObjects" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Create a customer with an address
-val customer = fixtureMonkey.giveMeBuilder<Customer>()
-    .setExp(Customer::name, "John Doe")
-    .set("address.street", "123 Main Street")  // Nested property
-    .set("address.city", "New York")           // Nested property
-    .sample()
-```
+<CodeSnippet src={QuickStartGuideKotlinTest} language="kotlin" method="customizingNestedObjects" />
 
 </TabItem>
 </Tabs>
@@ -224,40 +156,23 @@ For more complex nested object customization, check the [InnerSpec](../customizi
 
 ### Why is my collection empty when I tried to customize an element?
 
-The most common mistake is not setting the collection size first:
+:::caution[Common Mistake]
+Setting a collection element without specifying the size first (e.g., `.set("products[0].name", "Laptop")` without `.size(...)`) may result in an empty collection, causing the element to be ignored.
 
+**Always set the collection size before customizing its elements.**
+:::
+
+**Solution:**
 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-// Wrong way - collection might be empty
-Order orderWrong = fixtureMonkey.giveMeBuilder(Order.class)
-    .set("products[0].name", "Laptop")  // This might not work!
-    .sample();
-
-// Correct way - set size first
-Order orderCorrect = fixtureMonkey.giveMeBuilder(Order.class)
-    .size("products", 1)                // Set size first!
-    .set("products[0].name", "Laptop")  // Now this works
-    .sample();
-```
+<CodeSnippet src={QuickStartGuideTestJava} language="java" method="collectionSizeFirst" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-// Wrong way - collection might be empty
-val orderWrong = fixtureMonkey.giveMeBuilder<Order>()
-    .set("products[0].name", "Laptop")  // This might not work!
-    .sample()
-
-// Correct way - set size first
-val orderCorrect = fixtureMonkey.giveMeBuilder<Order>()
-    .sizeExp(Order::products, 1)        // Set size first!
-    .set("products[0].name", "Laptop")  // Now this works
-    .sample()
-```
+<CodeSnippet src={QuickStartGuideKotlinTest} language="kotlin" method="collectionSizeFirst" />
 
 </TabItem>
 </Tabs>
@@ -271,22 +186,12 @@ By default, Fixture Monkey may generate null values for some properties. To ensu
 <Tabs groupId="language">
 <TabItem value="java" label="Java">
 
-```java
-Product nonNullProduct = fixtureMonkey.giveMeBuilder(Product.class)
-    .setNotNull("name")        // Ensure name is not null
-    .setNotNull("price")       // Ensure price is not null
-    .sample();
-```
+<CodeSnippet src={QuickStartGuideTestJava} language="java" method="ensureNotNull" />
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-val nonNullProduct = fixtureMonkey.giveMeBuilder<Product>()
-    .setNotNullExp(Product::name)    // Ensure name is not null
-    .setNotNullExp(Product::price)   // Ensure price is not null
-    .sample()
-```
+<CodeSnippet src={QuickStartGuideKotlinTest} language="kotlin" method="ensureNotNull" />
 
 </TabItem>
 </Tabs>

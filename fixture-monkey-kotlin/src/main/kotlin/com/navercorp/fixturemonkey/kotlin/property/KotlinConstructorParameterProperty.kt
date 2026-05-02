@@ -50,7 +50,7 @@ internal data class KotlinConstructorParameterProperty(
     @Suppress("UNCHECKED_CAST")
     override fun <T : Annotation> getAnnotation(annotationClass: Class<T>): Optional<T> = annotations
         .find { it.annotationClass.java == annotationClass }
-        .let { Optional.of(it as T) }
+        .let { Optional.ofNullable(it as T?) }
 
     override fun isNullable(): Boolean = kParameter.type.isMarkedNullable
 }

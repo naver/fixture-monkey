@@ -39,6 +39,24 @@ public final class NodeFilterManipulator implements NodeManipulator {
 		this.filter = filter;
 	}
 
+	/**
+	 * Returns the type that this filter applies to.
+	 *
+	 * @return the filter type
+	 */
+	public Class<?> getType() {
+		return type;
+	}
+
+	/**
+	 * Returns the filter predicate.
+	 *
+	 * @return the filter predicate
+	 */
+	public Predicate getFilter() {
+		return filter;
+	}
+
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		Class<?> actualType = Types.getActualType(objectNode.getOriginalProperty().getType());

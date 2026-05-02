@@ -44,7 +44,7 @@ public final class PriorityConstructorArbitraryIntrospector implements Arbitrary
 	public static final PriorityConstructorArbitraryIntrospector INSTANCE =
 		new PriorityConstructorArbitraryIntrospector();
 
-	private static final Map<Property, ConstructorArbitraryIntrospector> CONSTRUCTOR_INTROSPECTORS_BY_PROPERTY =
+	private final Map<Property, ConstructorArbitraryIntrospector> constructorIntrospectorsByProperty =
 		new ConcurrentLruCache<>(256);
 
 	private final Predicate<Constructor<?>> constructorFilter;
@@ -113,7 +113,7 @@ public final class PriorityConstructorArbitraryIntrospector implements Arbitrary
 	private ConstructorArbitraryIntrospector getConstructorArbitraryIntrospector(Property property) {
 		Class<?> actualType = Types.getActualType(property.getType());
 
-		return CONSTRUCTOR_INTROSPECTORS_BY_PROPERTY.computeIfAbsent(
+		return constructorIntrospectorsByProperty.computeIfAbsent(
 			property,
 			p -> {
 				Constructor<?> constructor = TypeCache.getDeclaredConstructors(actualType).stream()

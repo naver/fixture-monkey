@@ -35,6 +35,15 @@ public final class StaticNodeResolver implements NodeResolver {
 	}
 
 	/**
+	 * Returns the list of nodes that this resolver will return.
+	 *
+	 * @return the static list of nodes
+	 */
+	public List<ObjectNode> getNodes() {
+		return nodes;
+	}
+
+	/**
 	 * Resolves the next nodes statically. It always returns the provided nodes.
 	 *
 	 * @param nextNode it may be the root node or the parent node resolved by the previous {@link NodeResolver}

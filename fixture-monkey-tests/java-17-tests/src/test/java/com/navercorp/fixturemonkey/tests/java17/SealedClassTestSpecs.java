@@ -1,6 +1,6 @@
 package com.navercorp.fixturemonkey.tests.java17;
 
-final class SealedClassTestSpecs {
+public final class SealedClassTestSpecs {
 	public static sealed class BaseSealedClass permits SealedClass {
 	}
 
@@ -25,6 +25,31 @@ final class SealedClassTestSpecs {
 	public record SealedClassProperty(
 		SealedClass sealedClass,
 		SealedInterface sealedInterface
+	) {
+	}
+
+	// Generic sealed interface
+	public sealed interface GenericSealedShape<T> permits GenericCircle, GenericSquare {
+		T getLabel();
+	}
+
+	public record GenericCircle<T>(T label, double radius) implements GenericSealedShape<T> {
+		@Override
+		public T getLabel() {
+			return label;
+		}
+	}
+
+	public record GenericSquare<T>(T label, double side) implements GenericSealedShape<T> {
+		@Override
+		public T getLabel() {
+			return label;
+		}
+	}
+
+	public record GenericSealedShapeContainer(
+		GenericSealedShape<String> stringShape,
+		GenericSealedShape<Integer> intShape
 	) {
 	}
 }

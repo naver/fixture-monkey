@@ -36,6 +36,7 @@ import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {
+
 	private final int sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
@@ -53,24 +54,37 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		this.lazyArbitrary = lazyArbitrary;
 	}
 
+	/**
+	 * Returns the LazyArbitrary that will be evaluated at runtime.
+	 *
+	 * @return the LazyArbitrary instance
+	 */
+	public LazyArbitrary<T> getLazyArbitrary() {
+		return lazyArbitrary;
+	}
+
+	public int getSequence() {
+		return sequence;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		T value = lazyArbitrary.getValue();
 
 		if (value == null) {
-			NodeNullityManipulator nullityManipulator = new NodeNullityManipulator(true);
+			NodeNullityManipulator nullityManipulator = new NodeNullityManipulator(sequence, true);
 			nullityManipulator.manipulate(objectNode);
 			return;
 		}
 
 		if (value instanceof Arbitrary) {
-			value = (T)((Arbitrary<?>)value).sample();
+			value = (T) ((Arbitrary<?>) value).sample();
 		}
 
 		if (value instanceof Just) {
-			Just just = (Just)value;
-			GenerateFixtureContext generateFixtureContext = (GenerateFixtureContext)objectNode.getObjectNodeContext();
+			Just just = (Just) value;
+			GenerateFixtureContext generateFixtureContext = (GenerateFixtureContext) objectNode.getObjectNodeContext();
 			generateFixtureContext.setArbitrary(CombinableArbitrary.from(just::getValue));
 			lazyArbitrary.clear();
 			return;

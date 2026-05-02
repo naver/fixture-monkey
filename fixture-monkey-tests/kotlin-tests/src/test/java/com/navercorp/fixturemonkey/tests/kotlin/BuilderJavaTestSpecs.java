@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.tests.kotlin;
 
 import lombok.Builder;
 
-class BuilderJavaTestSpecs {
+public class BuilderJavaTestSpecs {
 	@Builder(buildMethodName = "notBuild")
 	public static class BuilderObjectCustomBuildName {
 		private final String string;

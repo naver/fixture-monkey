@@ -93,6 +93,22 @@ public abstract class Types {
 		return getActualType(annotatedType.getType());
 	}
 
+	/**
+	 * Resolves a wildcard annotated type to its upper bound.
+	 * For `? extends SimpleObject`, returns the annotated type for `SimpleObject`.
+	 * For non-wildcard types, returns the original type unchanged.
+	 *
+	 * @param annotatedType the annotated type to resolve
+	 * @return the resolved annotated type (upper bound for wildcards, original for others)
+	 */
+	public static AnnotatedType resolveWildcardType(AnnotatedType annotatedType) {
+		if (AnnotatedWildcardType.class.isAssignableFrom(annotatedType.getClass())) {
+			AnnotatedWildcardType wildcardType = (AnnotatedWildcardType)annotatedType;
+			return wildcardType.getAnnotatedUpperBounds()[0];
+		}
+		return annotatedType;
+	}
+
 	public static Class<?> getActualType(Type type) {
 		if (type.getClass() == Class.class) {
 			return (Class<?>)type;
@@ -413,6 +429,10 @@ public abstract class Types {
 		return wrapperPrimitiveMap.get(cls);
 	}
 
+	public static boolean isBoxedPrimitive(final Class<?> cls) {
+		return wrapperPrimitiveMap.containsKey(cls);
+	}
+
 	/**
 	 * It is same as {@code toClass.isAssignableFrom(cls)}.
 	 */
@@ -576,8 +596,10 @@ public abstract class Types {
 			Stream.concat(annotations.stream(), Arrays.stream(annotatedType.getAnnotations()))
 				.collect(Collectors.toList());
 
+		Class<?> rawType = resolveRawTypeForJvmType(annotatedType);
+
 		return new JavaType(
-			Types.getActualType(annotatedType),
+			rawType,
 			Types.getGenericsTypes(annotatedType).stream()
 				.map(
 					genericAnnotatedType -> new JavaType(new ObjectTypeReference<Object>() {
@@ -590,5 +612,34 @@ public abstract class Types {
 			concatAnnotations,
 			annotatedType
 		);
+	}
+
+	private static Class<?> resolveRawTypeForJvmType(AnnotatedType annotatedType) {
+		Type type = annotatedType.getType();
+		if (type instanceof GenericArrayType) {
+			// For GenericArrayType, we need the array class, not the component class
+			GenericArrayType genericArrayType = (GenericArrayType) type;
+			Class<?> componentClass = getActualType(genericArrayType.getGenericComponentType());
+			return java.lang.reflect.Array.newInstance(componentClass, 0).getClass();
+		}
+		return getActualType(annotatedType);
+	}
+
+	/**
+	 * Truncates an array to the given size.
+	 * If the array is already smaller than or equal to the target size, it is returned as-is.
+	 *
+	 * @param array the source array (must be an actual array type)
+	 * @param targetSize the desired size
+	 * @return the truncated array, or the original if already small enough
+	 */
+	public static Object truncateArray(Object array, int targetSize) {
+		int length = java.lang.reflect.Array.getLength(array);
+		if (length <= targetSize) {
+			return array;
+		}
+		Object newArray = java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), targetSize);
+		System.arraycopy(array, 0, newArray, 0, targetSize);
+		return newArray;
 	}
 }

@@ -50,7 +50,6 @@ public final class NodePredicateResolver implements NodeResolver {
 	 * @return the next nodes that satisfy the given {@link NextNodePredicate},
 	 * or an empty list if there are no such nodes. {@link StartNodePredicate} always returns given {@code nextNode}.
 	 */
-	@SuppressWarnings("dereference.of.nullable")
 	@Override
 	public List<ObjectNode> resolve(ObjectNode nextNode) {
 		if (nextNodePredicate == StartNodePredicate.INSTANCE) {
@@ -58,7 +57,11 @@ public final class NodePredicateResolver implements NodeResolver {
 		}
 
 		nextNode.expand();
-		List<ObjectNode> resolved = nextNode.getChildren().asList().stream()
+		ObjectNodeList children = nextNode.getChildren();
+		if (children == null) {
+			return Collections.emptyList();
+		}
+		List<ObjectNode> resolved = children.asList().stream()
 			.filter(it -> nextNodePredicate.test(it.getArbitraryProperty().getObjectProperty()))
 			.collect(Collectors.toList());
 
@@ -85,6 +88,10 @@ public final class NodePredicateResolver implements NodeResolver {
 	@Override
 	public int hashCode() {
 		return Objects.hash(nextNodePredicate);
+	}
+
+	public NextNodePredicate getNextNodePredicate() {
+		return nextNodePredicate;
 	}
 
 	public ObjectNode resolveStartNode(ObjectNode startNode) {

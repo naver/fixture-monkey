@@ -126,6 +126,7 @@ public final class FixtureMonkeyOptions {
 		)
 	);
 	public static final int DEFAULT_MAX_UNIQUE_GENERATION_COUNT = 1_000;
+	public static final int DEFAULT_MAX_RECURSION_DEPTH = 5;
 	public static final List<MatcherOperator<NullInjectGenerator>> DEFAULT_NULL_INJECT_GENERATORS =
 		Collections.singletonList(
 			new MatcherOperator<>(
@@ -167,7 +168,20 @@ public final class FixtureMonkeyOptions {
 	private final InstantiatorProcessor instantiatorProcessor;
 	private final MatcherOperatorRetriever<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 	private final boolean enableLoggingFail;
+	private final int maxRecursionDepth;
 	private final List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers;
+	/**
+	 * Declared as Object because the actual type (NodeTreeAdapter) is in the fixture-monkey module,
+	 * which cannot be referenced from fixture-monkey-api due to module dependency constraints.
+	 */
+	@Nullable
+	private final Object nodeTreeAdapter;
+	/**
+	 * Declared as Object because the actual type (AdapterTracer) is in the fixture-monkey module,
+	 * which cannot be referenced from fixture-monkey-api due to module dependency constraints.
+	 */
+	@Nullable
+	private final Object adapterTracer;
 
 	public FixtureMonkeyOptions(
 		MatcherOperatorRetriever<PropertyGenerator> propertyGenerators,
@@ -190,7 +204,10 @@ public final class FixtureMonkeyOptions {
 		InstantiatorProcessor instantiatorProcessor,
 		MatcherOperatorRetriever<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers,
 		boolean enableLoggingFail,
-		List<TreeMatcherOperator<BuilderContextInitializer>> builderContextCustomizer
+		int maxRecursionDepth,
+		List<TreeMatcherOperator<BuilderContextInitializer>> builderContextCustomizer,
+		@Nullable Object nodeTreeAdapter,
+		@Nullable Object adapterTracer
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -212,7 +229,10 @@ public final class FixtureMonkeyOptions {
 		this.instantiatorProcessor = instantiatorProcessor;
 		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
 		this.enableLoggingFail = enableLoggingFail;
+		this.maxRecursionDepth = maxRecursionDepth;
 		this.builderContextInitializers = builderContextCustomizer;
+		this.nodeTreeAdapter = nodeTreeAdapter;
+		this.adapterTracer = adapterTracer;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -344,8 +364,35 @@ public final class FixtureMonkeyOptions {
 		return enableLoggingFail;
 	}
 
+
+	public int getMaxRecursionDepth() {
+		return maxRecursionDepth;
+	}
+
 	public List<TreeMatcherOperator<BuilderContextInitializer>> getBuilderContextInitializers() {
 		return builderContextInitializers;
+	}
+
+	/**
+	 * Returns the node tree adapter for tree-based object generation.
+	 *
+	 * @return the adapter instance, or null if not configured
+	 */
+	@Nullable
+	@API(since = "1.1.0", status = Status.EXPERIMENTAL)
+	public Object getNodeTreeAdapter() {
+		return nodeTreeAdapter;
+	}
+
+	/**
+	 * Returns the adapter tracer for debugging tree resolution.
+	 *
+	 * @return the tracer instance, or null if not configured
+	 */
+	@Nullable
+	@API(since = "1.1.0", status = Status.EXPERIMENTAL)
+	public Object getAdapterTracer() {
+		return adapterTracer;
 	}
 
 	public List<MatcherOperator<CandidateConcretePropertyResolver>> getCandidateConcretePropertyResolvers() {
@@ -361,6 +408,7 @@ public final class FixtureMonkeyOptions {
 		List<CandidateConcretePropertyResolver> candidateConcretePropertyResolverList =
 			this.candidateConcretePropertyResolvers.getListByProperty(property)
 				.stream()
+				.filter(it -> it.match(property))
 				.map(MatcherOperator::getOperator)
 				.collect(Collectors.toList());
 
@@ -388,6 +436,7 @@ public final class FixtureMonkeyOptions {
 			.javaConstraintGenerator(javaConstraintGenerator)
 			.instantiatorProcessor(instantiatorProcessor)
 			.candidateConcretePropertyResolvers(new ArrayList<>(candidateConcretePropertyResolvers.getList()))
+			.maxRecursionDepth(maxRecursionDepth)
 			.builderContextInitializers(builderContextInitializers);
 	}
 

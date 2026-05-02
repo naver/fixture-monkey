@@ -3,6 +3,8 @@ title: "Tips for Beginners"
 sidebar_position: 27
 ---
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import TipsTestJava from '@examples-java/getstarted/TipsTest.java';
 
 ## Essential Tips for Using Fixture Monkey
 
@@ -27,114 +29,40 @@ sidebar_position: 27
   - Makes it easier to understand test scenarios
   - Reduces the need for additional comments
 - Example:
-```java
-// Use meaningful values
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("price", 1000L)    // Use realistic price that matches business rules
-    .set("name", "Premium Product")  // Use descriptive name that indicates product type
-    .set("category", "ELECTRONICS")  // Use valid category from your domain
-    .set("stock", 50)       // Use reasonable stock quantity
-    .sample();
-```
+
+<CodeSnippet src={TipsTestJava} language="java" method="meaningfulTestData" />
 
 ### 3. Keep Tests Readable
 - Add comments to explain why specific values are set
 - Example:
-```java
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("price", 2000L)    // Price above discount threshold
-    .set("category", "PREMIUM")  // Category that gets special treatment
-    .sample();
-```
+
+<CodeSnippet src={TipsTestJava} language="java" method="readableTests" />
 
 ### 4. Handle Collections Properly
 - Set collection size before accessing specific indices
 - Example:
-```java
-Product product = fixtureMonkey.giveMeBuilder(Product.class)
-    .size("options", 3)          // Set size first
-    .set("options[1]", "red")    // Then access specific index
-    .sample();
-```
+
+<CodeSnippet src={TipsTestJava} language="java" method="handleCollections" />
 
 ### 5. Reuse FixtureMonkey Instance
 - Create one instance and reuse it across tests
 - Example:
-```java
-public class ProductTest {
-    private static final FixtureMonkey FIXTURE_MONKEY = FixtureMonkey.builder()
-        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-        .build();
 
-    @Test
-    void test1() {
-        Product product = FIXTURE_MONKEY.giveMeBuilder(Product.class).sample();
-        // ...
-    }
-
-    @Test
-    void test2() {
-        Product product = FIXTURE_MONKEY.giveMeBuilder(Product.class).sample();
-        // ...
-    }
-}
-```
+<CodeSnippet src={TipsTestJava} language="java" method="reuseFixtureMonkey" />
 
 ### 6. Reuse ArbitraryBuilder
 - Reuse ArbitraryBuilder instances to maintain consistent test data structure
 - Share common configurations across multiple tests
 - Improve code readability by centralizing test data setup
 - Example:
-```java
-public class ProductTest {
-    private static final FixtureMonkey FIXTURE_MONKEY = FixtureMonkey.builder()
-        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-        .build();
-    
-    // Base configuration for premium products
-    private static final ArbitraryBuilder<Product> PREMIUM_PRODUCT_BUILDER = FIXTURE_MONKEY.giveMeBuilder(Product.class)
-        .set("category", "PREMIUM")
-        .set("price", 1000L);
 
-    @Test
-    void testDiscountForPremiumProduct() {
-        // Test discount for premium product with price above threshold
-        Product product = PREMIUM_PRODUCT_BUILDER
-            .set("price", 2000L)  // Price above discount threshold
-            .sample();
-        // Test discount logic
-    }
-
-    @Test
-    void testShippingForPremiumProduct() {
-        // Test shipping for premium product with minimum order amount
-        Product product = PREMIUM_PRODUCT_BUILDER
-            .set("price", 5000L)  // Price above free shipping threshold
-            .sample();
-        // Test shipping logic
-    }
-}
-```
+<CodeSnippet src={TipsTestJava} language="java" method="reuseArbitraryBuilder" />
 
 ### 7. Start with Simple Objects
 - Begin with basic objects before moving to complex ones
 - Example:
-```java
-public class ProductTest {
-    private static final FixtureMonkey FIXTURE_MONKEY = FixtureMonkey.builder()
-        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-        .build();
 
-    @Test
-    void testBasicProduct() {
-        // Start with a simple object
-        Product product = FIXTURE_MONKEY.giveMeBuilder(Product.class)
-            .set("name", "Test Product")
-            .sample();
-        // ...
-    }
-}
-```
+<CodeSnippet src={TipsTestJava} language="java" method="startSimple" />
 
 ### 8. Use the IntelliJ Plugin
 Install the [Fixture Monkey Helper](https://plugins.jetbrains.com/plugin/19589-fixture-monkey-helper) plugin to enhance your development experience:

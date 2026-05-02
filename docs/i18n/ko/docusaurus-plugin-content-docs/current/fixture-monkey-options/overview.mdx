@@ -110,6 +110,10 @@ Product specificProduct = fixtureMonkey.giveMeBuilder(Product.class)
 
 `defaultNotNull` 옵션은 명시적으로 null 가능으로 표시되지 않은 프로퍼티가 null이 아니도록 보장합니다(Java의 `@Nullable` 어노테이션이나 Kotlin의 `?`와 같은 표시가 없는 경우). 이 옵션은 테스트에서 null 관련 문제를 피하고 싶을 때 유용합니다.
 
+:::note
+아래 Java 예시는 `objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)`도 함께 설정합니다. 예시에서 사용하는 `Product` 클래스가 Lombok `@Value`를 사용하기 때문입니다(`@Value`는 `@ConstructorProperties`가 붙은 전체 인자 생성자를 생성합니다). 실제 클래스 유형에 맞는 인트로스펙터를 선택하세요.
+:::
+
 
 <Tabs groupId="language">
 <TabItem value="java" label="Java">

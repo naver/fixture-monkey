@@ -91,7 +91,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterfaceImplementation2;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.NestedListStringObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.NestedStringListWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairInterface;
@@ -103,13 +103,13 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.UniqueArbitraryGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.Interface;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceFieldImplementationValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceImplHolder;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceImplementation;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringListWrapper;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapper;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapperList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
 
 class FixtureMonkeyOptionsTest {
@@ -130,7 +130,7 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
 		thenThrownBy(
-			() -> sut.giveMeBuilder(NestedStringList.class)
+			() -> sut.giveMeBuilder(StringWrapperList.class)
 				.size("nonExistentField", 1)
 				.sample()
 		).isInstanceOf(IllegalArgumentException.class)
@@ -142,7 +142,7 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
 		thenThrownBy(
-			() -> sut.giveMeBuilder(NestedStringList.class)
+			() -> sut.giveMeBuilder(StringWrapperList.class)
 				.size("values.nonExistentField", 1)
 				.sample()
 		).isInstanceOf(IllegalArgumentException.class)
@@ -172,7 +172,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		thenThrownBy(
-			() -> sut.giveMeBuilder(NestedStringList.class)
+			() -> sut.giveMeBuilder(StringWrapperList.class)
 				.size("prop_non_existent_container", 1)
 				.sample()
 		).isInstanceOf(IllegalArgumentException.class)
@@ -202,7 +202,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		thenThrownBy(
-			() -> sut.giveMeBuilder(NestedStringList.class)
+			() -> sut.giveMeBuilder(StringWrapperList.class)
 				.size("prop_non_existent_container", 1)
 				.sample()
 		).isInstanceOf(IllegalArgumentException.class)
@@ -224,7 +224,7 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
 		thenNoException()
-			.isThrownBy(() -> sut.giveMeBuilder(NestedStringList.class)
+			.isThrownBy(() -> sut.giveMeBuilder(StringWrapperList.class)
 				.size("values.nonExistentField", 1)
 				.sample());
 	}
@@ -321,7 +321,7 @@ class FixtureMonkeyOptionsTest {
 		InterfaceImplementation expected = new InterfaceImplementation();
 		expected.setValue("test");
 
-		InterfaceImplementation actual = sut.giveMeBuilder(InterfaceFieldImplementationValue.class)
+		InterfaceImplementation actual = sut.giveMeBuilder(InterfaceImplHolder.class)
 			.set("interface", expected)
 			.sample()
 			.getValue();
@@ -1082,10 +1082,10 @@ class FixtureMonkeyOptionsTest {
 	@Example
 	void registerFieldSet() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringValue.class, fixture -> fixture.giveMeBuilder(StringValue.class).set("value", "test"))
+			.register(StringWrapper.class, fixture -> fixture.giveMeBuilder(StringWrapper.class).set("value", "test"))
 			.build();
 
-		List<StringValue> actual = sut.giveMeOne(NestedStringList.class)
+		List<StringWrapper> actual = sut.giveMeOne(StringWrapperList.class)
 			.getValues();
 
 		then(actual).allMatch(it -> "test".equals(it.getValue()));
@@ -1095,12 +1095,12 @@ class FixtureMonkeyOptionsTest {
 	void registerFieldSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 1)
+				StringListWrapper.class,
+				fixture -> fixture.giveMeBuilder(StringListWrapper.class).size("values", 1)
 			)
 			.build();
 
-		List<ListStringObject> actual = sut.giveMeOne(NestedListStringObject.class)
+		List<StringListWrapper> actual = sut.giveMeOne(NestedStringListWrapper.class)
 			.getValues();
 
 		then(actual).allMatch(it -> it.getValues().size() == 1);
@@ -1113,7 +1113,7 @@ class FixtureMonkeyOptionsTest {
 			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
 			.build();
 
-		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+		List<String> actual = sut.giveMeBuilder(StringListWrapper.class)
 			.size("values", 5)
 			.sample()
 			.getValues();
@@ -1192,13 +1192,13 @@ class FixtureMonkeyOptionsTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 5)
+				StringListWrapper.class,
+				fixture -> fixture.giveMeBuilder(StringListWrapper.class).size("values", 5)
 			)
 			.build();
 
 		// when
-		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+		List<String> actual = sut.giveMeBuilder(StringListWrapper.class)
 			.thenApply((it, builder) -> builder.size("values", 10))
 			.sample()
 			.getValues();
@@ -1211,14 +1211,14 @@ class FixtureMonkeyOptionsTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class)
+				StringListWrapper.class,
+				fixture -> fixture.giveMeBuilder(StringListWrapper.class)
 					.thenApply((it, builder) -> builder.size("values", 1))
 			)
 			.build();
 
 		// when
-		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+		List<String> actual = sut.giveMeBuilder(StringListWrapper.class)
 			.size("values", 2)
 			.sample()
 			.getValues();
@@ -1231,8 +1231,8 @@ class FixtureMonkeyOptionsTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class)
+				StringListWrapper.class,
+				fixture -> fixture.giveMeBuilder(StringListWrapper.class)
 					.size("values", 1)
 					.thenApply((it, builder) -> {
 					})
@@ -1240,7 +1240,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		// when
-		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+		List<String> actual = sut.giveMeBuilder(StringListWrapper.class)
 			.size("values", 2)
 			.sample()
 			.getValues();
@@ -1492,14 +1492,14 @@ class FixtureMonkeyOptionsTest {
 			)
 			.build();
 
-		ConcreteStringValue concreteStringValue = new ConcreteStringValue();
-		concreteStringValue.setValue("stringValue");
-		concreteStringValue.setStringValue("test");
+		ConcreteStringValue concreteStringWrapper = new ConcreteStringValue();
+		concreteStringWrapper.setValue("stringValue");
+		concreteStringWrapper.setStringValue("test");
 		ConcreteIntValue concreteIntValue = new ConcreteIntValue();
 		concreteIntValue.setValue("intValue");
 		concreteIntValue.setIntValue(-999);
 		List<AbstractValue> expected = new ArrayList<>();
-		expected.add(concreteStringValue);
+		expected.add(concreteStringWrapper);
 		expected.add(concreteIntValue);
 
 		// when
@@ -1533,14 +1533,14 @@ class FixtureMonkeyOptionsTest {
 	void sizeElementWhenRegisteredSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				NestedListStringObject.class,
-				fixture -> fixture.giveMeBuilder(new TypeReference<NestedListStringObject>() {
+				NestedStringListWrapper.class,
+				fixture -> fixture.giveMeBuilder(new TypeReference<NestedStringListWrapper>() {
 					})
 					.size("values", 5)
 			)
 			.build();
 
-		List<ListStringObject> actual = sut.giveMeBuilder(NestedListStringObject.class)
+		List<StringListWrapper> actual = sut.giveMeBuilder(NestedStringListWrapper.class)
 			.size("values[*].values", 3, 5)
 			.sample()
 			.getValues();

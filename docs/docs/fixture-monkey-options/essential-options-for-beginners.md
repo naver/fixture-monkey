@@ -1,6 +1,6 @@
 ---
 title: "Essential Options for Beginners"
-sidebar_position: 51
+sidebar_position: 52
 ---
 
 

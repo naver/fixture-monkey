@@ -1,4 +1,3 @@
-
 /*
  * Fixture Monkey
  *
@@ -56,10 +55,11 @@ import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringListWrapper;
 
-class FixtureMonkeyOptionsAdditionalTestSpecs {
+public class FixtureMonkeyOptionsAdditionalTestSpecs {
+
 	public interface GetFixedValue {
 		Object get();
 	}
@@ -75,25 +75,26 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	}
 
 	@Data
-	public static class NestedListStringObject {
-		List<ListStringObject> values;
+	public static class NestedStringListWrapper {
+
+		List<StringListWrapper> values;
 	}
 
 	public static class RegisterGroup {
+
 		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
 
 		public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder(String.class)
+			return fixtureMonkey
+				.giveMeBuilder(String.class)
 				.set(Arbitraries.strings().numeric().ofMinLength(1).ofMaxLength(3));
 		}
 
 		public ArbitraryBuilder<List<String>> stringList(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {
+			return fixtureMonkey
+				.giveMeBuilder(new TypeReference<List<String>>() {
 				})
-				.setInner(
-					new InnerSpec()
-						.maxSize(2)
-				);
+				.setInner(new InnerSpec().maxSize(2));
 		}
 
 		public ArbitraryBuilder<ConcreteIntValue> concreteIntValue(FixtureMonkey fixtureMonkey) {
@@ -102,76 +103,46 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	}
 
 	public static class ChildBuilderGroup implements ArbitraryBuilderGroup {
+
 		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
 
 		@Override
 		public ArbitraryBuilderCandidateList generateCandidateList() {
 			return ArbitraryBuilderCandidateList.create()
 				.add(
-					ArbitraryBuilderCandidateFactory
-						.of(String.class)
-						.builder(
-							arbitraryBuilder -> arbitraryBuilder.set(
-								Arbitraries.strings()
-									.numeric()
-									.ofMinLength(1)
-									.ofMaxLength(3)
-							)
-						)
+					ArbitraryBuilderCandidateFactory.of(String.class).builder(arbitraryBuilder ->
+						arbitraryBuilder.set(Arbitraries.strings().numeric().ofMinLength(1).ofMaxLength(3))
+					)
 				)
 				.add(
-					ArbitraryBuilderCandidateFactory
-						.of(new TypeReference<List<String>>() {
-						})
-						.builder(
-							builder -> builder.setInner(
-								new InnerSpec()
-									.maxSize(2)
-							)
-						)
+					ArbitraryBuilderCandidateFactory.of(new TypeReference<List<String>>() {
+					}).builder(builder ->
+						builder.setInner(new InnerSpec().maxSize(2))
+					)
 				)
-				.add(
-					ArbitraryBuilderCandidateFactory
-						.of(ConcreteIntValue.class)
-						.value(FIXED_INT_VALUE)
-				);
+				.add(ArbitraryBuilderCandidateFactory.of(ConcreteIntValue.class).value(FIXED_INT_VALUE));
 		}
 	}
 
 	public static class SiblingBuilderGroup implements ArbitraryBuilderGroup {
+
 		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
 
 		@Override
 		public ArbitraryBuilderCandidateList generateCandidateList() {
 			return ArbitraryBuilderCandidateList.create()
 				.add(
-					ArbitraryBuilderCandidateFactory
-						.of(String.class)
-						.builder(
-							arbitraryBuilder -> arbitraryBuilder.set(
-								Arbitraries.strings()
-									.numeric()
-									.ofMinLength(4)
-									.ofMaxLength(6)
-							)
-						)
+					ArbitraryBuilderCandidateFactory.of(String.class).builder(arbitraryBuilder ->
+						arbitraryBuilder.set(Arbitraries.strings().numeric().ofMinLength(4).ofMaxLength(6))
+					)
 				)
 				.add(
-					ArbitraryBuilderCandidateFactory
-						.of(new TypeReference<List<String>>() {
-						})
-						.builder(
-							builder -> builder.setInner(
-								new InnerSpec()
-									.minSize(4)
-							)
-						)
+					ArbitraryBuilderCandidateFactory.of(new TypeReference<List<String>>() {
+					}).builder(builder ->
+						builder.setInner(new InnerSpec().minSize(4))
+					)
 				)
-				.add(
-					ArbitraryBuilderCandidateFactory
-						.of(ConcreteIntValue.class)
-						.value(FIXED_INT_VALUE)
-				);
+				.add(ArbitraryBuilderCandidateFactory.of(ConcreteIntValue.class).value(FIXED_INT_VALUE));
 		}
 	}
 
@@ -183,6 +154,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 
 	@EqualsAndHashCode
 	public static class Pair<S, T> implements PairInterface<S, T> {
+
 		private final S first;
 		private final T second;
 
@@ -201,6 +173,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	}
 
 	public static class PairContainerPropertyGenerator implements ContainerPropertyGenerator {
+
 		@Override
 		public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 			com.navercorp.fixturemonkey.api.property.Property property = context.getProperty();
@@ -209,39 +182,25 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 			if (elementTypes.size() != 2) {
 				throw new IllegalArgumentException(
 					"Pair elementsTypes must be have 1 generics type for element. "
-						+ "propertyType: " + property.getType()
-						+ ", elementTypes: " + elementTypes
+						+ "propertyType: "
+						+ property.getType()
+						+ ", elementTypes: "
+						+ elementTypes
 				);
 			}
 
 			AnnotatedType firstElementType = elementTypes.get(0);
 			AnnotatedType secondElementType = elementTypes.get(1);
 			List<com.navercorp.fixturemonkey.api.property.Property> elementProperties = new ArrayList<>();
-			elementProperties.add(
-				new ElementProperty(
-					property,
-					firstElementType,
-					0,
-					0
-				)
-			);
-			elementProperties.add(
-				new ElementProperty(
-					property,
-					secondElementType,
-					1,
-					1
-				)
-			);
+			elementProperties.add(new ElementProperty(property, firstElementType, 0, 0));
+			elementProperties.add(new ElementProperty(property, secondElementType, 1, 1));
 
-			return new ContainerProperty(
-				elementProperties,
-				new ArbitraryContainerInfo(1, 1)
-			);
+			return new ContainerProperty(elementProperties, new ArbitraryContainerInfo(1, 1));
 		}
 	}
 
 	public static class PairIntrospector implements ArbitraryIntrospector, Matcher {
+
 		private static final Matcher MATCHER = new AssignableTypeMatcher(Pair.class);
 
 		@Override
@@ -265,18 +224,19 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 					.build(elements -> new Pair<>(elements.get(0), elements.get(1)))
 			);
 		}
-
 	}
 
 	@Getter
 	@Builder
 	public static class BuilderInteger {
+
 		private int value;
 	}
 
 	@Getter
 	@Builder
 	public static class CustomBuilderMethodInteger {
+
 		private int value;
 
 		public static CustomBuilderMethodIntegerBuilder customBuilder() {
@@ -287,9 +247,11 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	@Getter
 	@Builder
 	public static class CustomBuildMethodInteger {
+
 		private int value;
 
 		public static class CustomBuildMethodIntegerBuilder {
+
 			public CustomBuildMethodInteger customBuild() {
 				return new CustomBuildMethodInteger(value);
 			}
@@ -297,6 +259,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	}
 
 	public static class GetIntegerFixedValue implements GetFixedValue {
+
 		@Override
 		public Object get() {
 			return 1;
@@ -304,6 +267,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	}
 
 	public static class GetStringFixedValue implements GetFixedValue {
+
 		@Override
 		public Object get() {
 			return "fixed";
@@ -320,12 +284,14 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 
 	@Data
 	public static class GenericGetFixedValue<T extends GetFixedValue> {
+
 		T value;
 	}
 
 	@Getter
 	@Setter
 	public abstract static class AbstractSamePropertyValue {
+
 		private String value;
 
 		public AbstractSamePropertyValue(String value) {
@@ -335,6 +301,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 
 	@Setter
 	public static class ConcreteSamePropertyValue extends AbstractSamePropertyValue {
+
 		private int value;
 
 		@ConstructorProperties({"value", "intValue"})
@@ -355,34 +322,40 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	public static class AbstractNoneConcreteIntValue extends AbstractNoneValue {
+
 		private int intValue;
 	}
 
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	public static class AbstractNoneConcreteStringValue extends AbstractNoneValue {
+
 		private String stringValue;
 	}
 
 	@Data
 	public abstract static class AbstractValue {
+
 		private String value;
 	}
 
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	public static class ConcreteStringValue extends AbstractValue {
+
 		private String stringValue;
 	}
 
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	public static class ConcreteIntValue extends AbstractValue {
+
 		private int intValue;
 	}
 
 	@Getter
 	public abstract static class SelfRecursiveAbstractValue {
+
 		private final List<SelfRecursiveAbstractValue> recursives;
 
 		@ConstructorProperties("recursives")
@@ -393,6 +366,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 
 	@Getter
 	public static class SelfRecursiveImplementationValue extends SelfRecursiveAbstractValue {
+
 		private final String value;
 
 		@ConstructorProperties({"recursives", "value"})
@@ -404,15 +378,18 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 
 	@Data
 	public static class GetterInterfaceImplementation implements GetterInterface {
+
 		private String value;
 	}
 
 	@Data
 	public static class GetterInterfaceImplementation2 implements GetterInterface {
+
 		private String value;
 	}
 
 	public static class UniqueArbitraryGenerator implements ArbitraryGenerator {
+
 		private static final Set<Object> UNIQUE = new HashSet<>();
 
 		private final ArbitraryGenerator delegate;
@@ -423,16 +400,15 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 
 		@Override
 		public CombinableArbitrary generate(ArbitraryGeneratorContext context) {
-			return delegate.generate(context)
-				.filter(
-					obj -> {
-						if (!UNIQUE.contains(obj)) {
-							UNIQUE.add(obj);
-							return true;
-						}
-						return false;
+			return delegate
+				.generate(context)
+				.filter(obj -> {
+					if (!UNIQUE.contains(obj)) {
+						UNIQUE.add(obj);
+						return true;
 					}
-				);
+					return false;
+				});
 		}
 	}
 }

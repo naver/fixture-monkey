@@ -18,12 +18,33 @@
 
 package com.navercorp.fixturemonkey.tests.java.specs;
 
+import java.util.List;
+
+import lombok.Builder;
 import lombok.Value;
 
 public class MixedIntrospectorsSpecs {
+
 	@Value
 	public static class MixedJavaTypeObject {
+
 		ImmutableSpecs.JavaTypeObject object;
 		NoArgsConstructorSpecs.JavaTypeObject object2;
+	}
+
+	@Value
+	@Builder
+	public static class BuilderWithMutableFieldObject {
+
+		String name;
+		MutableSpecs.JavaTypeObject mutableObject;
+	}
+
+	@Value
+	@Builder
+	public static class BuilderWithMutableContainerObject {
+
+		String name;
+		List<MutableSpecs.JavaTypeObject> mutableList;
 	}
 }

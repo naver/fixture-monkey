@@ -3,20 +3,12 @@ title: "Creating objects in Kotlin"
 sidebar_position: 24
 ---
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import CreatingObjectsKotlinTest from '@examples-kotlin/getstarted/CreatingObjectsKotlinTest.kt';
 
 Fixture Monkey helps you create test objects for your Kotlin classes easily. For example, suppose you have a Kotlin data class:
 
-```kotlin
-data class Product (
-    val id: Long,
-    val productName: String,
-    val price: Long,
-    val options: List<String>,
-    val createdAt: Instant,
-    val productType: ProductType,
-    val merchantInfo: Map<Int, String>
-)
-```
+<CodeSnippet src={CreatingObjectsKotlinTest} language="kotlin" showClass />
 
 With Fixture Monkey, you can create test instances of this class with just one line of code:
 
@@ -43,58 +35,18 @@ To start using Fixture Monkey with Kotlin, follow these steps:
 1. Add the `fixture-monkey-starter-kotlin` dependency to your project.
 
 2. Create a `FixtureMonkey` instance with the Kotlin plugin:
-```kotlin
-@Test
-fun test() {
-    val fixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .build()
-}
-```
+
+<CodeSnippet src={CreatingObjectsKotlinTest} language="kotlin" method="giveMeOneUsage" />
 
 The Kotlin plugin enables Fixture Monkey to work with Kotlin's features, using the primary constructor to create objects.
 
 Here's a complete test example:
 
-```kotlin
-@Test
-fun test() {
-    // given
-    val fixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .build()
-
-    // when
-    val actual: Product = fixtureMonkey.giveMeOne()
-
-    // then
-    then(actual).isNotNull
-}
-```
+<CodeSnippet src={CreatingObjectsKotlinTest} language="kotlin" method="test" />
 
 You can also customize the generated objects using Kotlin's property references:
 
-```kotlin
-@Test
-fun test() {
-    // given
-    val fixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .build()
-
-    // when
-    val actual = fixtureMonkey.giveMeKotlinBuilder<Product>()
-        .setExp(Product::id, 1000L)            // Set specific id
-        .sizeExp(Product::options, 3)          // Set options list size
-        .set("options[1]", "red")              // Set specific option
-        .sample()
-
-    // then
-    then(actual.id).isEqualTo(1000L)
-    then(actual.options).hasSize(3)
-    then(actual.options[1]).isEqualTo("red")
-}
-```
+<CodeSnippet src={CreatingObjectsKotlinTest} language="kotlin" method="customizeTest" />
 
 For more Kotlin-specific features, check out the [Kotlin Plugin](../plugins/kotlin-plugin/features) documentation.
 

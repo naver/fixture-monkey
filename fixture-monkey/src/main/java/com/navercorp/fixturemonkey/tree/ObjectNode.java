@@ -48,11 +48,10 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 	private final TraverseNode traverseNode;
 	private final GenerateFixtureContext generateFixtureContext;
 
-	@Nullable
-	private ObjectNode parent;
+	private @Nullable ObjectNode parent;
 	private List<ObjectNode> children;
 
-	@SuppressWarnings("argument")
+	@SuppressWarnings("argument") // passing @UnderInitialization this for storage-only; not a nullability issue
 	public ObjectNode(TraverseNode traverseNode, GenerateFixtureContext generateFixtureContext) {
 		this.traverseNode = traverseNode;
 		this.generateFixtureContext = generateFixtureContext;
@@ -113,15 +112,13 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 		return traverseNode.getMetadata();
 	}
 
-	@Nullable
 	@Override
-	public ObjectNode getParent() {
+	public @Nullable ObjectNode getParent() {
 		return this.parent;
 	}
 
-	@Nullable
 	@Override
-	public ObjectNodeList getChildren() {
+	public @Nullable ObjectNodeList getChildren() {
 		if (children == null) {
 			return null;
 		}
@@ -137,9 +134,8 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 		return this.getMetadata().getRootProperty();
 	}
 
-	@Nullable
 	@Override
-	public Property getResolvedParentProperty() {
+	public @Nullable Property getResolvedParentProperty() {
 		return this.getMetadata().getResolvedParentProperty();
 	}
 
@@ -192,8 +188,7 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 		this.traverseNode.getMetadata().setResolvedTypeDefinition(typeDefinition);
 	}
 
-	@Nullable
-	public TreeNodeManipulator getAppliedTreeNodeManipulator() {
+	public @Nullable TreeNodeManipulator getAppliedTreeNodeManipulator() {
 		return this.traverseNode.getMetadata().getAppliedTreeNodeManipulator();
 	}
 

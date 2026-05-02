@@ -30,6 +30,15 @@ public final class CompositeNodeManipulator implements NodeManipulator {
 		this.manipulators = Arrays.asList(manipulators);
 	}
 
+	/**
+	 * Returns the list of manipulators contained in this composite.
+	 *
+	 * @return unmodifiable list of node manipulators
+	 */
+	public List<NodeManipulator> getManipulators() {
+		return manipulators;
+	}
+
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		for (NodeManipulator manipulator : manipulators) {

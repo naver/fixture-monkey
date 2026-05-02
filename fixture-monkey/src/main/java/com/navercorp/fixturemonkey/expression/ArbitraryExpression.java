@@ -131,9 +131,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			.collect(Collectors.joining("."));
 	}
 
-	@SuppressWarnings("return")
 	public NodeResolver toNodeResolver() {
-		NodeResolver nodeResolver = null;
+		@Nullable NodeResolver nodeResolver = null;
 
 		for (Exp exp : expList) {
 			if (nodeResolver == null) {
@@ -141,6 +140,10 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			} else {
 				nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
 			}
+		}
+
+		if (nodeResolver == null) {
+			throw new IllegalStateException("expList is empty, cannot create NodeResolver");
 		}
 		return nodeResolver;
 	}

@@ -43,7 +43,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.stream.Stream;
 
-final class RecordTestSpecs {
+public final class RecordTestSpecs {
 	public record JavaTypeRecord(
 		String string,
 		int primitiveInteger,

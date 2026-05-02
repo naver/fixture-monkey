@@ -91,6 +91,11 @@ public final class PropertyPath implements Comparable<PropertyPath> {
 			return "";
 		}
 
+		String name = property.getName();
+		if (name != null && name.startsWith("[") && name.endsWith("]")) {
+			return "";
+		}
+
 		return ".";
 	}
 }

@@ -3,6 +3,9 @@ title: "Generating Complex Types"
 sidebar_position: 43
 ---
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import GeneratingComplexTypesTestJava from '@examples-java/generating/GeneratingComplexTypesTest.java';
+import GeneratingComplexTypesKotlinTest from '@examples-kotlin/generating/GeneratingComplexTypesKotlinTest.kt';
 
 ## Why Complex Types Matter in Testing
 
@@ -69,22 +72,7 @@ public static class ThreeGenericObject<T, U, V> {
 
 To generate instances of these generic types with Fixture Monkey:
 
-```java
-// Simple generic with String
-GenericObject<String> stringGeneric = fixtureMonkey.giveMeOne(
-    new TypeReference<GenericObject<String>>() {}
-);
-
-// Generic with array
-GenericArrayObject<Integer> arrayGeneric = fixtureMonkey.giveMeOne(
-    new TypeReference<GenericArrayObject<Integer>>() {}
-);
-
-// Multiple type parameters
-TwoGenericObject<String, Integer> twoParamGeneric = fixtureMonkey.giveMeOne(
-    new TypeReference<TwoGenericObject<String, Integer>>() {}
-);
-```
+<CodeSnippet src={GeneratingComplexTypesTestJava} language="java" method="generateGenericTypes" />
 
 ### Generic Interfaces
 ```java
@@ -109,12 +97,7 @@ public static class TwoGenericImpl<T, U> implements TwoGenericInterface<T, U> {
 
 To generate interface implementations:
 
-```java
-// Generate an implementation of GenericInterface<String>
-GenericInterface<String> genericInterface = fixtureMonkey.giveMeOne(
-    new TypeReference<GenericInterface<String>>() {}
-);
-```
+<CodeSnippet src={GeneratingComplexTypesTestJava} language="java" method="generateGenericInterface" />
 
 For example, when you have multiple classes implementing the same interface:
 
@@ -161,17 +144,12 @@ public class SelfReferenceList {
 
 Generate self-referencing objects with depth control:
 
-```java
-// Default generation (limited nesting depth to avoid infinite recursion)
-SelfReference selfRef = fixtureMonkey.giveMeOne(SelfReference.class);
+<CodeSnippet src={GeneratingComplexTypesTestJava} language="java" method="generateSelfReference" />
 
-// With custom configuration to control container size
-FixtureMonkey customFixture = FixtureMonkey.builder()
-    .defaultArbitraryContainerInfo(new ContainerInfo(2, 2)) // Controls lists size
-    .build();
-    
-SelfReferenceList refList = customFixture.giveMeOne(SelfReferenceList.class);
-```
+You can also control the depth of self-referencing list structures by configuring the container size.
+`ArbitraryContainerInfo(minSize, maxSize)` sets the size range for all generated collections — here, fixing it to exactly 2 elements per list:
+
+<CodeSnippet src={GeneratingComplexTypesTestJava} language="java" method="generateSelfReferenceWithContainerInfo" />
 
 ### Interface
 ```java
@@ -200,51 +178,97 @@ public interface InheritedTwoInterface extends Interface, ContainerInterface {
 ```
 
 ## Kotlin
+
+:::tip
+Make sure to add the `KotlinPlugin` when working with Kotlin classes:
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .build()
+```
+:::
+
 ### Generic Objects
+
 ```kotlin
 class Generic<T>(val foo: T)
 
 class GenericImpl(val foo: Generic<String>)
+
+class TwoGenericObject<T, U>(val foo: T, val bar: U)
 ```
 
-Generating Kotlin generic objects:
+Kotlin's reified type inference makes generating generic objects simpler than Java:
 
-```kotlin
-// Generate a Generic<Int>
-val genericInt: Generic<Int> = fixtureMonkey.giveMeOne()
+<CodeSnippet src={GeneratingComplexTypesKotlinTest} language="kotlin" method="generateGenericInt" />
 
-// Generate a GenericImpl with nested Generic<String>
-val genericImpl: GenericImpl = fixtureMonkey.giveMeOne()
-```
+<CodeSnippet src={GeneratingComplexTypesKotlinTest} language="kotlin" method="generateTwoGenericObject" />
 
 ### SelfReference
+
 ```kotlin
 class SelfReference(val foo: String, val bar: SelfReference?)
+
+class SelfReferenceList(val foo: String, val bar: List<SelfReferenceList>?)
 ```
 
-### Sealed class, Value class
+Generate self-referencing objects:
+
+<CodeSnippet src={GeneratingComplexTypesKotlinTest} language="kotlin" method="generateSelfReference" />
+
+You can also control the depth of self-referencing list structures by configuring the container size.
+`ArbitraryContainerInfo(minSize, maxSize)` sets the size range for all generated collections — here, fixing it to exactly 2 elements per list:
+
+<CodeSnippet src={GeneratingComplexTypesKotlinTest} language="kotlin" method="generateSelfReferenceWithContainerInfo" />
+
+### Sealed class
+
 ```kotlin
 sealed class SealedClass
 
 object ObjectSealedClass : SealedClass()
 
 class SealedClassImpl(val foo: String) : SealedClass()
+```
 
+Fixture Monkey automatically discovers sealed subclasses and randomly selects one:
+
+<CodeSnippet src={GeneratingComplexTypesKotlinTest} language="kotlin" method="generateSealedClass" />
+
+### Value class
+
+```kotlin
 @JvmInline
 value class ValueClass(val foo: String)
 ```
 
-Generating sealed classes and value classes in Kotlin:
+<CodeSnippet src={GeneratingComplexTypesKotlinTest} language="kotlin" method="generateValueClass" />
+
+### Interface
+
+Kotlin interfaces work the same way as Java interfaces:
 
 ```kotlin
-// Fixture Monkey will choose a concrete implementation of the sealed class
-val sealedClass: SealedClass = fixtureMonkey.giveMeOne()
+interface KotlinInterface {
+    val foo: String
+    val bar: Int
+}
 
-// Generate a value class
-val valueClass: ValueClass = fixtureMonkey.giveMeOne()
+// Anonymous implementation is generated automatically
+val instance: KotlinInterface = fixtureMonkey.giveMeOne()
+
+// With specific implementations
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .plugin(
+        InterfacePlugin()
+            .interfaceImplements(
+                KotlinInterface::class.java,
+                listOf(KotlinInterfaceImpl::class.java)
+            )
+    )
+    .build()
 ```
-
-Kotlin sealed classes are handled similarly to interfaces. Fixture Monkey randomly selects one of the subclasses of the sealed class to generate.
 
 ## Tips for Working with Complex Types
 

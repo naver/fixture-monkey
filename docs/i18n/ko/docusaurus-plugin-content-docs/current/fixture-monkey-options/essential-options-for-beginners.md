@@ -1,6 +1,6 @@
 ---
 title: "초보자를 위한 필수 옵션"
-sidebar_position: 51
+sidebar_position: 52
 ---
 
 

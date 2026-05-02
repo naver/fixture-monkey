@@ -25,6 +25,7 @@ import java.lang.reflect.AnnotatedWildcardType;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -64,6 +65,50 @@ public abstract class Types {
 
 	public static Class<?> getActualType(AnnotatedType annotatedType) {
 		return getActualType(annotatedType.getType());
+	}
+
+	/**
+	 * Resolves a wildcard annotated type to its upper bound.
+	 * For `? extends SimpleObject`, returns the annotated type for `SimpleObject`.
+	 * For non-wildcard types, returns the original type unchanged.
+	 *
+	 * @param annotatedType the annotated type to resolve
+	 * @return the resolved annotated type (upper bound for wildcards, original for others)
+	 */
+	public static AnnotatedType resolveWildcardType(AnnotatedType annotatedType) {
+		if (isAssignable(annotatedType.getClass(), AnnotatedWildcardType.class)) {
+			AnnotatedWildcardType wildcardType = (AnnotatedWildcardType)annotatedType;
+			return wildcardType.getAnnotatedUpperBounds()[0];
+		}
+		return annotatedType;
+	}
+
+	/**
+	 * Checks if an AnnotatedType contains wildcards in its type arguments.
+	 * For example, `List<? extends SimpleObject>` returns true,
+	 * while `List<SimpleObject>` returns false.
+	 *
+	 * @param annotatedType the annotated type to check
+	 * @return true if the type contains wildcards in its type arguments
+	 */
+	public static boolean containsWildcardTypeArguments(AnnotatedType annotatedType) {
+		if (isAssignable(annotatedType.getClass(), AnnotatedWildcardType.class)) {
+			return true;
+		}
+
+		if (isAssignable(annotatedType.getClass(), AnnotatedParameterizedType.class)) {
+			AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)annotatedType;
+			AnnotatedType[] typeArgs = parameterizedType.getAnnotatedActualTypeArguments();
+			if (typeArgs != null) {
+				for (AnnotatedType typeArg : typeArgs) {
+					if (containsWildcardTypeArguments(typeArg)) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public static Class<?> getActualType(Type type) {
@@ -281,5 +326,72 @@ public abstract class Types {
 				return annotatedType;
 			}
 		};
+	}
+
+	public static boolean isJavaType(Class<?> type) {
+		return type.isPrimitive() || isJavaPackage(type);
+	}
+
+	private static boolean isJavaPackage(Class<?> type) {
+		return type.getPackage() != null
+			&& (type.getPackage().getName().startsWith("java") || type.getPackage().getName().startsWith("sun"));
+	}
+
+	/**
+	 * Checks if the class is a terminal type that doesn't need interface resolution.
+	 * Terminal types include:
+	 * <ul>
+	 *   <li>String</li>
+	 *   <li>Final classes with Object as direct superclass</li>
+	 * </ul>
+	 * <p>
+	 * Note: Primitive wrappers (Integer, Long, etc.) are NOT terminal types because
+	 * they extend Number, not Object, and thus need interface resolution.
+	 *
+	 * @param clazz the class to check
+	 * @return true if the class is a terminal type
+	 */
+	public static boolean isTerminalType(Class<?> clazz) {
+		if (clazz == String.class) {
+			return true;
+		}
+
+		// Final classes with Object as direct superclass don't need resolution
+		if (Modifier.isFinal(clazz.getModifiers()) && clazz.getSuperclass() == Object.class) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if the class is a JDK value type that is always treated as a leaf node
+	 * and never expanded into a node tree. These types don't need interface resolution
+	 * even though they may extend non-Object superclasses (e.g., Long extends Number).
+	 * <p>
+	 * This includes:
+	 * <ul>
+	 *   <li>Primitive wrappers (Boolean, Byte, Short, Integer, Long, Float, Double, Character)</li>
+	 *   <li>Primitive types</li>
+	 *   <li>Enums</li>
+	 * </ul>
+	 *
+	 * @param clazz the class to check
+	 * @return true if the class is a JDK value type
+	 */
+	public static boolean isJdkValueType(Class<?> clazz) {
+		if (clazz.isPrimitive() || clazz.isEnum()) {
+			return true;
+		}
+
+		// Primitive wrappers — these all extend Number or Object but are leaf types
+		return clazz == Boolean.class
+			|| clazz == Byte.class
+			|| clazz == Short.class
+			|| clazz == Integer.class
+			|| clazz == Long.class
+			|| clazz == Float.class
+			|| clazz == Double.class
+			|| clazz == Character.class;
 	}
 }

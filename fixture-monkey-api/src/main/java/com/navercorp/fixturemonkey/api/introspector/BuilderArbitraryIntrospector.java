@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = API.Status.MAINTAINED)
 public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector {
+
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BuilderArbitraryIntrospector.class);
@@ -78,20 +79,17 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		Method buildMethod;
 		try {
 			builderType = this.getBuilderType(type);
-			buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(
-				builderType,
-				t -> {
-					String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
-					Method method = Reflections.findMethod(builderType, buildMethodName);
-					if (method == null) {
-						throw new IllegalStateException(
-							"Can not retrieve a build method. type: " + type + " buildMethodName: " + buildMethodName
-						);
-					}
-					method.setAccessible(true);
-					return method;
+			buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(builderType, t -> {
+				String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
+				Method method = Reflections.findMethod(builderType, buildMethodName);
+				if (method == null) {
+					throw new IllegalStateException(
+						"Can not retrieve a build method. type: " + type + " buildMethodName: " + buildMethodName
+					);
 				}
-			);
+				method.setAccessible(true);
+				return method;
+			});
 		} catch (Exception ex) {
 			ArbitraryGeneratorLoggingContext loggingContext = context.getLoggingContext();
 			if (loggingContext.isEnableLoggingFail()) {
@@ -101,38 +99,34 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		}
 		Method builderMethod = BUILDER_CACHE.get(type);
 
-		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(
-			() -> {
-				Object builder = Reflections.invokeMethod(builderMethod, null);
+		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(() -> {
+			Object builder = Reflections.invokeMethod(builderMethod, null);
 
-				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-					String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
-					Class<?> actualType = getActualType(arbitraryProperty.getObjectProperty().getProperty());
-					String buildFieldMethodName = builderType.getName() + "#" + methodName;
+			for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+				String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
+				Class<?> actualType = getActualType(arbitraryProperty.getObjectProperty().getProperty());
+				String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
-					String resolvePropertyName =
-						arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-					CombinableArbitrary<?> combinableArbitrary =
-						arbitrariesByResolvedName.get(resolvePropertyName);
+				String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
+				CombinableArbitrary<?> combinableArbitrary = arbitrariesByResolvedName.get(resolvePropertyName);
 
-					Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
-						Method buildFieldMethod = Reflections.findMethod(builderType, methodName, actualType);
-						if (buildFieldMethod != null) {
-							buildFieldMethod.setAccessible(true);
-						}
-						return buildFieldMethod;
-					});
-					if (method != null) {
-						Object child = combinableArbitrary.combined();
-						if (child != null) {
-							Reflections.invokeMethod(method, builder, child);
-						}
+				Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
+					Method buildFieldMethod = Reflections.findMethod(builderType, methodName, actualType);
+					if (buildFieldMethod != null) {
+						buildFieldMethod.setAccessible(true);
+					}
+					return buildFieldMethod;
+				});
+				if (method != null) {
+					Object child = combinableArbitrary.combined();
+					if (child != null) {
+						Reflections.invokeMethod(method, builder, child);
 					}
 				}
-
-				return Reflections.invokeMethod(buildMethod, builder);
 			}
-		);
+
+			return Reflections.invokeMethod(buildMethod, builder);
+		});
 		return new ArbitraryIntrospectorResult(CombinableArbitrary.from(generateArbitrary));
 	}
 
@@ -169,8 +163,8 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 
 		if (builderMethod == null) {
 			throw new IllegalArgumentException(
-				"Class has no builder class. "
-					+ "type: " + objectType.getName() + " builderMethodName: " + builderMethodName
+				"Class has no builder class. " + "type: " + objectType.getName()
+					+ " builderMethodName: " + builderMethodName
 			);
 		}
 
@@ -186,7 +180,20 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 	}
 
 	private Class<?> getActualType(Property property) {
-		return Types.getActualType(getActualProperty(property).getType());
+		Property actualProperty = getActualProperty(property);
+
+		// The adapter may resolve a FieldProperty's type to a concrete type (e.g. ArrayList),
+		// but builder methods accept the field's declared type (e.g. List) as their parameter.
+		// If the concrete type is a subtype of the declared type, use the declared type instead.
+		if (actualProperty instanceof FieldProperty) {
+			Class<?> fieldDeclaredType = ((FieldProperty)actualProperty).getField().getType();
+			Class<?> propertyType = Types.getActualType(actualProperty.getType());
+			if (fieldDeclaredType != propertyType && fieldDeclaredType.isAssignableFrom(propertyType)) {
+				return fieldDeclaredType;
+			}
+		}
+
+		return Types.getActualType(actualProperty.getType());
 	}
 
 	private Property getActualProperty(Property property) {

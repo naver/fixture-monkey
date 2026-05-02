@@ -1,0 +1,30 @@
+name: Doc examples test
+
+on:
+  push:
+    branches: [ main, '[0-9]*.[0-9]*.x' ]
+    paths:
+      - 'docs/**'
+      - 'fixture-monkey-tests/doc-examples/**'
+  pull_request:
+    branches: [ main, '[0-9]*.[0-9]*.x' ]
+    paths:
+      - 'docs/**'
+      - 'fixture-monkey-tests/doc-examples/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Doc examples test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Run doc example tests
+        uses: gradle/gradle-build-action@v2.4.2
+        with:
+          arguments: :fixture-monkey-tests:doc-examples:java-examples:test :fixture-monkey-tests:doc-examples:kotlin-examples:test

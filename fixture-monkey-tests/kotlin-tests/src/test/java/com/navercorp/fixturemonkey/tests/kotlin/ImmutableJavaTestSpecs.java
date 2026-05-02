@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.tests.kotlin;
 
 import java.beans.ConstructorProperties;
 
-class ImmutableJavaTestSpecs {
+public class ImmutableJavaTestSpecs {
 	public static class ArrayObject {
 		private final String[] array;
 

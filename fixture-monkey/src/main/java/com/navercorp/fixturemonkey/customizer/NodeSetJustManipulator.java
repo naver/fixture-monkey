@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.customizer;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
@@ -31,6 +32,10 @@ public final class NodeSetJustManipulator implements NodeManipulator {
 
 	public NodeSetJustManipulator(Just value) {
 		this.value = value;
+	}
+
+	public @Nullable Object getValue() {
+		return value.getValue();
 	}
 
 	@Override

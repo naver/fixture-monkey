@@ -39,6 +39,9 @@ include(
         "fixture-monkey-benchmarks:fixture-monkey-benchmark",
         "fixture-monkey-benchmarks:fixture-monkey-benchmark-kotlin",
         "fixture-monkey-datafaker",
+        "fixture-monkey-tests:doc-examples",
+        "fixture-monkey-tests:doc-examples:java-examples",
+        "fixture-monkey-tests:doc-examples:kotlin-examples",
 )
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

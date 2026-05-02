@@ -23,7 +23,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 
-class JavaAnonymousInstanceTestSpecs {
+public class JavaAnonymousInstanceTestSpecs {
 	public interface JavaInterface {
 		String string();
 

@@ -84,6 +84,7 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FixtureMonkeyOptionsBuilder {
+
 	private DefaultMatcherOperatorContainer<PropertyGenerator> propertyGenerators;
 	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private DefaultMatcherOperatorContainer<ObjectPropertyGenerator> arbitraryObjectPropertyGenerators;
@@ -104,16 +105,17 @@ public final class FixtureMonkeyOptionsBuilder {
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
 	private boolean enableLoggingFail = true;
+
+	private int maxRecursionDepth = FixtureMonkeyOptions.DEFAULT_MAX_RECURSION_DEPTH;
 	private UnaryOperator<NullInjectGenerator> defaultNullInjectGeneratorOperator = it -> it;
-	private ArbitraryValidator defaultArbitraryValidator = (obj) -> {
+	private ArbitraryValidator defaultArbitraryValidator = obj -> {
 	};
 	private DecomposedContainerValueFactory decomposedContainerValueFactory =
-		new DefaultDecomposedContainerValueFactory(
-			(obj) -> {
-				throw new IllegalArgumentException(
-					"given type is not supported container : " + obj.getClass().getTypeName());
-			}
-		);
+		new DefaultDecomposedContainerValueFactory(obj -> {
+			throw new IllegalArgumentException(
+				"given type is not supported container : " + obj.getClass().getTypeName()
+			);
+		});
 	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 	private int generateMaxTries = CombinableArbitrary.DEFAULT_MAX_TRIES;
 	private int generateUniqueMaxTries = DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
@@ -121,34 +123,50 @@ public final class FixtureMonkeyOptionsBuilder {
 	private final List<UnaryOperator<JavaConstraintGenerator>> javaConstraintGeneratorCustomizers = new ArrayList<>();
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};
+
 	@Nullable
 	private JavaArbitraryResolver javaArbitraryResolver = null;
+
 	private JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator = new JavaTimeTypeArbitraryGenerator() {
 	};
+
 	@Nullable
 	private JavaTimeArbitraryResolver javaTimeArbitraryResolver = null;
+
 	@Nullable
 	private Function<JavaConstraintGenerator, JavaTypeArbitraryGeneratorSet> generateJavaTypeArbitrarySet = null;
+
 	@Nullable
 	private Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet = null;
+
 	private InstantiatorProcessor instantiatorProcessor = new JavaInstantiatorProcessor();
 	private DefaultMatcherOperatorContainer<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 	private List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers = new ArrayList<>();
 
+	@Nullable
+	private Object nodeTreeAdapter;
+
+	@Nullable
+	private Object adapterTracer;
+
 	@SuppressWarnings({"argument"})
 	FixtureMonkeyOptionsBuilder() {
 		propertyGenerators = createMatcherOperatorRegistry(
-			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_PROPERTY_GENERATORS));
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_PROPERTY_GENERATORS)
+		);
 		containerPropertyGenerators = createMatcherOperatorRegistry(
-			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS));
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS)
+		);
 		nullInjectGenerators = createMatcherOperatorRegistry(
-			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_NULL_INJECT_GENERATORS));
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_NULL_INJECT_GENERATORS)
+		);
 		arbitraryObjectPropertyGenerators = createMatcherOperatorRegistry(new ArrayList<>());
 		propertyNameResolvers = createMatcherOperatorRegistry(new ArrayList<>());
 		arbitraryContainerInfoGenerators = createMatcherOperatorRegistry(new ArrayList<>());
 		arbitraryIntrospectors = createMatcherOperatorRegistry(new ArrayList<>(DEFAULT_ARBITRARY_INTROSPECTORS));
 		candidateConcretePropertyResolvers = createMatcherOperatorRegistry(
-			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CANDIDATE_CONCRETE_PROPERTY_RESOLVERS));
+			new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CANDIDATE_CONCRETE_PROPERTY_RESOLVERS)
+		);
 
 		new JdkVariantOptions().apply(this);
 	}
@@ -169,18 +187,14 @@ public final class FixtureMonkeyOptionsBuilder {
 		Matcher matcher,
 		PropertyGenerator propertyGenerator
 	) {
-		return this.insertFirstPropertyGenerator(
-			new MatcherOperator<>(matcher, propertyGenerator)
-		);
+		return this.insertFirstPropertyGenerator(new MatcherOperator<>(matcher, propertyGenerator));
 	}
 
 	public FixtureMonkeyOptionsBuilder insertFirstPropertyGenerator(
 		Class<?> type,
 		PropertyGenerator propertyGenerator
 	) {
-		return this.insertFirstPropertyGenerator(
-			MatcherOperator.assignableTypeMatchOperator(type, propertyGenerator)
-		);
+		return this.insertFirstPropertyGenerator(MatcherOperator.assignableTypeMatchOperator(type, propertyGenerator));
 	}
 
 	public FixtureMonkeyOptionsBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
@@ -230,7 +244,6 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryContainerPropertyGenerator(
 		MatcherOperator<ContainerPropertyGenerator> arbitraryContainerPropertyGenerator
 	) {
-
 		this.containerPropertyGenerators.addFirst(arbitraryContainerPropertyGenerator);
 		return this;
 	}
@@ -374,7 +387,8 @@ public final class FixtureMonkeyOptionsBuilder {
 	}
 
 	public FixtureMonkeyOptionsBuilder defaultArbitraryContainerInfoGenerator(
-		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator) {
+		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator
+	) {
 		this.defaultArbitraryContainerInfoGenerator = defaultArbitraryContainerInfoGenerator;
 		return this;
 	}
@@ -390,12 +404,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		Matcher matcher,
 		ArbitraryIntrospector arbitraryIntrospector
 	) {
-		return this.insertFirstArbitraryIntrospector(
-			new MatcherOperator<>(
-				matcher,
-				arbitraryIntrospector
-			)
-		);
+		return this.insertFirstArbitraryIntrospector(new MatcherOperator<>(matcher, arbitraryIntrospector));
 	}
 
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryIntrospector(
@@ -414,9 +423,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder priorityIntrospector(
-		UnaryOperator<ArbitraryIntrospector> priorityIntrospector
-	) {
+	public FixtureMonkeyOptionsBuilder priorityIntrospector(UnaryOperator<ArbitraryIntrospector> priorityIntrospector) {
 		this.javaDefaultArbitraryGeneratorBuilder.priorityIntrospector(priorityIntrospector);
 		return this;
 	}
@@ -428,22 +435,44 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder objectIntrospector(
-		UnaryOperator<ArbitraryIntrospector> objectIntrospector
-	) {
+	public FixtureMonkeyOptionsBuilder objectIntrospector(UnaryOperator<ArbitraryIntrospector> objectIntrospector) {
 		this.javaDefaultArbitraryGeneratorBuilder.objectIntrospector(objectIntrospector);
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder fallbackIntrospector(
-		UnaryOperator<ArbitraryIntrospector> fallbackIntrospector
-	) {
+	public FixtureMonkeyOptionsBuilder fallbackIntrospector(UnaryOperator<ArbitraryIntrospector> fallbackIntrospector) {
 		this.javaDefaultArbitraryGeneratorBuilder.fallbackIntrospector(fallbackIntrospector);
 		return this;
 	}
 
 	public FixtureMonkeyOptionsBuilder plugin(Plugin plugin) {
 		plugin.accept(this);
+		return this;
+	}
+
+	/**
+	 * Sets the node tree adapter for tree-based object generation.
+	 * This is typically set via JavaNodeTreeAdapterPlugin or KotlinNodeTreeAdapterPlugin.
+	 *
+	 * @param nodeTreeAdapter the adapter instance (type: NodeTreeAdapter)
+	 * @return this builder
+	 */
+	@API(since = "1.1.0", status = Status.EXPERIMENTAL)
+	public FixtureMonkeyOptionsBuilder nodeTreeAdapter(@Nullable Object nodeTreeAdapter) {
+		this.nodeTreeAdapter = nodeTreeAdapter;
+		return this;
+	}
+
+	/**
+	 * Sets the adapter tracer for debugging tree resolution.
+	 * This is typically set via JavaNodeTreeAdapterPlugin or KotlinNodeTreeAdapterPlugin.
+	 *
+	 * @param adapterTracer the tracer instance (type: AdapterTracer)
+	 * @return this builder
+	 */
+	@API(since = "1.1.0", status = Status.EXPERIMENTAL)
+	public FixtureMonkeyOptionsBuilder adapterTracer(@Nullable Object adapterTracer) {
+		this.adapterTracer = adapterTracer;
 		return this;
 	}
 
@@ -464,6 +493,11 @@ public final class FixtureMonkeyOptionsBuilder {
 
 	public FixtureMonkeyOptionsBuilder enableLoggingFail(boolean enableLoggingFail) {
 		this.enableLoggingFail = enableLoggingFail;
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder maxRecursionDepth(int maxRecursionDepth) {
+		this.maxRecursionDepth = maxRecursionDepth;
 		return this;
 	}
 
@@ -523,9 +557,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder instantiatorProcessor(
-		InstantiatorProcessor instantiatorProcessor
-	) {
+	public FixtureMonkeyOptionsBuilder instantiatorProcessor(InstantiatorProcessor instantiatorProcessor) {
 		this.instantiatorProcessor = instantiatorProcessor;
 		return this;
 	}
@@ -554,10 +586,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder insertFirstBuilderContextInitializer(
 		TreeMatcherOperator<BuilderContextInitializer> builderContextInitializer
 	) {
-		this.builderContextInitializers = insertFirst(
-			this.builderContextInitializers,
-			builderContextInitializer
-		);
+		this.builderContextInitializers = insertFirst(this.builderContextInitializers, builderContextInitializer);
 		return this;
 	}
 
@@ -566,14 +595,12 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.defaultObjectPropertyGenerator,
 			() -> FixtureMonkeyOptions.DEFAULT_OBJECT_PROPERTY_GENERATOR
 		);
-		PropertyNameResolver defaultPropertyNameResolver = defaultIfNull(
-			this.defaultPropertyNameResolver,
-			() -> FixtureMonkeyOptions.DEFAULT_PROPERTY_NAME_RESOLVER
+		PropertyNameResolver defaultPropertyNameResolver = defaultIfNull(this.defaultPropertyNameResolver, () ->
+			FixtureMonkeyOptions.DEFAULT_PROPERTY_NAME_RESOLVER
 		);
 
-		NullInjectGenerator defaultNullInjectGenerator = defaultIfNull(
-			this.defaultNullInjectGenerator,
-			() -> new DefaultNullInjectGenerator(
+		NullInjectGenerator defaultNullInjectGenerator = defaultIfNull(this.defaultNullInjectGenerator, () ->
+			new DefaultNullInjectGenerator(
 				DEFAULT_NULL_INJECT,
 				nullableContainer,
 				defaultNotNull,
@@ -598,44 +625,43 @@ public final class FixtureMonkeyOptionsBuilder {
 
 		JavaConstraintGenerator resolvedJavaConstraintGenerator = this.javaConstraintGenerator;
 
-		JavaArbitraryResolver javaArbitraryResolver = defaultIfNull(
-			this.javaArbitraryResolver,
-			() -> new JqwikJavaArbitraryResolver(resolvedJavaConstraintGenerator)
+		JavaArbitraryResolver javaArbitraryResolver = defaultIfNull(this.javaArbitraryResolver, () ->
+			new JqwikJavaArbitraryResolver(resolvedJavaConstraintGenerator)
 		);
 
 		this.generateJavaTypeArbitrarySet = defaultIfNull(
 			this.generateJavaTypeArbitrarySet,
-			() -> constraintGenerator ->
-				new JqwikJavaTypeArbitraryGeneratorSet(
-					this.javaTypeArbitraryGenerator,
-					javaArbitraryResolver
-				)
+			() ->
+				constraintGenerator ->
+					new JqwikJavaTypeArbitraryGeneratorSet(this.javaTypeArbitraryGenerator, javaArbitraryResolver)
 		);
 
 		javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGeneratorSet(
 			generateJavaTypeArbitrarySet.apply(resolvedJavaConstraintGenerator)
 		);
 
-		JavaTimeArbitraryResolver javaTimeArbitraryResolver = defaultIfNull(
-			this.javaTimeArbitraryResolver,
-			() -> new JqwikJavaTimeArbitraryResolver(resolvedJavaConstraintGenerator)
+		JavaTimeArbitraryResolver javaTimeArbitraryResolver = defaultIfNull(this.javaTimeArbitraryResolver, () ->
+			new JqwikJavaTimeArbitraryResolver(resolvedJavaConstraintGenerator)
 		);
 
 		this.generateJavaTimeArbitrarySet = defaultIfNull(
 			this.generateJavaTimeArbitrarySet,
-			() -> constraintGenerator ->
-				new JqwikJavaTimeArbitraryGeneratorSet(
-					this.javaTimeTypeArbitraryGenerator,
-					javaTimeArbitraryResolver
-				)
+			() ->
+				constraintGenerator ->
+					new JqwikJavaTimeArbitraryGeneratorSet(
+						this.javaTimeTypeArbitraryGenerator,
+						javaTimeArbitraryResolver
+					)
 		);
 
 		javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryGeneratorSet(
 			generateJavaTimeArbitrarySet.apply(resolvedJavaConstraintGenerator)
 		);
 
-		ArbitraryGenerator defaultArbitraryGenerator =
-			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
+		ArbitraryGenerator defaultArbitraryGenerator = defaultIfNull(
+			this.defaultArbitraryGenerator,
+			this.javaDefaultArbitraryGeneratorBuilder::build
+		);
 
 		List<ArbitraryIntrospector> typedArbitraryIntrospectors = arbitraryIntrospectors
 			.getList()
@@ -643,8 +669,9 @@ public final class FixtureMonkeyOptionsBuilder {
 			.map(TypedArbitraryIntrospector::new)
 			.collect(Collectors.toList());
 
-		ArbitraryGenerator introspectedGenerator =
-			new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedArbitraryIntrospectors));
+		ArbitraryGenerator introspectedGenerator = new IntrospectedArbitraryGenerator(
+			new MatchArbitraryIntrospector(typedArbitraryIntrospectors)
+		);
 
 		defaultArbitraryGenerator = new MatchArbitraryGenerator(
 			Arrays.asList(introspectedGenerator, defaultArbitraryGenerator)
@@ -653,10 +680,10 @@ public final class FixtureMonkeyOptionsBuilder {
 		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
 			obj -> {
 				Class<?> actualType = obj.getClass();
-				for (
-					Map.Entry<Class<?>, DecomposedContainerValueFactory> entry :
-					this.decomposableContainerFactoryMap.entrySet()
-				) {
+				for (Map.Entry<
+					Class<?>,
+					DecomposedContainerValueFactory
+					> entry : this.decomposableContainerFactoryMap.entrySet()) {
 					Class<?> type = entry.getKey();
 					DecomposableJavaContainer decomposedValue;
 					try {
@@ -696,12 +723,16 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.instantiatorProcessor,
 			this.candidateConcretePropertyResolvers,
 			this.enableLoggingFail,
-			this.builderContextInitializers
+			this.maxRecursionDepth,
+			this.builderContextInitializers,
+			this.nodeTreeAdapter,
+			this.adapterTracer
 		);
 	}
 
 	private <T> DefaultMatcherOperatorContainer<T> createMatcherOperatorRegistry(
-		List<MatcherOperator<T>> matcherOperators) {
+		List<MatcherOperator<T>> matcherOperators
+	) {
 		DefaultMatcherOperatorContainer<T> registry = new DefaultMatcherOperatorContainer<>();
 		matcherOperators.forEach(registry::addLast);
 

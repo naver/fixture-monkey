@@ -3,6 +3,9 @@ title: "Features"
 sidebar_position: 61
 ---
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+import KotlinPluginFeaturesTest from '@examples-kotlin/plugins/KotlinPluginFeaturesTest.kt';
+
 The Kotlin plugin helps you take full advantage of Kotlin's concise, safe, and pragmatic nature when generating test fixtures.
 
 ### What the Kotlin Plugin provides
@@ -20,7 +23,7 @@ Use **fixture-monkey-starter-kotlin** for new projects. It includes `fixture-mon
 
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:{{fixtureMonkeyVersion}}")
 ```
 
 #### Maven
@@ -28,7 +31,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-starter-kotlin</artifactId>
-  <version>1.1.15</version>
+  <version>{{fixtureMonkeyVersion}}</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -36,7 +39,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.
 If you only need the core Kotlin support without the starter bundle:
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:1.1.15")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:{{fixtureMonkeyVersion}}")
 ```
 
 ## Plugin Setup
@@ -49,31 +52,11 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 ## Quick Example
 
-```kotlin
-data class Product(
-    val id: Long,
-    val name: String,
-    val price: Long,
-    val options: List<String>
-)
+<CodeSnippet src={KotlinPluginFeaturesTest} language="kotlin" method="quickExample" />
 
-@Test
-fun test() {
-    val fixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .build()
+With customization using type-safe property references:
 
-    // Generate a random Product
-    val product: Product = fixtureMonkey.giveMeOne()
-
-    // Customize with type-safe property references
-    val custom = fixtureMonkey.giveMeKotlinBuilder<Product>()
-        .setExp(Product::name, "Fixture Monkey")
-        .setExp(Product::price, 29_900L)
-        .sizeExp(Product::options, 3)
-        .sample()
-}
-```
+<CodeSnippet src={KotlinPluginFeaturesTest} language="kotlin" method="customizeWithTypeSafeReferences" />
 
 ## Extension Functions
 
@@ -107,11 +90,7 @@ builder.setExp(Product::name, "Fixture Monkey")
 
 For nested properties, use the `into` infix function:
 
-```kotlin
-data class Order(val product: Product)
-
-builder.setExp(Order::product into Product::name, "Fixture Monkey")
-```
+<CodeSnippet src={KotlinPluginFeaturesTest} language="kotlin" method="nestedPropertyReference" />
 
 For Java classes (getter-based), use `setExpGetter` and `intoGetter`:
 
