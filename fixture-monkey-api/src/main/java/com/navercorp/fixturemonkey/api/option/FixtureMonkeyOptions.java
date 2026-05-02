@@ -153,23 +153,21 @@ public final class FixtureMonkeyOptions {
 	private final MatcherOperatorRetriever<ObjectPropertyGenerator> objectPropertyGenerators;
 	private final ObjectPropertyGenerator defaultObjectPropertyGenerator;
 	private final MatcherOperatorRetriever<ContainerPropertyGenerator> containerPropertyGenerators;
+	private final MatcherOperatorRetriever<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 	private final MatcherOperatorRetriever<PropertyNameResolver> propertyNameResolvers;
 	private final PropertyNameResolver defaultPropertyNameResolver;
 	private final MatcherOperatorRetriever<NullInjectGenerator> nullInjectGenerators;
 	private final NullInjectGenerator defaultNullInjectGenerator;
 	private final MatcherOperatorRetriever<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerators;
 	private final ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
-	private final ArbitraryGenerator defaultArbitraryGenerator;
-	private final ArbitraryValidator defaultArbitraryValidator;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
+	private final ArbitraryGenerator defaultArbitraryGenerator;
+	private final JavaConstraintGenerator javaConstraintGenerator;
+	private final ArbitraryValidator defaultArbitraryValidator;
+	private final InstantiatorProcessor instantiatorProcessor;
 	private final int generateMaxTries;
 	private final int generateUniqueMaxTries;
-	private final JavaConstraintGenerator javaConstraintGenerator;
-	private final InstantiatorProcessor instantiatorProcessor;
-	private final MatcherOperatorRetriever<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
-	private final boolean enableLoggingFail;
 	private final int maxRecursionDepth;
-	private final List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers;
 	/**
 	 * Declared as Object because the actual type (NodeTreeAdapter) is in the fixture-monkey module,
 	 * which cannot be referenced from fixture-monkey-api due to module dependency constraints.
@@ -182,6 +180,8 @@ public final class FixtureMonkeyOptions {
 	 */
 	@Nullable
 	private final Object adapterTracer;
+	private final List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers;
+	private final boolean enableLoggingFail;
 
 	public FixtureMonkeyOptions(
 		MatcherOperatorRetriever<PropertyGenerator> propertyGenerators,
@@ -214,25 +214,25 @@ public final class FixtureMonkeyOptions {
 		this.objectPropertyGenerators = objectPropertyGenerators;
 		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
 		this.containerPropertyGenerators = containerPropertyGenerators;
+		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
 		this.propertyNameResolvers = propertyNameResolvers;
 		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 		this.nullInjectGenerators = nullInjectGenerators;
 		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
 		this.defaultArbitraryContainerInfoGenerator = defaultArbitraryContainerInfoGenerator;
-		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
-		this.defaultArbitraryValidator = defaultArbitraryValidator;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
+		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
+		this.javaConstraintGenerator = javaConstraintGenerator;
+		this.defaultArbitraryValidator = defaultArbitraryValidator;
+		this.instantiatorProcessor = instantiatorProcessor;
 		this.generateMaxTries = generateMaxTries;
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
-		this.javaConstraintGenerator = javaConstraintGenerator;
-		this.instantiatorProcessor = instantiatorProcessor;
-		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
-		this.enableLoggingFail = enableLoggingFail;
 		this.maxRecursionDepth = maxRecursionDepth;
-		this.builderContextInitializers = builderContextCustomizer;
 		this.nodeTreeAdapter = nodeTreeAdapter;
 		this.adapterTracer = adapterTracer;
+		this.builderContextInitializers = builderContextCustomizer;
+		this.enableLoggingFail = enableLoggingFail;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -433,11 +433,16 @@ public final class FixtureMonkeyOptions {
 			.defaultArbitraryContainerInfoGenerator(this.defaultArbitraryContainerInfoGenerator)
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
+			.generateMaxTries(generateMaxTries)
+			.generateUniqueMaxTries(generateUniqueMaxTries)
 			.javaConstraintGenerator(javaConstraintGenerator)
 			.instantiatorProcessor(instantiatorProcessor)
 			.candidateConcretePropertyResolvers(new ArrayList<>(candidateConcretePropertyResolvers.getList()))
+			.enableLoggingFail(enableLoggingFail)
 			.maxRecursionDepth(maxRecursionDepth)
-			.builderContextInitializers(builderContextInitializers);
+			.builderContextInitializers(builderContextInitializers)
+			.nodeTreeAdapter(nodeTreeAdapter)
+			.adapterTracer(adapterTracer);
 	}
 
 	private static List<MatcherOperator<ContainerPropertyGenerator>> getDefaultContainerPropertyGenerators() {
