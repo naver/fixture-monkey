@@ -130,7 +130,11 @@ Fixture Monkey는 다음 조건을 만족하는 메서드에 대해서만 속성
 - getter 네이밍 규칙을 따르는 메서드(`getValue()`, `getName()` 등)
 - 매개변수가 없는 메서드
 
-다른 메서드는 항상 `null` 또는 기본 원시값을 반환합니다.
+그 외의 메서드는 `null` 또는 기본 원시값을 반환하지만, 한 가지 예외가 있습니다:
+반환 타입이 인터페이스 자기 자신인 메서드(정확한 타입 일치 또는 `T extends Spec<T>`
+같은 self-typed 타입 변수)는 proxy 인스턴스 자체를 반환합니다. 이를 통해 `default`
+메서드가 인자 있는 abstract wither/setter 메서드를 호출하더라도 `NullPointerException`
+없이 동작합니다.
 :::
 
 일반 클래스와 마찬가지로 생성된 속성을 커스터마이징할 수 있습니다:

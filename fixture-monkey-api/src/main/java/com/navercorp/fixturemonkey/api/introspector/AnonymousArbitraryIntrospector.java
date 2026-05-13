@@ -39,6 +39,11 @@ import com.navercorp.fixturemonkey.api.type.Types;
 /**
  * It generates the anonymous object of interface which has no-argument methods.
  * It is a default fallback {@link ArbitraryIntrospector}, if set none of introspectors in the options.
+ *
+ * <p>Methods returning the proxied interface itself (either by exact type match or via a
+ * self-typed type variable like {@code T extends Spec<T>}) yield the proxy instance.
+ * This avoids {@code NullPointerException} when default methods chain through abstract
+ * wither/setter methods.
  */
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
