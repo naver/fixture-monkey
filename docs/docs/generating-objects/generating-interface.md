@@ -84,7 +84,11 @@ Fixture Monkey only generates property values for methods that:
 - Follow the naming convention of getters (like `getValue()`, `getName()`, etc.)
 - Have no parameters
 
-Other methods will always return `null` or default primitive values.
+Other methods will return `null` or default primitive values, with one exception:
+methods whose return type is the interface itself — either by exact match or via
+a self-typed type variable (`T extends Spec<T>`) — yield the proxy instance.
+This allows `default` methods that chain through abstract wither/setter methods
+to run without producing a `NullPointerException`.
 :::
 
 You can customize the generated properties using the same API as for regular classes:

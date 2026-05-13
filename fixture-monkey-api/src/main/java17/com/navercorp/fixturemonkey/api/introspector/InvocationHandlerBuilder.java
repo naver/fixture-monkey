@@ -20,11 +20,15 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * A builder generates {@link InvocationHandler} for generating an anonymous instance of interface dynamically.
@@ -76,12 +80,35 @@ final class InvocationHandlerBuilder {
 				return toString(proxy);
 			}
 
+			if (isSelfTypeReturn(method)) {
+				return proxy;
+			}
+
 			return generatedValuesByMethodName.get(method.getName());
 		};
 	}
 
 	boolean isEmpty() {
 		return generatedValuesByMethodName.isEmpty();
+	}
+
+	private boolean isSelfTypeReturn(Method method) {
+		if (method.getReturnType() == type) {
+			return true;
+		}
+
+		Type genericReturn = method.getGenericReturnType();
+		if (!(genericReturn instanceof TypeVariable)) {
+			return false;
+		}
+
+		for (Type bound : ((TypeVariable<?>)genericReturn).getBounds()) {
+			Class<?> rawBound = Types.getActualType(bound);
+			if (rawBound != Object.class && rawBound.isAssignableFrom(type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean compareAllReturnValues(Object other) {
