@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.adapter;
 
+import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import com.navercorp.fixturemonkey.adapter.tracing.TraceContext;
 import com.navercorp.fixturemonkey.adapter.tracing.TraceContextResolutionListener;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -48,6 +51,7 @@ import com.navercorp.fixturemonkey.adapter.directive.SizeDirective;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
+import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
@@ -60,6 +64,7 @@ import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext;
 import com.navercorp.objectfarm.api.tree.JvmNodeSubtreeContext;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTreeTransformer;
+import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.tree.ResolutionListener;
 import com.navercorp.objectfarm.api.type.JavaType;
@@ -109,7 +114,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 
 	private final ContainerSizeResolverFactory containerSizeResolverFactory;
 	private final ContainerValuePruner containerValuePruner;
-	private final RootTypeResolver rootTypeResolver;
+	private final AbstractTypeResolver abstractTypeResolver;
 	private final PathResolverContextFactory pathResolverContextFactory;
 
 	/**
@@ -154,7 +159,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 			candidateGeneratorWrapper
 		);
 		this.treeCache = new TreeContextCache(treeContext, nodeContextFactory);
-		this.rootTypeResolver = new RootTypeResolver(seedState);
+		this.abstractTypeResolver = new AbstractTypeResolver(seedState);
 		this.pathResolverContextFactory = new PathResolverContextFactory(
 			containerSizeResolverFactory,
 			CONTAINER_DETECTOR
@@ -192,7 +197,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 		ResolutionListener resolutionListener,
 		boolean isFixed
 	) {
-		JvmType resolvedRootType = rootTypeResolver.resolveAbstractType(rootType, options);
+		JvmType resolvedRootType = walkCandidateChain(rootType, options);
 
 		long treeBuildStart = System.nanoTime();
 
@@ -258,7 +263,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 		// Resolve interface/abstract class to concrete implementation
 		// For non-container abstract types, check if there's a "$" path InterfaceResolver
 		// from explicit set(concreteValue) - it takes precedence over default resolution
-		JvmType resolvedRootType = rootTypeResolver.resolve(rootType, analysisResult, options);
+		JvmType resolvedRootType = resolveRootType(rootType, analysisResult, options);
 
 		Map<PathExpression, @Nullable Object> prunedValuesByPath =
 			containerValuePruner.pruneValuesExceedingContainerSize(
@@ -344,6 +349,57 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 		);
 	}
 
+	/**
+	 * Resolves the planning-phase root type.
+	 * <p>
+	 * For non-container abstract/interface roots, an explicit {@code $}-path
+	 * {@link InterfaceResolver} from {@code set(concreteValue)} takes precedence (last-wins).
+	 * Otherwise — including for {@link Collection}/{@link Map} roots whose element types are
+	 * resolved later by {@link JvmNodeTreeTransformer} — delegates to
+	 * {@link AbstractTypeResolver#resolve}.
+	 */
+	private JvmType resolveRootType(
+		JvmType rootType,
+		AnalysisResult analysisResult,
+		@Nullable FixtureMonkeyOptions options
+	) {
+		Class<?> rawType = rootType.getRawType();
+		boolean abstractOrInterface =
+			Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers());
+		if (!abstractOrInterface
+			|| Collection.class.isAssignableFrom(rawType)
+			|| Map.class.isAssignableFrom(rawType)) {
+			return walkCandidateChain(rootType, options);
+		}
+
+		PathExpression rootPath = PathExpression.of("$");
+		List<PathResolver<InterfaceResolver>> resolvers = analysisResult.getInterfaceResolvers();
+		for (int i = resolvers.size() - 1; i >= 0; i--) {
+			PathResolver<InterfaceResolver> resolver = resolvers.get(i);
+			if (resolver.matches(rootPath)) {
+				JvmType resolved = resolver.getCustomizer().resolve(rootType);
+				if (resolved != null) {
+					return resolved;
+				}
+			}
+		}
+
+		return walkCandidateChain(rootType, options);
+	}
+
+	/**
+	 * Adapts {@link FixtureMonkeyOptions} to {@link AbstractTypeResolver#resolve} inputs and
+	 * passes through the input type when {@code options} is null.
+	 */
+	private JvmType walkCandidateChain(JvmType type, @Nullable FixtureMonkeyOptions options) {
+		if (options == null) {
+			return type;
+		}
+		@SuppressWarnings("deprecation")
+		Function<Property, @Nullable CandidateConcretePropertyResolver> resolverLookup =
+			options::getCandidateConcretePropertyResolver;
+		return abstractTypeResolver.resolve(type, resolverLookup, options.getMaxRecursionDepth());
+	}
 
 	@Override
 	public @Nullable JvmNodeTree createConcreteNodeTree(JvmType concreteType, @Nullable FixtureMonkeyOptions options) {
