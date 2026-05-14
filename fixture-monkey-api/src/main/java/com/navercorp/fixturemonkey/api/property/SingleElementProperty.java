@@ -19,8 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +30,8 @@ import org.apiguardian.api.API;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * It is a property for a fixed single element of a container. ex, Optional, Function, Supplier
@@ -57,25 +57,31 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	 */
 	@Deprecated
 	public SingleElementProperty(Property containerProperty) {
-		super(containerProperty, containerProperty.getAnnotatedType(), null, 0);
+		super(containerProperty, containerProperty.getJvmType(), null, 0);
 		this.containerProperty = containerProperty;
-		this.elementProperty = new TypeParameterProperty(containerProperty.getAnnotatedType());
+		this.elementProperty = new TypeParameterProperty(containerProperty.getJvmType());
 	}
 
 	public SingleElementProperty(Property containerProperty, Property elementProperty) {
-		super(containerProperty, containerProperty.getAnnotatedType(), null, 0);
+		super(containerProperty, containerProperty.getJvmType(), null, 0);
 		this.containerProperty = containerProperty;
 		this.elementProperty = elementProperty;
 	}
 
 	@Override
-	public Type getType() {
-		return this.getAnnotatedType().getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.elementProperty.getAnnotatedType();
+	public JvmType getJvmType() {
+		JvmType base = this.elementProperty.getJvmType();
+		List<Annotation> annotations = getAnnotations();
+		if (base.getAnnotations().equals(annotations)) {
+			return base;
+		}
+		return new JavaType(
+			base.getRawType(),
+			base.getTypeVariables(),
+			annotations,
+			base.getComponentType(),
+			base.getNullable()
+		);
 	}
 
 	@Nullable
@@ -87,18 +93,6 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	@Override
 	public List<Annotation> getAnnotations() {
 		return this.containerProperty.getAnnotations();
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		Class<?> actualType = Types.getActualType(instance.getClass());
-
-		if (isOptional(actualType)) {
-			return getOptionalValue(instance);
-		}
-
-		return instance;
 	}
 
 	@Override

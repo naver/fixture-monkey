@@ -42,12 +42,12 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  *   <li>Assembly steps - how values were assembled into the final object</li>
  * </ul>
  *
- * @see AdapterTracer
+ * @see AssemblyTracer
  */
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class ResolutionTrace {
 	private final String rootType;
-	private final List<ManipulatorEntry> manipulators;
+	private final List<DirectiveEntry> directives;
 	private final Map<PathExpression, @Nullable Object> valuesByPath;
 	private final Map<PathExpression, Integer> valueOrderByPath;
 	private final List<NodeCollision> nodeCollisions;
@@ -74,7 +74,7 @@ public final class ResolutionTrace {
 
 	private ResolutionTrace(
 		String rootType,
-		List<ManipulatorEntry> manipulators,
+		List<DirectiveEntry> directives,
 		Map<PathExpression, @Nullable Object> valuesByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
 		List<NodeCollision> nodeCollisions,
@@ -94,7 +94,7 @@ public final class ResolutionTrace {
 		List<SubtreeCacheEntry> subtreeCacheEvents
 	) {
 		this.rootType = rootType;
-		this.manipulators = Collections.unmodifiableList(new ArrayList<>(manipulators));
+		this.directives = Collections.unmodifiableList(new ArrayList<>(directives));
 		this.valuesByPath = Collections.unmodifiableMap(new LinkedHashMap<>(valuesByPath));
 		this.valueOrderByPath = Collections.unmodifiableMap(new LinkedHashMap<>(valueOrderByPath));
 		this.nodeCollisions = Collections.unmodifiableList(new ArrayList<>(nodeCollisions));
@@ -118,8 +118,8 @@ public final class ResolutionTrace {
 		return rootType;
 	}
 
-	public List<ManipulatorEntry> getManipulators() {
-		return manipulators;
+	public List<DirectiveEntry> getDirectives() {
+		return directives;
 	}
 
 	public Map<PathExpression, @Nullable Object> getValuesByPath() {
@@ -219,7 +219,7 @@ public final class ResolutionTrace {
 		return new Builder();
 	}
 
-	public static final class ManipulatorEntry {
+	public static final class DirectiveEntry {
 
 		private final String path;
 		private final String type;
@@ -237,15 +237,15 @@ public final class ResolutionTrace {
 
 		private final @Nullable String decomposedSourceType;
 
-		public ManipulatorEntry(String path, String type) {
+		public DirectiveEntry(String path, String type) {
 			this(path, type, -1, null, null, null);
 		}
 
-		public ManipulatorEntry(String path, String type, @Nullable Object value) {
+		public DirectiveEntry(String path, String type, @Nullable Object value) {
 			this(path, type, -1, value, null, null);
 		}
 
-		public ManipulatorEntry(
+		public DirectiveEntry(
 			String path,
 			String type,
 			@Nullable Object value,
@@ -254,7 +254,7 @@ public final class ResolutionTrace {
 			this(path, type, -1, value, decomposed, null);
 		}
 
-		public ManipulatorEntry(
+		public DirectiveEntry(
 			String path,
 			String type,
 			int sequence,
@@ -264,7 +264,7 @@ public final class ResolutionTrace {
 			this(path, type, sequence, value, decomposed, null);
 		}
 
-		public ManipulatorEntry(
+		public DirectiveEntry(
 			String path,
 			String type,
 			int sequence,
@@ -275,7 +275,7 @@ public final class ResolutionTrace {
 			this(path, type, sequence, value, decomposed, source, -1, -1, null);
 		}
 
-		public ManipulatorEntry(
+		public DirectiveEntry(
 			String path,
 			String type,
 			int sequence,
@@ -604,7 +604,7 @@ public final class ResolutionTrace {
 	public static final class Builder {
 
 		private String rootType = "Unknown";
-		private final List<ManipulatorEntry> manipulators = new ArrayList<>();
+		private final List<DirectiveEntry> directives = new ArrayList<>();
 		private final Map<PathExpression, @Nullable Object> valuesByPath = new LinkedHashMap<>();
 		private final Map<PathExpression, Integer> valueOrderByPath = new LinkedHashMap<>();
 		private final List<NodeCollision> nodeCollisions = new ArrayList<>();
@@ -644,39 +644,39 @@ public final class ResolutionTrace {
 			return this;
 		}
 
-		public Builder addManipulator(ManipulatorEntry entry) {
-			this.manipulators.add(entry);
+		public Builder addDirective(DirectiveEntry entry) {
+			this.directives.add(entry);
 			return this;
 		}
 
-		public Builder addManipulator(String path, String type) {
-			return addManipulator(new ManipulatorEntry(path, type));
+		public Builder addDirective(String path, String type) {
+			return addDirective(new DirectiveEntry(path, type));
 		}
 
-		public Builder addManipulator(String path, String type, @Nullable Object value) {
-			return addManipulator(new ManipulatorEntry(path, type, value));
+		public Builder addDirective(String path, String type, @Nullable Object value) {
+			return addDirective(new DirectiveEntry(path, type, value));
 		}
 
-		public Builder addManipulator(
+		public Builder addDirective(
 			String path,
 			String type,
 			@Nullable Object value,
 			@Nullable Map<String, @Nullable Object> decomposed
 		) {
-			return addManipulator(new ManipulatorEntry(path, type, value, decomposed));
+			return addDirective(new DirectiveEntry(path, type, value, decomposed));
 		}
 
-		public Builder addManipulator(
+		public Builder addDirective(
 			String path,
 			String type,
 			int sequence,
 			@Nullable Object value,
 			@Nullable Map<String, @Nullable Object> decomposed
 		) {
-			return addManipulator(new ManipulatorEntry(path, type, sequence, value, decomposed));
+			return addDirective(new DirectiveEntry(path, type, sequence, value, decomposed));
 		}
 
-		public Builder addManipulator(
+		public Builder addDirective(
 			String path,
 			String type,
 			int sequence,
@@ -684,10 +684,10 @@ public final class ResolutionTrace {
 			@Nullable Map<String, @Nullable Object> decomposed,
 			@Nullable String source
 		) {
-			return addManipulator(new ManipulatorEntry(path, type, sequence, value, decomposed, source));
+			return addDirective(new DirectiveEntry(path, type, sequence, value, decomposed, source));
 		}
 
-		public Builder addManipulator(
+		public Builder addDirective(
 			String path,
 			String type,
 			int sequence,
@@ -698,8 +698,8 @@ public final class ResolutionTrace {
 			int decomposedMatchedCount,
 			@Nullable String decomposedSourceType
 		) {
-			return addManipulator(
-				new ManipulatorEntry(
+			return addDirective(
+				new DirectiveEntry(
 					path,
 					type,
 					sequence,
@@ -953,7 +953,7 @@ public final class ResolutionTrace {
 				: null;
 			return new ResolutionTrace(
 				rootType,
-				manipulators,
+				directives,
 				valuesByPath,
 				valueOrderByPath,
 				nodeCollisions,

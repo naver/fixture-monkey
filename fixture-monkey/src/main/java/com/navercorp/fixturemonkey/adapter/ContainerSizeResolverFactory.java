@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.adapter;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,7 +31,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.SeedSnapshot;
@@ -45,7 +43,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
 /**
  * Factory for creating {@link ContainerSizeResolver}s from manipulators and options.
  *
- * <p>Extracted from {@link DefaultNodeTreeAdapter} to separate container size
+ * <p>Extracted from {@link AssemblyPlanner} to separate container size
  * resolution concerns from the main adapt orchestration logic.
  */
 final class ContainerSizeResolverFactory {
@@ -58,27 +56,12 @@ final class ContainerSizeResolverFactory {
 		this.seedState = seedState;
 	}
 
-	Map<PathExpression, Integer> collectSizeSequences(
-		List<ContainerInfoManipulator> containerManipulators,
-		Map<ContainerInfoManipulator, PathExpression> containerPathCache
-	) {
-		Map<PathExpression, Integer> sizeSequenceByPath = new HashMap<>();
-		for (ContainerInfoManipulator manipulator : containerManipulators) {
-			PathExpression path = containerPathCache.get(manipulator);
-			if (path != null) {
-				sizeSequenceByPath.put(path, manipulator.getManipulatingSequence());
-			}
-		}
-		return sizeSequenceByPath;
-	}
-
-	void addLazyContainerSizeResolvers(
+	void addAnalysisContainerSizeResolvers(
 		PathResolverContext.Builder builder,
 		AnalysisResult analysisResult,
-		Map<PathExpression, Integer> sizeSequenceByPath,
 		List<Map.Entry<PathExpression, Integer>> wildcardSizeSequences
 	) {
-		Map<PathExpression, Integer> lazyContainerSizeSequence = analysisResult.getContainerSizeSequenceByPath();
+		Map<PathExpression, Integer> sequenceByPath = analysisResult.getContainerSizeSequenceByPath();
 		for (PathResolver<ContainerSizeResolver> resolver : analysisResult.getContainerSizeResolvers()) {
 			PathExpression resolverPath = extractResolverPath(resolver);
 			if (resolverPath == null) {
@@ -86,78 +69,26 @@ final class ContainerSizeResolverFactory {
 				continue;
 			}
 
-			Integer explicitSizeSequence = sizeSequenceByPath.get(resolverPath);
-			Integer lazySizeSequence = lazyContainerSizeSequence.get(resolverPath);
-
-			// If no explicit size() call for this exact path, check wildcard matches
-			if (explicitSizeSequence == null) {
-				if (lazySizeSequence != null && !wildcardSizeSequences.isEmpty()) {
-					boolean overriddenByWildcard = false;
-					for (Map.Entry<PathExpression, Integer> wildcardEntry : wildcardSizeSequences) {
-						if (
-							wildcardEntry.getKey().matches(resolverPath) && wildcardEntry.getValue() > lazySizeSequence
-						) {
-							overriddenByWildcard = true;
-							break;
-						}
-					}
-					if (overriddenByWildcard) {
-						continue;
+			// Sequence wins: a wildcard resolver with higher sequence shadows any exact-path
+			// resolver at a matching path. Build-time pruning is what enables this — the runtime
+			// EXACT-over-WILDCARD precedence in JvmNodeTreeTransformer would otherwise prevent
+			// the wildcard from taking effect at the shadowed exact path.
+			if (!resolverPath.hasWildcard() && !wildcardSizeSequences.isEmpty()) {
+				Integer ownSequence = sequenceByPath.get(resolverPath);
+				boolean overriddenByWildcard = false;
+				for (Map.Entry<PathExpression, Integer> wildcardEntry : wildcardSizeSequences) {
+					if (wildcardEntry.getKey().matches(resolverPath)
+						&& (ownSequence == null || wildcardEntry.getValue() > ownSequence)) {
+						overriddenByWildcard = true;
+						break;
 					}
 				}
-				builder.addContainerSizeResolver(resolver);
-				continue;
-			}
-
-			// If lazy sequence is higher than explicit size sequence, the lazy value should win
-			if (lazySizeSequence != null && lazySizeSequence > explicitSizeSequence) {
-				builder.addContainerSizeResolver(resolver);
-			}
-		}
-	}
-
-	void addManipulatorContainerSizeResolvers(
-		PathResolverContext.Builder builder,
-		List<ContainerInfoManipulator> containerManipulators,
-		Map<PathExpression, Integer> globalValueSequences,
-		Map<PathExpression, Integer> sizeSequenceByPath,
-		Map<ContainerInfoManipulator, PathExpression> containerPathCache
-	) {
-		for (ContainerInfoManipulator manipulator : containerManipulators) {
-			PathExpression path = containerPathCache.get(manipulator);
-			if (path == null) {
-				continue;
-			}
-
-			Integer setSequence = globalValueSequences.get(path);
-			Integer sizeSequence = sizeSequenceByPath.get(path);
-
-			// Skip if set() was called after size() for this path — sequence determines priority
-			if (setSequence != null && sizeSequence != null && setSequence > sizeSequence) {
-				continue;
-			}
-
-			ArbitraryContainerInfo containerInfo = manipulator.getContainerInfo();
-			int minSize = containerInfo.getElementMinSize();
-			int maxSize = containerInfo.getElementMaxSize();
-
-			ContainerSizeResolver sizeResolver = containerType -> {
-				int effectiveMin = minSize;
-				int effectiveMax = maxSize;
-
-				Integer enumLimit = getEnumSizeLimit(containerType);
-				if (enumLimit != null) {
-					effectiveMax = Math.min(effectiveMax, enumLimit);
-					effectiveMin = Math.min(effectiveMin, effectiveMax);
+				if (overriddenByWildcard) {
+					continue;
 				}
+			}
 
-				if (effectiveMin == effectiveMax) {
-					return effectiveMin;
-				}
-				return effectiveMin + (int) (Math.random() * (effectiveMax - effectiveMin + 1));
-			};
-
-			builder.addContainerSizeResolver(new PathContainerSizeResolver(path, sizeResolver));
+			builder.addContainerSizeResolver(resolver);
 		}
 	}
 
@@ -175,7 +106,8 @@ final class ContainerSizeResolverFactory {
 					if (minSize == maxSize) {
 						return minSize;
 					}
-					return minSize + (int) (Math.random() * (maxSize - minSize + 1));
+					int range = maxSize - minSize + 1;
+					return minSize + nextRandomForType(containerType).nextInt(range);
 				};
 				builder.addTypedContainerSizeResolver(ownerType, fieldEntry.getKey(), resolver);
 			}
@@ -184,7 +116,11 @@ final class ContainerSizeResolverFactory {
 
 	/**
 	 * Creates a ContainerSizeResolver based on the given options.
-	 * Each invocation generates a new snapshot from seedState for reproducible randomness.
+	 *
+	 * <p>Sizes come from the next {@link SeedState#snapshot()} combined with the container
+	 * type's hash. Each resolve advances the seed sequence, so consecutive calls produce
+	 * varied sizes; two adapters created with the same seed see the same sequence and
+	 * therefore the same sizes for the same call pattern.
 	 */
 	ContainerSizeResolver createContainerSizeResolver(@Nullable FixtureMonkeyOptions options) {
 		if (options != null) {
@@ -212,16 +148,27 @@ final class ContainerSizeResolverFactory {
 				if (minSize == maxSize) {
 					return minSize;
 				}
-				Random typeRandom = seedState.snapshot().randomFor(containerType.hashCode());
-				return minSize + typeRandom.nextInt(maxSize - minSize + 1);
+				return minSize + nextRandomForType(containerType).nextInt(maxSize - minSize + 1);
 			};
 		}
 
 		return containerType -> {
 			int range = DEFAULT_MAX_CONTAINER_SIZE - DEFAULT_MIN_CONTAINER_SIZE + 1;
-			Random typeRandom = seedState.snapshot().randomFor(containerType.hashCode());
-			return DEFAULT_MIN_CONTAINER_SIZE + typeRandom.nextInt(range);
+			return DEFAULT_MIN_CONTAINER_SIZE + nextRandomForType(containerType).nextInt(range);
 		};
+	}
+
+	private Random nextRandomForType(JvmType containerType) {
+		// Use the dedicated container-size counter on SeedState so cache hit/miss in other
+		// snapshot() consumers does not perturb the size sequence. Combining the snapshot
+		// with the type hash (via SeedSnapshot.seedFor) gives per-call variation plus
+		// per-type spread. Class.hashCode() is identityHashCode and varies across JVM runs,
+		// so we hash the fully-qualified class name instead to keep seeds reproducible.
+		return seedState.containerSizeSnapshot().randomFor(stableTypeHash(containerType));
+	}
+
+	private static int stableTypeHash(JvmType containerType) {
+		return containerType.getRawType().getName().hashCode();
 	}
 
 	/**
@@ -259,7 +206,7 @@ final class ContainerSizeResolverFactory {
 				return minSize;
 			}
 			int range = maxSize - minSize + 1;
-			Random typeRandom = fixedSnapshot.randomFor(containerType.hashCode());
+			Random typeRandom = fixedSnapshot.randomFor(stableTypeHash(containerType));
 			return minSize + typeRandom.nextInt(range);
 		};
 	}

@@ -18,9 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
-
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
@@ -34,21 +31,22 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class StreamContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final StreamContainerPropertyGenerator INSTANCE = new StreamContainerPropertyGenerator();
 
-	private static final AnnotatedType INTEGER_TYPE = generateAnnotatedTypeWithoutAnnotation(Integer.class);
-	private static final AnnotatedType LONG_TYPE = generateAnnotatedTypeWithoutAnnotation(Long.class);
-	private static final AnnotatedType DOUBLE_TYPE = generateAnnotatedTypeWithoutAnnotation(Double.class);
+	private static final JvmType INTEGER_TYPE = new JavaType(Integer.class);
+	private static final JvmType LONG_TYPE = new JavaType(Long.class);
+	private static final JvmType DOUBLE_TYPE = new JavaType(Double.class);
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		AnnotatedType elementAnnotatedType = getElementAnnotatedType(property);
+		JvmType elementJvmType = getElementJvmType(property);
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 
@@ -58,7 +56,7 @@ public final class StreamContainerPropertyGenerator implements ContainerProperty
 			childProperties.add(
 				new DefaultContainerElementProperty(
 					property,
-					new TypeParameterProperty(elementAnnotatedType),
+					new TypeParameterProperty(elementJvmType),
 					sequence,
 					sequence
 				)
@@ -71,8 +69,8 @@ public final class StreamContainerPropertyGenerator implements ContainerProperty
 		);
 	}
 
-	private AnnotatedType getElementAnnotatedType(Property streamProperty) {
-		Class<?> type = Types.getActualType(streamProperty.getType());
+	private JvmType getElementJvmType(Property streamProperty) {
+		Class<?> type = streamProperty.getJvmType().getRawType();
 		if (IntStream.class.isAssignableFrom(type)) {
 			return INTEGER_TYPE;
 		}
@@ -91,15 +89,15 @@ public final class StreamContainerPropertyGenerator implements ContainerProperty
 			);
 		}
 
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(streamProperty.getAnnotatedType());
-		if (genericsTypes.size() != 1) {
+		List<? extends JvmType> typeVariables = streamProperty.getJvmType().getTypeVariables();
+		if (typeVariables.size() != 1) {
 			throw new IllegalArgumentException(
-				"Stream genericTypes must be have 1 generics type for value. "
-					+ "propertyType: " + streamProperty.getType()
-					+ ", genericsTypes: " + genericsTypes
+				"Stream typeVariables must be have 1 generics type for value. "
+					+ "propertyType: " + type
+					+ ", typeVariables: " + typeVariables
 			);
 		}
 
-		return genericsTypes.get(0);
+		return typeVariables.get(0);
 	}
 }

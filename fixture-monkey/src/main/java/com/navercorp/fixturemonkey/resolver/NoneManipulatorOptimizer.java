@@ -23,13 +23,13 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NoneManipulatorOptimizer implements ManipulatorOptimizer {
 
 	@Override
-	public OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators) {
+	public OptimizedManipulatorResult optimize(List<PathDirective> manipulators) {
 		return new OptimizedManipulatorResult(manipulators);
 	}
 }

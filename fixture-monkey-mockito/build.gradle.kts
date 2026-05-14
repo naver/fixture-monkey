@@ -7,6 +7,8 @@ dependencies {
     api(projects.fixtureMonkey)
     api(libs.mockito.core)
 
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.engine)
     testImplementation(libs.assertj.core)
     testImplementation(libs.lombok)
     testAnnotationProcessor(libs.lombok)

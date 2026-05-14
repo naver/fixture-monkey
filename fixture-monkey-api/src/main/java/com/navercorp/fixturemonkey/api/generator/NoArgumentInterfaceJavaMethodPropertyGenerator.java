@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmTypes;
 
 /**
  * A property generator for generating no-argument Java interface method.
@@ -44,7 +44,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	@Override
 	public List<Property> generateChildProperties(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 		Map<Method, String> propertyNamesByGetter =
 			TypeCache.getPropertyDescriptorsByPropertyName(actualType).values().stream()
 				.collect(
@@ -57,7 +57,11 @@ public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements Pro
 		return Arrays.stream(actualType.getMethods())
 			.filter(it -> it.getParameters().length == 0)
 			.map(it -> new InterfaceJavaMethodProperty(
-					it.getAnnotatedReturnType(),
+					JvmTypes.resolveJvmType(
+						property.getJvmType(),
+						it.getGenericReturnType(),
+						Arrays.asList(it.getAnnotations())
+					),
 					propertyNamesByGetter.getOrDefault(it, it.getName()),
 					it.getName(),
 					Arrays.asList(it.getAnnotations())

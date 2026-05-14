@@ -46,7 +46,7 @@ import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.2", status = Status.MAINTAINED)
+@API(since = "0.4.2", status = Status.EXPERIMENTAL)
 public final class ConstructorPropertiesArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final ConstructorPropertiesArbitraryIntrospector INSTANCE =
 		new ConstructorPropertiesArbitraryIntrospector();
@@ -62,7 +62,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 		if (Modifier.isAbstract(type.getModifiers())) {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}

@@ -31,9 +31,11 @@ import java.util.function.UnaryOperator;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.adapter.NodeTreeAdapter;
-import com.navercorp.fixturemonkey.adapter.tracing.AdapterTracer;
+import com.navercorp.fixturemonkey.adapter.AssemblyPlanner;
+import com.navercorp.fixturemonkey.adapter.tracing.AssemblyTracer;
+import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -63,9 +65,6 @@ import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalFixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
-import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
-import com.navercorp.fixturemonkey.expression.StrictModeMonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.seed.SeedFileLoader;
@@ -84,9 +83,12 @@ public final class FixtureMonkeyBuilder {
 	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredPriorityMatchersByName = new HashMap<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
-	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private boolean experimentalFileSeedEnabled = false;
 	private long seed = System.nanoTime();
+	@Nullable
+	private AssemblyPlanner assemblyPlanner;
+	@Nullable
+	private AssemblyTracer tracer;
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -298,7 +300,7 @@ public final class FixtureMonkeyBuilder {
 	public FixtureMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
 		return pushExceptGenerateType(
 			property -> {
-				Package pkg = Types.primitiveToWrapper(Types.getActualType(property.getType())).getPackage();
+				Package pkg = Types.primitiveToWrapper(property.getJvmType().getRawType()).getPackage();
 				return pkg != null && pkg.getName().startsWith(exceptGeneratePackage);
 			}
 		);
@@ -439,6 +441,9 @@ public final class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder plugin(Plugin plugin) {
 		fixtureMonkeyOptionsBuilder.plugin(plugin);
+		if (plugin instanceof JvmTypeSystemPlugin) {
+			((JvmTypeSystemPlugin)plugin).configure(planner -> this.assemblyPlanner = planner);
+		}
 		return this;
 	}
 
@@ -580,6 +585,18 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	/**
+	 * Sets a tracer that captures adapter resolution events for debugging.
+	 * Replace by passing {@link AssemblyTracer#noOp()} (the default) when not debugging.
+	 *
+	 * @param tracer tracer to use
+	 * @return this builder
+	 */
+	public FixtureMonkeyBuilder tracer(AssemblyTracer tracer) {
+		this.tracer = tracer;
+		return this;
+	}
+
 	public FixtureMonkey build() {
 		if (defaultPropertyNameResolver != null) {
 			fixtureMonkeyOptionsBuilder.defaultPropertyNameResolver(defaultPropertyNameResolver);
@@ -593,50 +610,27 @@ public final class FixtureMonkeyBuilder {
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
-			fixtureMonkeyOptions.getContainerPropertyGenerators()
+			fixtureMonkeyOptions.getContainerPropertyGenerators(),
+			expressionStrictMode
 		);
 
-		MonkeyExpressionFactory monkeyExpressionFactory = newExpressionFactory(fixtureMonkeyOptions);
+		Randoms.applyBuilderSeed(seed);
 
-		Randoms.setSeed(seed);
+		AssemblyTracer resolvedTracer = this.tracer != null ? this.tracer : AssemblyTracer.noOp();
 
-		Object rawTracer = fixtureMonkeyOptions.getAdapterTracer();
-		AdapterTracer adapterTracer = rawTracer instanceof AdapterTracer
-			? (AdapterTracer)rawTracer
-			: AdapterTracer.noOp();
+		AssemblyPlanner resolvedPlanner = this.assemblyPlanner != null
+			? this.assemblyPlanner
+			: new AssemblyPlanner(seed);
 
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
 			registeredArbitraryBuildersWithPriority,
 			monkeyManipulatorFactory,
-			monkeyExpressionFactory,
 			registeredPriorityMatchersByName,
-			(NodeTreeAdapter)fixtureMonkeyOptions.getNodeTreeAdapter(),
-			adapterTracer
+			resolvedPlanner,
+			resolvedTracer
 		);
 	}
 
-	private MonkeyExpressionFactory newExpressionFactory(FixtureMonkeyOptions fixtureMonkeyOptions) {
-		if (!expressionStrictMode) {
-			return this.monkeyExpressionFactory;
-		}
-
-		PropertyNameResolver compositePropertyNameResolver = newCompositePropertyNameResolver(fixtureMonkeyOptions);
-
-		return new StrictModeMonkeyExpressionFactory(
-			new ArbitraryExpressionFactory(),
-			compositePropertyNameResolver
-		);
-	}
-
-	private PropertyNameResolver newCompositePropertyNameResolver(
-		FixtureMonkeyOptions fixtureMonkeyOptions
-	) {
-		return property -> fixtureMonkeyOptions.getPropertyNameResolvers().stream()
-			.filter(it -> it.getMatcher().match(property))
-			.findFirst()
-			.map(it -> it.getOperator().resolve(property))
-			.orElseGet(() -> fixtureMonkeyOptions.getDefaultPropertyNameResolver().resolve(property));
-	}
 }

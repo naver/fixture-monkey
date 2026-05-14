@@ -39,7 +39,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 /**
  * This plugin is used to extend an interface.
  */
-@API(since = "1.0.6", status = Status.EXPERIMENTAL)
+@API(since = "1.0.6", status = Status.MAINTAINED)
 public final class InterfacePlugin implements Plugin {
 	private final List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers =
 		new ArrayList<>();
@@ -102,7 +102,7 @@ public final class InterfacePlugin implements Plugin {
 	) {
 		this.candidateConcretePropertyResolvers.add(
 			new MatcherOperator<>(
-				matcher.intersect(p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers())),
+				matcher.intersect(p -> Modifier.isInterface(p.getJvmType().getRawType().getModifiers())),
 				concretePropertyResolver
 			)
 		);
@@ -168,7 +168,7 @@ public final class InterfacePlugin implements Plugin {
 	) {
 		this.candidateConcretePropertyResolvers.add(
 			new MatcherOperator<>(
-				matcher.intersect(p -> Modifier.isAbstract(Types.getActualType(p.getType()).getModifiers())),
+				matcher.intersect(p -> Modifier.isAbstract(p.getJvmType().getRawType().getModifiers())),
 				concretePropertyResolver
 			)
 		);

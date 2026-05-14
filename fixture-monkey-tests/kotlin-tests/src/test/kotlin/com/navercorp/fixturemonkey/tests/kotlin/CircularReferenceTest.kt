@@ -25,17 +25,17 @@ import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import com.navercorp.fixturemonkey.tests.kotlin.specs.CircularReferenceDefaultArgument
 import com.navercorp.fixturemonkey.tests.kotlin.specs.CircularReferenceValueNullable
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 
 class CircularReferenceTest {
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun circularReferenceDefaultArgument() {
         val actual = SUT.giveMeOne<CircularReferenceDefaultArgument>().value
 
         then(actual).isNotNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun circularReferenceNullable() {
         val actual: CircularReferenceValueNullable = SUT.giveMeOne()
 

@@ -6,7 +6,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import java.util.Map;
 
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -17,21 +17,21 @@ class ConcurrentTest {
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void test1() {
 		JavaObject actual = SUT.giveMeOne(JavaObject.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void test2() {
 		JavaObject actual = SUT.giveMeOne(JavaObject.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void test3() {
 		JavaObject actual = SUT.giveMeOne(JavaObject.class);
 

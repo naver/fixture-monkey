@@ -1,11 +1,12 @@
 package com.navercorp.fixturemonkey.api.property;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
+
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * It is a property for a root type.
@@ -15,8 +16,8 @@ import org.jspecify.annotations.Nullable;
 public final class ComparableRootProperty implements TreeRootProperty {
 	private final Property delgeatedProperty;
 
-	public ComparableRootProperty(AnnotatedType annotatedType) {
-		this.delgeatedProperty = new TypeParameterProperty(annotatedType);
+	public ComparableRootProperty(JvmType jvmType) {
+		this.delgeatedProperty = new TypeParameterProperty(jvmType);
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public final class ComparableRootProperty implements TreeRootProperty {
 	@Override
 	public String toString() {
 		return "RootProperty{"
-			+ "annotatedType=" + delgeatedProperty.getAnnotatedType() + '}';
+			+ "jvmType=" + delgeatedProperty.getJvmType() + '}';
 	}
 
 	@Override

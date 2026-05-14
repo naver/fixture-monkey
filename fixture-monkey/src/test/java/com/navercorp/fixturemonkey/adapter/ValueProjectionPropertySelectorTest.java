@@ -22,7 +22,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.NestedSimpleObject;
@@ -37,10 +37,9 @@ class ValueProjectionPropertySelectorTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void setAllFieldsWithWildcard() {
 		StringPair actual = SUT.giveMeBuilder(StringPair.class).set("*", "str").sample();
 
@@ -48,7 +47,7 @@ class ValueProjectionPropertySelectorTest {
 		then(actual.getValue2()).isEqualTo("str");
 	}
 
-	@Property
+	@Test
 	void wildcardDoesNotOverrideExplicitSet() {
 		StringPair actual = SUT.giveMeBuilder(StringPair.class).set("*", "wildcard").set("value1", "explicit").sample();
 
@@ -56,7 +55,7 @@ class ValueProjectionPropertySelectorTest {
 		then(actual.getValue2()).isEqualTo("wildcard");
 	}
 
-	@Property
+	@Test
 	void setNestedWildcard() {
 		NestedSimpleObject actual = SUT.giveMeBuilder(NestedSimpleObject.class)
 			.set("object.*", "nested-wildcard")
@@ -65,7 +64,7 @@ class ValueProjectionPropertySelectorTest {
 		then(actual.getObject().getStr()).isEqualTo("nested-wildcard");
 	}
 
-	@Property
+	@Test
 	void wildcardWithContainerElements() {
 		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
 			})

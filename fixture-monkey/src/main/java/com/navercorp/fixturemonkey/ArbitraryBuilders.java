@@ -26,6 +26,10 @@ import java.util.function.Function;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+@API(since = "1.1.20", status = Status.MAINTAINED)
 public final class ArbitraryBuilders {
 	public static <T, U, R> ArbitraryBuilder<R> zip(
 		ArbitraryBuilder<T> a1,

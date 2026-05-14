@@ -40,7 +40,7 @@ public abstract class Jackson3Annotations {
 			return propertyAnnotation;
 		}
 
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 		return type.getAnnotation(annotationClass);
 	}
 

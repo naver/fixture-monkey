@@ -43,20 +43,23 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.adapter.directive.CustomizerDirective;
+import com.navercorp.fixturemonkey.adapter.directive.FilterDirective;
+import com.navercorp.fixturemonkey.adapter.directive.JustDirective;
+import com.navercorp.fixturemonkey.adapter.directive.LazyDirective;
+import com.navercorp.fixturemonkey.adapter.directive.NullityDirective;
+import com.navercorp.fixturemonkey.adapter.directive.SetDirective;
+import com.navercorp.fixturemonkey.adapter.directive.SizeDirective;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.customizer.Values.Unique;
-import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodePredicateResolver;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
-import com.navercorp.fixturemonkey.tree.ObjectNode;
-import com.navercorp.fixturemonkey.tree.StaticNodeResolver;
+import com.navercorp.objectfarm.api.expression.PathExpression;
 
 /**
  * It is for internal use only.
@@ -67,243 +70,188 @@ public final class MonkeyManipulatorFactory {
 	private final AtomicInteger sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
+	private final boolean expressionStrictMode;
 
 	public MonkeyManipulatorFactory(
 		AtomicInteger sequence,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators
 	) {
+		this(sequence, decomposedContainerValueFactory, containerPropertyGenerators, false);
+	}
+
+	public MonkeyManipulatorFactory(
+		AtomicInteger sequence,
+		DecomposedContainerValueFactory decomposedContainerValueFactory,
+		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
+		boolean expressionStrictMode
+	) {
 		this.sequence = sequence;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.containerPropertyGenerators = containerPropertyGenerators;
+		this.expressionStrictMode = expressionStrictMode;
 	}
 
-	public ArbitraryManipulator newArbitraryManipulator(NodeResolver nodeResolver, @Nullable Object value, int limit) {
-		return new ArbitraryManipulator(nodeResolver, convertToNodeManipulator(value, limit));
+	public boolean isExpressionStrictMode() {
+		return expressionStrictMode;
 	}
 
-	public ArbitraryManipulator newArbitraryManipulator(NodeResolver nodeResolver, @Nullable Object value) {
-		return new ArbitraryManipulator(nodeResolver, convertToNodeManipulator(sequence.getAndIncrement(), value));
+	public PathDirective newDirective(PathExpression path, @Nullable Object value, int limit) {
+		return convertToDirective(path, sequence.getAndIncrement(), value, limit, false);
 	}
 
-	public <T> ArbitraryManipulator newArbitraryManipulator(
-		NodeResolver nodeResolver,
+	public PathDirective newDirective(PathExpression path, @Nullable Object value) {
+		return convertToDirective(path, sequence.getAndIncrement(), value, -1, false);
+	}
+
+	public <T> PathDirective newDirective(
+		PathExpression path,
 		Class<T> type,
 		Predicate<T> filter,
 		int limit
 	) {
-		return new ArbitraryManipulator(
-			nodeResolver,
-			new ApplyNodeCountManipulator(new NodeFilterManipulator(type, filter), limit)
+		return new FilterDirective(
+			path,
+			sequence.getAndIncrement(),
+			limit,
+			expressionStrictMode,
+			false,
+			type,
+			filter
 		);
 	}
 
-	public <T> ArbitraryManipulator newArbitraryManipulator(
-		NodeResolver nodeResolver,
+	public <T> PathDirective newDirective(
+		PathExpression path,
 		@Nullable Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> arbitraryCustomizer
 	) {
 		if (arbitraryCustomizer == null) {
-			return newArbitraryManipulator(nodeResolver, (Object)null);
+			return newDirective(path, (Object)null);
 		}
 
-		return new ArbitraryManipulator(nodeResolver, new NodeCustomizerManipulator<>(arbitraryCustomizer));
-	}
-
-	public ContainerInfoManipulator newContainerInfoManipulator(
-		List<NextNodePredicate> nextNodePredicates,
-		int min,
-		int max
-	) {
-		int newSequence = sequence.getAndIncrement();
-
-		return new ContainerInfoManipulator(nextNodePredicates, new ArbitraryContainerInfo(min, max), newSequence);
-	}
-
-	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators( // TODO: Fragmented registered
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
-		Map<Property, List<ObjectNode>> nodesByType
-	) {
-		List<ArbitraryManipulator> manipulators = new ArrayList<>();
-
-		for (Entry<Property, List<ObjectNode>> nodeByType : nodesByType.entrySet()) {
-			Property property = nodeByType.getKey();
-			List<ObjectNode> objectNodes = nodeByType.getValue();
-
-			ArbitraryBuilderContext activeContext = findRegisteredArbitraryBuilderContext(standbyContexts, property);
-
-			if (activeContext == null) {
-				continue;
-			}
-
-			List<ArbitraryManipulator> arbitraryManipulators = activeContext
-				.getManipulators()
-				.stream()
-				.map(it ->
-					new ArbitraryManipulator(
-						new CompositeNodeResolver(new StaticNodeResolver(objectNodes), it.getNodeResolver()),
-						it.getNodeManipulator()
-					)
-				)
-				.collect(toList());
-
-			manipulators.addAll(arbitraryManipulators);
-		}
-		return manipulators;
-	}
-
-	private @Nullable ArbitraryBuilderContext findRegisteredArbitraryBuilderContext(
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
-		Property property
-	) {
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> priorityOperators = standbyContexts
-			.stream()
-			.filter(it -> it.match(property))
-			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
-			.collect(toList());
-
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> highestPriorityOperators = getHighestPriorityOperators(
-			priorityOperators
+		return new CustomizerDirective<>(
+			path,
+			sequence.getAndIncrement(),
+			-1,
+			expressionStrictMode,
+			false,
+			arbitraryCustomizer
 		);
-
-		if (highestPriorityOperators.size() > 1) {
-			Collections.shuffle(highestPriorityOperators, Randoms.current());
-		}
-
-		return highestPriorityOperators.stream().findFirst().map(MatcherOperator::getOperator).orElse(null);
 	}
 
-	private List<PriorityMatcherOperator<ArbitraryBuilderContext>> getHighestPriorityOperators(
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> priorityOperators
-	) {
-		if (priorityOperators.isEmpty()) {
-			return priorityOperators;
-		}
-
-		int highestPriority = priorityOperators.get(0).getPriority();
-
-		return priorityOperators
-			.stream()
-			.filter(it -> it.getPriority() == highestPriority)
-			.collect(toList());
+	public SizeDirective newSizeDirective(PathExpression path, int min, int max) {
+		return new SizeDirective(path, sequence.getAndIncrement(), min, max);
 	}
 
 	public ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
 		int baseSequence = sequence.getAndIncrement();
 
-		List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
+		List<PathDirective> directives = new ArrayList<>();
 
-		List<ArbitraryManipulator> setArbitraryManipulators = manipulatorHolderSet
+		List<PathDirective> setArbitraryManipulators = manipulatorHolderSet
 			.getNodeResolverObjectHolders()
 			.stream()
-			.map(it -> {
-				List<NodeResolver> nextNodeResolvers = it
-					.getNextNodePredicates()
-					.stream()
-					.map(NodePredicateResolver::new)
-					.collect(toList());
-
-				CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
-				return new ArbitraryManipulator(
-					compositeNodeResolver,
-					convertToNodeManipulator(baseSequence + it.getSequence(), it.getValue())
-				);
-			})
+			.map(it -> convertToDirective(
+				it.getPath(),
+				baseSequence + it.getSequence(),
+				it.getValue(),
+				-1,
+				false
+			))
 			.collect(toList());
 
-		List<ArbitraryManipulator> filterArbitraryManipulators = manipulatorHolderSet
+		List<PathDirective> filterArbitraryManipulators = manipulatorHolderSet
 			.getPostConditionManipulators()
 			.stream()
-			.map(it -> {
-				List<NodeResolver> nextNodeResolvers = it
-					.getNextNodePredicates()
-					.stream()
-					.map(NodePredicateResolver::new)
-					.collect(toList());
-
-				CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
-				return new ArbitraryManipulator(
-					compositeNodeResolver,
-					new NodeFilterManipulator(it.getType(), it.getPredicate())
-				);
-			})
+			.map(it -> (PathDirective)new FilterDirective(
+				it.getPath(),
+				sequence.getAndIncrement(),
+				-1,
+				false,
+				false,
+				it.getType(),
+				it.getPredicate()
+			))
 			.collect(toList());
-		arbitraryManipulators.addAll(setArbitraryManipulators);
-		arbitraryManipulators.addAll(filterArbitraryManipulators);
+		directives.addAll(setArbitraryManipulators);
+		directives.addAll(filterArbitraryManipulators);
 
-		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorHolderSet
-			.getContainerInfoManipulators()
+		List<PathDirective> sizeDirectives = manipulatorHolderSet
+			.getSizeDirectives()
 			.stream()
-			.map(it ->
-				new ContainerInfoManipulator(
-					it.getNextNodePredicates(),
-					new ArbitraryContainerInfo(it.getElementMinSize(), it.getElementMaxSize()),
-					baseSequence + it.getSequence()
-				)
-			)
+			.map(it -> (PathDirective)new SizeDirective(
+				it.getPath(),
+				baseSequence + it.getSequence(),
+				new ArbitraryContainerInfo(it.getElementMinSize(), it.getElementMaxSize())
+			))
 			.collect(toList());
+		directives.addAll(sizeDirectives);
 
-		sequence.set(sequence.get() + containerInfoManipulators.size() + arbitraryManipulators.size());
-		return new ManipulatorSet(arbitraryManipulators, containerInfoManipulators);
+		sequence.set(sequence.get() + directives.size());
+		return new ManipulatorSet(directives);
 	}
 
 	public MonkeyManipulatorFactory copy() {
 		return new MonkeyManipulatorFactory(
 			new AtomicInteger(sequence.get()),
 			decomposedContainerValueFactory,
-			containerPropertyGenerators
+			containerPropertyGenerators,
+			expressionStrictMode
 		);
 	}
 
-	private NodeManipulator convertToNodeManipulator(@Nullable Object value, int limit) {
-		NodeManipulator nodeManipulator = convertToNodeManipulator(sequence.getAndIncrement(), value);
-		return new ApplyNodeCountManipulator(nodeManipulator, limit);
-	}
-
-	private NodeManipulator convertToNodeManipulator(int sequence, @Nullable Object value) {
+	private PathDirective convertToDirective(
+		PathExpression path,
+		int seq,
+		@Nullable Object value,
+		int limit,
+		boolean registered
+	) {
 		if (value == null) {
-			return new NodeNullityManipulator(sequence, true);
+			return new NullityDirective(path, seq, limit, expressionStrictMode, registered, true);
 		} else if (value == Values.NOT_NULL) {
-			return new NodeNullityManipulator(sequence, false);
+			return new NullityDirective(path, seq, limit, expressionStrictMode, registered, false);
 		} else if (value instanceof Just) {
-			return new NodeSetJustManipulator((Just)value);
+			return new JustDirective(path, seq, limit, expressionStrictMode, registered, (Just)value);
 		} else if (value instanceof Arbitrary) {
-			return new NodeSetLazyManipulator<>(
-				sequence,
+			return new LazyDirective(
+				path, seq, limit, expressionStrictMode, registered,
+				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
 				decomposedContainerValueFactory,
-				containerPropertyGenerators,
-				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample())
+				containerPropertyGenerators
 			);
 		} else if (value instanceof DefaultArbitraryBuilder) {
-			return new NodeSetLazyManipulator<>(
-				sequence,
+			return new LazyDirective(
+				path, seq, limit, expressionStrictMode, registered,
+				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample()),
 				decomposedContainerValueFactory,
-				containerPropertyGenerators,
-				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample())
+				containerPropertyGenerators
 			);
 		} else if (value instanceof Supplier) {
-			return new NodeSetLazyManipulator<>(
-				sequence,
+			return new LazyDirective(
+				path, seq, limit, expressionStrictMode, registered,
+				LazyArbitrary.lazy((Supplier<?>)value),
 				decomposedContainerValueFactory,
-				containerPropertyGenerators,
-				LazyArbitrary.lazy((Supplier<?>)value)
+				containerPropertyGenerators
 			);
 		} else if (value instanceof LazyArbitrary) {
-			return new NodeSetLazyManipulator<>(
-				sequence,
+			return new LazyDirective(
+				path, seq, limit, expressionStrictMode, registered,
+				(LazyArbitrary<?>)value,
 				decomposedContainerValueFactory,
-				containerPropertyGenerators,
-				(LazyArbitrary<?>)value
+				containerPropertyGenerators
 			);
 		} else if (value instanceof Unique) {
-			return new NodeSetJustManipulator(
+			return new JustDirective(
+				path, seq, limit, expressionStrictMode, registered,
 				Values.just(CombinableArbitrary.from(((Unique)value).getValueSupplier()).unique())
 			);
 		} else {
-			return new NodeSetDecomposedValueManipulator<>(
-				sequence,
+			return new SetDirective(
+				path, seq, limit, expressionStrictMode, registered,
+				value,
 				decomposedContainerValueFactory,
-				containerPropertyGenerators,
-				value
+				containerPropertyGenerators
 			);
 		}
 	}

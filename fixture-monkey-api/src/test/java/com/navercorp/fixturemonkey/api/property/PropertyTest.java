@@ -21,13 +21,15 @@ package com.navercorp.fixturemonkey.api.property;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.Test;
+
+import com.navercorp.objectfarm.api.type.JvmType;
 
 class PropertyTest {
 	@Test
@@ -39,18 +41,13 @@ class PropertyTest {
 	@Test
 	void getAnnotationNotFound() {
 		Property sut = this.anonymousProperty();
-		then(sut.getAnnotation(NonNull.class)).isEmpty();
+		then(sut.getAnnotation(Nonnull.class)).isEmpty();
 	}
 
 	private Property anonymousProperty() {
 		return new Property() {
 			@Override
-			public Class<?> getType() {
-				return null;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
+			public JvmType getJvmType() {
 				return null;
 			}
 
@@ -68,11 +65,6 @@ class PropertyTest {
 				}
 			}
 
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				return null;
-			}
 		};
 	}
 }

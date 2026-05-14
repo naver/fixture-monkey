@@ -18,9 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
-
-import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,25 +31,26 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class OptionalContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final OptionalContainerPropertyGenerator INSTANCE = new OptionalContainerPropertyGenerator();
 
-	private static final AnnotatedType INTEGER_TYPE = generateAnnotatedTypeWithoutAnnotation(Integer.class);
-	private static final AnnotatedType LONG_TYPE = generateAnnotatedTypeWithoutAnnotation(Long.class);
-	private static final AnnotatedType DOUBLE_TYPE = generateAnnotatedTypeWithoutAnnotation(Double.class);
+	private static final JvmType INTEGER_TYPE = new JavaType(Integer.class);
+	private static final JvmType LONG_TYPE = new JavaType(Long.class);
+	private static final JvmType DOUBLE_TYPE = new JavaType(Double.class);
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		AnnotatedType valueAnnotatedType = getOptionalValueAnnotatedType(property);
+		JvmType valueJvmType = getOptionalValueJvmType(property);
 
 		SingleElementProperty singleElementProperty =
-			new SingleElementProperty(property, new TypeParameterProperty(valueAnnotatedType));
+			new SingleElementProperty(property, new TypeParameterProperty(valueJvmType));
 
 		return new ContainerProperty(
 			Collections.singletonList(singleElementProperty),
@@ -60,8 +58,8 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 		);
 	}
 
-	private AnnotatedType getOptionalValueAnnotatedType(Property optionalProperty) {
-		Class<?> type = Types.getActualType(optionalProperty.getType());
+	private JvmType getOptionalValueJvmType(Property optionalProperty) {
+		Class<?> type = optionalProperty.getJvmType().getRawType();
 		if (type == OptionalInt.class) {
 			return INTEGER_TYPE;
 		}
@@ -80,15 +78,15 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 			);
 		}
 
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(optionalProperty.getAnnotatedType());
-		if (genericsTypes.size() != 1) {
+		List<? extends JvmType> typeVariables = optionalProperty.getJvmType().getTypeVariables();
+		if (typeVariables.size() != 1) {
 			throw new IllegalArgumentException(
-				"Optional genericTypes must be have 1 generics type for value. "
-					+ "propertyType: " + optionalProperty.getType()
-					+ ", genericsTypes: " + genericsTypes
+				"Optional typeVariables must be have 1 generics type for value. "
+					+ "propertyType: " + type
+					+ ", typeVariables: " + typeVariables
 			);
 		}
 
-		return genericsTypes.get(0);
+		return typeVariables.get(0);
 	}
 }

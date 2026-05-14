@@ -40,7 +40,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = API.Status.MAINTAINED)
+@API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector {
 
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
@@ -66,7 +66,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 		if (Modifier.isAbstract(type.getModifiers())) {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
@@ -187,13 +187,13 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		// If the concrete type is a subtype of the declared type, use the declared type instead.
 		if (actualProperty instanceof FieldProperty) {
 			Class<?> fieldDeclaredType = ((FieldProperty)actualProperty).getField().getType();
-			Class<?> propertyType = Types.getActualType(actualProperty.getType());
+			Class<?> propertyType = actualProperty.getJvmType().getRawType();
 			if (fieldDeclaredType != propertyType && fieldDeclaredType.isAssignableFrom(propertyType)) {
 				return fieldDeclaredType;
 			}
 		}
 
-		return Types.getActualType(actualProperty.getType());
+		return actualProperty.getJvmType().getRawType();
 	}
 
 	private Property getActualProperty(Property property) {

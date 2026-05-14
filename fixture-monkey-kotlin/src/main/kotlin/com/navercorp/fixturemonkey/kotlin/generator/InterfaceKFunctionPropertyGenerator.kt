@@ -42,7 +42,7 @@ import kotlin.reflect.jvm.javaMethod
 @API(since = "0.5.5", status = Status.MAINTAINED)
 class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
     override fun generateChildProperties(property: Property): List<Property> {
-        val type = Types.getActualType(property.type)
+        val type = property.jvmType.rawType
 
         if (type.isKotlinType()) {
             val methods = type.kotlinMemberFunctions()

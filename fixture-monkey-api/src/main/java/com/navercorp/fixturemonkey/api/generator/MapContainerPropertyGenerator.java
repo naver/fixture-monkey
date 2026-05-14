@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -33,11 +33,13 @@ import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapContainerPropertyGenerator implements ContainerPropertyGenerator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapContainerPropertyGenerator.class);
+	private static final JvmType DEFAULT_ELEMENT_JVM_TYPE = new JavaType(String.class);
 
 	public static final MapContainerPropertyGenerator INSTANCE = new MapContainerPropertyGenerator();
 
@@ -46,12 +48,10 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		AnnotatedType keyType =
-			!genericsTypes.isEmpty() ? genericsTypes.get(0) : DEFAULT_ELEMENT_RAW_TYPE.getAnnotatedType();
-		AnnotatedType valueType =
-			genericsTypes.size() > 1 ? genericsTypes.get(1) : DEFAULT_ELEMENT_RAW_TYPE.getAnnotatedType();
-		Class<?> actualKeyType = Types.getActualType(keyType);
+		List<? extends JvmType> typeVariables = property.getJvmType().getTypeVariables();
+		JvmType keyType = !typeVariables.isEmpty() ? typeVariables.get(0) : DEFAULT_ELEMENT_JVM_TYPE;
+		JvmType valueType = typeVariables.size() > 1 ? typeVariables.get(1) : DEFAULT_ELEMENT_JVM_TYPE;
+		Class<?> actualKeyType = keyType.getRawType();
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		if (actualKeyType.isEnum()) {
@@ -87,7 +87,7 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 		}
 
 		return new ContainerProperty(
-			childProperties,
+			Collections.unmodifiableList(childProperties),
 			containerInfo
 		);
 	}

@@ -18,6 +18,10 @@
 
 package com.navercorp.fixturemonkey.api.validator;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+@API(since = "1.1.20", status = Status.MAINTAINED)
 public interface ArbitraryValidator {
 	// if arbitrary is not valid throw exception then re-create arbitrary for valid.
 	void validate(Object arbitrary);

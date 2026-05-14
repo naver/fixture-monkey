@@ -26,6 +26,9 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 /**
  * Holds a LazyArbitrary for deferred evaluation during assembly.
  * This allows lazy values to participate in the type-based priority mechanism.
@@ -35,6 +38,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
  * Field-level lazies skip the recursion guard because they are simple value suppliers
  * that do not trigger nested assembly of the same type.
  */
+@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class LazyValueHolder {
 	/**
 	 * Sentinel value returned when recursion guard blocks evaluation.

@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,9 +26,9 @@ import org.apiguardian.api.API;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "1.0.21", status = API.Status.EXPERIMENTAL)
+@API(since = "1.0.21", status = API.Status.MAINTAINED)
 public final class FunctionalInterfaceContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final FunctionalInterfaceContainerPropertyGenerator INSTANCE =
 		new FunctionalInterfaceContainerPropertyGenerator();
@@ -40,10 +39,10 @@ public final class FunctionalInterfaceContainerPropertyGenerator implements Cont
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		AnnotatedType lambdaReturnAnnotatedType = getLambdaReturnAnnotatedType(property);
+		JvmType lambdaReturnJvmType = getLambdaReturnJvmType(property);
 
 		SingleElementProperty singleElementProperty =
-			new SingleElementProperty(property, new TypeParameterProperty(lambdaReturnAnnotatedType));
+			new SingleElementProperty(property, new TypeParameterProperty(lambdaReturnJvmType));
 
 		return new ContainerProperty(
 			Collections.singletonList(singleElementProperty),
@@ -51,8 +50,8 @@ public final class FunctionalInterfaceContainerPropertyGenerator implements Cont
 		);
 	}
 
-	private AnnotatedType getLambdaReturnAnnotatedType(Property lambdaProperty) {
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(lambdaProperty.getAnnotatedType());
-		return genericsTypes.get(genericsTypes.size() - 1);
+	private JvmType getLambdaReturnJvmType(Property lambdaProperty) {
+		List<? extends JvmType> typeVariables = lambdaProperty.getJvmType().getTypeVariables();
+		return typeVariables.get(typeVariables.size() - 1);
 	}
 }

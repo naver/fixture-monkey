@@ -19,10 +19,11 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.objectfarm.api.type.JvmType
 import org.apiguardian.api.API
 import org.slf4j.LoggerFactory
 import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Type
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
@@ -33,31 +34,17 @@ data class KPropertyProperty(
     private val annotatedType: AnnotatedType,
     val kProperty: KProperty<*>,
 ) : Property {
-    override fun getType(): Type = this.annotatedType.type
+    private val cachedJvmType: JvmType = Types.toJvmType(
+        annotatedType,
+        emptyList(),
+        kProperty.returnType.isMarkedNullable,
+    )
 
-    override fun getAnnotatedType(): AnnotatedType = this.annotatedType
+    override fun getJvmType(): JvmType = cachedJvmType
 
     override fun getName(): String = this.kProperty.name
 
     override fun getAnnotations(): List<Annotation> = this.annotatedType.annotations.toList()
-
-    override fun getValue(instance: Any): Any? {
-        val javaMethod = this.kProperty.getter.javaMethod
-
-        if (javaMethod != null) {
-            javaMethod.isAccessible = true
-            return javaMethod.invoke(instance)
-        }
-
-        val javaField = this.kProperty.javaField
-        if (javaField != null) {
-            javaField.isAccessible = true
-            return javaField.get(instance)
-        }
-
-        LOGGER.warn("Failed to get value of property {} in instance {}.", this.kProperty.name, instance)
-        return null
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -68,10 +55,10 @@ data class KPropertyProperty(
         }
 
         val that = other as Property
-        return type == that.type
+        return jvmType == that.jvmType
     }
 
-    override fun hashCode(): Int = type.hashCode()
+    override fun hashCode(): Int = jvmType.hashCode()
 
     override fun isNullable(): Boolean = this.kProperty.returnType.isMarkedNullable
 

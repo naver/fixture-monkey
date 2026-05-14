@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public final class InstantiatorProcessResult {
 	private final ArbitraryIntrospector introspector;
 	private final List<Property> properties;

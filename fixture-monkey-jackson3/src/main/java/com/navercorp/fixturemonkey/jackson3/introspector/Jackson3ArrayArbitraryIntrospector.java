@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.jackson3.introspector;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -53,17 +54,22 @@ public final class Jackson3ArrayArbitraryIntrospector implements ArbitraryIntros
 
 	@Override
 	public boolean match(Property property) {
-		return Types.getActualType(property.getType()).isArray();
+		return property.getJvmType().getRawType().isArray();
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
 		TypeFactory typeFactory = TypeFactory.createDefaultInstance();
+		Class<?> componentClass = property.getJvmType().getRawType().getComponentType();
+		if (componentClass == null) {
+			throw new IllegalStateException("expected array type but got: " + property.getJvmType().getRawType());
+		}
+		Type elementRawType = componentClass;
 		JavaType elementType = typeFactory.constructType(new Jackson3TypeReference<Object>() {
 			@Override
 			public Type getType() {
-				return Types.getArrayComponentAnnotatedType(property.getAnnotatedType()).getType();
+				return elementRawType;
 			}
 		});
 

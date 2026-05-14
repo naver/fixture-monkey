@@ -22,7 +22,7 @@ import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPrope
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -43,14 +43,14 @@ class ConstructorPropertiesRecordTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleJavaType() {
 		JavaTypeRecord actual = SUT.giveMeOne(JavaTypeRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedJavaType() {
 		JavaTypeRecord actual = SUT.giveMeBuilder(JavaTypeRecord.class)
 			.fixed()
@@ -59,14 +59,14 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleDateTime() {
 		DateTimeRecord actual = SUT.giveMeOne(DateTimeRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedDateTime() {
 		DateTimeRecord actual = SUT.giveMeBuilder(DateTimeRecord.class)
 			.fixed()
@@ -75,14 +75,14 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleContainer() {
 		ContainerRecord actual = SUT.giveMeOne(ContainerRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedContainer() {
 		ContainerRecord actual = SUT.giveMeBuilder(ContainerRecord.class)
 			.fixed()
@@ -91,14 +91,14 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleInterfaceContainer() {
 		ComplexContainerRecord actual = SUT.giveMeOne(ComplexContainerRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedInterfaceContainer() {
 		ComplexContainerRecord actual = SUT.giveMeBuilder(ComplexContainerRecord.class)
 			.fixed()
@@ -107,7 +107,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleTwoConstructorsRecord() {
 		String actual = SUT.giveMeBuilder(TwoConstructorsRecord.class)
 			.setNotNull("string")
@@ -117,7 +117,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void recordShouldUseCanonicalConstructor() {
 		String expected = "expected";
 
@@ -129,7 +129,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void recordUseCompactConstructor() {
 		String expected = "expected";
 
@@ -141,7 +141,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isEqualTo("12345");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedTwoConstructorsRecord() {
 		String actual = SUT.giveMeBuilder(TwoConstructorsRecord.class)
 			.setNotNull("string")
@@ -152,14 +152,14 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleNoArgsConstructorRecord() {
 		NoArgsConstructorRecord actual = SUT.giveMeOne(NoArgsConstructorRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedNoArgsConstructorRecord() {
 		NoArgsConstructorRecord actual = SUT.giveMeBuilder(NoArgsConstructorRecord.class)
 			.fixed()
@@ -168,7 +168,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setIsPrefixPrimitiveBoolean() {
 		boolean actual = SUT.giveMeBuilder(IsPrefixBooleanRecord.class)
 			.set(javaGetter(IsPrefixBooleanRecord::isPrimitive), false)
@@ -178,7 +178,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isFalse();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setIsPrefixWrapperBoolean() {
 		boolean actual = SUT.giveMeBuilder(IsPrefixBooleanRecord.class)
 			.set(javaGetter(IsPrefixBooleanRecord::isWrapper), false)
@@ -188,7 +188,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isFalse();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setPrimitiveBoolean() {
 		boolean actual = SUT.giveMeBuilder(BooleanRecord.class)
 			.set(javaGetter(BooleanRecord::primitive), false)
@@ -198,7 +198,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isFalse();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setWrapperBoolean() {
 		boolean actual = SUT.giveMeBuilder(BooleanRecord.class)
 			.set(javaGetter(BooleanRecord::wrapper), false)
@@ -208,7 +208,7 @@ class ConstructorPropertiesRecordTest {
 		then(actual).isFalse();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleCanonicalConstructorRecord() {
 		String actual = SUT.giveMeOne(CanonicalConstructorRecord.class).string();
 

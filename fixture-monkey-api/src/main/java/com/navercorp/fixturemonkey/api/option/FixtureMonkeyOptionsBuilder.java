@@ -143,11 +143,6 @@ public final class FixtureMonkeyOptionsBuilder {
 	private DefaultMatcherOperatorContainer<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 	private List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers = new ArrayList<>();
 
-	@Nullable
-	private Object nodeTreeAdapter;
-
-	@Nullable
-	private Object adapterTracer;
 
 	@SuppressWarnings({"argument"})
 	FixtureMonkeyOptionsBuilder() {
@@ -350,7 +345,9 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder defaultNullInjectGeneratorOperator(
 		UnaryOperator<NullInjectGenerator> defaultNullInjectGeneratorOperator
 	) {
-		this.defaultNullInjectGeneratorOperator = defaultNullInjectGeneratorOperator;
+		UnaryOperator<NullInjectGenerator> previous = this.defaultNullInjectGeneratorOperator;
+		this.defaultNullInjectGeneratorOperator =
+			delegate -> defaultNullInjectGeneratorOperator.apply(previous.apply(delegate));
 		return this;
 	}
 
@@ -447,32 +444,6 @@ public final class FixtureMonkeyOptionsBuilder {
 
 	public FixtureMonkeyOptionsBuilder plugin(Plugin plugin) {
 		plugin.accept(this);
-		return this;
-	}
-
-	/**
-	 * Sets the node tree adapter for tree-based object generation.
-	 * This is typically set via JavaNodeTreeAdapterPlugin or KotlinNodeTreeAdapterPlugin.
-	 *
-	 * @param nodeTreeAdapter the adapter instance (type: NodeTreeAdapter)
-	 * @return this builder
-	 */
-	@API(since = "1.1.0", status = Status.EXPERIMENTAL)
-	public FixtureMonkeyOptionsBuilder nodeTreeAdapter(@Nullable Object nodeTreeAdapter) {
-		this.nodeTreeAdapter = nodeTreeAdapter;
-		return this;
-	}
-
-	/**
-	 * Sets the adapter tracer for debugging tree resolution.
-	 * This is typically set via JavaNodeTreeAdapterPlugin or KotlinNodeTreeAdapterPlugin.
-	 *
-	 * @param adapterTracer the tracer instance (type: AdapterTracer)
-	 * @return this builder
-	 */
-	@API(since = "1.1.0", status = Status.EXPERIMENTAL)
-	public FixtureMonkeyOptionsBuilder adapterTracer(@Nullable Object adapterTracer) {
-		this.adapterTracer = adapterTracer;
 		return this;
 	}
 
@@ -724,9 +695,7 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.candidateConcretePropertyResolvers,
 			this.enableLoggingFail,
 			this.maxRecursionDepth,
-			this.builderContextInitializers,
-			this.nodeTreeAdapter,
-			this.adapterTracer
+			this.builderContextInitializers
 		);
 	}
 

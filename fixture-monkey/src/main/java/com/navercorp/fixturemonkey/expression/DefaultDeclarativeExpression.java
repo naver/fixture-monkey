@@ -18,87 +18,63 @@
 
 package com.navercorp.fixturemonkey.expression;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodeAllElementPredicate;
-import com.navercorp.fixturemonkey.tree.NodeElementPredicate;
-import com.navercorp.fixturemonkey.tree.NodeKeyPredicate;
-import com.navercorp.fixturemonkey.tree.NodeValuePredicate;
-import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
-import com.navercorp.fixturemonkey.tree.StartNodePredicate;
+import com.navercorp.objectfarm.api.expression.PathExpression;
 
 /**
- * It is a default implementation of {@link DeclarativeExpression}.
+ * Default implementation of {@link DeclarativeExpression}. Each builder call returns a new
+ * instance carrying the accumulated {@link PathExpression}.
  */
+@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class DefaultDeclarativeExpression implements DeclarativeExpression {
-	private final List<NextNodePredicate> nestedNextNodePredicates;
+	private final PathExpression path;
 
 	/**
-	 * It is for internal use only.
-	 * It may be removed or changed in a future release.
+	 * It is for internal use only. May be removed or changed in a future release.
 	 */
 	@Deprecated
 	public DefaultDeclarativeExpression() {
-		this.nestedNextNodePredicates = Collections.singletonList(StartNodePredicate.INSTANCE);
+		this(PathExpression.root());
 	}
 
-	DefaultDeclarativeExpression(List<NextNodePredicate> nestedNextNodePredicates) {
-		this.nestedNextNodePredicates = nestedNextNodePredicates;
+	DefaultDeclarativeExpression(PathExpression path) {
+		this.path = path;
 	}
 
 	@Override
 	public DefaultDeclarativeExpression property(String propertyName) {
-		List<NextNodePredicate> copied = new ArrayList<>(this.nestedNextNodePredicates);
-		copied.add(new PropertyNameNodePredicate(propertyName));
-		return new DefaultDeclarativeExpression(copied);
+		return new DefaultDeclarativeExpression(path.child(propertyName));
 	}
 
 	@Override
 	public DefaultDeclarativeExpression element(int sequence) {
-		List<NextNodePredicate> copied = new ArrayList<>(this.nestedNextNodePredicates);
-		copied.add(new NodeElementPredicate(sequence));
-		return new DefaultDeclarativeExpression(copied);
+		return new DefaultDeclarativeExpression(path.index(sequence));
 	}
 
 	@Override
 	public DefaultDeclarativeExpression allElement() {
-		List<NextNodePredicate> copied = new ArrayList<>(this.nestedNextNodePredicates);
-		copied.add(new NodeAllElementPredicate());
-		return new DefaultDeclarativeExpression(copied);
+		return new DefaultDeclarativeExpression(path.wildcard());
 	}
 
 	@Override
 	public DefaultDeclarativeExpression key() {
-		List<NextNodePredicate> copied = new ArrayList<>(this.nestedNextNodePredicates);
-		copied.add(new NodeKeyPredicate());
-		return new DefaultDeclarativeExpression(copied);
+		return new DefaultDeclarativeExpression(path.key());
 	}
 
 	@Override
 	public DefaultDeclarativeExpression value() {
-		List<NextNodePredicate> copied = new ArrayList<>(this.nestedNextNodePredicates);
-		copied.add(new NodeValuePredicate());
-		return new DefaultDeclarativeExpression(copied);
+		return new DefaultDeclarativeExpression(path.value());
 	}
 
 	@API(since = "1.1.10", status = Status.INTERNAL)
 	public DefaultDeclarativeExpression prepend(DefaultDeclarativeExpression parentDeclarativeExpression) {
-		List<NextNodePredicate> concat = new ArrayList<>(parentDeclarativeExpression.getNestedNextNodePredicates());
-		concat.addAll(this.getNestedNextNodePredicates().stream()
-			.filter(it -> !(it instanceof StartNodePredicate))
-			.collect(Collectors.toList()));
-		return new DefaultDeclarativeExpression(concat);
+		return new DefaultDeclarativeExpression(parentDeclarativeExpression.path.append(this.path));
 	}
 
 	@API(since = "1.1.10", status = Status.INTERNAL)
-	public List<NextNodePredicate> getNestedNextNodePredicates() {
-		return nestedNextNodePredicates;
+	public PathExpression getPath() {
+		return path;
 	}
 }

@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.adapter;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -43,19 +43,17 @@ class ValueProjectionMiscTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void sampleNotGeneratingStaticField() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(StaticFieldObject.class));
 	}
 
-	@Property
+	@Test
 	void sampleWithMonkeyStringArbitrary() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTypeArbitraryGenerator(
 					new JavaTypeArbitraryGenerator() {
@@ -75,11 +73,10 @@ class ValueProjectionMiscTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void filterWithMonkeyStringArbitrary() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTypeArbitraryGenerator(
 					new JavaTypeArbitraryGenerator() {
@@ -99,10 +96,10 @@ class ValueProjectionMiscTest {
 		then(actual).isUpperCase();
 	}
 
-	@Property
+	@Test
 	void filterIsoControlCharacterWithMonkeyStringArbitrary() {
 		// given
-		FixtureMonkey sut = FixtureMonkey.builder().plugin(new JavaNodeTreeAdapterPlugin()).build();
+		FixtureMonkey sut = FixtureMonkey.builder().build();
 
 		// when
 		String actual = sut.giveMeOne(String.class);
@@ -118,13 +115,12 @@ class ValueProjectionMiscTest {
 		});
 	}
 
-	@Property
+	@Test
 	void sampleConstructorBasedTypeWithDefaultNotNull() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		// when
@@ -137,13 +133,12 @@ class ValueProjectionMiscTest {
 		then(actual.getFirstPayMethod().getPayMethodType()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleNullableConstructorParamWithDefaultNotNull() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		// when
@@ -157,11 +152,10 @@ class ValueProjectionMiscTest {
 		}
 	}
 
-	@Property
+	@Test
 	void multipleFiltersWithMonkeyStringArbitrary() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTypeArbitraryGenerator(
 					new JavaTypeArbitraryGenerator() {
@@ -190,13 +184,12 @@ class ValueProjectionMiscTest {
 		});
 	}
 
-	@Property
+	@Test
 	void registerLazyShouldPreserveNullFieldsAfterDecompose() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.register(StringAndInt.class, fixture -> fixture.giveMeBuilder(StringAndInt.class)
 				.setLazy("$", () -> {
 					StringAndInt obj = new StringAndInt();
@@ -219,7 +212,7 @@ class ValueProjectionMiscTest {
 		}
 	}
 
-	@Property
+	@Test
 	void setRootWithNullFieldShouldPreserveNull() {
 		// given
 		StringAndInt value = new StringAndInt();
@@ -238,7 +231,7 @@ class ValueProjectionMiscTest {
 		then(actual.getValue2()).isNull();
 	}
 
-	@Property
+	@Test
 	void setRootWithAllNullFieldsShouldPreserveNulls() {
 		// given
 		StringAndInt value = new StringAndInt();
@@ -253,7 +246,7 @@ class ValueProjectionMiscTest {
 		then(actual.getValue2()).isNull();
 	}
 
-	@Property
+	@Test
 	void setRootWithNullFieldAndChildOverrideShouldOverrideOnly() {
 		// given
 		StringAndInt value = new StringAndInt();
@@ -270,13 +263,12 @@ class ValueProjectionMiscTest {
 		then(actual.getValue2().getValue()).isEqualTo(42);
 	}
 
-	@Property
+	@Test
 	void registerThenApplyWithFieldLevelSetLazyShouldNotBeBlockedByRecursionGuard() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.register(StringPair.class, fixture -> fixture.giveMeBuilder(StringPair.class)
 				.thenApply((it, builder) -> builder.set("value2", it.getValue1() + "_suffix"))
 				.setLazy("value1", () -> "fixed")
@@ -293,13 +285,12 @@ class ValueProjectionMiscTest {
 		}
 	}
 
-	@Property
+	@Test
 	void registerNestedTypeBothWithThenApplyAndFieldSetLazy() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.register(StringAndInt.class, fixture -> fixture.giveMeBuilder(StringAndInt.class)
 				.thenApply((it, builder) -> {
 					if (it.getValue1() != null) {
@@ -322,13 +313,12 @@ class ValueProjectionMiscTest {
 		}
 	}
 
-	@Property
+	@Test
 	void registerFieldSetLazyOnlyNoThenApplyShouldWork() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.register(StringPair.class, fixture -> fixture.giveMeBuilder(StringPair.class)
 				.setLazy("value1", () -> "lazy1")
 				.setLazy("value2", () -> "lazy2")
@@ -345,13 +335,12 @@ class ValueProjectionMiscTest {
 		}
 	}
 
-	@Property
+	@Test
 	void registerTwoTypesWithCrossReferenceThenApply() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.register(StringValue.class, fixture -> fixture.giveMeBuilder(StringValue.class)
 				.setLazy("value", () -> "sv_fixed")
 			)
@@ -376,7 +365,7 @@ class ValueProjectionMiscTest {
 		}
 	}
 
-	@Property
+	@Test
 	void setNestedObjectWithNullFieldShouldPreserveNull() {
 		// given
 		SimpleObject value = new SimpleObject();

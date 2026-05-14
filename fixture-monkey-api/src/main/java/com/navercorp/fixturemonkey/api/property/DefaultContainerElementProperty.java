@@ -19,9 +19,7 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,6 +33,7 @@ import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "1.1.6", status = Status.EXPERIMENTAL)
 public final class DefaultContainerElementProperty extends ElementProperty implements ContainerElementProperty {
@@ -50,7 +49,7 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 		@Nullable Integer index,
 		int sequence
 	) {
-		super(containerProperty, elementProperty.getAnnotatedType(), index, sequence);
+		super(containerProperty, elementProperty.getJvmType(), index, sequence);
 		this.containerProperty = containerProperty;
 		this.elementProperty = elementProperty;
 		this.index = index;
@@ -79,13 +78,8 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 	}
 
 	@Override
-	public Type getType() {
-		return this.elementProperty.getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.elementProperty.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.elementProperty.getJvmType();
 	}
 
 	@Nullable
@@ -97,38 +91,6 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 	@Override
 	public List<Annotation> getAnnotations() {
 		return this.elementProperty.getAnnotations();
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		// TODO: should split as a implementation of ContainerElementProperty
-		Class<?> actualType = Types.getActualType(instance.getClass());
-		if (isOptional(actualType)) {
-			return getOptionalValue(instance);
-		}
-
-		if (actualType.isArray()) {
-			if (Array.getLength(instance) == 0) {
-				return null;
-			}
-
-			return Array.get(instance, sequence);
-		}
-
-		if (List.class.isAssignableFrom(actualType)) {
-			List<?> list = (List<?>)instance;
-			if (list.isEmpty()) {
-				return null;
-			}
-			return list.get(sequence);
-		}
-
-		if (Supplier.class.isAssignableFrom(actualType)) {
-			return instance;
-		}
-
-		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
 	}
 
 	private boolean isOptional(Class<?> type) {

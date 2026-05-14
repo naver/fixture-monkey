@@ -25,6 +25,10 @@ import java.nio.file.Paths;
 
 import org.jspecify.annotations.Nullable;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class SeedFileLoader {
 	private static final String DEFAULT_SEED_FILE_NAME = ".fixture-monkey-seed";
 

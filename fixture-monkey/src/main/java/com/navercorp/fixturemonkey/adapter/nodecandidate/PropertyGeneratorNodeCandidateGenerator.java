@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -44,6 +45,7 @@ import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.MethodInvocationCreationMethod;
+import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -75,7 +77,6 @@ public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCan
 		}
 
 		Property property = JvmNodePropertyFactory.fromType(jvmType);
-		AnnotatedType parentAnnotatedType = property.getAnnotatedType();
 
 		List<Property> childProperties = propertyGenerator.generateChildProperties(property);
 		if (childProperties == null || childProperties.isEmpty()) {
@@ -84,18 +85,13 @@ public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCan
 
 		List<JvmNodeCandidate> result = new ArrayList<>(childProperties.size());
 		for (int i = 0; i < childProperties.size(); i++) {
-			result.add(toNodeCandidate(parentAnnotatedType, childProperties.get(i), i));
+			result.add(toNodeCandidate(childProperties.get(i), i));
 		}
 		return result;
 	}
 
-	private JvmNodeCandidate toNodeCandidate(AnnotatedType parentAnnotatedType, Property property, int index) {
-		// Resolve type variables in the child property's type against the parent's type
-		AnnotatedType resolvedType = Types.resolveWithTypeReferenceGenerics(
-			parentAnnotatedType,
-			property.getAnnotatedType()
-		);
-		JvmType jvmType = Types.toJvmType(resolvedType, property.getAnnotations());
+	private JvmNodeCandidate toNodeCandidate(Property property, int index) {
+		JvmType jvmType = property.getJvmType();
 		String name = property.getName();
 		if (name == null) {
 			name = "";

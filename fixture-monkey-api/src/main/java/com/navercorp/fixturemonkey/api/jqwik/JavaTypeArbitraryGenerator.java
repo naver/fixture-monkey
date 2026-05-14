@@ -35,7 +35,7 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface JavaTypeArbitraryGenerator {
 
 	default StringArbitrary strings() {

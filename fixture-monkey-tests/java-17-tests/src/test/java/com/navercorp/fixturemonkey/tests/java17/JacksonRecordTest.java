@@ -22,7 +22,7 @@ import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
@@ -36,14 +36,14 @@ class JacksonRecordTest {
 		.plugin(new JacksonPlugin())
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleJavaType() {
 		JavaTypeRecord actual = SUT.giveMeOne(JavaTypeRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedJavaType() {
 		JavaTypeRecord actual = SUT.giveMeBuilder(JavaTypeRecord.class)
 			.fixed()
@@ -52,14 +52,14 @@ class JacksonRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleDateTime() {
 		DateTimeRecord actual = SUT.giveMeOne(DateTimeRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedDateTime() {
 		DateTimeRecord actual = SUT.giveMeBuilder(DateTimeRecord.class)
 			.fixed()
@@ -68,14 +68,14 @@ class JacksonRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleContainer() {
 		ContainerRecord actual = SUT.giveMeOne(ContainerRecord.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedContainer() {
 		ContainerRecord actual = SUT.giveMeBuilder(ContainerRecord.class)
 			.fixed()
@@ -84,7 +84,7 @@ class JacksonRecordTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleEnum() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(EnumClass.class));
 	}

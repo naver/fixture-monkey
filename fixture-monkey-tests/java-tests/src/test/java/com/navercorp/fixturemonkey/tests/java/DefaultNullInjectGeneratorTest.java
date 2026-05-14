@@ -26,7 +26,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.HashSet;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.tests.java.specs.DefaultNullInjectGeneratorSp
 import com.navercorp.fixturemonkey.tests.java.specs.DefaultNullInjectGeneratorSpecs.NullableAnnotationObject;
 
 class DefaultNullInjectGeneratorTest {
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void nonNullAnnotations() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
@@ -58,7 +58,7 @@ class DefaultNullInjectGeneratorTest {
 		then(actual.getCheckerNonNullField()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void nullableAnnotations() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)

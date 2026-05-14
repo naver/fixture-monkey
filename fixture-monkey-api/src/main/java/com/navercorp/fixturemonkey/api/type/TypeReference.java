@@ -23,13 +23,25 @@ import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWi
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+import com.navercorp.objectfarm.api.type.JvmType;
+
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public abstract class TypeReference<T> {
 	private final AnnotatedType annotatedType;
+	// Lazy because Types.toTypeReference produces anonymous subclasses that override getAnnotatedType()
+	// to return a value different from the field captured by the parent constructor. Computing jvmType
+	// eagerly in the constructor would cache the field-derived (wrong) value, bypassing the override.
+	// Deferring to first access also avoids invoking an overridable method during super construction,
+	// which is unsafe before subclass initialization completes.
+	private volatile @Nullable JvmType jvmType;
+	private final ReentrantLock jvmTypeLock = new ReentrantLock();
 
 	protected TypeReference() {
 		AnnotatedType annotatedType = getClass().getAnnotatedSuperclass();
@@ -46,6 +58,24 @@ public abstract class TypeReference<T> {
 
 	public AnnotatedType getAnnotatedType() {
 		return this.annotatedType;
+	}
+
+	public JvmType getJvmType() {
+		JvmType cached = this.jvmType;
+		if (cached != null) {
+			return cached;
+		}
+		jvmTypeLock.lock();
+		try {
+			cached = this.jvmType;
+			if (cached == null) {
+				cached = Types.toJvmType(getAnnotatedType(), Collections.emptyList());
+				this.jvmType = cached;
+			}
+			return cached;
+		} finally {
+			jvmTypeLock.unlock();
+		}
 	}
 
 	public boolean isGenericType() {

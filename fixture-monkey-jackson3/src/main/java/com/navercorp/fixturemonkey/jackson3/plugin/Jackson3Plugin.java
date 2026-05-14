@@ -109,7 +109,7 @@ public final class Jackson3Plugin implements Plugin {
 					new MatcherOperator<>(
 						property -> getJacksonAnnotation(property, JsonSubTypes.class) != null
 							&& isNotJavaContainerType(property)
-							&& Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
+							&& Modifier.isAbstract(property.getJvmType().getRawType().getModifiers()),
 						Jackson3PropertyJsonSubTypesConcreteTypeResolver.INSTANCE
 					)
 				)
@@ -119,7 +119,7 @@ public final class Jackson3Plugin implements Plugin {
 							&& getJacksonAnnotation(((ContainerElementProperty)property).getContainerProperty(),
 							JsonSubTypes.class
 						) != null
-							&& Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
+							&& Modifier.isAbstract(property.getJvmType().getRawType().getModifiers()),
 						Jackson3ElementJsonSubTypesConcreteTypeResolver.INSTANCE
 					)
 				);
@@ -137,7 +137,7 @@ public final class Jackson3Plugin implements Plugin {
 	}
 
 	private static boolean isNotJavaContainerType(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 		return !Collection.class.isAssignableFrom(actualType);
 	}
 }

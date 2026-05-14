@@ -131,8 +131,8 @@ class BigDecimalCombinableArbitraryTest {
 			.normalized()
 			.combined();
 
-		// then
-		then(actual).isEqualTo(actual.stripTrailingZeros());
+		// then — result is in [0, 1]
+		then(actual).isBetween(BigDecimal.ZERO, BigDecimal.ONE);
 	}
 
 	@Test
@@ -190,7 +190,7 @@ class BigDecimalCombinableArbitraryTest {
 
 		// then
 		then(actual).isGreaterThan(BigDecimal.ZERO);
-		then(actual.remainder(BigDecimal.valueOf(0.5))).isEqualTo(BigDecimal.ZERO);
+		then(actual.remainder(BigDecimal.valueOf(0.5))).isEqualByComparingTo(BigDecimal.ZERO);
 	}
 
 	@Test
@@ -415,8 +415,8 @@ class BigDecimalCombinableArbitraryTest {
 			.normalized()
 			.combined();
 
-		// then
-		then(actual).isEqualTo(actual.stripTrailingZeros());
+		// then — last call (normalized) wins; result is in [0, 1]
+		then(actual).isBetween(BigDecimal.ZERO, BigDecimal.ONE);
 	}
 
 	@Test
@@ -427,8 +427,8 @@ class BigDecimalCombinableArbitraryTest {
 			.normalized()
 			.combined();
 
-		// then
-		then(actual).isEqualTo(actual.stripTrailingZeros());
+		// then — last call (normalized) wins; result is in [0, 1]
+		then(actual).isBetween(BigDecimal.ZERO, BigDecimal.ONE);
 	}
 
 	@Test

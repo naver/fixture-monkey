@@ -41,7 +41,6 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.single
 import io.kotest.property.arbs.geo.zipcodes
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -58,7 +57,7 @@ import javax.validation.constraints.PositiveOrZero
 import javax.validation.constraints.Size
 
 class KotestInJunitTest {
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleStringWithSize() {
         class StringObject(@field:Size(min = 10, max = 20) val value: String)
 
@@ -67,7 +66,7 @@ class KotestInJunitTest {
         then(actual).hasSizeBetween(10, 20)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleStringWithNotEmpty() {
         class StringObject(@field:NotEmpty val value: String)
 
@@ -76,7 +75,7 @@ class KotestInJunitTest {
         then(actual).isNotEmpty()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithNegative() {
         class ShortObject(@field:Negative val value: Short)
 
@@ -85,7 +84,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithNegativeOrZero() {
         class ShortObject(@field:NegativeOrZero val value: Short)
 
@@ -94,7 +93,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithPositive() {
         class ShortObject(@field:Positive val value: Short)
 
@@ -103,7 +102,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithPositiveOrZero() {
         class ShortObject(@field:PositiveOrZero val value: Short)
 
@@ -112,7 +111,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithMin() {
         class ShortObject(@field:Min(10) val value: Short)
 
@@ -121,7 +120,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithDecimalMin() {
         class ShortObject(@field:DecimalMin("10") val value: Short)
 
@@ -130,7 +129,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithMax() {
         class ShortObject(@field:Max(50) val value: Short)
 
@@ -139,7 +138,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithDecimalMax() {
         class ShortObject(@field:DecimalMax("50") val value: Short)
 
@@ -148,7 +147,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleShortWithDigits() {
         class ShortObject(@field:Digits(integer = 2, fraction = 0) val value: Short)
 
@@ -157,7 +156,7 @@ class KotestInJunitTest {
         then(actual).matches { it in -99..99 }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithNegative() {
         class ByteObject(@field:Negative val value: Byte)
 
@@ -166,7 +165,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithNegativeOrZero() {
         class ByteObject(@field:NegativeOrZero val value: Byte)
 
@@ -175,7 +174,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithPositive() {
         class ByteObject(@field:Positive val value: Byte)
 
@@ -184,7 +183,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithPositiveOrZero() {
         class ByteObject(@field:PositiveOrZero val value: Byte)
 
@@ -193,7 +192,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithMin() {
         class ByteObject(@field:Min(10) val value: Byte)
 
@@ -202,7 +201,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithDecimalMin() {
         class ByteObject(@field:DecimalMin("10") val value: Byte)
 
@@ -211,7 +210,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithMax() {
         class ByteObject(@field:Max(50) val value: Byte)
 
@@ -220,7 +219,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithDecimalMax() {
         class ByteObject(@field:DecimalMax("50") val value: Byte)
 
@@ -229,7 +228,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByteWithDigits() {
         class ByteObject(@field:Digits(integer = 2, fraction = 0) val value: Byte)
 
@@ -238,7 +237,7 @@ class KotestInJunitTest {
         then(actual).matches { it in -99..99 }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithNegative() {
         class DoubleObject(@field:Negative val value: Double)
 
@@ -247,7 +246,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithNegativeOrZero() {
         class DoubleObject(@field:NegativeOrZero val value: Double)
 
@@ -256,7 +255,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(0.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithPositive() {
         class DoubleObject(@field:Positive val value: Double)
 
@@ -265,7 +264,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithPositiveOrZero() {
         class DoubleObject(@field:PositiveOrZero val value: Double)
 
@@ -274,7 +273,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithMin() {
         class DoubleObject(@field:Min(10) val value: Double)
 
@@ -283,7 +282,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithDecimalMin() {
         class DoubleObject(@field:DecimalMin("10") val value: Double)
 
@@ -292,7 +291,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithMax() {
         class DoubleObject(@field:Max(50) val value: Double)
 
@@ -301,7 +300,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithDecimalMax() {
         class DoubleObject(@field:DecimalMax("50") val value: Double)
 
@@ -310,7 +309,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithDigits() {
         class DoubleObject(@field:Digits(integer = 2, fraction = 0) val value: Double)
 
@@ -319,7 +318,7 @@ class KotestInJunitTest {
         then(actual).matches { it in -99.0..99.0 }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithEqualMinMax() {
         class DoubleObject(
             @field:DecimalMin("10.0") @field:DecimalMax("10.0")
@@ -330,7 +329,7 @@ class KotestInJunitTest {
         then(actual).isEqualTo(10.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithMultipleConstraints() {
         class DoubleObject(
             @field:DecimalMax("11.5") @field:Max(10)
@@ -341,7 +340,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(10.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleDoubleWithPreciseExclusiveBounds() {
         class DoubleObject(
             @field:DecimalMin(value = "10.0", inclusive = false)
@@ -356,7 +355,7 @@ class KotestInJunitTest {
             .isLessThan(10.1)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithNegative() {
         class FloatObject(@field:Negative val value: Float)
 
@@ -365,7 +364,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithNegativeOrZero() {
         class FloatObject(@field:NegativeOrZero val value: Float)
 
@@ -374,7 +373,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(0.0f)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithPositive() {
         class FloatObject(@field:Positive val value: Float)
 
@@ -383,7 +382,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithPositiveOrZero() {
         class FloatObject(@field:PositiveOrZero val value: Float)
 
@@ -392,7 +391,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0.0f)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithMin() {
         class FloatObject(@field:Min(10) val value: Float)
 
@@ -401,7 +400,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10.0f)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithDecimalMin() {
         class FloatObject(@field:DecimalMin("10") val value: Float)
 
@@ -410,7 +409,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10.0f)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithMax() {
         class FloatObject(@field:Max(50) val value: Float)
 
@@ -419,7 +418,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50.0f)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithDecimalMax() {
         class FloatObject(@field:DecimalMax("50") val value: Float)
 
@@ -428,7 +427,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50.0f)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithDigits() {
         class FloatObject(@field:Digits(integer = 2, fraction = 0) val value: Float)
 
@@ -437,7 +436,7 @@ class KotestInJunitTest {
         then(actual).matches { it in -99.0..99.0 }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithEqualMinMax() {
         class DoubleObject(
             @field:DecimalMin("10.0") @field:DecimalMax("10.0")
@@ -448,7 +447,7 @@ class KotestInJunitTest {
         then(actual).isEqualTo(10.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithMultipleConstraints() {
         class DoubleObject(
             @field:DecimalMax("11.5") @field:Max(10)
@@ -459,7 +458,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(10.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleFloatWithPreciseExclusiveBounds() {
         class FloatObject(
             @field:DecimalMin(value = "10.0", inclusive = false)
@@ -474,7 +473,7 @@ class KotestInJunitTest {
             .isLessThan(10.1f)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithNegative() {
         class IntObject(@field:Negative val value: Int)
 
@@ -483,7 +482,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithNegativeOrZero() {
         class IntObject(@field:NegativeOrZero val value: Int)
 
@@ -492,7 +491,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithPositive() {
         class IntObject(@field:Positive val value: Int)
 
@@ -501,7 +500,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithPositiveOrZero() {
         class IntObject(@field:PositiveOrZero val value: Int)
 
@@ -510,7 +509,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithMin() {
         class IntObject(@field:Min(10) val value: Int)
 
@@ -519,7 +518,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithDecimalMin() {
         class IntObject(@field:DecimalMin("10") val value: Int)
 
@@ -528,7 +527,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithMax() {
         class IntObject(@field:Max(50) val value: Int)
 
@@ -537,7 +536,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithDecimalMax() {
         class IntObject(@field:DecimalMax("50") val value: Int)
 
@@ -546,7 +545,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleIntWithDigits() {
         class IntObject(@field:Digits(integer = 2, fraction = 0) val value: Int)
 
@@ -555,7 +554,7 @@ class KotestInJunitTest {
         then(actual).matches { it in -99..99 }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithNegative() {
         class LongObject(@field:Negative val value: Long)
 
@@ -564,7 +563,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithNegativeOrZero() {
         class LongObject(@field:NegativeOrZero val value: Long)
 
@@ -573,7 +572,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithPositive() {
         class LongObject(@field:Positive val value: Long)
 
@@ -582,7 +581,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithPositiveOrZero() {
         class LongObject(@field:PositiveOrZero val value: Long)
 
@@ -591,7 +590,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithMin() {
         class LongObject(@field:Min(10) val value: Long)
 
@@ -600,7 +599,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithDecimalMin() {
         class LongObject(@field:DecimalMin("10") val value: Long)
 
@@ -609,7 +608,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(10)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithMax() {
         class LongObject(@field:Max(50) val value: Long)
 
@@ -618,7 +617,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithDecimalMax() {
         class LongObject(@field:DecimalMax("50") val value: Long)
 
@@ -627,7 +626,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(50)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleLongWithDigits() {
         class LongObject(@field:Digits(integer = 2, fraction = 0) val value: Long)
 
@@ -636,7 +635,7 @@ class KotestInJunitTest {
         then(actual).matches { it in -99L..99L }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithNegative() {
         class BigIntegerObject(@field:Negative val value: BigInteger)
 
@@ -645,7 +644,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithNegativeOrZero() {
         class BigIntegerObject(@field:NegativeOrZero val value: BigInteger)
 
@@ -654,7 +653,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(BigInteger.ZERO)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithPositive() {
         class BigIntegerObject(@field:Positive val value: BigInteger)
 
@@ -663,7 +662,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithPositiveOrZero() {
         class BigIntegerObject(@field:PositiveOrZero val value: BigInteger)
 
@@ -672,7 +671,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(BigInteger.ZERO)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithMin() {
         class BigIntegerObject(@field:Min(10) val value: BigInteger)
 
@@ -681,7 +680,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(BigInteger.valueOf(10))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithDecimalMin() {
         class BigIntegerObject(@field:DecimalMin("10") val value: BigInteger)
 
@@ -690,7 +689,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(BigInteger.valueOf(10))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithMax() {
         class BigIntegerObject(@field:Max(50) val value: BigInteger)
 
@@ -699,7 +698,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(BigInteger.valueOf(50))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithDecimalMax() {
         class BigIntegerObject(@field:DecimalMax("50") val value: BigInteger)
 
@@ -708,7 +707,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(BigInteger.valueOf(50))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigIntegerWithDigits() {
         class BigIntegerObject(@field:Digits(integer = 2, fraction = 0) val value: BigInteger)
 
@@ -719,7 +718,7 @@ class KotestInJunitTest {
         }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithNegative() {
         class BigDecimalObject(@field:Negative val value: BigDecimal)
 
@@ -728,7 +727,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithNegativeOrZero() {
         class BigDecimalObject(@field:NegativeOrZero val value: BigDecimal)
 
@@ -737,7 +736,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(BigDecimal.ZERO)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithPositive() {
         class BigDecimalObject(@field:Positive val value: BigDecimal)
 
@@ -746,7 +745,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithPositiveOrZero() {
         class BigDecimalObject(@field:PositiveOrZero val value: BigDecimal)
 
@@ -755,7 +754,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(BigDecimal.ZERO)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithMin() {
         class BigDecimalObject(@field:Min(10) val value: BigDecimal)
 
@@ -764,7 +763,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(BigDecimal.valueOf(10L))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithDecimalMin() {
         class BigDecimalObject(@field:DecimalMin("10") val value: BigDecimal)
 
@@ -773,7 +772,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(BigDecimal.valueOf(10L))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithMax() {
         class BigDecimalObject(@field:Max(50) val value: BigDecimal)
 
@@ -782,7 +781,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(50L))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithDecimalMax() {
         class BigDecimalObject(@field:DecimalMax("50") val value: BigDecimal)
 
@@ -791,7 +790,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(50L))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithDigits() {
         class BigDecimalObject(@field:Digits(integer = 2, fraction = 0) val value: BigDecimal)
 
@@ -802,7 +801,7 @@ class KotestInJunitTest {
         }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithEqualMinMax() {
         class BigDecimalObject(
             @field:DecimalMin("10.00") @field:DecimalMax("10.00")
@@ -813,7 +812,7 @@ class KotestInJunitTest {
         then(actual).isEqualByComparingTo(BigDecimal("10.00"))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithMultipleConstraints() {
         class BigDecimalObject(
             @field:DecimalMax("11.5") @field:Max(10)
@@ -824,7 +823,7 @@ class KotestInJunitTest {
         then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(10))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleBigDecimalWithPreciseExclusiveBounds() {
         class BigDecimalObject(
             @field:DecimalMin(value = "10.0", inclusive = false)
@@ -839,7 +838,7 @@ class KotestInJunitTest {
             .isLessThan(BigDecimal("10.1"))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setPostConditionExtension() {
         class StringObject(val string: String)
 
@@ -853,7 +852,7 @@ class KotestInJunitTest {
         then(actual).hasSizeLessThan(5)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleMinZeroInteger() {
         class IntegerObject(@field:Min(0L) val value: Int)
 
@@ -862,7 +861,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleMinZeroDecimal() {
         class DecimalObject(@field:Min(0L) val value: Double)
 
@@ -871,7 +870,7 @@ class KotestInJunitTest {
         then(actual).isGreaterThanOrEqualTo(0.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleSetArb() {
         class StringObject(val string: String)
 
@@ -889,35 +888,35 @@ class KotestInJunitTest {
         then(actual).isInstanceOf(KotestIntegerCombinableArbitrary::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.integers().positive().combined()
 
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryNegative() {
         val actual = CombinableArbitrary.integers().negative().combined()
 
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryEven() {
         val actual = CombinableArbitrary.integers().even().combined()
 
         then(actual).isEven()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryOdd() {
         val actual = CombinableArbitrary.integers().odd().combined()
 
         then(actual).isOdd()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.integers().withRange(10, 20).combined()
 
@@ -931,42 +930,42 @@ class KotestInJunitTest {
         then(actual).isInstanceOf(KotestByteCombinableArbitrary::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.bytes().positive().combined()
 
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryNegative() {
         val actual = CombinableArbitrary.bytes().negative().combined()
 
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryEven() {
         val actual = CombinableArbitrary.bytes().even().combined()
 
         then(actual % 2).isEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryOdd() {
         val actual = CombinableArbitrary.bytes().odd().combined()
 
         then(actual % 2 != 0).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryAscii() {
         val actual = CombinableArbitrary.bytes().ascii().combined()
 
         then(actual).isBetween(0.toByte(), 127.toByte())
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.bytes().withRange(10.toByte(), 20.toByte()).combined()
 
@@ -980,56 +979,56 @@ class KotestInJunitTest {
         then(actual).isInstanceOf(KotestLongCombinableArbitrary::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.longs().positive().combined()
 
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryNegative() {
         val actual = CombinableArbitrary.longs().negative().combined()
 
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryEven() {
         val actual = CombinableArbitrary.longs().even().combined()
 
         then(actual % 2).isEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryOdd() {
         val actual = CombinableArbitrary.longs().odd().combined()
 
         then(actual % 2 != 0.toLong()).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.longs().withRange(10L, 20L).combined()
 
         then(actual).isBetween(10L, 20L)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryNonZero() {
         val actual = CombinableArbitrary.longs().nonZero().combined()
 
         then(actual).isNotEqualTo(0L)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryMultipleOf() {
         val actual = CombinableArbitrary.longs().multipleOf(7L).combined()
 
         then(actual % 7L).isEqualTo(0L)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryNonZeroWithRange() {
         // withRange(-5L, 5L).nonZero() => nonZero()
         val actual = CombinableArbitrary.longs().withRange(-5L, 5L).nonZero().combined()
@@ -1037,7 +1036,7 @@ class KotestInJunitTest {
         then(actual).isNotEqualTo(0L)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryMultipleOfWithPositiveAndRange() {
         // positive().withRange(1L, 50L).multipleOf(3L) => multipleOf(3L)
         val actual = CombinableArbitrary.longs()
@@ -1049,7 +1048,7 @@ class KotestInJunitTest {
         then(actual % 3L).isEqualTo(0L)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryLastMethodWinsWithPositiveAndNegative() {
         // positive().negative() => negative()
         val actual = CombinableArbitrary.longs().positive().negative().combined()
@@ -1057,7 +1056,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryLastMethodWinsWithEvenAndOdd() {
         // even().odd() => odd()
         val actual = CombinableArbitrary.longs().even().odd().combined()
@@ -1065,7 +1064,7 @@ class KotestInJunitTest {
         then(actual.toInt() % 2 != 0).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun longCombinableArbitraryLastMethodWinsWithNegativeAndRange() {
         // negative().withRange() => withRange()
         val actual = CombinableArbitrary.longs().negative().withRange(100L, 1000L).combined()
@@ -1081,34 +1080,34 @@ class KotestInJunitTest {
         then(actual).isInstanceOf(KotestShortCombinableArbitrary::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun shortCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.shorts().positive().combined()
 
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun shortCombinableArbitraryNegative() {
         val actual = CombinableArbitrary.shorts().negative().combined()
 
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun shortCombinableArbitraryEven() {
         val actual = CombinableArbitrary.shorts().even().combined()
 
         then(actual % 2).isEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun shortCombinableArbitraryOdd() {
         val actual = CombinableArbitrary.shorts().odd().combined()
         then(actual % 2 != 0).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun shortCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.shorts().withRange(10.toShort(), 20.toShort()).combined()
 
@@ -1122,63 +1121,63 @@ class KotestInJunitTest {
         then(actual).isInstanceOf(KotestCharacterCombinableArbitrary::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.chars().withRange('A', 'Z').combined()
 
         then(actual).isBetween('A', 'Z')
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryAlpha() {
         val actual = CombinableArbitrary.chars().alphabetic().combined()
 
         then(actual.isLetter()).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryNumeric() {
         val actual = CombinableArbitrary.chars().numeric().combined()
 
         then(actual.isDigit()).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryAlphaNumeric() {
         val actual = CombinableArbitrary.chars().alphaNumeric().combined()
 
         then(actual.isLetterOrDigit()).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryAscii() {
         val actual = CombinableArbitrary.chars().ascii().combined()
 
         then(actual.code).isLessThanOrEqualTo(127)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryUppercase() {
         val actual = CombinableArbitrary.chars().uppercase().combined()
 
         then(actual.isUpperCase()).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryLowercase() {
         val actual = CombinableArbitrary.chars().lowercase().combined()
 
         then(actual.isLowerCase()).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryKorean() {
         val actual = CombinableArbitrary.chars().korean().combined()
 
         then(actual).isBetween('가', '힣')
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun characterCombinableArbitraryWhitespace() {
         val actual = CombinableArbitrary.chars().whitespace().combined()
 
@@ -1202,7 +1201,7 @@ class KotestInJunitTest {
         )
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithPositiveAndNegative() {
         // positive().negative() => negative()
         val actual = CombinableArbitrary.bytes().positive().negative().combined()
@@ -1210,7 +1209,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithEvenAndOdd() {
         // even().odd() => odd()
         val actual = CombinableArbitrary.bytes().even().odd().combined()
@@ -1218,7 +1217,7 @@ class KotestInJunitTest {
         then(actual % 2 != 0).isTrue()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithNegativeAndRange() {
         // negative().withRange() => withRange()
         val actual = CombinableArbitrary.bytes().negative().withRange(100.toByte(), 127.toByte()).combined()
@@ -1226,7 +1225,7 @@ class KotestInJunitTest {
         then(actual).isBetween(100.toByte(), 127.toByte())
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithAsciiAndPositive() {
         // ascii().positive() => positive()
         val actual = CombinableArbitrary.bytes().ascii().positive().combined()
@@ -1234,7 +1233,7 @@ class KotestInJunitTest {
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithPositiveAndAscii() {
         // positive().ascii() => ascii()
         val actual = CombinableArbitrary.bytes().positive().ascii().combined()
@@ -1242,7 +1241,7 @@ class KotestInJunitTest {
         then(actual).isBetween(0.toByte(), 127.toByte())
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithAsciiAndEven() {
         // ascii().even() => even()
         val actual = CombinableArbitrary.bytes().ascii().even().combined()
@@ -1250,7 +1249,7 @@ class KotestInJunitTest {
         then(actual % 2).isEqualTo(0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithEvenAndAscii() {
         // even().ascii() => ascii()
         val actual = CombinableArbitrary.bytes().even().ascii().combined()
@@ -1258,7 +1257,7 @@ class KotestInJunitTest {
         then(actual).isBetween(0.toByte(), 127.toByte())
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun byteCombinableArbitraryLastMethodWinsWithAsciiAndNegative() {
         // ascii().negative() => negative()
         val actual = CombinableArbitrary.bytes().ascii().negative().combined()
@@ -1266,7 +1265,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryLastMethodWinsWithPositiveAndNegative() {
         // positive().negative() => negative()
         val actual = CombinableArbitrary.integers().positive().negative().combined()
@@ -1274,7 +1273,7 @@ class KotestInJunitTest {
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryLastMethodWinsWithEvenAndOdd() {
         // even().odd() => odd()
         val actual = CombinableArbitrary.integers().even().odd().combined()
@@ -1282,7 +1281,7 @@ class KotestInJunitTest {
         then(actual).isOdd()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun integerCombinableArbitraryLastMethodWinsWithNegativeAndRange() {
         // negative().withRange() => withRange()
         val actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined()
@@ -1297,21 +1296,21 @@ class KotestInJunitTest {
         then(actual).isInstanceOf(KotestBigIntegerCombinableArbitrary::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigIntegerCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.bigIntegers().positive().combined()
 
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigIntegerCombinableArbitraryNegative() {
         val actual = CombinableArbitrary.bigIntegers().negative().combined()
 
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigIntegerCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.bigIntegers().withRange(
             BigInteger.valueOf(100), BigInteger.valueOf(1000)
@@ -1327,21 +1326,21 @@ class KotestInJunitTest {
         then(actual).isInstanceOf(KotestBigDecimalCombinableArbitrary::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigDecimalCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.bigDecimals().positive().combined()
 
         then(actual).isPositive()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigDecimalCombinableArbitraryNegative() {
         val actual = CombinableArbitrary.bigDecimals().negative().combined()
 
         then(actual).isNegative()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigDecimalCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.bigDecimals().withRange(
             BigDecimal("100.0"), BigDecimal("1000.0")
@@ -1350,14 +1349,14 @@ class KotestInJunitTest {
         then(actual).isBetween(BigDecimal("100.0"), BigDecimal("1000.0"))
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigDecimalCombinableArbitraryWithPrecision() {
         val actual = CombinableArbitrary.bigDecimals().withPrecision(2).combined()
 
         then(actual.precision()).isLessThanOrEqualTo(2)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun bigDecimalCombinableArbitraryLastMethodWins() {
         val actual = CombinableArbitrary.bigDecimals()
             .withRange(BigDecimal("10.0"), BigDecimal("20.0"))

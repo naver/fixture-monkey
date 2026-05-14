@@ -27,17 +27,20 @@ import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.adapter.directive.SizeDirective;
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 /**
- * Result of analyzing a list of ArbitraryManipulators.
+ * Result of analyzing a list of {@link com.navercorp.fixturemonkey.adapter.directive.PathDirective}s.
  * <p>
  * Path resolution follows the "more specific path wins" rule:
  * - If both "$.object" and "$.object.str" have values, "$.object.str" takes precedence for that field.
@@ -47,15 +50,16 @@ import com.navercorp.objectfarm.api.tree.PathResolver;
  * - Values.just() creates truly immutable values where child paths are ignored.
  * - This is intentional: when a user sets Values.just(object), they want that exact object.
  */
+@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class AnalysisResult {
 	private final List<PathResolver<InterfaceResolver>> interfaceResolvers;
 	private final List<PathResolver<GenericTypeResolver>> genericTypeResolvers;
 	private final List<PathResolver<ContainerSizeResolver>> containerSizeResolvers;
 	private final Map<PathExpression, Integer> containerSizeSequenceByPath;
+	private final Map<PathExpression, SizeDirective> latestSizeDirectiveByPath;
 	private final List<PathExpression> justPaths;
 	private final Set<PathExpression> notNullPaths;
 	private final Map<PathExpression, @Nullable Object> valuesByPath;
-	private final List<LazyManipulatorDescriptor> lazyManipulators;
 	private final Map<PathExpression, List<PostConditionFilter>> filtersByPath;
 	private final Map<PathExpression, Integer> limitsByPath;
 	private final Map<PathExpression, Integer> valueOrderByPath;
@@ -68,10 +72,10 @@ public final class AnalysisResult {
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		Map<PathExpression, Integer> containerSizeSequenceByPath,
+		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath,
 		List<PathExpression> justPaths,
 		Set<PathExpression> notNullPaths,
 		Map<PathExpression, @Nullable Object> valuesByPath,
-		List<LazyManipulatorDescriptor> lazyManipulators,
 		Map<PathExpression, List<PostConditionFilter>> filtersByPath,
 		Map<PathExpression, Integer> limitsByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
@@ -83,10 +87,10 @@ public final class AnalysisResult {
 		this.genericTypeResolvers = Collections.unmodifiableList(genericTypeResolvers);
 		this.containerSizeResolvers = Collections.unmodifiableList(containerSizeResolvers);
 		this.containerSizeSequenceByPath = Collections.unmodifiableMap(containerSizeSequenceByPath);
+		this.latestSizeDirectiveByPath = Collections.unmodifiableMap(latestSizeDirectiveByPath);
 		this.justPaths = Collections.unmodifiableList(justPaths);
 		this.notNullPaths = Collections.unmodifiableSet(notNullPaths);
 		this.valuesByPath = Collections.unmodifiableMap(valuesByPath);
-		this.lazyManipulators = Collections.unmodifiableList(lazyManipulators);
 		this.filtersByPath = Collections.unmodifiableMap(filtersByPath);
 		this.limitsByPath = Collections.unmodifiableMap(limitsByPath);
 		this.valueOrderByPath = Collections.unmodifiableMap(valueOrderByPath);
@@ -108,13 +112,23 @@ public final class AnalysisResult {
 	}
 
 	/**
-	 * Returns the sequence (order) of container size resolvers extracted from lazy/decomposed values.
+	 * Returns the sequence (order) of the highest-priority container size resolver per path.
 	 * <p>
-	 * This is used to determine priority when both explicit size() and lazy-derived sizes exist.
-	 * A size with higher sequence should take precedence over one with lower sequence.
+	 * This is used to determine priority across explicit size() and lazy-derived sizes.
+	 * A size with higher sequence takes precedence over one with lower sequence.
 	 */
 	public Map<PathExpression, Integer> getContainerSizeSequenceByPath() {
 		return containerSizeSequenceByPath;
+	}
+
+	/**
+	 * Returns the highest-sequence explicit {@link SizeDirective} per path. Decomposed-value
+	 * size resolvers are intentionally excluded — only directives the user emitted via
+	 * {@code size()} are tracked here. Used by build-time pruning to truncate or expand
+	 * user-provided container values.
+	 */
+	public Map<PathExpression, SizeDirective> getLatestSizeDirectiveByPath() {
+		return latestSizeDirectiveByPath;
 	}
 
 	/**
@@ -144,10 +158,6 @@ public final class AnalysisResult {
 		return valuesByPath;
 	}
 
-	public List<LazyManipulatorDescriptor> getLazyManipulators() {
-		return lazyManipulators;
-	}
-
 	public Map<PathExpression, List<PostConditionFilter>> getFiltersByPath() {
 		return filtersByPath;
 	}
@@ -157,10 +167,8 @@ public final class AnalysisResult {
 	}
 
 	/**
-	 * Returns the order index of each value in valuesByPath.
-	 * Used to determine which values came before/after lazy manipulators.
-	 * A value with order > lazyManipulator.getOrder() came AFTER the lazy manipulator
-	 * and should override the lazy result.
+	 * Returns the sequence index of each value in valuesByPath. Higher sequences override lower
+	 * ones at the same path; consumers compare sequences to decide which directive wins per path.
 	 */
 	public Map<PathExpression, Integer> getValueOrderByPath() {
 		return valueOrderByPath;
@@ -190,38 +198,6 @@ public final class AnalysisResult {
 	 */
 	public boolean isStrictMode() {
 		return strictMode;
-	}
-
-	/**
-	 * Information about a lazy manipulator that needs to be executed at runtime.
-	 */
-	public static final class LazyManipulatorDescriptor {
-
-		private final PathExpression pathExpression;
-		private final LazyArbitrary<?> lazyArbitrary;
-		private final int order;
-
-		public LazyManipulatorDescriptor(PathExpression pathExpression, LazyArbitrary<?> lazyArbitrary, int order) {
-			this.pathExpression = pathExpression;
-			this.lazyArbitrary = lazyArbitrary;
-			this.order = order;
-		}
-
-		public PathExpression getPathExpression() {
-			return pathExpression;
-		}
-
-		public LazyArbitrary<?> getLazyArbitrary() {
-			return lazyArbitrary;
-		}
-
-		/**
-		 * Returns the order index of this lazy manipulator in the manipulator list.
-		 * Used to determine which explicit values should override the lazy result.
-		 */
-		public int getOrder() {
-			return order;
-		}
 	}
 
 	/**

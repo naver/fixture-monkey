@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.adapter;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -37,10 +37,9 @@ class ValueProjectionThenApplyTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void thenApplyTransformsValue() {
 		StringValue actual = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "original")
@@ -50,7 +49,7 @@ class ValueProjectionThenApplyTest {
 		then(actual.getValue()).isEqualTo("original-modified");
 	}
 
-	@Property
+	@Test
 	void thenApplyWithNestedObject() {
 		Order actual = SUT.giveMeBuilder(Order.class)
 			.set("orderId", "ORD-001")
@@ -62,7 +61,7 @@ class ValueProjectionThenApplyTest {
 		then(actual.getProduct().getName()).isEqualTo("Initial-Updated");
 	}
 
-	@Property
+	@Test
 	void setNestedAndThenApply() {
 		Order actual = SUT.giveMeBuilder(Order.class)
 			.set("orderId", "ORD-001")
@@ -75,7 +74,7 @@ class ValueProjectionThenApplyTest {
 		then(actual.getProduct().getName()).isEqualTo("Product-Q10");
 	}
 
-	@Property
+	@Test
 	void apply() {
 		String actual = SUT.giveMeBuilder(SimpleListObject.class)
 			.set("str", "set")
@@ -87,7 +86,7 @@ class ValueProjectionThenApplyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Test
 	void applyNotAffectedManipulatorsAfterApply() {
 		String actual = SUT.giveMeBuilder(SimpleListObject.class)
 			.set("str", "set")
@@ -100,7 +99,7 @@ class ValueProjectionThenApplyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Test
 	void acceptIfAlwaysTrue() {
 		String actual = SUT.giveMeBuilder(SimpleStringObject.class)
 			.acceptIf(it -> true, builder -> builder.set("str", "set"))
@@ -110,7 +109,7 @@ class ValueProjectionThenApplyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Test
 	void acceptIf() {
 		String actual = SUT.giveMeBuilder(SimpleListObject.class)
 			.set("str", "set")
@@ -122,7 +121,7 @@ class ValueProjectionThenApplyTest {
 		then(actual).isEqualTo("set");
 	}
 
-	@Property
+	@Test
 	void applySetElementNull() {
 		String actual = SUT.giveMeBuilder(SimpleListObject.class)
 			.thenApply((obj, builder) -> builder.size("strList", 1).setNull("strList[0]"))
@@ -133,7 +132,7 @@ class ValueProjectionThenApplyTest {
 		then(actual).isNull();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void applySampleTwiceReturnsDiff() {
 		ArbitraryBuilder<SimpleStringObject> builder = SUT.giveMeBuilder(SimpleStringObject.class).thenApply(
 			(obj, b) -> {

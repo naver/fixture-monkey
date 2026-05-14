@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public final class ConstructorPropertyGeneratorContext {
 	private final Property property;
 	private final Constructor<?> constructor;

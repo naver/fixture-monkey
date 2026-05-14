@@ -23,7 +23,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.BuilderInteger;
@@ -43,15 +43,13 @@ class ValueProjectionInstantiatorTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void generateWithBuilderArbitraryIntrospector() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypeArbitraryIntrospector(BuilderInteger.class, BuilderArbitraryIntrospector.INSTANCE)
 			.build();
 
@@ -62,7 +60,7 @@ class ValueProjectionInstantiatorTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	@Property
+	@Test
 	void generateWithBuilderArbitraryIntrospectorDefaultBuilderMethod() {
 		// given
 		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
@@ -70,7 +68,6 @@ class ValueProjectionInstantiatorTest {
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypeArbitraryIntrospector(CustomBuilderMethodInteger.class, builderArbitraryIntrospector)
 			.build();
 
@@ -81,7 +78,7 @@ class ValueProjectionInstantiatorTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	@Property
+	@Test
 	void generateWithBuilderArbitraryIntrospectorDefaultBuildMethod() {
 		// given
 		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
@@ -89,7 +86,6 @@ class ValueProjectionInstantiatorTest {
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypeArbitraryIntrospector(CustomBuildMethodInteger.class, builderArbitraryIntrospector)
 			.build();
 
@@ -100,12 +96,11 @@ class ValueProjectionInstantiatorTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	@Property
+	@Test
 	void generateWithConstructorPropertiesArbitraryIntrospector() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypeArbitraryIntrospector(
 				ConstructorOnlyInteger.class,
 				ConstructorPropertiesArbitraryIntrospector.INSTANCE
@@ -120,7 +115,7 @@ class ValueProjectionInstantiatorTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	@Property
+	@Test
 	void generateWithFactoryMethodArbitraryIntrospector() throws NoSuchMethodException {
 		// given
 		Method factoryMethod = FactoryMethodInteger.class.getDeclaredMethod("of", int.class);
@@ -128,7 +123,6 @@ class ValueProjectionInstantiatorTest {
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypeArbitraryIntrospector(
 				FactoryMethodInteger.class,
 				new FactoryMethodArbitraryIntrospector(

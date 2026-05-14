@@ -79,7 +79,7 @@ public final class MonkeyContext {
 	}
 
 	public void putCachedArbitrary(Property property, CombinableArbitrary<?> combinableArbitrary) {
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 		if (isJavaType(type)) {
 			javaArbitrariesByProperty.putIfAbsent(property, combinableArbitrary);
 			return;

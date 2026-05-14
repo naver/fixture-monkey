@@ -32,11 +32,26 @@ import org.jspecify.annotations.Nullable;
 public abstract class JvmTypes {
 	public static JvmType resolveJvmType(JvmType parentType, Type type, List<Annotation> annotations) {
 		if (!Types.isGenericType(type)) {
-			return new JavaType(Types.getActualType(type));
+			return new JavaType(Types.getActualType(type), Collections.emptyList(), annotations);
 		}
 
 		if (type instanceof TypeVariable) {
-			return resolveTypeVariable(parentType, (TypeVariable<?>)type);
+			JvmType resolved = resolveTypeVariable(parentType, (TypeVariable<?>)type);
+			if (annotations.isEmpty()) {
+				return resolved;
+			}
+			List<Annotation> merged = new ArrayList<>(resolved.getAnnotations());
+			for (Annotation annotation : annotations) {
+				if (!merged.contains(annotation)) {
+					merged.add(annotation);
+				}
+			}
+			return new JavaType(
+				resolved.getRawType(),
+				resolved.getTypeVariables(),
+				merged,
+				resolved.getNullable()
+			);
 		}
 
 		List<JvmType> typeArguments = resolveTypeArguments(parentType, type);
@@ -50,13 +65,113 @@ public abstract class JvmTypes {
 
 	/**
 	 * Resolves a TypeVariable to its actual JvmType using the parent type's type variables.
+	 * <p>
+	 * The TypeVariable is matched by its declaring class' type parameters. If the immediate
+	 * parent has no type variables (e.g., a concrete class extending a generic superclass),
+	 * walks up the superclass chain.
 	 */
 	private static JvmType resolveTypeVariable(JvmType parentType, TypeVariable<?> typeVariable) {
-		List<? extends JvmType> parentTypeVariables = parentType.getTypeVariables();
-		if (parentTypeVariables.isEmpty()) {
-			return new JavaType(Object.class);
+		Class<?> declaringClass = null;
+		java.lang.reflect.GenericDeclaration declaration = typeVariable.getGenericDeclaration();
+		if (declaration instanceof Class<?>) {
+			declaringClass = (Class<?>)declaration;
 		}
-		return parentTypeVariables.get(0);
+
+		List<? extends JvmType> parentTypeVariables = parentType.getTypeVariables();
+		Class<?> parentRawType = parentType.getRawType();
+
+		// If the parent matches the declaring class directly, look up by index.
+		if (declaringClass != null && declaringClass == parentRawType && !parentTypeVariables.isEmpty()) {
+			TypeVariable<?>[] declaredVars = declaringClass.getTypeParameters();
+			for (int i = 0; i < declaredVars.length && i < parentTypeVariables.size(); i++) {
+				if (declaredVars[i].getName().equals(typeVariable.getName())) {
+					return parentTypeVariables.get(i);
+				}
+			}
+		}
+
+		// Walk up the superclass/interface chain to find a parameterized super that
+		// declares the TypeVariable and resolves it via the concrete subtype.
+		if (declaringClass != null && parentRawType != null) {
+			JvmType resolved = resolveTypeVariableViaSuperType(parentRawType, declaringClass, typeVariable);
+			if (resolved != null) {
+				return resolved;
+			}
+		}
+
+		// Fallback: return the first parent type variable if any (legacy behavior).
+		if (!parentTypeVariables.isEmpty()) {
+			return parentTypeVariables.get(0);
+		}
+		return new JavaType(Object.class);
+	}
+
+	@Nullable
+	private static JvmType resolveTypeVariableViaSuperType(
+		Class<?> startType,
+		Class<?> declaringClass,
+		TypeVariable<?> typeVariable
+	) {
+		// Walk superclass first, then interfaces.
+		Type genericSuper = startType.getGenericSuperclass();
+		Class<?> rawSuper = startType.getSuperclass();
+		if (genericSuper instanceof ParameterizedType && rawSuper != null) {
+			JvmType result = matchTypeVariableInParameterizedSuper(
+				(ParameterizedType)genericSuper, rawSuper, declaringClass, typeVariable
+			);
+			if (result != null) {
+				return result;
+			}
+		}
+		if (rawSuper != null && rawSuper != Object.class) {
+			JvmType resolved = resolveTypeVariableViaSuperType(rawSuper, declaringClass, typeVariable);
+			if (resolved != null) {
+				return resolved;
+			}
+		}
+		Type[] genericInterfaces = startType.getGenericInterfaces();
+		Class<?>[] rawInterfaces = startType.getInterfaces();
+		for (int i = 0; i < genericInterfaces.length; i++) {
+			if (genericInterfaces[i] instanceof ParameterizedType) {
+				JvmType result = matchTypeVariableInParameterizedSuper(
+					(ParameterizedType)genericInterfaces[i],
+					rawInterfaces[i],
+					declaringClass,
+					typeVariable
+				);
+				if (result != null) {
+					return result;
+				}
+			}
+			JvmType resolved = resolveTypeVariableViaSuperType(rawInterfaces[i], declaringClass, typeVariable);
+			if (resolved != null) {
+				return resolved;
+			}
+		}
+		return null;
+	}
+
+	@Nullable
+	private static JvmType matchTypeVariableInParameterizedSuper(
+		ParameterizedType parameterizedSuper,
+		Class<?> rawSuper,
+		Class<?> declaringClass,
+		TypeVariable<?> typeVariable
+	) {
+		if (rawSuper != declaringClass) {
+			return null;
+		}
+		TypeVariable<?>[] declaredVars = declaringClass.getTypeParameters();
+		Type[] actualArgs = parameterizedSuper.getActualTypeArguments();
+		for (int i = 0; i < declaredVars.length && i < actualArgs.length; i++) {
+			if (declaredVars[i].getName().equals(typeVariable.getName())) {
+				if (actualArgs[i] instanceof Class<?>) {
+					return new JavaType((Class<?>)actualArgs[i]);
+				}
+				return new JavaType(Types.getActualType(actualArgs[i]));
+			}
+		}
+		return null;
 	}
 
 	/**

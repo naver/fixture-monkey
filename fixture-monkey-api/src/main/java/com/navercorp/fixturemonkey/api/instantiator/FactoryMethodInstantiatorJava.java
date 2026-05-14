@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInstantiator<T> {
 	private final String factoryMethodName;
 	private final List<TypeReference<?>> types;

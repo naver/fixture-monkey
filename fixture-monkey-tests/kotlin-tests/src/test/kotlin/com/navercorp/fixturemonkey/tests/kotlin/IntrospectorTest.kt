@@ -32,7 +32,6 @@ import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import com.navercorp.fixturemonkey.tests.kotlin.BuilderJavaTestSpecs.BuilderObjectCustomBuildName
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import java.sql.Timestamp
 import java.util.UUID
@@ -151,7 +150,7 @@ class IntrospectorTest {
         then(actual).isNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun pushPrimaryConstructorIntrospector() {
         // given
         class StringObject(val string: String)

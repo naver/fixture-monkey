@@ -18,13 +18,14 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * It is deprecated.
@@ -42,8 +43,11 @@ public final class InterfaceCandidateConcretePropertyResolver<T> implements Cand
 	@Override
 	public List<Property> resolve(Property property) {
 		return implementations.stream()
-			.map(implementation -> new ConcreteTypeProperty(
-				generateAnnotatedTypeWithoutAnnotation(implementation),
+			.map(implementation -> (Property)new ConcreteTypeProperty(
+				Types.toJvmType(
+					Types.generateAnnotatedTypeWithoutAnnotation(implementation),
+					Collections.emptyList()
+				),
 				property
 			))
 			.collect(Collectors.toList());

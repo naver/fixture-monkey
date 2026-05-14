@@ -6,10 +6,14 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 /**
  * Represent a location of property.
  * It is mainly used as a caching key or for logging.
  */
+@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class PropertyPath implements Comparable<PropertyPath> {
 	private final Property property;
 	@Nullable

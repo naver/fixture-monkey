@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.adapter;
 
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.NestedStringList;
@@ -33,26 +33,23 @@ class ValueProjectionStrictModeTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void notStrictModeSetWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		thenNoException().isThrownBy(() -> sut.giveMeBuilder(String.class).set("nonExistentField", 0).sample());
 	}
 
-	@Property
+	@Test
 	void notStrictModeSizeWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		thenNoException().isThrownBy(() ->

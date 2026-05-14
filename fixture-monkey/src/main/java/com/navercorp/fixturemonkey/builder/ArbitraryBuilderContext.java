@@ -21,12 +21,10 @@ package com.navercorp.fixturemonkey.builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -45,16 +43,12 @@ import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
-import com.navercorp.fixturemonkey.api.tree.TraverseContext;
-import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
+import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
+import com.navercorp.fixturemonkey.adapter.directive.SizeDirective;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
-import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
-import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 /**
- * {@link FixtureMonkey} → {@link ArbitraryBuilder} → {@link ObjectTree} → {@link CombinableArbitrary}
+ * {@link FixtureMonkey} → {@link ArbitraryBuilder} → adapter pipeline → {@link CombinableArbitrary}
  * 1:N							1:N					1:1
  * <p>
  * It is a context within {@link ArbitraryBuilder}. It represents a status of the {@link ArbitraryBuilder}.
@@ -64,8 +58,7 @@ import com.navercorp.fixturemonkey.tree.ObjectTree;
  */
 @API(since = "0.4.0", status = Status.INTERNAL)
 public final class ArbitraryBuilderContext {
-	private final List<ArbitraryManipulator> manipulators;
-	private final List<ContainerInfoManipulator> containerInfoManipulators;
+	private final List<PathDirective> directives;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 	private final MonkeyContext monkeyContext;
@@ -78,16 +71,14 @@ public final class ArbitraryBuilderContext {
 	private @Nullable CombinableArbitrary<?> fixedCombinableArbitrary;
 
 	private ArbitraryBuilderContext(
-		List<ArbitraryManipulator> manipulators,
-		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<PathDirective> directives,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
 		MonkeyContext monkeyContext
 	) {
-		this.manipulators = manipulators;
-		this.containerInfoManipulators = containerInfoManipulators;
+		this.directives = directives;
 		this.propertyConfigurers = propertyConfigurers;
 		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
 		this.fixedState = fixedState;
@@ -103,7 +94,6 @@ public final class ArbitraryBuilderContext {
 	public static ArbitraryBuilderContext newBuilderContext(MonkeyContext monkeyContext) {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(),
-			new ArrayList<>(),
 			new HashMap<>(),
 			new HashMap<>(),
 			null, null,
@@ -112,13 +102,10 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public ArbitraryBuilderContext copy() {
-		List<ContainerInfoManipulator> copiedContainerInfoManipulators = this.containerInfoManipulators.stream()
-			.map(ContainerInfoManipulator::copy)
-			.collect(Collectors.toList());
+		List<PathDirective> copiedDirectives = new ArrayList<>(this.directives);
 
 		ArbitraryBuilderContext copiedContext = new ArbitraryBuilderContext(
-			new ArrayList<>(this.manipulators),
-			copiedContainerInfoManipulators,
+			copiedDirectives,
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
 			fixedState,
@@ -132,28 +119,43 @@ public final class ArbitraryBuilderContext {
 		return copiedContext;
 	}
 
-	public void addManipulator(ArbitraryManipulator arbitraryManipulator) {
-		this.manipulators.add(arbitraryManipulator);
+	public void addDirective(PathDirective directive) {
+		this.directives.add(directive);
 	}
 
-	public void addManipulators(Collection<ArbitraryManipulator> arbitraryManipulators) {
-		this.manipulators.addAll(arbitraryManipulators);
+	public void addDirectives(Collection<PathDirective> directives) {
+		this.directives.addAll(directives);
 	}
 
-	public List<ArbitraryManipulator> getManipulators() {
-		return Collections.unmodifiableList(manipulators);
+	public List<PathDirective> getDirectives() {
+		return Collections.unmodifiableList(directives);
 	}
 
-	public void addContainerInfoManipulator(ContainerInfoManipulator containerInfo) {
-		this.containerInfoManipulators.add(containerInfo);
+	/**
+	 * Filters this context's directives down to {@link SizeDirective}s. Used by adapter consumers
+	 * that only care about container-size manipulation.
+	 */
+	public List<SizeDirective> getSizeDirectives() {
+		List<SizeDirective> sizes = new ArrayList<>();
+		for (PathDirective directive : directives) {
+			if (directive instanceof SizeDirective) {
+				sizes.add((SizeDirective)directive);
+			}
+		}
+		return sizes;
 	}
 
-	public void addContainerInfoManipulators(List<ContainerInfoManipulator> containerInfoManipulators) {
-		this.containerInfoManipulators.addAll(containerInfoManipulators);
-	}
-
-	public List<TreeNodeManipulator> getContainerInfoManipulators() {
-		return Collections.unmodifiableList(containerInfoManipulators);
+	/**
+	 * Locks every {@link SizeDirective} on this context to a single random size — used by
+	 * {@code ArbitraryBuilder.fixed()} so subsequent samples produce deterministic container sizes.
+	 */
+	public void fixContainerSizes() {
+		for (int i = 0; i < directives.size(); i++) {
+			PathDirective directive = directives.get(i);
+			if (directive instanceof SizeDirective) {
+				directives.set(i, ((SizeDirective)directive).fix());
+			}
+		}
 	}
 
 	public void putPropertyConfigurer(Class<?> type, List<Property> propertyConfigurer) {
@@ -193,14 +195,12 @@ public final class ArbitraryBuilderContext {
 
 	public void markFixed() {
 		FixedState fixedStateLocal = fixedState;
-		if (fixedStateLocal  != null
-			&& fixedStateLocal.getFixedManipulateSize() == this.manipulators.size()) {
-			if (fixedStateLocal.getFixedContainerManipulatorSize() == this.containerInfoManipulators.size()) {
-				return;
-			}
+		if (fixedStateLocal != null
+			&& fixedStateLocal.getFixedManipulateSize() == this.directives.size()) {
+			return;
 		}
 
-		fixedState = new FixedState(this.manipulators.size(), this.containerInfoManipulators.size());
+		fixedState = new FixedState(this.directives.size());
 		fixedCombinableArbitrary = null;
 	}
 
@@ -210,8 +210,7 @@ public final class ArbitraryBuilderContext {
 
 	@SuppressWarnings({"dereference.of.nullable", "argument"})
 	public boolean fixedExpired() {
-		return manipulators.size() > Objects.requireNonNull(fixedState).getFixedManipulateSize()
-			|| containerInfoManipulators.size() > fixedState.getFixedContainerManipulatorSize();
+		return directives.size() > Objects.requireNonNull(fixedState).getFixedManipulateSize();
 	}
 
 	public void renewFixed(CombinableArbitrary<?> fixedCombinableArbitrary) {
@@ -223,92 +222,15 @@ public final class ArbitraryBuilderContext {
 		return fixedCombinableArbitrary;
 	}
 
-	public TraverseContext newTraverseContext(
-		TreeRootProperty rootProperty,
-		Map<Class<?>, List<Property>> registeredPropertyConfigurer
-	) {
-		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeNodeManipulators =
-			monkeyContext.getRegisteredArbitraryBuilders()
-				.stream()
-				.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
-				.map(it -> new MatcherOperator<>(
-					it.getMatcher(),
-					((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
-						.getContainerInfoManipulators()
-				))
-				.collect(Collectors.toList()); // TODO: Fragmented registered
-
-		TreeNodeManipulator registeredRootTreeManipulator = registeredTreeNodeManipulators.stream()
-			.filter(it -> it.match(rootProperty))
-			.flatMap(it -> it.getOperator().stream())
-			.findFirst()
-			.orElse(null);
-
-		List<TreeNodeManipulator> activeTreeNodeManipulators = new ArrayList<>(this.getContainerInfoManipulators());
-		if (registeredRootTreeManipulator != null) {
-			activeTreeNodeManipulators.add(0, registeredRootTreeManipulator);
-		}
-
-		FixtureMonkeyOptions fixtureMonkeyOptions = this.monkeyContext.getFixtureMonkeyOptions();
-		Map<Class<?>, List<Property>> concatPropertyConfigurer = new HashMap<>(this.getPropertyConfigurers());
-		concatPropertyConfigurer.putAll(registeredPropertyConfigurer);
-		concatPropertyConfigurer = Collections.unmodifiableMap(concatPropertyConfigurer);
-
-		return new TraverseContext(
-			rootProperty,
-			new ArrayList<>(),
-			activeTreeNodeManipulators,
-			registeredTreeNodeManipulators,
-			concatPropertyConfigurer,
-			this.isValidOnly(),
-			initializeResolvedPropertyGenerator(
-				concatPropertyConfigurer,
-				fixtureMonkeyOptions.getPropertyGenerators(),
-				fixtureMonkeyOptions.getDefaultArbitraryGenerator(),
-				fixtureMonkeyOptions.getDefaultPropertyGenerator()
-			),
-			fixtureMonkeyOptions.getObjectPropertyGenerators(),
-			fixtureMonkeyOptions.getDefaultObjectPropertyGenerator(),
-			fixtureMonkeyOptions.getContainerPropertyGenerators(),
-			fixtureMonkeyOptions.getPropertyNameResolvers(),
-			fixtureMonkeyOptions.getDefaultPropertyNameResolver(),
-			fixtureMonkeyOptions.getCandidateConcretePropertyResolvers(),
-			fixtureMonkeyOptions.getArbitraryContainerInfoGenerators(),
-			fixtureMonkeyOptions.getDefaultArbitraryContainerInfoGenerator(),
-			fixtureMonkeyOptions.getNullInjectGenerators(),
-			fixtureMonkeyOptions.getDefaultNullInjectGenerator()
-		);
-	}
-
-	public GenerateFixtureContext newGenerateFixtureContext(
-		Map<Class<?>, ArbitraryIntrospector> registeredArbitraryIntrospectorsByType
-	) {
-		Map<Class<?>, ArbitraryIntrospector> concat = new HashMap<>(arbitraryIntrospectorsByType);
-		concat.putAll(registeredArbitraryIntrospectorsByType);
-		concat = Collections.unmodifiableMap(concat);
-
-		return new GenerateFixtureContext(
-			concat,
-			this::isValidOnly,
-			monkeyContext
-		);
-	}
-
 	private static class FixedState {
 		private final int fixedManipulateSize;
-		private final int fixedContainerManipulatorSize;
 
-		public FixedState(int fixedManipulateSize, int fixedContainerManipulatorSize) {
+		public FixedState(int fixedManipulateSize) {
 			this.fixedManipulateSize = fixedManipulateSize;
-			this.fixedContainerManipulatorSize = fixedContainerManipulatorSize;
 		}
 
 		public int getFixedManipulateSize() {
 			return fixedManipulateSize;
-		}
-
-		public int getFixedContainerManipulatorSize() {
-			return fixedContainerManipulatorSize;
 		}
 	}
 
@@ -319,7 +241,7 @@ public final class ArbitraryBuilderContext {
 		PropertyGenerator defaultPropertyGenerator
 	) {
 		PropertyGenerator resolvedPropertyGenerator = property -> {
-			Class<?> type = Types.getActualType(property.getType());
+			Class<?> type = property.getJvmType().getRawType();
 			List<Property> propertyConfigurer = propertyConfigurers.get(type);
 			if (propertyConfigurer != null) {
 				return propertyConfigurer;

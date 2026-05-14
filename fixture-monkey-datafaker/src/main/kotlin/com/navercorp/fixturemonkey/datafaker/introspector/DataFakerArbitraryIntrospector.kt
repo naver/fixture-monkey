@@ -24,14 +24,13 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
-import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.datafaker.arbitrary.DataFakerStringArbitrary
 
 class DataFakerArbitraryIntrospector : ArbitraryIntrospector, Matcher {
 
     override fun match(property: Property): Boolean {
         val fieldName = property.name ?: return false
-        val fieldType = Types.getActualType(property.type) as Class<*>? ?: return false
+        val fieldType = property.jvmType.rawType
 
         if (fieldType != String::class.java) return false
 

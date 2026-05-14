@@ -93,10 +93,23 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			String failedConcatProperties = String.join(", ",
 				((ValidationFailedException)lastException).getConstraintViolationPropertyNames());
 
-			throw new RetryableFilterMissException(
-				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
-				lastException
-			);
+			String message;
+			if (combinableArbitrary instanceof Traceable) {
+				PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
+				String generateType = propertyPath.getProperty().getJvmType().getRawType().getTypeName();
+				message = String.format(
+					"Generate type \"%s\" is failed due to property \"%s\" - not validated by annotations.",
+					generateType,
+					failedConcatProperties
+				);
+			} else {
+				message = String.format(
+					"Given properties \"%s\" is not validated by annotations.",
+					failedConcatProperties
+				);
+			}
+
+			throw new RetryableFilterMissException(message, lastException);
 		}
 
 		if (lastException != null) {
@@ -105,7 +118,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 
 		if (combinableArbitrary instanceof Traceable) {
 			PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
-			String generateType = propertyPath.getProperty().getType().getTypeName();
+			String generateType = propertyPath.getProperty().getJvmType().getRawType().getTypeName();
 			String expression = "".equals(propertyPath.getExpression())
 				? "$"
 				: propertyPath.getExpression();
@@ -160,10 +173,23 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			String failedConcatProperties = String.join(", ",
 				((ValidationFailedException)lastException).getConstraintViolationPropertyNames());
 
-			throw new RetryableFilterMissException(
-				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
-				lastException
-			);
+			String message;
+			if (combinableArbitrary instanceof Traceable) {
+				PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
+				String generateType = propertyPath.getProperty().getJvmType().getRawType().getTypeName();
+				message = String.format(
+					"Generate type \"%s\" is failed due to property \"%s\" - not validated by annotations.",
+					generateType,
+					failedConcatProperties
+				);
+			} else {
+				message = String.format(
+					"Given properties \"%s\" is not validated by annotations.",
+					failedConcatProperties
+				);
+			}
+
+			throw new RetryableFilterMissException(message, lastException);
 		}
 
 		if (lastException != null) {
@@ -172,7 +198,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 
 		if (combinableArbitrary instanceof Traceable) {
 			PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
-			String generateType = propertyPath.getProperty().getType().getTypeName();
+			String generateType = propertyPath.getProperty().getJvmType().getRawType().getTypeName();
 			String expression = "".equals(propertyPath.getExpression())
 				? "$"
 				: propertyPath.getExpression();

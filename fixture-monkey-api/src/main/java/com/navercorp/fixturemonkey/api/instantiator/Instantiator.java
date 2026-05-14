@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 /**
  * provides a DSL for a way of specifying the instantiation of types.
  */
-@API(since = "0.6.12", status = Status.MAINTAINED)
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public interface Instantiator {
 	/**
 	 * Creates a DSL object for specifying a given type of constructor.

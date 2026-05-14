@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.expression.DefaultDeclarativeExpression;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.objectfarm.api.expression.PathExpression;
 
 @API(since = "0.5.0", status = Status.MAINTAINED)
 final class InnerSpecState {
@@ -118,8 +118,8 @@ final class InnerSpecState {
 			return sequence;
 		}
 
-		List<NextNodePredicate> getNextNodePredicates() {
-			return this.declarativeExpression.getNestedNextNodePredicates();
+		PathExpression getPath() {
+			return this.declarativeExpression.getPath();
 		}
 
 		int getElementMinSize() {
@@ -153,8 +153,8 @@ final class InnerSpecState {
 			return sequence;
 		}
 
-		List<NextNodePredicate> getNextNodePredicates() {
-			return this.declarativeExpression.getNestedNextNodePredicates();
+		PathExpression getPath() {
+			return this.declarativeExpression.getPath();
 		}
 
 		Class<?> getType() {
@@ -181,8 +181,8 @@ final class InnerSpecState {
 			this.value = value;
 		}
 
-		List<NextNodePredicate> getNextNodePredicates() {
-			return this.declarativeExpression.getNestedNextNodePredicates();
+		PathExpression getPath() {
+			return this.declarativeExpression.getPath();
 		}
 
 		Object getValue() {
@@ -213,7 +213,7 @@ final class InnerSpecState {
 			return nodeSetManipulatorSnapshots;
 		}
 
-		public List<ContainerInfoSnapshot> getContainerInfoManipulators() {
+		public List<ContainerInfoSnapshot> getSizeDirectives() {
 			return containerInfoManipulators;
 		}
 

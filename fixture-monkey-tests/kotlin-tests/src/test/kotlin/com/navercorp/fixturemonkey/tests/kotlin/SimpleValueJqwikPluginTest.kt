@@ -26,7 +26,6 @@ import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.LocalDateTime
@@ -35,7 +34,7 @@ import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 
 class SimpleValueJqwikPluginTest {
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInt() {
         val sut = FixtureMonkey.builder()
             .plugin(SimpleValueJqwikPlugin())
@@ -46,7 +45,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(-10000, 10000)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyNumberValue() {
         val sut = FixtureMonkey.builder()
             .plugin(
@@ -61,7 +60,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(-1, 1)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyStringLength() {
         val sut = FixtureMonkey.builder()
             .plugin(
@@ -76,7 +75,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).hasSizeBetween(2, 3)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyCharacterPredicate() {
         val sut = FixtureMonkey.builder()
             .plugin(
@@ -90,7 +89,7 @@ class SimpleValueJqwikPluginTest {
         then(actual.chars()).allMatch { it in 50..100 }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyContainerSize() {
         val sut = FixtureMonkey.builder()
             .plugin(
@@ -105,7 +104,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).hasSizeBetween(2, 3)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyDate() {
         val sut = FixtureMonkey.builder()
             .plugin(
@@ -122,7 +121,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(yesterday, tomorrow)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun withValidationPlugin() {
         // given
         class JavaxValidationAnnotationValue(
@@ -143,7 +142,7 @@ class SimpleValueJqwikPluginTest {
         then(actual.notAnnotatedInt).isBetween(-10000, 10000)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleSetObject() {
         class SetObject(val integers: Set<Integer>)
 
@@ -161,7 +160,7 @@ class SimpleValueJqwikPluginTest {
         then(setObject.integers).hasSize(3)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleByte() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -173,7 +172,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyNumberValueByte() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -189,7 +188,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(-1, 1)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyOutOfRangeNumberValueByte() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -205,7 +204,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setPositiveMinNumberReturnsPositive() {
         val sut = FixtureMonkey.builder()
             .plugin(SimpleValueJqwikPlugin().minNumberValue(0))
@@ -216,7 +215,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isGreaterThanOrEqualTo(0);
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setNegativeMaxNumberReturnsNegative() {
         val sut = FixtureMonkey.builder()
             .plugin(SimpleValueJqwikPlugin().maxNumberValue(-0))
@@ -227,7 +226,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isLessThanOrEqualTo(0);
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyPositiveDecimalNumberRange() {
         val sut = FixtureMonkey.builder()
             .plugin(
@@ -242,7 +241,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(1.0, 10.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyNegativeDecimalNumberRange() {
         val sut = FixtureMonkey.builder()
             .plugin(
@@ -257,7 +256,7 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(-10.0, -1.0)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun modifyMixedDecimalNumberRange() {
         val sut = FixtureMonkey.builder()
             .plugin(

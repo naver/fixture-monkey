@@ -18,12 +18,13 @@
 
 package com.navercorp.fixturemonkey.kotlin.test
 
+import org.junit.jupiter.api.Test
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
-import net.jqwik.api.Example
+import com.navercorp.fixturemonkey.kotlin.set
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
 import org.junit.jupiter.api.assertAll
@@ -37,32 +38,32 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         .plugin(KotlinPlugin())
         .build()
 
-    @Example
+    @Test
     fun samplePrimaryConstructor() {
         thenNoException().isThrownBy { sut.giveMeOne<PrimaryConstructor>() }
     }
 
-    @Example
+    @Test
     fun sampleNested() {
         thenNoException().isThrownBy { sut.giveMeOne<Nested>().nested.intValue }
     }
 
-    @Example
+    @Test
     fun sampleDataClass() {
         thenNoException().isThrownBy { sut.giveMeOne<DataValue>() }
     }
 
-    @Example
+    @Test
     fun sampleVarValue() {
         thenNoException().isThrownBy { sut.giveMeOne<VarValue>() }
     }
 
-    @Example
+    @Test
     fun sampleNullableValue() {
         thenNoException().isThrownBy { sut.giveMeOne<NullableValue>() }
     }
 
-    @Example
+    @Test
     fun sampleDefaultValue() {
         // when
         val actual = sut.giveMeOne<DefaultValue>().stringValue
@@ -70,7 +71,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         then(actual).isNotEqualTo("default_value")
     }
 
-    @Example
+    @Test
     fun sampleDefaultValueWhenOptionalParameterIsSkipped() {
         // when
         val actual = sut.giveMeKotlinBuilder<DefaultValue>()
@@ -80,7 +81,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         then(actual.stringValue).isEqualTo("default_value")
     }
 
-    @Example
+    @Test
     fun sampleNullableDefaultValue() {
         // when
         val actual = sut.giveMeKotlinBuilder<NullableDefaultValue>()
@@ -90,14 +91,14 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         then(actual.stringValue).isNull()
     }
 
-    @Example
+    @Test
     fun sampleDuration() {
         // when
         val duration = sut.giveMeOne<Duration>()
         then(duration).isNotNull()
     }
 
-    @Example
+    @Test
     fun sampleDurationValue() {
         // when
         val durationValue = sut.giveMeBuilder<DurationValue>()
@@ -106,7 +107,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         then(durationValue.duration).isNotNull()
     }
 
-    @Example
+    @Test
     fun setDurationValue() {
         // given
         val duration = Random().nextLong().toDuration(DurationUnit.values().random())
@@ -120,7 +121,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         then(one.duration).isEqualTo(duration)
     }
 
-    @Example
+    @Test
     fun sampleGenericDuration() {
         // when
         val one = sut.giveMeOne<List<Duration>>()
@@ -131,7 +132,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         )
     }
 
-    @Example
+    @Test
     fun sampleSecondaryConstructor() {
         // when
         val actual = sut.giveMeOne<SecondaryConstructor>().stringValue
@@ -139,7 +140,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         then(actual).isNotEqualTo("default_value")
     }
 
-    @Example
+    @Test
     fun sampleInterface() {
         // when
         val actual: InterfaceClass = sut.giveMeOne()

@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
@@ -93,10 +93,9 @@ class ValueProjectionCustomizationTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void setSingleField() {
 		String expected = "test-value";
 
@@ -106,7 +105,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValue()).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setContainerField() {
 		List<String> expected = java.util.Arrays.asList("a", "b", "c");
 
@@ -116,7 +115,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues()).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setNestedList() {
 		List<List<String>> expected = java.util.Arrays.asList(
 			java.util.Arrays.asList("a", "b"),
@@ -129,7 +128,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getNestedValues()).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setMultipleFields() {
 		Order actual = SUT.giveMeBuilder(Order.class)
 			.set("orderId", "ORD-123")
@@ -145,14 +144,14 @@ class ValueProjectionCustomizationTest {
 		then(actual.getProduct().getPrice()).isEqualTo(1000);
 	}
 
-	@Property
+	@Test
 	void sizeFixesListSize() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class).size("values", 5).sample();
 
 		then(actual.getValues()).hasSize(5);
 	}
 
-	@Property
+	@Test
 	void setListElementWithIndex() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class)
 			.size("values", 3)
@@ -163,7 +162,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(1)).isEqualTo("modified");
 	}
 
-	@Property
+	@Test
 	void setMapField() {
 		java.util.Map<String, Integer> expected = new java.util.HashMap<>();
 		expected.put("one", 1);
@@ -174,28 +173,28 @@ class ValueProjectionCustomizationTest {
 		then(actual.getMapping()).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void sizeMapField() {
 		MapHolder actual = SUT.giveMeBuilder(MapHolder.class).size("mapping", 3).sample();
 
 		then(actual.getMapping()).hasSize(3);
 	}
 
-	@Property
+	@Test
 	void setNull() {
 		String actual = SUT.giveMeBuilder(StringValue.class).setNull("value").sample().getValue();
 
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void setNullList() {
 		List<String> actual = SUT.giveMeBuilder(StringListHolder.class).setNull("values").sample().getValues();
 
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void setNestedStringListElement() {
 		String expected = "nested-test";
 
@@ -208,7 +207,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(0).getValue()).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setMultipleNestedStringListElements() {
 		NestedStringListHolder actual = SUT.giveMeBuilder(NestedStringListHolder.class)
 			.size("values", 3)
@@ -223,7 +222,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(2).getValue()).isEqualTo("third");
 	}
 
-	@Property
+	@Test
 	void sizeSmallerRemains() {
 		List<String> actual = SUT.giveMeBuilder(StringListHolder.class)
 			.size("values", 2)
@@ -237,7 +236,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.get(0)).isEqualTo("test");
 	}
 
-	@Property
+	@Test
 	void sizeSmallerRemovesOutOfRangeValues() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class)
 			.size("values", 3)
@@ -251,12 +250,11 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(0)).isEqualTo("keep");
 	}
 
-	@Property
+	@Test
 	void defaultNotNull() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		String actual = sut.giveMeOne(SimpleObject.class).getStr();
@@ -264,12 +262,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void pushExceptGenerateType() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExceptGenerateType(new ExactTypeMatcher(String.class))
 			.build();
 
@@ -278,12 +275,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void addExceptGenerateClass() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.addExceptGenerateClass(Timestamp.class)
 			.build();
 
@@ -292,12 +288,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void addExceptGenerateClassNotGenerateField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.addExceptGenerateClass(String.class)
 			.build();
 
@@ -306,12 +301,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void addExceptGeneratePackage() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.addExceptGeneratePackage("java.lang")
 			.build();
 
@@ -320,12 +314,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void addExceptGeneratePackageNotGenerateField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.addExceptGeneratePackage("java.lang")
 			.build();
 
@@ -334,12 +327,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void pushAssignableTypeNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushAssignableTypeNullInjectGenerator(SimpleObject.class, context -> 1.0d)
 			.build();
 
@@ -348,12 +340,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void pushExactTypeNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypeNullInjectGenerator(SimpleObject.class, context -> 1.0d)
 			.build();
 
@@ -362,12 +353,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void pushNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushNullInjectGenerator(MatcherOperator.exactTypeMatchOperator(SimpleObject.class, context -> 1.0d))
 			.build();
 
@@ -376,12 +366,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void defaultNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultNullInjectGenerator(context -> 1.0d)
 			.build();
 
@@ -390,12 +379,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void pushExactTypePropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypePropertyNameResolver(String.class, property -> "string")
 			.build();
 		String expected = "test";
@@ -405,12 +393,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void pushAssignableTypePropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushAssignableTypePropertyNameResolver(Interface.class, property -> "interface")
 			.build();
 		InterfaceImplementation expected = new InterfaceImplementation();
@@ -425,12 +412,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void pushPropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushPropertyNameResolver(MatcherOperator.exactTypeMatchOperator(String.class, property -> "string"))
 			.build();
 		String expected = "test";
@@ -440,12 +426,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void defaultPropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultPropertyNameResolver(property -> "'" + property.getName() + "'")
 			.build();
 		String expected = "test";
@@ -455,20 +440,20 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void pushArbitraryContainerInfoGenerator() {
 		// given
 		MatcherOperator<ArbitraryContainerInfoGenerator> containerInfoGenerator = new MatcherOperator<>(
 			property -> {
 				if (
-					Types.getActualType(property.getType()).isArray()
-						|| Types.getGenericsTypes(property.getAnnotatedType()).isEmpty()
+					property.getJvmType().getRawType().isArray()
+						|| property.getJvmType().getTypeVariables().isEmpty()
 				) {
 					return false;
 				}
 
-				AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
-				Class<?> type = Types.getActualType(elementType);
+				com.navercorp.objectfarm.api.type.JvmType elementType = property.getJvmType().getTypeVariables().get(0);
+				Class<?> type = elementType.getRawType();
 				return type.isAssignableFrom(String.class);
 			},
 			context -> new ArbitraryContainerInfo(5, 5)
@@ -477,7 +462,6 @@ class ValueProjectionCustomizationTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushArbitraryContainerInfoGenerator(containerInfoGenerator)
 			.build();
 
@@ -488,24 +472,23 @@ class ValueProjectionCustomizationTest {
 		then(actual).hasSize(5);
 	}
 
-	@Property
+	@Test
 	void pushArbitraryContainerInfoGeneratorNotMatching() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					property -> {
 						if (
-							Types.getActualType(property.getType()).isArray()
-								|| Types.getGenericsTypes(property.getAnnotatedType()).isEmpty()
+							property.getJvmType().getRawType().isArray()
+								|| property.getJvmType().getTypeVariables().isEmpty()
 						) {
 							return false;
 						}
 
-						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
-						Class<?> type = Types.getActualType(elementType);
+						com.navercorp.objectfarm.api.type.JvmType elementType = property.getJvmType().getTypeVariables().get(0);
+						Class<?> type = elementType.getRawType();
 						return type.isAssignableFrom(String.class);
 					},
 					context -> new ArbitraryContainerInfo(5, 5)
@@ -518,7 +501,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).hasSizeBetween(0, 3);
 	}
 
-	@Property
+	@Test
 	void defaultArbitraryContainerMaxSize() {
 		// given
 		ArbitraryContainerInfoGenerator containerInfoGenerator = context -> new ArbitraryContainerInfo(0, 1);
@@ -526,7 +509,6 @@ class ValueProjectionCustomizationTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryContainerInfoGenerator(containerInfoGenerator)
 			.build();
 
@@ -537,7 +519,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).hasSizeLessThanOrEqualTo(1);
 	}
 
-	@Property
+	@Test
 	void defaultArbitraryContainerInfo() {
 		// given
 		ArbitraryContainerInfoGenerator containerInfoGenerator = context -> new ArbitraryContainerInfo(3, 3);
@@ -545,7 +527,6 @@ class ValueProjectionCustomizationTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryContainerInfoGenerator(containerInfoGenerator)
 			.build();
 
@@ -556,14 +537,13 @@ class ValueProjectionCustomizationTest {
 		then(actual).hasSize(3);
 	}
 
-	@Property
+	@Test
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMaxSize() {
 		ArbitraryContainerInfoGenerator containerInfoGenerator = context -> new ArbitraryContainerInfo(0, 5);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryContainerInfoGenerator(containerInfoGenerator)
 			.build();
 
@@ -573,13 +553,12 @@ class ValueProjectionCustomizationTest {
 		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Property
+	@Test
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMinSize() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
 			.build();
 
@@ -591,13 +570,12 @@ class ValueProjectionCustomizationTest {
 		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Property
+	@Test
 	void sampleEnumSetWithEnumSizeIsLessThanContainerInfoMinSize() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
 			.build();
 
@@ -609,12 +587,11 @@ class ValueProjectionCustomizationTest {
 		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Property
+	@Test
 	void alterDefaultArbitraryGenerator() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryGenerator(generator ->
 				new MatchArbitraryGenerator(
 					Arrays.asList(
@@ -632,12 +609,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void skipArbitraryGenerator() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryGenerator(generator ->
 				new CompositeArbitraryGenerator(Arrays.asList(context -> NOT_GENERATED, generator))
 			)
@@ -651,12 +627,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void uniqueArbitraryGenerator() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryGenerator(UniqueArbitraryGenerator::new)
 			.build();
 
@@ -668,12 +643,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).hasSameSizeAs(expected);
 	}
 
-	@Property
+	@Test
 	void allArbitraryGeneratorSkipReturnsNull() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultArbitraryGenerator(generator ->
 				(new CompositeArbitraryGenerator(Arrays.asList(context -> NOT_GENERATED, context -> NOT_GENERATED)))
 			)
@@ -686,11 +660,10 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void defaultNotNullNotWorksWhenSetDefaultNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultNullInjectGenerator(
 				new DefaultNullInjectGenerator(
 					ALWAYS_NULL_INJECT,
@@ -709,12 +682,11 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void nullableElement() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultNullInjectGenerator(
 				new DefaultNullInjectGenerator(1.0d, false, false, true, Collections.emptySet(), Collections.emptySet())
 			)
@@ -726,7 +698,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).allMatch(Objects::isNull);
 	}
 
-	@Property
+	@Test
 	void sampleNullableContainerWhenOptionNullableContainerIsSetReturnsNull() {
 		DefaultNullInjectGenerator nullInjectGenerator = new DefaultNullInjectGenerator(
 			ALWAYS_NULL_INJECT,
@@ -739,7 +711,6 @@ class ValueProjectionCustomizationTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.defaultNullInjectGenerator(nullInjectGenerator)
 			.build();
 
@@ -748,14 +719,14 @@ class ValueProjectionCustomizationTest {
 		then(values).isNull();
 	}
 
-	@Property
+	@Test
 	void setSimple() {
 		SimpleStringObject actual = SUT.giveMeBuilder(SimpleStringObject.class).set("str", "str").sample();
 
 		then(actual.getStr()).isEqualTo("str");
 	}
 
-	@Property
+	@Test
 	void setDecomposedValue() {
 		SimpleStringObject expected = new SimpleStringObject();
 		expected.setStr("original");
@@ -769,7 +740,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getStr()).isEqualTo("modified");
 	}
 
-	@Property
+	@Test
 	void setArbitrary() {
 		SimpleStringObject expected = new SimpleStringObject();
 		expected.setStr("original");
@@ -783,7 +754,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getStr()).isEqualTo("modified");
 	}
 
-	@Property
+	@Test
 	void setOptional() {
 		Optional<String> optional = Optional.of("test");
 
@@ -795,7 +766,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(optional);
 	}
 
-	@Property
+	@Test
 	void setDecomposedList() {
 		List<String> expected = new ArrayList<>();
 		expected.add("a");
@@ -807,7 +778,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setDecomposedSet() {
 		Set<String> expected = new HashSet<>();
 		expected.add("a");
@@ -820,7 +791,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setDecomposedMap() {
 		Map<String, String> expected = new HashMap<>();
 		expected.put("a", "1");
@@ -834,7 +805,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setDecomposedOptional() {
 		Optional<String> expected = Optional.of("test");
 
@@ -846,7 +817,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setDecomposedOptionalEmpty() {
 		Optional<String> expected = Optional.empty();
 
@@ -858,28 +829,28 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setNullMap() {
 		Map<String, String> actual = SUT.giveMeBuilder(StringMapHolder.class).setNull("mapping").sample().getMapping();
 
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void setNotNullString() {
 		String actual = SUT.giveMeBuilder(SimpleStringObject.class).setNotNull("str").sample().getStr();
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void setNotNullList() {
 		List<String> actual = SUT.giveMeBuilder(StringListHolder.class).setNotNull("values").sample().getValues();
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void setNotNullMap() {
 		Map<String, String> actual = SUT.giveMeBuilder(StringMapHolder.class)
 			.setNotNull("mapping")
@@ -889,14 +860,14 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void setNotNullValue() {
 		String actual = SUT.giveMeBuilder(SimpleStringObject.class).set("str", NOT_NULL).sample().getStr();
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void setRootJavaType() {
 		String expected = "test";
 
@@ -905,7 +876,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setRootComplexType() {
 		SimpleStringObject expected = new SimpleStringObject();
 		expected.setStr("test");
@@ -915,7 +886,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getStr()).isEqualTo(expected.getStr());
 	}
 
-	@Property
+	@Test
 	void setListElement() {
 		String expected = "test";
 
@@ -929,14 +900,14 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setAndSetNull() {
 		String actual = SUT.giveMeBuilder(SimpleStringObject.class).set("str", "test").setNull("str").sample().getStr();
 
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void setAfterBuildNotAffected() {
 		ArbitraryBuilder<SimpleStringObject> builder = SUT.giveMeBuilder(SimpleStringObject.class);
 		net.jqwik.api.Arbitrary<SimpleStringObject> buildArbitrary = builder.build();
@@ -948,7 +919,7 @@ class ValueProjectionCustomizationTest {
 		then(actualSample.getStr()).isEqualTo("set");
 	}
 
-	@Property
+	@Test
 	void setLazyValue() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class).setLazy("$", variable::sample);
@@ -959,7 +930,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Property
+	@Test
 	void setArbitraryBuilder() {
 		String expected = "test";
 
@@ -971,7 +942,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setDecomposeContainerTwice() {
 		List<String> strings = new ArrayList<>();
 		strings.add("test");
@@ -985,7 +956,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Test
 	void setEmptyMap() {
 		Map<String, String> map = new HashMap<>();
 		map.put("test", "value");
@@ -999,7 +970,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Test
 	void setFieldWhichObjectIsFixedNull() {
 		String expected = "test";
 
@@ -1013,7 +984,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setFieldWhichRootIsFixedNull() {
 		String expected = "test";
 
@@ -1026,63 +997,63 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void sizeZero() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class).size("values", 0).sample();
 
 		then(actual.getValues()).hasSize(0);
 	}
 
-	@Property
+	@Test
 	void size() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class).size("values", 10).sample();
 
 		then(actual.getValues()).hasSize(10);
 	}
 
-	@Property
+	@Test
 	void sizeArray() {
 		StringArrayHolder actual = SUT.giveMeBuilder(StringArrayHolder.class).size("values", 10).sample();
 
 		then(actual.getValues()).hasSize(10);
 	}
 
-	@Property
+	@Test
 	void sizeMinMax() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class).size("values", 3, 8).sample();
 
 		then(actual.getValues()).hasSizeBetween(3, 8);
 	}
 
-	@Property
+	@Test
 	void sizeMinIsBiggerThanMax() {
 		thenThrownBy(() -> SUT.giveMeBuilder(StringListHolder.class).size("values", 5, 1).sample())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("should be min <= max");
 	}
 
-	@Property
+	@Test
 	void minSize() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class).minSize("values", 10).sample();
 
 		then(actual.getValues()).hasSizeGreaterThanOrEqualTo(10);
 	}
 
-	@Property
+	@Test
 	void maxSize() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class).maxSize("values", 10).sample();
 
 		then(actual.getValues()).hasSizeLessThanOrEqualTo(10);
 	}
 
-	@Property
+	@Test
 	void maxSizeZero() {
 		StringListHolder actual = SUT.giveMeBuilder(StringListHolder.class).maxSize("values", 0).sample();
 
 		then(actual.getValues()).hasSizeLessThanOrEqualTo(0);
 	}
 
-	@Property
+	@Test
 	void nestedSize() {
 		List<List<String>> actual = SUT.giveMeBuilder(new TypeReference<List<List<String>>>() {
 			})
@@ -1094,7 +1065,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.get(0)).hasSize(10);
 	}
 
-	@Property
+	@Test
 	void sizeAfterSetReturnsSet() {
 		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
 			})
@@ -1105,7 +1076,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Test
 	void sizeNotSetEmptyList() {
 		List<String> actual = SUT.giveMeBuilder(StringListHolder.class)
 			.size("values", 1)
@@ -1116,7 +1087,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEmpty();
 	}
 
-	@Property
+	@Test
 	void mapWhenNull() {
 		String actual = SUT.giveMeBuilder(SimpleStringObject.class)
 			.setNull("str")
@@ -1126,7 +1097,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void mapWhenNotNull() {
 		String actual = SUT.giveMeBuilder(SimpleStringObject.class)
 			.setNotNull("str")
@@ -1136,7 +1107,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void mapToFixedValue() {
 		String actual = SUT.giveMeBuilder(SimpleStringObject.class)
 			.map(it -> "test")
@@ -1145,7 +1116,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Property
+	@Test
 	void mapKeyIsNotNull() {
 		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Map<String, String>>() {
 		}).sample().keySet();
@@ -1153,7 +1124,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).allMatch(Objects::nonNull);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void sampleAfterMapTwiceReturnsDiff() {
 		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(SimpleStringObject.class)
 			.set(
@@ -1170,7 +1141,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNotEqualTo(notExpected);
 	}
 
-	@Property
+	@Test
 	void zipList() {
 		List<ArbitraryBuilder<?>> list = new ArrayList<>();
 		list.add(SUT.giveMeBuilder(StringValue.class));
@@ -1187,7 +1158,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValue2()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void zipEmptyListThrows() {
 		List<ArbitraryBuilder<?>> list = new ArrayList<>();
 
@@ -1196,7 +1167,7 @@ class ValueProjectionCustomizationTest {
 			.hasMessageContaining("zip should be used in more than two ArbitraryBuilders, given size");
 	}
 
-	@Property
+	@Test
 	void zipThree() {
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class).set("value", "s1");
 		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class).set("value", "s2");
@@ -1219,7 +1190,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
 	}
 
-	@Property
+	@Test
 	void zipWithThree() {
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class).set("value", "s1");
 		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class).set("value", "s2");
@@ -1244,7 +1215,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
 	}
 
-	@Property
+	@Test
 	void zipFour() {
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class).set("value", "s1");
 		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class).set("value", "s2");
@@ -1270,7 +1241,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
 	}
 
-	@Property
+	@Test
 	void zipWithFour() {
 		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class).set("value", "s1");
 		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class).set("value", "s2");
@@ -1298,7 +1269,7 @@ class ValueProjectionCustomizationTest {
 		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
 	}
 
-	@Property
+	@Test
 	void zipWith() {
 		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
 
@@ -1309,7 +1280,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void zipTwo() {
 		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<Integer> integerArbitraryBuilder = SUT.giveMeBuilder(Integer.class);
@@ -1323,7 +1294,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void zipReturnsNew() {
 		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<Integer> integerArbitraryBuilder = SUT.giveMeBuilder(Integer.class);
@@ -1339,7 +1310,7 @@ class ValueProjectionCustomizationTest {
 		then(result1).isNotEqualTo(result2);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void notFixedSampleReturnsDiff() {
 		ArbitraryBuilder<SimpleStringObject> fixedArbitraryBuilder = SUT.giveMeBuilder(SimpleStringObject.class);
 
@@ -1348,7 +1319,7 @@ class ValueProjectionCustomizationTest {
 		then(sample1).isNotEqualTo(sample2);
 	}
 
-	@Property
+	@Test
 	void fixedSampleReturnsSame() {
 		ArbitraryBuilder<SimpleStringObject> fixedArbitraryBuilder = SUT.giveMeBuilder(
 			SimpleStringObject.class
@@ -1359,7 +1330,7 @@ class ValueProjectionCustomizationTest {
 		then(sample1.getStr()).isEqualTo(sample2.getStr());
 	}
 
-	@Property
+	@Test
 	void arbitraryFixedSampleReturnsSame() {
 		ArbitraryBuilder<SimpleStringObject> fixedArbitraryBuilder = SUT.giveMeBuilder(SimpleStringObject.class)
 			.set("str", Arbitraries.of("value1", "value2"))
@@ -1370,14 +1341,14 @@ class ValueProjectionCustomizationTest {
 		then(sample1.getStr()).isEqualTo(sample2.getStr());
 	}
 
-	@Property
+	@Test
 	void setNullFixedReturnsNull() {
 		SimpleStringObject actual = SUT.giveMeBuilder(SimpleStringObject.class).setNull("$").fixed().sample();
 
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void fixedRangedSizeReturnsSameSize() {
 		ArbitraryBuilder<StringListHolder> fixedArbitraryBuilder = SUT.giveMeBuilder(StringListHolder.class)
 			.size("values", 1, 5)
@@ -1389,7 +1360,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setNullFixed() {
 		String expected = "test";
 
@@ -1404,7 +1375,7 @@ class ValueProjectionCustomizationTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void giveMeBuilderWithValue() {
 		SimpleStringObject expected = new SimpleStringObject();
 		expected.setStr("test");
@@ -1414,20 +1385,19 @@ class ValueProjectionCustomizationTest {
 		then(actual.getStr()).isEqualTo(expected.getStr());
 	}
 
-	@Property
+	@Test
 	void copyValidOnly() {
 		thenNoException().isThrownBy(() ->
 			SUT.giveMeBuilder(ListStringObject.class).size("values", 0).validOnly(false).copy().sample()
 		);
 	}
 
-	@Property
+	@Test
 	void generateNewContainer() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		// when
@@ -1438,7 +1408,7 @@ class ValueProjectionCustomizationTest {
 		then(pair).isNotNull();
 	}
 
-	@Property
+	@Test
 	void decomposeNewContainer() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1456,7 +1426,6 @@ class ValueProjectionCustomizationTest {
 					"given type is not supported container : " + obj.getClass().getTypeName()
 				);
 			})
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 		ArbitraryBuilder<Pair<String, String>> builder = sut
 			.giveMeBuilder(new TypeReference<Pair<String, String>>() {
@@ -1471,7 +1440,7 @@ class ValueProjectionCustomizationTest {
 		then(actual1).isEqualTo(actual2);
 	}
 
-	@Property
+	@Test
 	void decomposeNewContainerByAddContainerType() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1482,7 +1451,6 @@ class ValueProjectionCustomizationTest {
 				list.add(pair.getSecond());
 				return new DecomposableJavaContainer(list, 2);
 			})
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 		ArbitraryBuilder<Pair<String, String>> builder = sut
 			.giveMeBuilder(new TypeReference<Pair<String, String>>() {
@@ -1497,7 +1465,7 @@ class ValueProjectionCustomizationTest {
 		then(actual1).isEqualTo(actual2);
 	}
 
-	@Property
+	@Test
 	void decomposeNewContainerByAddContainerTypeInterface() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1513,7 +1481,6 @@ class ValueProjectionCustomizationTest {
 					return new DecomposableJavaContainer(list, 2);
 				}
 			)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		// when
@@ -1527,12 +1494,11 @@ class ValueProjectionCustomizationTest {
 		);
 	}
 
-	@Property
+	@Test
 	void setContainerThenSize_shouldNotLockConcreteType() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 
 		StringValue element = new StringValue();

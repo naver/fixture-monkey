@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ExactTypeMatcher implements Matcher {
 	private final Class<?> type;
 
@@ -38,6 +38,6 @@ public final class ExactTypeMatcher implements Matcher {
 
 	@Override
 	public boolean match(Property property) {
-		return this.type == Types.getActualType(property.getType());
+		return this.type == Types.normalizeRawType(property.getJvmType().getRawType());
 	}
 }

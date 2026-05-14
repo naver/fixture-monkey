@@ -19,9 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +26,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -44,23 +40,18 @@ public final class TypeNameProperty implements Property {
 	private final Boolean nullable;
 
 	public TypeNameProperty(
-		AnnotatedType annotatedType,
+		JvmType jvmType,
 		String typeName,
 		@Nullable Boolean nullable
 	) {
-		this.jvmType = Types.toJvmType(annotatedType, Collections.emptyList());
+		this.jvmType = jvmType;
 		this.typeName = typeName;
 		this.nullable = nullable;
 	}
 
 	@Override
-	public Type getType() {
-		return jvmType.getRawType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return jvmType.getAnnotatedType();
+	public JvmType getJvmType() {
+		return jvmType;
 	}
 
 	@Nullable
@@ -72,12 +63,6 @@ public final class TypeNameProperty implements Property {
 	@Override
 	public List<Annotation> getAnnotations() {
 		return jvmType.getAnnotations();
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Nullable

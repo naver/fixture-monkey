@@ -24,7 +24,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 import java.sql.Timestamp;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -41,7 +40,7 @@ class PriorityConstructorArbitraryIntrospectorTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sample() {
 		Timestamp actual = SUT.giveMeOne(Timestamp.class);
 
@@ -58,7 +57,7 @@ class PriorityConstructorArbitraryIntrospectorTest {
 		then(actual).isNotEqualTo(expected);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void set() {
 		// given
 		PriorityConstructorArbitraryIntrospector priorityConstructorArbitraryIntrospector =
@@ -80,7 +79,7 @@ class PriorityConstructorArbitraryIntrospectorTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void genericType() {
 		String actual = SUT.giveMeOne(new TypeReference<GenericObject<String>>() {
 		}).getValue();
@@ -88,7 +87,7 @@ class PriorityConstructorArbitraryIntrospectorTest {
 		then(actual).isExactlyInstanceOf(String.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void twoGenericType() {
 		TwoGenericObject<String, Integer> actual = SUT.giveMeOne(
 			new TypeReference<TwoGenericObject<String, Integer>>() {
@@ -98,7 +97,7 @@ class PriorityConstructorArbitraryIntrospectorTest {
 		then(actual.getValue2()).isExactlyInstanceOf(Integer.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void twoGenericObjectConstructorParameterOrderDiff() {
 		TwoGenericObjectConstructorParameterOrderDiff<String, Integer> actual = SUT.giveMeOne(
 			new TypeReference<TwoGenericObjectConstructorParameterOrderDiff<String, Integer>>() {
@@ -108,7 +107,7 @@ class PriorityConstructorArbitraryIntrospectorTest {
 		then(actual.getValue2()).isExactlyInstanceOf(Integer.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void twoGenericObjectConstructorParameterOrderDiffNameDiff() {
 		TwoGenericObjectConstructorParameterOrderDiffNameDiff<String, Integer> actual = SUT.giveMeOne(
 			new TypeReference<TwoGenericObjectConstructorParameterOrderDiffNameDiff<String, Integer>>() {

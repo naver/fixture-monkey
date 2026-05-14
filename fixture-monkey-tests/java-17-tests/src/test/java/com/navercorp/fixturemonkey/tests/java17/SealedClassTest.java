@@ -22,11 +22,12 @@ import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.EnumClass;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.GenericSealedShapeContainer;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClass;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassImpl;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassProperty;
@@ -34,12 +35,13 @@ import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInter
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInterfaceImpl;
 
 class SealedClassTest {
+
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSealedClass() {
 		// when
 		SealedClass actual = SUT.giveMeOne(SealedClass.class);
@@ -47,7 +49,7 @@ class SealedClassTest {
 		then(actual).isInstanceOf(SealedClassImpl.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSealedInterface() {
 		// when
 		SealedInterface actual = SUT.giveMeOne(SealedInterface.class);
@@ -55,7 +57,7 @@ class SealedClassTest {
 		then(actual).isInstanceOf(SealedInterfaceImpl.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSealedClassProperty() {
 		// when
 		SealedClassProperty actual = SUT.giveMeOne(SealedClassProperty.class);
@@ -64,19 +66,30 @@ class SealedClassTest {
 		then(actual.sealedClass()).isInstanceOf(SealedClassImpl.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedSealedClassProperty() {
 		// when
-		SealedClassProperty actual = SUT.giveMeBuilder(SealedClassProperty.class)
-			.fixed()
-			.sample();
+		SealedClassProperty actual = SUT.giveMeBuilder(SealedClassProperty.class).fixed().sample();
 
 		then(actual.sealedInterface()).isInstanceOf(SealedInterfaceImpl.class);
 		then(actual.sealedClass()).isInstanceOf(SealedClassImpl.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleEnum() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(EnumClass.class));
+	}
+
+	@Test
+	void sampleGenericSealedInterface() {
+		// when
+		GenericSealedShapeContainer actual = SUT.giveMeOne(GenericSealedShapeContainer.class);
+
+		// then
+		then(actual).isNotNull();
+		then(actual.stringShape()).isNotNull();
+		then(actual.stringShape().getLabel()).isInstanceOf(String.class);
+		then(actual.intShape()).isNotNull();
+		then(actual.intShape().getLabel()).isInstanceOf(Integer.class);
 	}
 }

@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Provides static methods or constants for extensions of ArbitraryBuilder {@code set}.
  */
-@API(since = "0.5.1", status = Status.MAINTAINED)
+@API(since = "0.5.1", status = Status.EXPERIMENTAL)
 public final class Values {
 	public static final Object NOT_NULL = new Object();
 

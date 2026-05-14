@@ -18,10 +18,14 @@
 
 package com.navercorp.fixturemonkey.api.experimental;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 /**
  * It is deprecated. Use {@link com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector} instead.
  */
 @Deprecated
+@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public interface TypedExpressionGenerator<T> {
 	@Deprecated
 	static <U> com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator<U> typedRoot() {

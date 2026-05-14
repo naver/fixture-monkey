@@ -21,14 +21,13 @@ package com.navercorp.fixturemonkey.api.generator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ContainerPropertyGenerator {
-	TypeReference<String> DEFAULT_ELEMENT_RAW_TYPE =
-		new TypeReference<String>() {
-		};
+	JvmType DEFAULT_ELEMENT_JVM_TYPE = new JavaType(String.class);
 
 	ContainerProperty generate(ContainerPropertyGeneratorContext context);
 }

@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.adapter;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.ComplexObject;
@@ -39,16 +39,14 @@ class ValueProjectionIntrospectorTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void pushExactTypeArbitraryIntrospector() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushExactTypeArbitraryIntrospector(SimpleObjectChild.class, context ->
 				new ArbitraryIntrospectorResult(ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null)))
 			)
@@ -61,13 +59,12 @@ class ValueProjectionIntrospectorTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void pushAssignableTypeArbitraryIntrospector() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushAssignableTypeArbitraryIntrospector(SimpleObject.class, context ->
 				new ArbitraryIntrospectorResult(ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null)))
 			)
@@ -80,13 +77,12 @@ class ValueProjectionIntrospectorTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void pushArbitraryIntrospector() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.pushArbitraryIntrospector(
 				MatcherOperator.exactTypeMatchOperator(SimpleObjectChild.class, context ->
 					new ArbitraryIntrospectorResult(ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null)))
@@ -101,11 +97,10 @@ class ValueProjectionIntrospectorTest {
 		then(actual).isNull();
 	}
 
-	@Property
+	@Test
 	void objectIntrospector() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.objectIntrospector(context ->
 				new ArbitraryIntrospectorResult(ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null)))
 			)

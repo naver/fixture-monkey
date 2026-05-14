@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
+import com.navercorp.fixturemonkey.adapter.AssemblyPlanner
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.MatchPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator
@@ -26,6 +27,8 @@ import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
+import com.navercorp.fixturemonkey.plugin.JvmTypeSystem
+import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator
@@ -42,18 +45,23 @@ import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
+import com.navercorp.fixturemonkey.kotlin.generator.KotlinNullInjectGenerator
+import com.navercorp.fixturemonkey.kotlin.node.KotlinLeafTypeResolver
+import com.navercorp.fixturemonkey.kotlin.node.KotlinNodeCandidateGenerator
+import com.navercorp.fixturemonkey.kotlin.node.KotlinNodePromoters
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.KotlinNullabilityUtils
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
+import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
 
 @API(since = "0.4.0", status = MAINTAINED)
-class KotlinPlugin : Plugin {
+class KotlinPlugin : Plugin, JvmTypeSystemPlugin {
     override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
         optionsBuilder.objectIntrospector {
             MatchArbitraryIntrospector(
@@ -67,7 +75,7 @@ class KotlinPlugin : Plugin {
                 MatchPropertyGenerator(
                     listOf(
                         MatcherOperator(
-                            { property -> property.type.actualType().isKotlinType() },
+                            { property -> property.jvmType.rawType.isKotlinType() },
                             KotlinPropertyGenerator()
                         ),
                         MatcherOperator({ true }, DefaultPropertyGenerator())
@@ -75,18 +83,18 @@ class KotlinPlugin : Plugin {
                 )
             )
             .insertFirstArbitraryContainerPropertyGenerator(
-                { property -> property.type.actualType().cachedKotlin().isKotlinLambda() }
+                { property -> property.jvmType.rawType.cachedKotlin().isKotlinLambda() }
             ) { FunctionalInterfaceContainerPropertyGenerator.INSTANCE.generate(it) }
             .insertFirstArbitraryIntrospector(
-                { property -> property.type.actualType().cachedKotlin().isKotlinLambda() },
+                { property -> property.jvmType.rawType.cachedKotlin().isKotlinLambda() },
                 FunctionalInterfaceArbitraryIntrospector()
             )
             .insertFirstCandidateConcretePropertyResolvers(
                 MatcherOperator(
-                    { it.type.actualType().cachedKotlin().isSealed },
+                    { it.jvmType.rawType.cachedKotlin().isSealed },
                     CandidateConcretePropertyResolver { property ->
                         ConcreteTypeCandidateConcretePropertyResolver(
-                            property.type.actualType().cachedKotlin().sealedSubclasses
+                            property.jvmType.rawType.cachedKotlin().sealedSubclasses
                                 .map { it.java }
                         )
                             .resolve(property)
@@ -95,7 +103,7 @@ class KotlinPlugin : Plugin {
             )
             .insertFirstPropertyGenerator(
                 MatcherOperator(
-                    { p -> Modifier.isInterface(p.type.actualType().modifiers) },
+                    { p -> Modifier.isInterface(p.jvmType.rawType.modifiers) },
                     InterfaceKFunctionPropertyGenerator(),
                 ),
             )
@@ -136,6 +144,21 @@ class KotlinPlugin : Plugin {
                     NullInjectGenerator { 0.0 }
                 )
             )
+            .defaultNullInjectGeneratorOperator { delegate ->
+                KotlinNullInjectGenerator(delegate)
+            }
+    }
+
+    override fun configure(typeSystem: JvmTypeSystem) {
+        typeSystem.assemblyPlanner(
+            AssemblyPlanner(
+                System.nanoTime(),
+                JvmNodeCandidateTreeContext(),
+                KotlinNodePromoters.all(),
+                listOf(KotlinLeafTypeResolver.INSTANCE),
+                { delegate -> KotlinNodeCandidateGenerator(delegate) }
+            )
+        )
     }
 
     private fun isKotlinNonNullableProperty(property: com.navercorp.fixturemonkey.api.property.Property): Boolean {

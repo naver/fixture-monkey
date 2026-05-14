@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.adapter.projection.ValueProjection;
 import com.navercorp.objectfarm.api.expression.PathExpression;
@@ -62,7 +62,7 @@ class ValueProjectionUnitTest {
 		.containerSizeResolver(FIXED_SIZE_RESOLVER)
 		.build();
 
-	@Property(tries = 1)
+	@Test
 	void buildWithPut() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -78,7 +78,7 @@ class ValueProjectionUnitTest {
 		then(projection.size()).isEqualTo(2);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void buildWithPutByPathExpression() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -96,7 +96,7 @@ class ValueProjectionUnitTest {
 		then(projection.get(valueNode)).isEqualTo(100);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void buildWithPutByPathString() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -114,7 +114,7 @@ class ValueProjectionUnitTest {
 		then(projection.get(valueNode)).isEqualTo(200);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void putByPathWithUnresolvablePathStoresIt() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -128,7 +128,7 @@ class ValueProjectionUnitTest {
 		then(projection.getUnresolvedNonWildcardPaths()).containsExactly("$.nonexistent");
 	}
 
-	@Property(tries = 1)
+	@Test
 	void allowNullValues() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -142,7 +142,7 @@ class ValueProjectionUnitTest {
 		then(projection.get(nameNode)).isNull();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void getExistingNode() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -157,7 +157,7 @@ class ValueProjectionUnitTest {
 		then(value).isEqualTo("Test");
 	}
 
-	@Property(tries = 1)
+	@Test
 	void getNonExistingNode() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -173,7 +173,7 @@ class ValueProjectionUnitTest {
 		then(value).isNull();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void getByPathExpression() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -188,7 +188,7 @@ class ValueProjectionUnitTest {
 		then(value).isEqualTo("PathTest");
 	}
 
-	@Property(tries = 1)
+	@Test
 	void getByPathString() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -203,7 +203,7 @@ class ValueProjectionUnitTest {
 		then(value).isEqualTo("StringPathTest");
 	}
 
-	@Property(tries = 1)
+	@Test
 	void getByInvalidPath() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -218,7 +218,7 @@ class ValueProjectionUnitTest {
 		then(value).isNull();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void forEachIteratesAll() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -236,7 +236,7 @@ class ValueProjectionUnitTest {
 		then(count.get()).isEqualTo(2);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void filterByPredicate() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -256,7 +256,7 @@ class ValueProjectionUnitTest {
 		then(nonNullNodes).contains(nameNode);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void filterNoMatch() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -271,7 +271,7 @@ class ValueProjectionUnitTest {
 		then(result).isEmpty();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void sizeReturnsCount() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -284,7 +284,7 @@ class ValueProjectionUnitTest {
 		then(projection.size()).isEqualTo(2);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void isEmptyForEmpty() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -295,7 +295,7 @@ class ValueProjectionUnitTest {
 		then(projection.isEmpty()).isTrue();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void isEmptyForNonEmpty() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -307,7 +307,7 @@ class ValueProjectionUnitTest {
 		then(projection.isEmpty()).isFalse();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void containsNodeForExisting() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -319,7 +319,7 @@ class ValueProjectionUnitTest {
 		then(projection.containsNode(nameNode)).isTrue();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void containsNodeForNonExisting() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -332,7 +332,7 @@ class ValueProjectionUnitTest {
 		then(projection.containsNode(valueNode)).isFalse();
 	}
 
-	@Property(tries = 1)
+	@Test
 	void fromStringPathMap() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -351,7 +351,7 @@ class ValueProjectionUnitTest {
 		then(projection.get(valueNode)).isEqualTo(888);
 	}
 
-	@Property(tries = 1)
+	@Test
 	void fromStringPathMapKeepsUnresolvablePaths() {
 		// given
 		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
@@ -371,7 +371,7 @@ class ValueProjectionUnitTest {
 		then(projection.getUnresolvedNonWildcardPaths()).containsExactly("$.invalid");
 	}
 
-	@Property(tries = 1)
+	@Test
 	void listElementPaths() {
 		// given
 		JvmNodeTree listTree = createTree(new JavaType(ListContainer.class));

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collections;
 import java.util.List;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.InterfaceResolverConverter;
@@ -54,7 +54,7 @@ class InterfaceResolverConverterTest {
 		}
 	}
 
-	@Property
+	@Test
 	void createsResolverFromValueType() {
 		Dog dog = new Dog();
 
@@ -73,7 +73,7 @@ class InterfaceResolverConverterTest {
 		assertThat(resolvedType.getRawType()).isEqualTo(Dog.class);
 	}
 
-	@Property
+	@Test
 	void createsResolverWithSpecificConcreteType() {
 		PathResolver<InterfaceResolver> resolver = InterfaceResolverConverter.createResolver("$.animal", Cat.class);
 
@@ -87,7 +87,7 @@ class InterfaceResolverConverterTest {
 		assertThat(resolvedType.getRawType()).isEqualTo(Cat.class);
 	}
 
-	@Property
+	@Test
 	void returnsNullForNonAssignableTypes() {
 		PathResolver<InterfaceResolver> resolver = InterfaceResolverConverter.createResolver("$.animal", Dog.class);
 
@@ -99,14 +99,14 @@ class InterfaceResolverConverterTest {
 		assertThat(resolvedType).isNull();
 	}
 
-	@Property
+	@Test
 	void nullValueReturnsNullResolver() {
 		PathResolver<InterfaceResolver> resolver = InterfaceResolverConverter.fromValue("$.animal", null);
 
 		assertThat(resolver).isNull();
 	}
 
-	@Property
+	@Test
 	void createsResolverWithTypeVariables() {
 		List<String> stringList = Collections.singletonList("test");
 		JvmType stringType = new JavaType(String.class);
@@ -128,7 +128,7 @@ class InterfaceResolverConverterTest {
 		assertThat(resolvedType.getTypeVariables().get(0).getRawType()).isEqualTo(String.class);
 	}
 
-	@Property
+	@Test
 	void pathPatternMatchingWorksCorrectly() {
 		PathResolver<InterfaceResolver> resolver = InterfaceResolverConverter.createResolver(
 			"$.items[*].animal",

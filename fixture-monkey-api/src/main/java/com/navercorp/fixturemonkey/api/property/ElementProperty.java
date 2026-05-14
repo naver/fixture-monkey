@@ -19,10 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,7 +27,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -61,12 +56,12 @@ public class ElementProperty implements ContainerElementProperty {
 
 	public ElementProperty(
 		Property containerProperty,
-		AnnotatedType elementType,
+		JvmType elementType,
 		@Nullable Integer index,
 		int sequence
 	) {
 		this.containerProperty = containerProperty;
-		this.elementType = Types.toJvmType(elementType, Collections.emptyList());
+		this.elementType = elementType;
 		this.index = index;
 		this.sequence = sequence;
 		this.annotationsMap = this.elementType.getAnnotations().stream()
@@ -74,13 +69,8 @@ public class ElementProperty implements ContainerElementProperty {
 	}
 
 	@Override
-	public Type getType() {
-		return this.elementType.getRawType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.elementType.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.elementType;
 	}
 
 	public Property getContainerProperty() {
@@ -90,10 +80,6 @@ public class ElementProperty implements ContainerElementProperty {
 	@Override
 	public Property getElementProperty() {
 		return this;
-	}
-
-	public AnnotatedType getElementType() {
-		return this.elementType.getAnnotatedType();
 	}
 
 	@Nullable
@@ -120,37 +106,6 @@ public class ElementProperty implements ContainerElementProperty {
 	public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
 		return Optional.ofNullable(this.annotationsMap.get(annotationClass))
 			.map(annotationClass::cast);
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		Class<?> actualType = Types.getActualType(instance.getClass());
-		if (isOptional(actualType)) {
-			return getOptionalValue(instance);
-		}
-
-		if (actualType.isArray()) {
-			if (Array.getLength(instance) == 0) {
-				return null;
-			}
-
-			return Array.get(instance, sequence);
-		}
-
-		if (List.class.isAssignableFrom(actualType)) {
-			List<?> list = (List<?>)instance;
-			if (list.isEmpty()) {
-				return null;
-			}
-			return list.get(sequence);
-		}
-
-		if (Supplier.class.isAssignableFrom(actualType)) {
-			return instance;
-		}
-
-		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
 	}
 
 	@Override

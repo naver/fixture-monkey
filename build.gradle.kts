@@ -56,7 +56,7 @@ subprojects {
     if (!name.endsWith("tests")) {
         tasks.withType<Test> {
             useJUnitPlatform {
-                includeEngines("jqwik")
+                includeEngines("jqwik", "junit-jupiter")
             }
         }
     }

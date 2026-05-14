@@ -54,7 +54,7 @@ import net.jqwik.engine.properties.shrinking.ShrinkableString;
  * A StringArbitrary instance which supports filtering with a predicate
  * Same implementation as DefaultStringArbitrary
  */
-@API(since = "0.6.0", status = Status.MAINTAINED)
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class MonkeyStringArbitrary implements StringArbitrary {
 	private CharacterArbitrary characterArbitrary = new DefaultCharacterArbitrary();
 

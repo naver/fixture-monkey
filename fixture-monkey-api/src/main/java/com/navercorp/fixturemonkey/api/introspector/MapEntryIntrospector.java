@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.5.6", status = Status.MAINTAINED)
+@API(since = "0.5.6", status = Status.EXPERIMENTAL)
 public final class MapEntryIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapEntryIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Entry.class);

@@ -3,7 +3,6 @@ package com.navercorp.fixturemonkey.tests.java;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
@@ -23,77 +22,77 @@ class CombinableArbitraryTest {
 		then(actual).isInstanceOf(JqwikIntegerCombinableArbitrary.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryInjectNull() {
 		Integer actual = CombinableArbitrary.integers().injectNull(1).combined();
 
 		then(actual).isNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryFilter() {
 		Integer actual = CombinableArbitrary.integers().filter(it -> it > 10000).combined();
 
 		then(actual).isGreaterThan(10000);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryPositive() {
 		Integer actual = CombinableArbitrary.integers().positive().combined();
 
 		then(actual).isPositive();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryNegative() {
 		Integer actual = CombinableArbitrary.integers().negative().combined();
 
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryWithRange() {
 		Integer actual = CombinableArbitrary.integers().withRange(10, 100).combined();
 
 		then(actual).isBetween(10, 100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryWithRangeAndFilter() {
 		Integer actual = CombinableArbitrary.integers().withRange(10, 100).filter(it -> 75 <= it).combined();
 
 		then(actual).isBetween(75, 100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryEven() {
 		Integer actual = CombinableArbitrary.integers().even().combined();
 
 		then(actual).isEven();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryOdd() {
 		Integer actual = CombinableArbitrary.integers().odd().combined();
 
 		then(actual).isOdd();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
 		Integer actual = CombinableArbitrary.integers().positive().negative().combined();
 
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
 		Integer actual = CombinableArbitrary.integers().even().odd().combined();
 
 		then(actual).isOdd();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void integerCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
 		Integer actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined();
 
@@ -107,77 +106,77 @@ class CombinableArbitraryTest {
 		then(actual).isInstanceOf(JqwikLongCombinableArbitrary.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryInjectNull() {
 		Long actual = CombinableArbitrary.longs().injectNull(1).combined();
 
 		then(actual).isNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryFilter() {
 		Long actual = CombinableArbitrary.longs().filter(it -> it > 10000L).combined();
 
 		then(actual).isGreaterThan(10000L);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryPositive() {
 		Long actual = CombinableArbitrary.longs().positive().combined();
 
 		then(actual).isPositive();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryNegative() {
 		Long actual = CombinableArbitrary.longs().negative().combined();
 
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryWithRange() {
 		Long actual = CombinableArbitrary.longs().withRange(10L, 100L).combined();
 
 		then(actual).isBetween(10L, 100L);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryWithRangeAndFilter() {
 		Long actual = CombinableArbitrary.longs().withRange(10L, 100L).filter(it -> 75L <= it).combined();
 
 		then(actual).isBetween(75L, 100L);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryEven() {
 		Long actual = CombinableArbitrary.longs().even().combined();
 
 		then(actual % 2).isEqualTo(0);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryOdd() {
 		Long actual = CombinableArbitrary.longs().odd().combined();
 
 		then(actual % 2 != 0).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
 		Long actual = CombinableArbitrary.longs().positive().negative().combined();
 
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
 		Long actual = CombinableArbitrary.longs().even().odd().combined();
 
 		then(actual % 2 != 0).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void longCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
 		Long actual = CombinableArbitrary.longs().negative().withRange(100L, 1000L).combined();
 
@@ -191,70 +190,70 @@ class CombinableArbitraryTest {
 		then(actual).isInstanceOf(JqwikByteCombinableArbitrary.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryInjectNull() {
 		Byte actual = CombinableArbitrary.bytes().injectNull(1).combined();
 
 		then(actual).isNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryFilter() {
 		Byte actual = CombinableArbitrary.bytes().filter(it -> it > 50).combined();
 
 		then(actual).isGreaterThan((byte)50);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryPositive() {
 		Byte actual = CombinableArbitrary.bytes().positive().combined();
 
 		then(actual).isPositive();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryNegative() {
 		Byte actual = CombinableArbitrary.bytes().negative().combined();
 
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryWithRange() {
 		Byte actual = CombinableArbitrary.bytes().withRange((byte)10, (byte)100).combined();
 
 		then(actual).isBetween((byte)10, (byte)100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryWithRangeAndFilter() {
 		Byte actual = CombinableArbitrary.bytes().withRange((byte)10, (byte)100).filter(it -> 75 <= it).combined();
 
 		then(actual).isBetween((byte)75, (byte)100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryEven() {
 		Byte actual = CombinableArbitrary.bytes().even().combined();
 
 		then(actual % 2).isEqualTo(0);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryOdd() {
 		Byte actual = CombinableArbitrary.bytes().odd().combined();
 
 		then(actual % 2 != 0).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryAscii() {
 		Byte actual = CombinableArbitrary.bytes().ascii().combined();
 
 		then(actual).isBetween((byte)0, (byte)127);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
 		// positive().negative() => negative()
 		Byte actual = CombinableArbitrary.bytes().positive().negative().combined();
@@ -262,7 +261,7 @@ class CombinableArbitraryTest {
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
 		// even().odd() => odd()
 		Byte actual = CombinableArbitrary.bytes().even().odd().combined();
@@ -270,7 +269,7 @@ class CombinableArbitraryTest {
 		then(actual % 2 != 0).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
 		// negative().withRange() => withRange()
 		Byte actual = CombinableArbitrary.bytes().negative().withRange((byte)100, (byte)127).combined();
@@ -278,7 +277,7 @@ class CombinableArbitraryTest {
 		then(actual).isBetween((byte)100, (byte)127);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithAsciiAndPositive() {
 		// ascii().positive() => positive()
 		Byte actual = CombinableArbitrary.bytes().ascii().positive().combined();
@@ -286,7 +285,7 @@ class CombinableArbitraryTest {
 		then(actual).isPositive();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithPositiveAndAscii() {
 		// positive().ascii() => ascii()
 		Byte actual = CombinableArbitrary.bytes().positive().ascii().combined();
@@ -294,7 +293,7 @@ class CombinableArbitraryTest {
 		then(actual).isBetween((byte)0, (byte)127);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithAsciiAndEven() {
 		// ascii().even() => even()
 		Byte actual = CombinableArbitrary.bytes().ascii().even().combined();
@@ -302,7 +301,7 @@ class CombinableArbitraryTest {
 		then(actual % 2).isEqualTo(0);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithEvenAndAscii() {
 		// even().ascii() => ascii()
 		Byte actual = CombinableArbitrary.bytes().even().ascii().combined();
@@ -310,7 +309,7 @@ class CombinableArbitraryTest {
 		then(actual).isBetween((byte)0, (byte)127);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void byteCombinableArbitraryLastOperationWinsWithAsciiAndNegative() {
 		// ascii().negative() => negative()
 		Byte actual = CombinableArbitrary.bytes().ascii().negative().combined();
@@ -328,84 +327,84 @@ class CombinableArbitraryTest {
 		then(actual).isInstanceOf(JqwikCharacterCombinableArbitrary.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryInjectNull() {
 		Character actual = CombinableArbitrary.chars().injectNull(1).combined();
 
 		then(actual).isNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryFilter() {
 		Character actual = CombinableArbitrary.chars().filter(it -> it > 'A').combined();
 
 		then(actual).isGreaterThan('A');
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryWithRange() {
 		Character actual = CombinableArbitrary.chars().withRange('A', 'Z').combined();
 
 		then(actual).isBetween('A', 'Z');
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryAlpha() {
 		Character actual = CombinableArbitrary.chars().alphabetic().combined();
 
 		then(Character.isLetter(actual)).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryNumeric() {
 		Character actual = CombinableArbitrary.chars().numeric().combined();
 
 		then(Character.isDigit(actual)).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryAlphaNumeric() {
 		Character actual = CombinableArbitrary.chars().alphaNumeric().combined();
 
 		then(Character.isLetterOrDigit(actual)).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryAscii() {
 		Character actual = CombinableArbitrary.chars().ascii().combined();
 
 		then((int)actual).isLessThanOrEqualTo(127);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryUppercase() {
 		Character actual = CombinableArbitrary.chars().uppercase().combined();
 
 		then(Character.isUpperCase(actual)).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryLowercase() {
 		Character actual = CombinableArbitrary.chars().lowercase().combined();
 
 		then(Character.isLowerCase(actual)).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryKorean() {
 		Character actual = CombinableArbitrary.chars().korean().combined();
 
 		then(actual).isBetween('가', '힣');
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryWhitespace() {
 		Character actual = CombinableArbitrary.chars().whitespace().combined();
 
 		then(Character.isWhitespace(actual)).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void characterCombinableArbitraryLastOperationWinsWithAlphaAndNumeric() {
 		Character actual = CombinableArbitrary.chars().alphabetic().numeric().combined();
 
@@ -499,42 +498,42 @@ class CombinableArbitraryTest {
 		then(actual).isInstanceOf(JqwikShortCombinableArbitrary.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryInjectNull() {
 		Short actual = CombinableArbitrary.shorts().injectNull(1).combined();
 
 		then(actual).isNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryFilter() {
 		Short actual = CombinableArbitrary.shorts().filter(it -> it > 100).combined();
 
 		then(actual).isGreaterThan((short) 100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryPositive() {
 		Short actual = CombinableArbitrary.shorts().positive().combined();
 
 		then(actual).isPositive();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryNegative() {
 		Short actual = CombinableArbitrary.shorts().negative().combined();
 
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryWithRange() {
 		Short actual = CombinableArbitrary.shorts().withRange((short) 10, (short) 100).combined();
 
 		then(actual).isBetween((short) 10, (short) 100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryWithRangeAndFilter() {
 		Short actual = CombinableArbitrary.shorts()
 			.withRange((short) 10, (short) 100)
@@ -544,35 +543,35 @@ class CombinableArbitraryTest {
 		then(actual).isBetween((short) 75, (short) 100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryEven() {
 		Short actual = CombinableArbitrary.shorts().even().combined();
 
 		then(actual % 2).isEqualTo(0);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryOdd() {
 		Short actual = CombinableArbitrary.shorts().odd().combined();
 
 		then(actual % 2 != 0).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryLastOperationWinsWithPositiveAndNegative() {
 		Short actual = CombinableArbitrary.shorts().positive().negative().combined();
 
 		then(actual).isNegative();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryLastOperationWinsWithEvenAndOdd() {
 		Short actual = CombinableArbitrary.shorts().even().odd().combined();
 
 		then(actual % 2 != 0).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void shortCombinableArbitraryLastOperationWinsWithNegativeAndRange() {
 		Short actual = CombinableArbitrary.shorts().negative().withRange((short) 100, (short) 1000).combined();
 

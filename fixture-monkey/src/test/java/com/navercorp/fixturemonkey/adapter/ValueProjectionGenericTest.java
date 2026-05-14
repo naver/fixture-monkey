@@ -24,7 +24,7 @@ import static org.assertj.core.api.BDDAssertions.thenNoException;
 import java.util.List;
 import java.util.Map;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.GenericChildTwoValue;
@@ -44,10 +44,9 @@ class ValueProjectionGenericTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void generateGenericWrapper() {
 		GenericWrapper<String> actual = SUT.giveMeBuilder(
 			new com.navercorp.fixturemonkey.api.type.TypeReference<GenericWrapper<String>>() {
@@ -58,7 +57,7 @@ class ValueProjectionGenericTest {
 		then(actual.getValue()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void setGenericWrapperValue() {
 		GenericWrapper<String> actual = SUT.giveMeBuilder(
 				new com.navercorp.fixturemonkey.api.type.TypeReference<GenericWrapper<String>>() {
@@ -70,7 +69,7 @@ class ValueProjectionGenericTest {
 		then(actual.getValue()).isEqualTo("generic-value");
 	}
 
-	@Property
+	@Test
 	void generateGenericListWrapper() {
 		GenericWrapper<List<String>> actual = SUT.giveMeBuilder(
 			new com.navercorp.fixturemonkey.api.type.TypeReference<GenericWrapper<List<String>>>() {
@@ -82,7 +81,7 @@ class ValueProjectionGenericTest {
 		then(actual.getValue()).isInstanceOf(java.util.ArrayList.class);
 	}
 
-	@Property
+	@Test
 	void setGenericListWrapperValue() {
 		List<String> expected = java.util.Arrays.asList("a", "b");
 
@@ -96,7 +95,7 @@ class ValueProjectionGenericTest {
 		then(actual.getValue()).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void generateNestedGeneric() {
 		GenericWrapper<GenericWrapper<String>> actual = SUT.giveMeBuilder(
 			new com.navercorp.fixturemonkey.api.type.TypeReference<GenericWrapper<GenericWrapper<String>>>() {
@@ -108,7 +107,7 @@ class ValueProjectionGenericTest {
 		then(actual.getValue().getValue()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void setNestedGenericValue() {
 		GenericWrapper<GenericWrapper<String>> actual = SUT.giveMeBuilder(
 				new com.navercorp.fixturemonkey.api.type.TypeReference<GenericWrapper<GenericWrapper<String>>>() {
@@ -120,7 +119,7 @@ class ValueProjectionGenericTest {
 		then(actual.getValue().getValue()).isEqualTo("nested-generic");
 	}
 
-	@Property
+	@Test
 	void sampleGeneric() {
 		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<String>>() {
 			})
@@ -131,7 +130,7 @@ class ValueProjectionGenericTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleGenericWildcardExtends() {
 		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<? extends String>>() {
 			})
@@ -142,14 +141,14 @@ class ValueProjectionGenericTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleStringGenericField() {
 		GenericStringWrapperValue actual = SUT.giveMeOne(GenericStringWrapperValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleGenericField() {
 		GenericWrapperValue<String> actual = SUT.giveMeOne(new TypeReference<GenericWrapperValue<String>>() {
 		});
@@ -157,33 +156,33 @@ class ValueProjectionGenericTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleGenericChild() {
 		GenericChildValue actual = SUT.giveMeOne(GenericChildValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleTwoGenericChild() {
 		GenericChildTwoValue actual = SUT.giveMeOne(GenericChildTwoValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleWildcard() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(new TypeReference<List<? extends SimpleStringObject>>() {
 		}));
 	}
 
-	@Property
+	@Test
 	void sampleMapValueWildcardListString() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(new TypeReference<Map<String, ? extends List<String>>>() {
 		}));
 	}
 
-	@Property
+	@Test
 	void setGenericContainerThenSize_shouldNotLockConcreteType() {
 		// given
 		GenericWrapper<List<String>> actual = SUT.giveMeBuilder(

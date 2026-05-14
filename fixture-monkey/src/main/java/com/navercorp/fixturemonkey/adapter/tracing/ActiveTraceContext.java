@@ -95,7 +95,7 @@ final class ActiveTraceContext implements TraceContext {
 		@Nullable Map<String, @Nullable Object> decomposed,
 		String source
 	) {
-		builder.addManipulator(path, type, sequence, value, decomposed, source);
+		builder.addDirective(path, type, sequence, value, decomposed, source);
 		// Also record for override tracking
 		manipulatorsByPath
 			.computeIfAbsent(path, k -> new ArrayList<>())
@@ -324,7 +324,7 @@ final class ActiveTraceContext implements TraceContext {
 		int decomposedMatchedCount,
 		@Nullable String decomposedSourceType
 	) {
-		builder.addManipulator(
+		builder.addDirective(
 			path,
 			type,
 			sequence,

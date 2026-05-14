@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.adapter;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.MapHolder;
@@ -34,10 +34,9 @@ class ValueProjectionContainerTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void generateNestedList() {
 		NestedListHolder actual = SUT.giveMeOne(NestedListHolder.class);
 
@@ -45,7 +44,7 @@ class ValueProjectionContainerTest {
 		then(actual.getNestedValues()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void generateMapField() {
 		MapHolder actual = SUT.giveMeOne(MapHolder.class);
 

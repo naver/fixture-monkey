@@ -26,7 +26,6 @@ import java.util.function.UnaryOperator;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 
 class DefaultArbitraryBuilderCandidate<T> implements ArbitraryBuilderCandidate<T> {
@@ -55,9 +54,7 @@ class DefaultArbitraryBuilderCandidate<T> implements ArbitraryBuilderCandidate<T
 
 	@Override
 	public Class<?> getClassType() {
-		return Types.getActualType(
-			requireNonNull(this.typeReference).getAnnotatedType()
-		);
+		return requireNonNull(this.typeReference).getJvmType().getRawType();
 	}
 
 	@Override

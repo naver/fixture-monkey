@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.adapter;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
+import com.navercorp.fixturemonkey.adapter.directive.SizeDirective;
 import com.navercorp.objectfarm.api.expression.IndexSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
@@ -38,7 +37,7 @@ import com.navercorp.objectfarm.api.input.ContainerDetector;
 /**
  * Prunes values that exceed container size constraints.
  *
- * <p>Extracted from {@link DefaultNodeTreeAdapter} to separate container value
+ * <p>Extracted from {@link AssemblyPlanner} to separate container value
  * pruning concerns from the main adapt orchestration logic.
  */
 final class ContainerValuePruner {
@@ -50,21 +49,15 @@ final class ContainerValuePruner {
 
 	Map<PathExpression, @Nullable Object> pruneValuesExceedingContainerSize(
 		Map<PathExpression, @Nullable Object> valuesByPath,
-		List<ContainerInfoManipulator> containerManipulators,
-		Map<PathExpression, Integer> valueOrderByPath,
-		Map<ContainerInfoManipulator, PathExpression> containerPathCache
+		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath,
+		Map<PathExpression, Integer> valueOrderByPath
 	) {
-		if (valuesByPath.isEmpty() || containerManipulators.isEmpty()) {
+		if (valuesByPath.isEmpty() || latestSizeDirectiveByPath.isEmpty()) {
 			return new HashMap<>(valuesByPath);
 		}
 
-		Map<PathExpression, ContainerSizeConstraint> sizeConstraintByPath = collectContainerSizeConstraints(
-			containerManipulators,
-			containerPathCache
-		);
-		if (sizeConstraintByPath.isEmpty()) {
-			return new HashMap<>(valuesByPath);
-		}
+		Map<PathExpression, ContainerSizeConstraint> sizeConstraintByPath =
+			toSizeConstraints(latestSizeDirectiveByPath);
 
 		List<Map.Entry<PathExpression, ContainerSizeConstraint>> wildcardSizeEntries = new ArrayList<>();
 		for (Map.Entry<PathExpression, ContainerSizeConstraint> entry : sizeConstraintByPath.entrySet()) {
@@ -78,7 +71,8 @@ final class ContainerValuePruner {
 
 		for (PathExpression path : valuesByPath.keySet()) {
 			@Nullable Object value = valuesByPath.get(path);
-			ContainerSizeConstraint sizeConstraint = sizeConstraintByPath.get(path);
+			ContainerSizeConstraint sizeConstraint =
+				resolveEffectiveConstraint(path, sizeConstraintByPath.get(path), wildcardSizeEntries);
 
 			// Case 1: Exact path match with size constraint
 			if (sizeConstraint != null && containerDetector.isContainer(value)) {
@@ -128,7 +122,7 @@ final class ContainerValuePruner {
 				}
 			}
 
-			// Case 3: Container without exact/wildcard match — check child manipulators
+			// Case 3: Container without exact/wildcard match — check child size directives
 			if (containerDetector.isContainer(value) && !keysToRemove.contains(path)) {
 				int effectiveOrder = valueOrderByPath.getOrDefault(path, Integer.MIN_VALUE);
 				if (hasChildManipulatorWithHigherSequence(path, effectiveOrder, sizeConstraintByPath)) {
@@ -138,7 +132,7 @@ final class ContainerValuePruner {
 			}
 
 			// Case 4: Indexed element exceeding container size
-			if (isIndexedElementOutOfRange(path, sizeConstraintByPath, valueOrderByPath)) {
+			if (isIndexedElementOutOfRange(path, sizeConstraintByPath, wildcardSizeEntries, valueOrderByPath)) {
 				keysToRemove.add(path);
 			}
 		}
@@ -209,9 +203,37 @@ final class ContainerValuePruner {
 		return null;
 	}
 
+	/**
+	 * Mirrors the runtime precedence applied in {@code PathResolverContextFactory}: a wildcard
+	 * size directive with a strictly higher sequence shadows the exact-path constraint at any
+	 * matching path. Pruning must use the same effective constraint, otherwise a value can be
+	 * truncated based on a constraint the assembler will later ignore.
+	 */
+	private static @Nullable ContainerSizeConstraint resolveEffectiveConstraint(
+		PathExpression path,
+		@Nullable ContainerSizeConstraint exact,
+		List<Map.Entry<PathExpression, ContainerSizeConstraint>> wildcardSizeEntries
+	) {
+		if (path.hasWildcard() || wildcardSizeEntries.isEmpty()) {
+			return exact;
+		}
+		ContainerSizeConstraint effective = exact;
+		for (Map.Entry<PathExpression, ContainerSizeConstraint> wildcardEntry : wildcardSizeEntries) {
+			if (!wildcardEntry.getKey().matches(path)) {
+				continue;
+			}
+			ContainerSizeConstraint candidate = wildcardEntry.getValue();
+			if (effective == null || candidate.sequence > effective.sequence) {
+				effective = candidate;
+			}
+		}
+		return effective;
+	}
+
 	private static boolean isIndexedElementOutOfRange(
 		PathExpression path,
 		Map<PathExpression, ContainerSizeConstraint> sizeConstraintByPath,
+		List<Map.Entry<PathExpression, ContainerSizeConstraint>> wildcardSizeEntries,
 		Map<PathExpression, Integer> valueOrderByPath
 	) {
 		List<Segment> segments = path.getSegments();
@@ -223,7 +245,11 @@ final class ContainerValuePruner {
 		if (lastSegment.isSingleSelector() && lastSegment.getFirstSelector() instanceof IndexSelector) {
 			int index = ((IndexSelector)lastSegment.getFirstSelector()).getIndex();
 			PathExpression containerPath = path.getParent();
-			ContainerSizeConstraint containerSizeConstraint = sizeConstraintByPath.get(containerPath);
+			ContainerSizeConstraint containerSizeConstraint = resolveEffectiveConstraint(
+				containerPath,
+				sizeConstraintByPath.get(containerPath),
+				wildcardSizeEntries
+			);
 			if (containerSizeConstraint != null && index >= containerSizeConstraint.size) {
 				// Only prune if the size constraint has higher sequence than this element's value
 				Integer elementOrder = valueOrderByPath.get(path);
@@ -341,28 +367,24 @@ final class ContainerValuePruner {
 		return container;
 	}
 
-	private static Map<PathExpression, ContainerSizeConstraint> collectContainerSizeConstraints(
-		List<ContainerInfoManipulator> containerManipulators,
-		Map<ContainerInfoManipulator, PathExpression> containerPathCache
+	/**
+	 * Converts the analyzer's per-path latest {@link SizeDirective} map into the constraint
+	 * shape this class uses internally. Uses {@code maxSize} (not the {@code fixed()}-resolved
+	 * size) so elements within the max range are preserved — e.g. {@code maxSize(2) +
+	 * listElement(1, value)} keeps {@code $[1]} alive.
+	 */
+	private static Map<PathExpression, ContainerSizeConstraint> toSizeConstraints(
+		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath
 	) {
-		Map<PathExpression, ContainerSizeConstraint> sizeConstraintByPath = new HashMap<>();
-
-		List<ContainerInfoManipulator> sorted = new ArrayList<>(containerManipulators);
-		sorted.sort(Comparator.comparingInt(ContainerInfoManipulator::getManipulatingSequence));
-
-		for (ContainerInfoManipulator manipulator : sorted) {
-			// Use maxSize for pruning indexed elements — elements within the max range should be preserved.
-			// Using fixed() (random between min and max) would incorrectly prune elements
-			// when maxSize > fixedSize (e.g., maxSize(2) + listElement(1, value) should keep $[1]).
-			int size = manipulator.getContainerInfo().getElementMaxSize();
-			int sequence = manipulator.getManipulatingSequence();
-
-			PathExpression path = containerPathCache.get(manipulator);
-			if (path != null) {
-				sizeConstraintByPath.put(path, new ContainerSizeConstraint(size, sequence));
-			}
+		Map<PathExpression, ContainerSizeConstraint> sizeConstraintByPath =
+			new HashMap<>(latestSizeDirectiveByPath.size());
+		for (Map.Entry<PathExpression, SizeDirective> entry : latestSizeDirectiveByPath.entrySet()) {
+			SizeDirective directive = entry.getValue();
+			sizeConstraintByPath.put(
+				entry.getKey(),
+				new ContainerSizeConstraint(directive.containerInfo().getElementMaxSize(), directive.sequence())
+			);
 		}
-
 		return sizeConstraintByPath;
 	}
 

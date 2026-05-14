@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
@@ -50,7 +49,7 @@ class ContainerTypeTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleContainerType() {
 		ContainerObject actual = SUT.giveMeOne(ContainerObject.class);
 
@@ -71,7 +70,7 @@ class ContainerTypeTest {
 		then(actual.getOptionalDouble()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleListType() {
 		List<JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<List<JavaTypeObject>>() {
 		});
@@ -79,7 +78,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedListType() {
 		List<JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<List<JavaTypeObject>>() {
 			})
@@ -89,7 +88,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSetType() {
 		Set<JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<Set<JavaTypeObject>>() {
 		});
@@ -97,7 +96,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedSetType() {
 		Set<JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<Set<JavaTypeObject>>() {
 			})
@@ -107,7 +106,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleArrayType() {
 		JavaTypeObject[] actual = SUT.giveMeOne(new TypeReference<JavaTypeObject[]>() {
 		});
@@ -115,7 +114,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedArrayType() {
 		JavaTypeObject[] actual = SUT.giveMeBuilder(new TypeReference<JavaTypeObject[]>() {
 			})
@@ -125,7 +124,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleOptionalType() {
 		Optional<JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<Optional<JavaTypeObject>>() {
 		});
@@ -133,7 +132,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedOptionalType() {
 		Optional<JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<Optional<JavaTypeObject>>() {
 			})
@@ -143,7 +142,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleMapType() {
 		Map<String, JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<Map<String, JavaTypeObject>>() {
 		});
@@ -151,7 +150,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedMapType() {
 		Map<String, JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<Map<String, JavaTypeObject>>() {
 			})
@@ -161,7 +160,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleMapEntryType() {
 		Map.Entry<String, JavaTypeObject> actual = SUT.giveMeOne(
 			new TypeReference<Map.Entry<String, JavaTypeObject>>() {
@@ -170,7 +169,7 @@ class ContainerTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedMapEntryType() {
 		Map.Entry<String, JavaTypeObject> actual = SUT.giveMeBuilder(
 				new TypeReference<Map.Entry<String, JavaTypeObject>>() {
@@ -191,7 +190,7 @@ class ContainerTypeTest {
 		then(actual).hasSize(200);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setEnumSet() {
 		Set<Enum> set = new HashSet<>();
 		set.add(Enum.ONE);
@@ -206,7 +205,7 @@ class ContainerTypeTest {
 		then(actual).hasSize(3);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleUniqueList() {
 		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
 			})

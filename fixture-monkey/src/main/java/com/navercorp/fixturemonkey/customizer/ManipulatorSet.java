@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,15 +27,21 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
+import com.navercorp.fixturemonkey.adapter.directive.SizeDirective;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.5.0", status = Status.MAINTAINED)
+@API(since = "0.5.0", status = Status.EXPERIMENTAL)
 public final class ManipulatorSet {
-	private final List<ArbitraryManipulator> arbitraryManipulators;
-	private final List<ContainerInfoManipulator> containerInfoManipulators;
+	/**
+	 * All user-issued path directives — set / null / lazy / filter / customizer / size — in
+	 * the order they were declared. Size directives ({@link SizeDirective}) are mixed in
+	 * alongside the others; downstream consumers filter by subtype.
+	 */
+	private final List<PathDirective> directives;
 
 	/**
 	 * Type-based container sizes from registered builders.
@@ -66,13 +73,9 @@ public final class ManipulatorSet {
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 	private final boolean fixed;
 
-	public ManipulatorSet(
-		List<ArbitraryManipulator> arbitraryManipulators,
-		List<ContainerInfoManipulator> containerInfoManipulators
-	) {
+	public ManipulatorSet(List<PathDirective> directives) {
 		this(
-			arbitraryManipulators,
-			containerInfoManipulators,
+			directives,
 			Collections.emptyMap(),
 			Collections.emptyMap(),
 			Collections.emptyMap(),
@@ -82,16 +85,14 @@ public final class ManipulatorSet {
 	}
 
 	public ManipulatorSet(
-		List<ArbitraryManipulator> arbitraryManipulators,
-		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<PathDirective> directives,
 		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes,
 		Map<JvmType, Map<String, @Nullable Object>> typedValues,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		boolean fixed
 	) {
-		this.arbitraryManipulators = arbitraryManipulators;
-		this.containerInfoManipulators = containerInfoManipulators;
+		this.directives = directives;
 		this.typedContainerSizes = typedContainerSizes;
 		this.typedValues = typedValues;
 		this.propertyConfigurers = propertyConfigurers;
@@ -99,12 +100,22 @@ public final class ManipulatorSet {
 		this.fixed = fixed;
 	}
 
-	public List<ArbitraryManipulator> getArbitraryManipulators() {
-		return arbitraryManipulators;
+	public List<PathDirective> getDirectives() {
+		return directives;
 	}
 
-	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
-		return containerInfoManipulators;
+	/**
+	 * Filters {@link #directives} down to {@link SizeDirective}s. Used by adapter consumers
+	 * that only need container-size manipulations.
+	 */
+	public List<SizeDirective> getSizeDirectives() {
+		List<SizeDirective> sizes = new ArrayList<>();
+		for (PathDirective directive : directives) {
+			if (directive instanceof SizeDirective) {
+				sizes.add((SizeDirective)directive);
+			}
+		}
+		return sizes;
 	}
 
 	public Map<JvmType, Map<String, ArbitraryContainerInfo>> getTypedContainerSizes() {
@@ -128,8 +139,7 @@ public final class ManipulatorSet {
 	}
 
 	public boolean isEmpty() {
-		return arbitraryManipulators.isEmpty()
-			&& containerInfoManipulators.isEmpty()
+		return directives.isEmpty()
 			&& typedContainerSizes.isEmpty()
 			&& typedValues.isEmpty()
 			&& propertyConfigurers.isEmpty()

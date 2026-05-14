@@ -373,7 +373,15 @@ public final class JvmNodeCandidateTree {
 		// Only treat standard Java library collections as container types
 		// Custom classes that implement Collection/Map should be treated as regular objects
 		boolean isCollectionOrMap = Collection.class.isAssignableFrom(rawType) || Map.class.isAssignableFrom(rawType);
-		return isCollectionOrMap && Types.isJavaType(rawType);
+		if (isCollectionOrMap) {
+			return Types.isJavaType(rawType);
+		}
+		// For non-Collection/Map types, defer to registered JvmContainerNodeGenerators
+		// (e.g., Pair, Triple). Without this, custom container types' children would be
+		// generated via PropertyGenerator in the candidate tree, which may produce an
+		// unordered result for Kotlin reflection. Collection/Map user classes are
+		// intentionally excluded above so their declared fields are processed normally.
+		return jvmNodeContext.isContainerType(jvmType);
 	}
 
 	/**

@@ -23,7 +23,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.INTERNAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class MatcherOperator<T> implements Matcher {
 	private final Matcher matcher;
 	private final T operator;

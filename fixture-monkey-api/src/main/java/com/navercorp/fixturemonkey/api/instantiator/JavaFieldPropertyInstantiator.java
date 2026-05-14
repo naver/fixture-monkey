@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public final class JavaFieldPropertyInstantiator<T> implements PropertyInstantiator<T> {
 	private Predicate<Field> fieldPredicate = it -> true;
 

@@ -26,7 +26,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ObjectPropertyGeneratorContext {
 	private final Property property;
 	@Nullable

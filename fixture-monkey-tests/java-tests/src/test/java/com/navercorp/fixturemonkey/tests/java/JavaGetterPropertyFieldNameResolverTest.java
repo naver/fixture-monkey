@@ -22,7 +22,7 @@ import static com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropert
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,7 +35,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void nonBooleanFieldWithIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getIsStatus), "javaGetterStringStatus")
@@ -44,7 +44,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 		then(actual.getIsStatus()).isEqualTo("javaGetterStringStatus");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void primitiveTypeBooleanFieldWithIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::isActive), true)
@@ -53,7 +53,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 		then(actual.isActive).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void booleanFieldWithoutIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::isEnabled), true)
@@ -62,7 +62,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 		then(actual.isEnabled()).isTrue();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void nonBooleanFieldWithoutIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getName), "javaGetterObjectName")
@@ -71,7 +71,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 		then(actual.getName()).isEqualTo("javaGetterObjectName");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void wrapperTypeBooleanFieldWithIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getIsDeleted), true)

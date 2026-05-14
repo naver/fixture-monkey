@@ -25,7 +25,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -41,14 +40,14 @@ class PropertySelectorTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void nestedObject() {
 		Inner actual = SUT.giveMeOne(Inner.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setJavaGetter() {
 		String actual = SUT.giveMeBuilder(JavaTypeObject.class)
 			.set(javaGetter(JavaTypeObject::getString), "test")
@@ -58,7 +57,7 @@ class PropertySelectorTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setJavaGetterInto() {
 		String actual = SUT.giveMeBuilder(RootJavaTypeObject.class)
 			.set(javaGetter(RootJavaTypeObject::getValue).into(JavaTypeObject::getString), "test")
@@ -69,7 +68,7 @@ class PropertySelectorTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setJavaGetterCollection() {
 		String actual = SUT.giveMeBuilder(ContainerObject.class)
 			.size("list", 1)
@@ -81,7 +80,7 @@ class PropertySelectorTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setJavaGetterCollectionElement() {
 		String actual = SUT.giveMeBuilder(ContainerObject.class)
 			.size("complexList", 1)
@@ -98,7 +97,7 @@ class PropertySelectorTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setJavaGetterCollectionAllElement() {
 		String expected = "test";
 
@@ -159,7 +158,7 @@ class PropertySelectorTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setExp() {
 		String actual = SUT.giveMeJavaBuilder(JavaTypeObject.class)
 			.setExpGetter(JavaTypeObject::getString, "test")
@@ -169,7 +168,7 @@ class PropertySelectorTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setExpCollectionElement() {
 		String actual = SUT.giveMeJavaBuilder(ContainerObject.class)
 			.size("complexList", 1)

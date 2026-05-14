@@ -23,7 +23,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryContainerInfo {
 	private final int elementMinSize;
 	private final int elementMaxSize;

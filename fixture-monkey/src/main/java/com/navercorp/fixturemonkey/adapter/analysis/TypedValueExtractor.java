@@ -26,111 +26,67 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.adapter.converter.PredicatePathConverter;
+import com.navercorp.fixturemonkey.adapter.directive.JustDirective;
+import com.navercorp.fixturemonkey.adapter.directive.LazyDirective;
+import com.navercorp.fixturemonkey.adapter.directive.NullityDirective;
+import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
+import com.navercorp.fixturemonkey.adapter.directive.SetDirective;
 import com.navercorp.fixturemonkey.adapter.projection.LazyValueHolder;
-import com.navercorp.fixturemonkey.customizer.ApplyNodeCountManipulator;
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.customizer.CompositeNodeManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeNullityManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeSetDecomposedValueManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeSetJustManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeSetLazyManipulator;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.type.JvmType;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 /**
- * Extracts typed values from manipulators and converts them to path expressions.
+ * Extracts typed values from {@link PathDirective}s and converts them to path expressions.
  * <p>
  * This class handles the extraction of values set via {@code set()}, {@code setLazy()},
  * {@code setNull()} calls in registered builders, and their conversion into
  * TypeSelector-based PathExpression entries.
  */
+@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class TypedValueExtractor {
 	private TypedValueExtractor() {
 	}
 
 	/**
-	 * Extracts typed values from an ArbitraryManipulator into the accumulated typedValues map.
+	 * Extracts typed values from a {@link PathDirective} into the accumulated typedValues map.
 	 * This extracts values set via set() calls in registered builders.
 	 * <p>
 	 * The accumulated map is mutated directly so that thenApply's {@code clear()} on "$" lazy
 	 * correctly removes previously accumulated field-level entries for the same type.
 	 *
-	 * @param manipulator the manipulator to extract values from
+	 * @param directive   the directive to extract values from
 	 * @param ownerType   the owner type for type-based matching
 	 * @param typedValues the accumulated map to populate (mutated directly)
 	 */
 	public static void extract(
-		ArbitraryManipulator manipulator,
+		PathDirective directive,
 		JvmType ownerType,
 		Map<JvmType, Map<String, @Nullable Object>> typedValues
 	) {
-		NodeResolver nodeResolver = manipulator.getNodeResolver();
-		NodeManipulator nodeManipulator = manipulator.getNodeManipulator();
-
-		List<NextNodePredicate> predicates = PredicatePathConverter.extractPredicates(nodeResolver);
-		String pathExpression = PredicatePathConverter.toExpression(predicates);
+		String pathExpression = directive.path().toExpression();
 		String fieldPath = pathExpression.startsWith("$.") ? pathExpression.substring(2) : pathExpression;
 
-		populateFromNodeManipulator(nodeManipulator, fieldPath, ownerType, typedValues);
-	}
-
-	/**
-	 * Recursively extracts typed values from a NodeManipulator.
-	 * Uses put() so that later declarations override earlier ones (last-write-wins),
-	 * consistent with the "declaration order" principle used by direct manipulators.
-	 */
-	private static void populateFromNodeManipulator(
-		NodeManipulator nodeManipulator,
-		String fieldPath,
-		JvmType ownerType,
-		Map<JvmType, Map<String, @Nullable Object>> typedValues
-	) {
-		if (nodeManipulator instanceof CompositeNodeManipulator) {
-			CompositeNodeManipulator composite = (CompositeNodeManipulator)nodeManipulator;
-			for (NodeManipulator inner : composite.getManipulators()) {
-				populateFromNodeManipulator(inner, fieldPath, ownerType, typedValues);
-			}
-			return;
-		}
-
-		// Unwrap ApplyNodeCountManipulator to get the underlying manipulator
-		if (nodeManipulator instanceof ApplyNodeCountManipulator) {
-			ApplyNodeCountManipulator countManipulator = (ApplyNodeCountManipulator)nodeManipulator;
-			populateFromNodeManipulator(countManipulator.getNodeManipulator(), fieldPath, ownerType, typedValues);
-			return;
-		}
-
-		if (nodeManipulator instanceof NodeSetDecomposedValueManipulator) {
-			NodeSetDecomposedValueManipulator<?> setManipulator = (NodeSetDecomposedValueManipulator<
-				?
-				>)nodeManipulator;
-			Object value = setManipulator.getValue();
-
+		if (directive instanceof SetDirective) {
+			Object value = ((SetDirective)directive).value();
 			Map<String, @Nullable Object> fieldValues = typedValues.computeIfAbsent(ownerType, k -> new HashMap<>());
 			fieldValues.put(fieldPath, value);
-		} else if (nodeManipulator instanceof NodeSetJustManipulator) {
-			NodeSetJustManipulator setManipulator = (NodeSetJustManipulator)nodeManipulator;
-			Object value = setManipulator.getValue();
-
+		} else if (directive instanceof JustDirective) {
+			Object value = ((JustDirective)directive).value();
 			Map<String, @Nullable Object> fieldValues = typedValues.computeIfAbsent(ownerType, k -> new HashMap<>());
 			fieldValues.put(fieldPath, value);
-		} else if (nodeManipulator instanceof NodeNullityManipulator) {
-			NodeNullityManipulator nullityManipulator = (NodeNullityManipulator)nodeManipulator;
-			if (nullityManipulator.isToNull()) {
+		} else if (directive instanceof NullityDirective) {
+			if (((NullityDirective)directive).toNull()) {
 				Map<String, @Nullable Object> fieldValues =
 					typedValues.computeIfAbsent(ownerType, k -> new HashMap<>());
 				fieldValues.put(fieldPath, null);
 			}
-		} else if (nodeManipulator instanceof NodeSetLazyManipulator) {
-			NodeSetLazyManipulator<?> lazyManipulator = (NodeSetLazyManipulator<?>)nodeManipulator;
-
+		} else if (directive instanceof LazyDirective) {
+			LazyDirective lazyDirective = (LazyDirective)directive;
 			Map<String, @Nullable Object> fieldValues = typedValues.computeIfAbsent(ownerType, k -> new HashMap<>());
-			// Use put() instead of putIfAbsent() for lazy manipulators.
 			// thenApply chains produce multiple SetLazy on "$" where each subsequent lazy
 			// captures the previous state (including earlier lazies) in its supplier.
 			// The last lazy in the chain evaluates the entire chain, so it must override earlier ones.
@@ -139,7 +95,7 @@ public final class TypedValueExtractor {
 			}
 			boolean isRootLevel = "$".equals(fieldPath);
 			fieldValues.put(fieldPath,
-				new LazyValueHolder(lazyManipulator.getLazyArbitrary(), ownerType.getRawType(), isRootLevel));
+				new LazyValueHolder(lazyDirective.lazyArbitrary(), ownerType.getRawType(), isRootLevel));
 		}
 	}
 

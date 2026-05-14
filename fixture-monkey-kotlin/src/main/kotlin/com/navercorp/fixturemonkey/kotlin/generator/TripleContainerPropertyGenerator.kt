@@ -24,7 +24,6 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty
-import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 
@@ -32,17 +31,19 @@ import org.apiguardian.api.API.Status
 class TripleContainerPropertyGenerator : ContainerPropertyGenerator {
     override fun generate(context: ContainerPropertyGeneratorContext): ContainerProperty {
         val property = context.property
-        val genericsTypes = Types.getGenericsTypes(property.annotatedType)
-        if (genericsTypes.size != 3) {
+        val typeVariables = property.jvmType.typeVariables
+        if (typeVariables.size != 3) {
             throw IllegalArgumentException(
                 """
-                    Triple genericsTypes must have 3 generics types for the first, second, and third values.
-                    "propertyType: ${property.type}, genericsTypes: $genericsTypes
+                    Triple typeVariables must have 3 generics types for the first, second, and third values.
+                    "propertyType: ${property.jvmType.rawType}, typeVariables: $typeVariables
                 """.trimIndent()
             )
         }
 
-        val (firstElementType, secondElementType, thirdElementType) = genericsTypes
+        val firstElementType = typeVariables[0]
+        val secondElementType = typeVariables[1]
+        val thirdElementType = typeVariables[2]
 
         return ContainerProperty(
             listOf(

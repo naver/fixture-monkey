@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetContainerPropertyGenerator implements ContainerPropertyGenerator {
@@ -44,16 +43,11 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		AnnotatedType elementType;
-		if (elementTypes.size() == 1) {
-			elementType = elementTypes.get(0);
-		} else {
-			elementType = DEFAULT_ELEMENT_RAW_TYPE.getAnnotatedType();
-		}
+		List<? extends JvmType> elementTypes = property.getJvmType().getTypeVariables();
+		JvmType elementType = elementTypes.size() == 1 ? elementTypes.get(0) : DEFAULT_ELEMENT_JVM_TYPE;
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-		Class<?> actualElementType = Types.getActualType(elementType.getType());
+		Class<?> actualElementType = elementType.getRawType();
 
 		if (actualElementType.isEnum()) {
 			int enumSize = EnumSet.allOf((Class<? extends Enum>)actualElementType).size();

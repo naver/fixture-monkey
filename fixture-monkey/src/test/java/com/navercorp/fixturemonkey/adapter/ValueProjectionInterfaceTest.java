@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.AbstractGenericBox;
@@ -77,10 +77,9 @@ class ValueProjectionInterfaceTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void generateWithInterfaceField() {
 		InterfaceHolder actual = SUT.giveMeOne(InterfaceHolder.class);
 
@@ -89,7 +88,7 @@ class ValueProjectionInterfaceTest {
 		then(actual.getItems()).isInstanceOf(java.util.ArrayList.class);
 	}
 
-	@Property
+	@Test
 	void setInterfaceField() {
 		List<String> expected = java.util.Arrays.asList("x", "y", "z");
 
@@ -98,14 +97,14 @@ class ValueProjectionInterfaceTest {
 		then(actual.getItems()).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void sizeInterfaceField() {
 		InterfaceHolder actual = SUT.giveMeBuilder(InterfaceHolder.class).size("items", 4).sample();
 
 		then(actual.getItems()).hasSize(4);
 	}
 
-	@Property
+	@Test
 	void interfaceImplements() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -114,7 +113,6 @@ class ValueProjectionInterfaceTest {
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(new InterfacePlugin().interfaceImplements(GetFixedValue.class, implementations))
 			.build();
 
@@ -126,7 +124,7 @@ class ValueProjectionInterfaceTest {
 		then(actual).isIn(1, "fixed");
 	}
 
-	@Property
+	@Test
 	void sampleGenericInterface() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -135,7 +133,6 @@ class ValueProjectionInterfaceTest {
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(new InterfacePlugin().interfaceImplements(GetFixedValue.class, implementations))
 			.build();
 
@@ -152,7 +149,7 @@ class ValueProjectionInterfaceTest {
 		then(actual).isIn(1, "fixed");
 	}
 
-	@Property(tries = 1)
+	@Test
 	void sampleGenericInterfaceReturnsDiff() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -161,7 +158,6 @@ class ValueProjectionInterfaceTest {
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(new InterfacePlugin().interfaceImplements(GetFixedValue.class, implementations))
 			.build();
 
@@ -179,7 +175,7 @@ class ValueProjectionInterfaceTest {
 		then(actual).hasSize(2);
 	}
 
-	@Property
+	@Test
 	void sampleInterfaceChildWhenOptionHasHierarchy() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -191,7 +187,6 @@ class ValueProjectionInterfaceTest {
 
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin()
 					.interfaceImplements(GetFixedValueChild.class, childImplementations)
@@ -207,11 +202,10 @@ class ValueProjectionInterfaceTest {
 		then(actual).isEqualTo(2);
 	}
 
-	@Property
+	@Test
 	void sampleConcreteWhenHasSameNameProperty() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().abstractClassExtends(
 					AbstractSamePropertyValue.class,
@@ -228,11 +222,10 @@ class ValueProjectionInterfaceTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleSelfRecursiveAbstract() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().abstractClassExtends(
 					SelfRecursiveAbstractValue.class,
@@ -249,11 +242,10 @@ class ValueProjectionInterfaceTest {
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void setConcreteClassWhenHasParentValue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().abstractClassExtends(
 					AbstractValue.class,
@@ -273,11 +265,10 @@ class ValueProjectionInterfaceTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setConcreteClassWhenHasNoParentValue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().abstractClassExtends(
 					AbstractNoneValue.class,
@@ -297,7 +288,7 @@ class ValueProjectionInterfaceTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setConcreteList() {
 		// given
 		List<Class<? extends AbstractValue>> implementations = new ArrayList<>();
@@ -305,7 +296,6 @@ class ValueProjectionInterfaceTest {
 		implementations.add(ConcreteIntValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(new InterfacePlugin().abstractClassExtends(AbstractValue.class, implementations))
 			.build();
 
@@ -330,7 +320,7 @@ class ValueProjectionInterfaceTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setConcreteListWithNoParentValue() {
 		// given
 		List<Class<? extends AbstractNoneValue>> implementations = new ArrayList<>();
@@ -338,7 +328,6 @@ class ValueProjectionInterfaceTest {
 		implementations.add(AbstractNoneConcreteIntValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(new InterfacePlugin().abstractClassExtends(AbstractNoneValue.class, implementations))
 			.build();
 
@@ -361,7 +350,7 @@ class ValueProjectionInterfaceTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void setConcrete() {
 		// given
 		List<Class<? extends AbstractValue>> implementations = new ArrayList<>();
@@ -369,7 +358,6 @@ class ValueProjectionInterfaceTest {
 		implementations.add(ConcreteIntValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(new InterfacePlugin().abstractClassExtends(AbstractValue.class, implementations))
 			.build();
 
@@ -384,11 +372,10 @@ class ValueProjectionInterfaceTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void samePropertyDiffImplementations() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().interfaceImplements(
 					GetterInterface.class,
@@ -404,13 +391,12 @@ class ValueProjectionInterfaceTest {
 		then(actual).isEqualTo("expected");
 	}
 
-	@Property
+	@Test
 	void sampleDifferentGenericImplementations() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().interfaceImplements(
 					GenericHolder.class,
@@ -428,13 +414,12 @@ class ValueProjectionInterfaceTest {
 		then(actual.getIntegerHolder()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleAbstractWithNestedInterface() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.defaultNotNull(true)
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin()
 					.abstractClassExtends(
@@ -455,11 +440,10 @@ class ValueProjectionInterfaceTest {
 		then(actual.getNestedInterface()).isInstanceOf(InterfaceImplementation.class);
 	}
 
-	@Property
+	@Test
 	void setSelfRecursiveAbstractField() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().abstractClassExtends(
 					SelfRecursiveWithFieldAbstractValue.class,
@@ -480,11 +464,10 @@ class ValueProjectionInterfaceTest {
 		then(actual.getName()).isEqualTo("root");
 	}
 
-	@Property
+	@Test
 	void sizeSelfRecursiveAbstractList() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().abstractClassExtends(
 					SelfRecursiveAbstractValue.class,
@@ -505,11 +488,10 @@ class ValueProjectionInterfaceTest {
 		then(actual.getRecursives()).hasSize(2);
 	}
 
-	@Property
+	@Test
 	void sampleAbstractGenericBoxResolvesFieldTypes() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().abstractClassExtends(
 					AbstractGenericBox.class,
@@ -531,11 +513,10 @@ class ValueProjectionInterfaceTest {
 		then(actual.getItems()).allSatisfy(item -> then(item).isInstanceOf(String.class));
 	}
 
-	@Property
+	@Test
 	void sampleInterfaceWithDifferentReturnType() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new InterfacePlugin().interfaceImplements(
 					ValueProvider.class,

@@ -19,14 +19,12 @@
 package com.navercorp.fixturemonkey.adapter.projection;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,22 +33,16 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.BaseStream;
 
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.adapter.NodeTreeAdapter;
 import com.navercorp.fixturemonkey.adapter.analysis.AnalysisResult;
 import com.navercorp.fixturemonkey.adapter.property.JvmNodePropertyFactory;
-import com.navercorp.fixturemonkey.adapter.tracing.TraceContext;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.TraceableCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -77,15 +69,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.objectfarm.api.expression.IndexSelector;
-import com.navercorp.objectfarm.api.expression.KeySelector;
-import com.navercorp.objectfarm.api.expression.NameSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
-import com.navercorp.objectfarm.api.expression.Segment;
-import com.navercorp.objectfarm.api.expression.Selector;
-import com.navercorp.objectfarm.api.expression.TypeSelector;
-import com.navercorp.objectfarm.api.expression.ValueSelector;
-import com.navercorp.objectfarm.api.expression.WildcardSelector;
 import com.navercorp.objectfarm.api.input.ObjectValueExtractor;
 import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JvmMapEntryNode;
@@ -96,6 +80,7 @@ import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.FieldAccessCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.MethodInvocationCreationMethod;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
+import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 final class ValueProjectionAssembler {
@@ -155,7 +140,9 @@ final class ValueProjectionAssembler {
 			context.getCustomizersByPath(),
 			context.getTraceContext(),
 			context.getIntrospectorsByType(),
-			context.getNodeTreeAdapter(),
+			context.getRuntimeTreeFactory(),
+			context.getPathResolverContext(),
+			context.getNodeMetadataCache(),
 			context.getUserContainerSizePaths()
 		);
 
@@ -191,7 +178,7 @@ final class ValueProjectionAssembler {
 		state.nodeByPath.put(currentPath.toExpression(), node);
 
 		boolean isCurrentTypeContainer = state.containerTypeCache.computeIfAbsent(currentType, type ->
-			computeIsContainerType(type, options)
+			TypeMetadataResolver.computeIsContainerType(type, options)
 		);
 
 		Class<?> currentRawType = currentType.getRawType();
@@ -203,30 +190,30 @@ final class ValueProjectionAssembler {
 		}
 
 		try {
-			if (isUnderExcludedPath(currentPath, state.justPaths)) {
+			if (PathMatcher.isUnderExcludedPath(currentPath, state.justPaths)) {
 				return assembleNodeDefault(node, state, parentContext, parentPath, currentPath, visitedTypes);
 			}
 
 			boolean isValueSet = state.candidatesByPath.containsKey(currentPath);
-			boolean hasChildValues = hasChildPathValues(currentPath, state.pathIndex);
+			boolean hasChildValues = PathMatcher.hasChildPathValues(currentPath, state.pathIndex);
 
 			// set("field", null) vs child values priority:
 			// If null was set AFTER all child values, null wins. Otherwise children win.
 			if (isValueSet && hasChildValues) {
 				ValueCandidate nullCandidate = state.candidatesByPath.get(currentPath);
 				if (nullCandidate != null && nullCandidate.value == null) {
-					boolean hasActualChildCandidates = hasChildCandidateValues(currentPath, state.candidatesByPath);
+					boolean hasActualChildCandidates = PathMatcher.hasChildCandidateValues(currentPath, state.candidatesByPath);
 					if (!hasActualChildCandidates) {
 						return wrapValueWithFiltersAndCustomizers(null, currentPath, currentRawType, state);
 					}
-					if (isNullSetAfterAllChildren(nullCandidate.order, currentPath, state.candidatesByPath)) {
+					if (PathMatcher.isNullSetAfterAllChildren(nullCandidate.order, currentPath, state.candidatesByPath)) {
 						return wrapValueWithFiltersAndCustomizers(null, currentPath, currentRawType, state);
 					}
 				}
 			}
 
 			if (!hasChildValues) {
-				PathExpression bestPath = findBestMatchingPath(state.candidatesByPath, currentPath, state);
+				PathExpression bestPath = PathMatcher.findBestMatchingPath(state.candidatesByPath, currentPath, state);
 				if (bestPath != null) {
 					if (!bestPath.equals(currentPath)) {
 						Integer remainingLimit = state.limitsByPath.get(bestPath);
@@ -248,7 +235,7 @@ final class ValueProjectionAssembler {
 					ValueCandidate bestCandidate = state.candidatesByPath.get(bestPath);
 					Object rawValue = bestCandidate.value;
 					boolean wasLazy = rawValue instanceof LazyValueHolder;
-					Object setValue = resolveLazyValue(
+					Object setValue = LazyResolver.resolveLazyValue(
 						rawValue,
 						bestCandidate.order instanceof ValueOrder.RegisterOrder,
 						state
@@ -268,7 +255,7 @@ final class ValueProjectionAssembler {
 					}
 
 					// Root TypeSelector matched but field-level siblings exist → decompose and fall through
-					if (isRootTypeSelector(bestPath) && hasFieldLevelTypeSelectorSiblings(bestPath, state)) {
+					if (PathMatcher.isRootTypeSelector(bestPath) && PathMatcher.hasFieldLevelTypeSelectorSiblings(bestPath, state)) {
 						state.candidatesByPath.put(currentPath, bestCandidate.withValue(setValue));
 						isValueSet = true;
 					} else {
@@ -319,7 +306,7 @@ final class ValueProjectionAssembler {
 			// thenApply fallback: walks ancestors to find $[type:T] lazy, evaluates it,
 			// and navigates the relative path to extract field values.
 			if (!isValueSet && !hasChildValues) {
-				Object typedValue = resolveThenApplyAncestorValue(node, currentPath, state);
+				Object typedValue = LazyResolver.resolveThenApplyAncestorValue(node, currentPath, state);
 				if (typedValue != null) {
 					return traceAndReturnValue(
 						typedValue,
@@ -374,6 +361,11 @@ final class ValueProjectionAssembler {
 					}
 					return wrapValueWithFiltersAndCustomizers(setValue, currentPath, currentRawType, state);
 				}
+				// AnonymousArbitraryIntrospector's proxy substitutes self for self-type methods,
+				// so null here is safe and breaks the assembleNodeDefault recursion cycle.
+				if (isCircular) {
+					return wrapValueWithFiltersAndCustomizers(null, currentPath, currentRawType, state);
+				}
 				CombinableArbitrary<?> interfaceResult = assembleInterfaceNode(
 					node,
 					state,
@@ -386,8 +378,15 @@ final class ValueProjectionAssembler {
 				if (interfaceResult != CombinableArbitrary.NOT_GENERATED) {
 					return interfaceResult;
 				}
-				if (state.nodeTreeAdapter != null) {
-					JvmNodeTree anonymousTree = state.nodeTreeAdapter.createAnonymousNodeTree(nodeType, options);
+				if (state.runtimeTreeFactory != null) {
+					PathResolverContext resolverContext = state.pathResolverContext != null
+						? state.pathResolverContext
+						: PathResolverContext.builder().build();
+					JvmNodeTree anonymousTree = state.runtimeTreeFactory.createAnonymousNodeTree(
+						nodeType,
+						options,
+						resolverContext
+					);
 					if (anonymousTree != null) {
 						registerConcreteTree(anonymousTree, state);
 						return assembleNodeDefault(
@@ -412,9 +411,9 @@ final class ValueProjectionAssembler {
 			}
 
 			Property nodeProperty = state.propertyByNode.computeIfAbsent(node, state.nodePropertyFactory);
-			writeBackTypeMetadata(node, nodeProperty, state);
+			TypeMetadataResolver.writeBackTypeMetadata(node, nodeProperty, state);
 
-			PropertyNameResolver nameResolver = resolveNameResolver(node, nodeProperty, state);
+			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(node, nodeProperty, state);
 
 			ObjectProperty objectProperty = new ObjectProperty(nodeProperty, nameResolver, node.getIndex());
 
@@ -427,18 +426,31 @@ final class ValueProjectionAssembler {
 				isCurrentTypeContainer,
 				nameResolver
 			);
-			double nullInject = resolveNullInjectGenerator(node, nodeProperty, state).generate(nullInjectContext);
+			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(node, nodeProperty, state).generate(nullInjectContext);
+
+			// Primitive slots cannot hold null; the introspector would throw IllegalArgumentException
+			// when the array/setter writes the null produced by injectNull.
+			if (currentRawType.isPrimitive()) {
+				nullInject = 0.0;
+			}
 
 			if (state.notNullPaths.contains(currentPath)) {
 				nullInject = 0.0;
 			}
 
 			// Suppress null injection for types targeted by register() to ensure registered values take effect
-			if (nullInject > 0 && hasMatchingTypeSelector(node.getConcreteType(), state.pathIndex)) {
+			if (nullInject > 0 && PathMatcher.hasMatchingTypeSelector(node.getConcreteType(), state.pathIndex)) {
 				nullInject = 0.0;
 			}
 
 			if (nullInject > 0 && (isValueSet || hasChildValues)) {
+				nullInject = 0.0;
+			}
+
+			// A user-supplied postCondition predicate (setPostCondition) is applied to the
+			// generated value verbatim, so null injection would invoke the predicate with null
+			// and typically NPE inside the user lambda. Treat the filter as an implicit not-null.
+			if (nullInject > 0 && state.filtersByPath.containsKey(currentPath)) {
 				nullInject = 0.0;
 			}
 
@@ -469,7 +481,7 @@ final class ValueProjectionAssembler {
 					} else {
 						PathExpression childPath = buildChildPath(currentPath, child, node, state);
 						if (
-							hasChildPathValues(childPath, state.pathIndex)
+							PathMatcher.hasChildPathValues(childPath, state.pathIndex)
 								|| state.candidatesByPath.containsKey(childPath)
 						) {
 							children.add(child);
@@ -495,8 +507,8 @@ final class ValueProjectionAssembler {
 				PathExpression childPath = buildChildPath(currentPath, childNode, node, state);
 
 				Property childProperty = state.propertyByNode.computeIfAbsent(childNode, state.nodePropertyFactory);
-				writeBackTypeMetadata(childNode, childProperty, state);
-				PropertyNameResolver childNameResolver = resolveNameResolver(childNode, childProperty, state);
+				TypeMetadataResolver.writeBackTypeMetadata(childNode, childProperty, state);
+				PropertyNameResolver childNameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 
 				ObjectProperty childObjectProperty = new ObjectProperty(
 					childProperty,
@@ -505,7 +517,7 @@ final class ValueProjectionAssembler {
 				);
 
 				boolean childIsContainer = state.containerTypeCache.computeIfAbsent(childNode.getConcreteType(), type ->
-					computeIsContainerType(type, options)
+					TypeMetadataResolver.computeIsContainerType(type, options)
 				);
 
 				ObjectPropertyGeneratorContext childNullInjectContext = new ObjectPropertyGeneratorContext(
@@ -515,16 +527,18 @@ final class ValueProjectionAssembler {
 					childIsContainer,
 					childNameResolver
 				);
-				double childNullInject = resolveNullInjectGenerator(childNode, childProperty, state).generate(
+				double childNullInject = TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state).generate(
 					childNullInjectContext
 				);
 
 				if (childNullInject > 0) {
 					if (
 						state.candidatesByPath.containsKey(childPath)
-							|| hasChildPathValues(childPath, state.pathIndex)
+							|| PathMatcher.hasChildPathValues(childPath, state.pathIndex)
 							|| state.notNullPaths.contains(childPath)
 							|| state.customizersByPath.containsKey(childPath)
+							|| state.filtersByPath.containsKey(childPath)
+							|| PathMatcher.matchesAnyWildcardCandidate(childPath, state)
 					) {
 						childNullInject = 0.0;
 					}
@@ -571,7 +585,9 @@ final class ValueProjectionAssembler {
 				state.loggingContext
 			);
 
-			Class<?> actualType = Types.getActualType(nodeProperty.getType());
+			Class<?> actualType = com.navercorp.fixturemonkey.api.type.Types.normalizeRawType(
+				nodeProperty.getJvmType().getRawType()
+			);
 			ArbitraryIntrospector typeSpecificIntrospector = state.introspectorsByType.get(actualType);
 
 			// Do NOT call .injectNull() here — the generator already handles null injection
@@ -669,13 +685,13 @@ final class ValueProjectionAssembler {
 		int selectedIndex = strategy.selectIndex(candidates.size(), seed, sampleIndex);
 		Property selectedProperty = candidates.get(selectedIndex);
 
-		JvmType concreteType = Types.toJvmType(selectedProperty.getAnnotatedType(), selectedProperty.getAnnotations());
+		JvmType concreteType = selectedProperty.getJvmType();
 
 		// Skip concrete tree for self-recursive types to avoid infinite recursion
 		boolean isSelfRecursive = visitedTypes.contains(concreteType.getRawType());
 		JvmNodeTree concreteTree =
-			state.nodeTreeAdapter != null && !isSelfRecursive
-				? state.nodeTreeAdapter.createConcreteNodeTree(concreteType, options)
+			state.runtimeTreeFactory != null && !isSelfRecursive
+				? state.runtimeTreeFactory.createConcreteNodeTree(concreteType, options)
 				: null;
 
 		CombinableArbitrary<?> result;
@@ -762,7 +778,9 @@ final class ValueProjectionAssembler {
 
 		ObjectProperty objectProperty = new ObjectProperty(concreteProperty, nameResolver, originalNode.getIndex());
 
-		Class<?> actualType = Types.getActualType(concreteProperty.getType());
+		Class<?> actualType = com.navercorp.fixturemonkey.api.type.Types.normalizeRawType(
+			concreteProperty.getJvmType().getRawType()
+		);
 		ArbitraryIntrospector typeSpecificIntrospector = state.introspectorsByType.get(actualType);
 
 		PropertyGenerator propertyGenerator = options
@@ -783,7 +801,7 @@ final class ValueProjectionAssembler {
 
 		JvmType originalType = originalNode.getConcreteType();
 		boolean isContainer = state.containerTypeCache.computeIfAbsent(originalType, type ->
-			computeIsContainerType(type, options)
+			TypeMetadataResolver.computeIsContainerType(type, options)
 		);
 
 		Property propertyForNullInject = parentPath == null ? new RootProperty(concreteProperty) : concreteProperty;
@@ -815,17 +833,14 @@ final class ValueProjectionAssembler {
 			addedToVisited = true;
 		}
 
-		JvmType concreteJvmType = Types.toJvmType(
-			concreteProperty.getAnnotatedType(),
-			concreteProperty.getAnnotations()
-		);
+		JvmType concreteJvmType = concreteProperty.getJvmType();
 		Map<String, JvmNode> concreteChildrenByName = buildConcreteChildrenMap(concreteJvmType, state);
 
 		try {
 			if (!addedToVisited) {
 				List<Property> filteredChildren = new ArrayList<>();
 				for (Property childProp : childProperties) {
-					Class<?> childRawType = Types.getActualType(childProp.getType());
+					Class<?> childRawType = childProp.getJvmType().getRawType();
 					boolean isRecursiveChild =
 						visitedTypes.contains(childRawType) || childRawType.isAssignableFrom(actualType);
 					if (!isRecursiveChild) {
@@ -835,7 +850,7 @@ final class ValueProjectionAssembler {
 						String childName = childNr.resolve(childProp);
 						PathExpression childPath = currentPath.child(childName);
 						if (
-							hasChildPathValues(childPath, state.pathIndex)
+							PathMatcher.hasChildPathValues(childPath, state.pathIndex)
 								|| state.candidatesByPath.containsKey(childPath)
 						) {
 							filteredChildren.add(childProp);
@@ -858,12 +873,9 @@ final class ValueProjectionAssembler {
 					0
 				);
 
-				JvmType childJvmType = Types.toJvmType(
-					childProperty.getAnnotatedType(),
-					childProperty.getAnnotations()
-				);
+				JvmType childJvmType = childProperty.getJvmType();
 				boolean childIsContainer = state.containerTypeCache.computeIfAbsent(childJvmType, type ->
-					computeIsContainerType(type, options)
+					TypeMetadataResolver.computeIsContainerType(type, options)
 				);
 
 				ObjectPropertyGeneratorContext childNullInjectContext = new ObjectPropertyGeneratorContext(
@@ -915,11 +927,7 @@ final class ValueProjectionAssembler {
 					String childName = childProperty.getName();
 					JvmNode childNode = childName != null ? concreteChildrenByName.get(childName) : null;
 					if (childNode == null) {
-						JvmType childType = Types.toJvmType(
-							childProperty.getAnnotatedType(),
-							childProperty.getAnnotations()
-						);
-						childNode = new JavaNode(childType, childName != null ? childName : "");
+						childNode = new JavaNode(childProperty.getJvmType(), childName != null ? childName : "");
 					}
 
 					return assembleNode(childNode, state, currentContext, propertyPath, childPath, visitedTypes);
@@ -939,7 +947,7 @@ final class ValueProjectionAssembler {
 				result = options.getDefaultArbitraryGenerator().generate(context);
 			}
 
-			Class<?> concreteRawType = Types.getActualType(concreteProperty.getType());
+			Class<?> concreteRawType = concreteProperty.getJvmType().getRawType();
 			if (!concreteRawType.isPrimitive()) {
 				result = result.injectNull(nullInject);
 			}
@@ -985,7 +993,7 @@ final class ValueProjectionAssembler {
 
 		JvmType nodeType = mapEntryNode.getConcreteType();
 		boolean isNodeContainer = state.containerTypeCache.computeIfAbsent(nodeType, type ->
-			computeIsContainerType(type, options)
+			TypeMetadataResolver.computeIsContainerType(type, options)
 		);
 
 		Class<?> nodeRawType = nodeType.getRawType();
@@ -1003,7 +1011,7 @@ final class ValueProjectionAssembler {
 			Property valueProperty = state.propertyByNode.computeIfAbsent(valueNode, state.nodePropertyFactory);
 
 			Property nodeProperty = state.propertyByNode.computeIfAbsent(mapEntryNode, state.nodePropertyFactory);
-			PropertyNameResolver nameResolver = resolveNameResolver(mapEntryNode, nodeProperty, state);
+			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(mapEntryNode, nodeProperty, state);
 
 			ObjectProperty objectProperty = new ObjectProperty(nodeProperty, nameResolver, mapEntryNode.getIndex());
 
@@ -1016,7 +1024,7 @@ final class ValueProjectionAssembler {
 				isContainer,
 				nameResolver
 			);
-			double nullInject = resolveNullInjectGenerator(mapEntryNode, nodeProperty, state).generate(
+			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(mapEntryNode, nodeProperty, state).generate(
 				nullInjectContext
 			);
 
@@ -1112,7 +1120,7 @@ final class ValueProjectionAssembler {
 
 		JvmType nodeType = mapLikeNode.getConcreteType();
 		boolean isNodeContainer = state.containerTypeCache.computeIfAbsent(nodeType, type ->
-			computeIsContainerType(type, options)
+			TypeMetadataResolver.computeIsContainerType(type, options)
 		);
 
 		Class<?> rawType = nodeType.getRawType();
@@ -1362,7 +1370,7 @@ final class ValueProjectionAssembler {
 
 		JvmType currentType = node.getConcreteType();
 		boolean isContainer = state.containerTypeCache.computeIfAbsent(currentType, type ->
-			computeIsContainerType(type, options)
+			TypeMetadataResolver.computeIsContainerType(type, options)
 		);
 
 		Class<?> currentRawType = currentType.getRawType();
@@ -1373,8 +1381,8 @@ final class ValueProjectionAssembler {
 
 		try {
 			Property nodeProperty = state.propertyByNode.computeIfAbsent(node, state.nodePropertyFactory);
-			writeBackTypeMetadata(node, nodeProperty, state);
-			PropertyNameResolver nameResolver = resolveNameResolver(node, nodeProperty, state);
+			TypeMetadataResolver.writeBackTypeMetadata(node, nodeProperty, state);
+			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(node, nodeProperty, state);
 
 			ObjectProperty objectProperty = new ObjectProperty(nodeProperty, nameResolver, node.getIndex());
 
@@ -1385,7 +1393,23 @@ final class ValueProjectionAssembler {
 				isContainer,
 				nameResolver
 			);
-			double nullInject = resolveNullInjectGenerator(node, nodeProperty, state).generate(nullInjectContext);
+			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(node, nodeProperty, state).generate(nullInjectContext);
+
+			// Primitive slots cannot hold null; the introspector would throw IllegalArgumentException
+			// when the array/setter writes the null produced by injectNull.
+			if (currentRawType.isPrimitive()) {
+				nullInject = 0.0;
+			}
+
+			if (state.notNullPaths.contains(currentPath)) {
+				nullInject = 0.0;
+			}
+
+			// A path matched by a wildcard candidate (e.g. $.list[*]) but exhausted by limit
+			// still belongs to the user-targeted set; injecting null contradicts the intent.
+			if (nullInject > 0 && PathMatcher.matchesAnyWildcardCandidate(currentPath, state)) {
+				nullInject = 0.0;
+			}
 
 			List<ConcreteTypeDefinition> typeDefinitions = Collections.singletonList(
 				new ConcreteTypeDefinition(nodeProperty, Collections.emptyList())
@@ -1411,8 +1435,8 @@ final class ValueProjectionAssembler {
 				PathExpression childPath = buildChildPath(currentPath, childNode, node, state);
 
 				Property childProperty = state.propertyByNode.computeIfAbsent(childNode, state.nodePropertyFactory);
-				writeBackTypeMetadata(childNode, childProperty, state);
-				PropertyNameResolver childNameResolver = resolveNameResolver(childNode, childProperty, state);
+				TypeMetadataResolver.writeBackTypeMetadata(childNode, childProperty, state);
+				PropertyNameResolver childNameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 
 				ObjectProperty childObjectProperty = new ObjectProperty(
 					childProperty,
@@ -1421,7 +1445,7 @@ final class ValueProjectionAssembler {
 				);
 
 				boolean childIsContainer = state.containerTypeCache.computeIfAbsent(childNode.getConcreteType(), type ->
-					computeIsContainerType(type, options)
+					TypeMetadataResolver.computeIsContainerType(type, options)
 				);
 
 				ObjectPropertyGeneratorContext childNullInjectContext = new ObjectPropertyGeneratorContext(
@@ -1431,7 +1455,7 @@ final class ValueProjectionAssembler {
 					childIsContainer,
 					childNameResolver
 				);
-				double childNullInject = resolveNullInjectGenerator(childNode, childProperty, state).generate(
+				double childNullInject = TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state).generate(
 					childNullInjectContext
 				);
 
@@ -1479,11 +1503,11 @@ final class ValueProjectionAssembler {
 	}
 
 	private Map<String, JvmNode> buildConcreteChildrenMap(JvmType concreteType, AssemblyState state) {
-		if (state.nodeTreeAdapter == null || state.options == null) {
+		if (state.runtimeTreeFactory == null || state.options == null) {
 			return Collections.emptyMap();
 		}
 
-		JvmNodeTree concreteTree = state.nodeTreeAdapter.createConcreteNodeTree(concreteType, state.options);
+		JvmNodeTree concreteTree = state.runtimeTreeFactory.createConcreteNodeTree(concreteType, state.options);
 		if (concreteTree == null) {
 			return Collections.emptyMap();
 		}
@@ -1555,12 +1579,12 @@ final class ValueProjectionAssembler {
 		AssemblyState state
 	) {
 		FixtureMonkeyOptions options = state.options;
-		PropertyNameResolver childNameResolver = resolveNameResolver(childNode, childProperty, state);
+		PropertyNameResolver childNameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 
 		ObjectProperty childObjectProperty = new ObjectProperty(childProperty, childNameResolver, childNode.getIndex());
 
 		boolean childIsContainer = state.containerTypeCache.computeIfAbsent(childNode.getConcreteType(), type ->
-			computeIsContainerType(type, options)
+			TypeMetadataResolver.computeIsContainerType(type, options)
 		);
 
 		ObjectPropertyGeneratorContext childNullInjectContext = new ObjectPropertyGeneratorContext(
@@ -1570,7 +1594,7 @@ final class ValueProjectionAssembler {
 			childIsContainer,
 			childNameResolver
 		);
-		double childNullInject = resolveNullInjectGenerator(childNode, childProperty, state).generate(
+		double childNullInject = TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state).generate(
 			childNullInjectContext
 		);
 
@@ -1587,7 +1611,7 @@ final class ValueProjectionAssembler {
 		JvmNode parentNode,
 		AssemblyState state
 	) {
-		if (isSingleElementWrapper(parentNode.getConcreteType())) {
+		if (TypeMetadataResolver.isSingleElementWrapper(parentNode.getConcreteType())) {
 			String nodeName = childNode.getNodeName();
 			Integer index = childNode.getIndex();
 
@@ -1603,444 +1627,13 @@ final class ValueProjectionAssembler {
 			return parentPath.index(index);
 		} else if (nodeName != null) {
 			Property childProperty = state.propertyByNode.computeIfAbsent(childNode, state.nodePropertyFactory);
-			PropertyNameResolver nameResolver = resolveNameResolver(childNode, childProperty, state);
+			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 			String resolvedName = nameResolver.resolve(childProperty);
 
 			return parentPath.child(resolvedName);
 		} else {
 			return parentPath;
 		}
-	}
-
-	private boolean isSingleElementWrapper(JvmType jvmType) {
-		Class<?> rawType = jvmType.getRawType();
-		return (Supplier.class.isAssignableFrom(rawType)
-			|| Optional.class.isAssignableFrom(rawType)
-			|| OptionalInt.class.isAssignableFrom(rawType)
-			|| OptionalLong.class.isAssignableFrom(rawType)
-			|| OptionalDouble.class.isAssignableFrom(rawType));
-	}
-
-	private boolean computeIsContainerType(JvmType jvmType, @Nullable FixtureMonkeyOptions options) {
-		Class<?> rawType = jvmType.getRawType();
-		if (
-			rawType.isArray()
-				|| Collection.class.isAssignableFrom(rawType)
-				|| Map.class.isAssignableFrom(rawType)
-				|| Map.Entry.class.isAssignableFrom(rawType)
-				|| Iterable.class.isAssignableFrom(rawType)
-				|| BaseStream.class.isAssignableFrom(rawType)
-				|| isSingleElementWrapper(jvmType)
-		) {
-			return true;
-		}
-
-		if (options != null) {
-			Property property = JvmNodePropertyFactory.fromType(jvmType);
-			for (MatcherOperator<ContainerPropertyGenerator> op : options.getContainerPropertyGenerators()) {
-				if (op.getMatcher().match(property)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private PropertyNameResolver resolveNameResolver(JvmNode node, Property property, AssemblyState state) {
-		if (state.typeMetadataCache != null) {
-			CachedTypeMetadata cached = state.typeMetadataCache.get(node.getConcreteType());
-			if (cached != null) {
-				return cached.nameResolver;
-			}
-		}
-		return state.options.getPropertyNameResolver(property);
-	}
-
-	private NullInjectGenerator resolveNullInjectGenerator(JvmNode node, Property property, AssemblyState state) {
-		if (state.typeMetadataCache != null) {
-			CachedTypeMetadata cached = state.typeMetadataCache.get(node.getConcreteType());
-			if (cached != null) {
-				return cached.nullInjectGenerator;
-			}
-		}
-		return state.options.getNullInjectGenerator(property);
-	}
-
-	@SuppressWarnings("deprecation")
-	private void writeBackTypeMetadata(JvmNode node, Property property, AssemblyState state) {
-		if (state.typeMetadataCache == null) {
-			return;
-		}
-		JvmType jvmType = node.getConcreteType();
-		if (!state.typeMetadataCache.containsKey(jvmType)) {
-			PropertyNameResolver resolver = state.options.getPropertyNameResolver(property);
-			NullInjectGenerator generator = state.options.getNullInjectGenerator(property);
-			boolean isContainer = computeIsContainerType(jvmType, state.options);
-			boolean hasCandidateResolvers = state.options.getCandidateConcretePropertyResolver(property) != null;
-			state.typeMetadataCache.putIfAbsent(
-				jvmType,
-				new CachedTypeMetadata(resolver, generator, isContainer, hasCandidateResolvers)
-			);
-		}
-	}
-
-	private boolean hasChildPathValues(PathExpression parentPath, PathIndex pathIndex) {
-		return pathIndex.hasChildPaths(parentPath);
-	}
-
-	private static boolean hasChildCandidateValues(
-		PathExpression parentPath,
-		Map<PathExpression, ValueCandidate> candidatesByPath
-	) {
-		String parentStr = parentPath.toExpression();
-		for (PathExpression candidatePath : candidatesByPath.keySet()) {
-			String candidateStr = candidatePath.toExpression();
-			if (candidateStr.length() > parentStr.length() && candidateStr.startsWith(parentStr)) {
-				char nextChar = candidateStr.charAt(parentStr.length());
-				if (nextChar == '.' || nextChar == '[') {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private static boolean isNullSetAfterAllChildren(
-		ValueOrder nullOrder,
-		PathExpression parentPath,
-		Map<PathExpression, ValueCandidate> candidatesByPath
-	) {
-		String parentStr = parentPath.toExpression();
-		for (Map.Entry<PathExpression, ValueCandidate> entry : candidatesByPath.entrySet()) {
-			String candidateStr = entry.getKey().toExpression();
-			if (candidateStr.length() > parentStr.length() && candidateStr.startsWith(parentStr)) {
-				char nextChar = candidateStr.charAt(parentStr.length());
-				if (nextChar == '.' || nextChar == '[') {
-					if (entry.getValue().order.compareTo(nullOrder) >= 0) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	private @Nullable PathExpression findBestMatchingPath(
-		Map<PathExpression, ValueCandidate> candidatesByPath,
-		PathExpression path,
-		@Nullable AssemblyState state
-	) {
-		PathExpression bestPath = null;
-		// Sentinel initial values — RegisterOrder.of(MIN_VALUE) loses to any real comparison
-		ValueOrder bestOrder = ValueOrder.RegisterOrder.of(Integer.MIN_VALUE);
-
-		PathExpression bestTypePath = null;
-		int bestTypeDepth = -1;
-		ValueOrder bestTypeOrder = ValueOrder.RegisterOrder.of(Integer.MIN_VALUE);
-
-		ValueCandidate exactCandidate = candidatesByPath.get(path);
-		if (exactCandidate != null) {
-			if (exactCandidate.order.compareTo(bestOrder) > 0) {
-				bestOrder = exactCandidate.order;
-				bestPath = path;
-			}
-		}
-
-		if (state != null) {
-			for (Map.Entry<PathExpression, ValueCandidate> entry : state.wildcardEntries) {
-				PathExpression pattern = entry.getKey();
-				if (pattern.matches(path)) {
-					ValueOrder order = entry.getValue().order;
-					if (order.compareTo(bestOrder) > 0) {
-						bestOrder = order;
-						bestPath = pattern;
-					}
-				}
-			}
-
-			for (Map.Entry<PathExpression, ValueCandidate> entry : state.typeSelectorEntries) {
-				PathExpression pattern = entry.getKey();
-				// depth = how deep in the tree the type match occurs; deeper = more specific = wins
-				int depth = matchesTypePattern(pattern, path, state);
-				if (depth >= 0) {
-					ValueOrder order = entry.getValue().order;
-					if (depth > bestTypeDepth || (depth == bestTypeDepth && order.compareTo(bestTypeOrder) > 0)) {
-						bestTypeDepth = depth;
-						bestTypeOrder = order;
-						bestTypePath = pattern;
-					}
-				}
-			}
-		}
-
-		if (bestTypePath != null) {
-			if (bestPath == null || bestTypeOrder.compareTo(bestOrder) > 0) {
-				return bestTypePath;
-			}
-		}
-
-		return bestPath;
-	}
-
-	private int matchesTypePattern(PathExpression pattern, PathExpression path, AssemblyState state) {
-		List<Segment> patternSegments = pattern.getSegments();
-		List<Segment> pathSegments = path.getSegments();
-
-		if (patternSegments.isEmpty()) {
-			return -1;
-		}
-
-		int typeSegmentIndex = -1;
-		TypeSelector typeSelector = null;
-		for (int i = 0; i < patternSegments.size(); i++) {
-			Segment seg = patternSegments.get(i);
-			if (seg.isSingleSelector() && seg.getFirstSelector() instanceof TypeSelector) {
-				typeSegmentIndex = i;
-				typeSelector = (TypeSelector)seg.getFirstSelector();
-				break;
-			}
-		}
-
-		if (typeSelector == null) {
-			return -1;
-		}
-
-		int patternSuffixLen = patternSegments.size() - typeSegmentIndex - 1;
-
-		// TypeSelector-only pattern ($[type:T]) — only matches current node's type directly.
-		// Descendant field matching is handled by resolveThenApplyAncestorValue.
-		if (patternSuffixLen == 0 && typeSegmentIndex == 0) {
-			JvmNode currentNode = findNodeForPath(path, state);
-			if (currentNode != null && typeSelector.matchesType(currentNode.getConcreteType().getRawType())) {
-				return pathSegments.size();
-			}
-			return -1;
-		}
-
-		if (patternSuffixLen > pathSegments.size()) {
-			return -1;
-		}
-
-		int suffixStartInPath = pathSegments.size() - patternSuffixLen;
-		for (int i = 0; i < patternSuffixLen; i++) {
-			Segment patternSeg = patternSegments.get(typeSegmentIndex + 1 + i);
-			Segment pathSeg = pathSegments.get(suffixStartInPath + i);
-			if (!patternSeg.equals(pathSeg)
-				&& !(patternSeg.isSingleSelector()
-				&& patternSeg.getFirstSelector() instanceof WildcardSelector
-				&& pathSeg.isSingleSelector()
-				&& (pathSeg.getFirstSelector() instanceof IndexSelector
-				|| pathSeg.getFirstSelector() instanceof KeySelector
-				|| pathSeg.getFirstSelector() instanceof ValueSelector))
-			) {
-				return -1;
-			}
-		}
-
-		int ownerPos = suffixStartInPath - 1;
-
-		PathExpression nodeAtPath;
-		if (ownerPos < 0) {
-			nodeAtPath = PathExpression.root();
-		} else {
-			nodeAtPath = buildPathUpTo(path, ownerPos);
-		}
-
-		JvmNode node = findNodeForPath(nodeAtPath, state);
-		if (node == null) {
-			return -1;
-		}
-
-		if (typeSelector.matchesType(node.getConcreteType().getRawType())) {
-			return ownerPos + 1;
-		}
-
-		return -1;
-	}
-
-	private PathExpression buildPathUpTo(PathExpression fullPath, int segmentIndex) {
-		List<Segment> segments = fullPath.getSegments();
-		PathExpression result = PathExpression.root();
-		for (int i = 0; i <= segmentIndex && i < segments.size(); i++) {
-			result = result.appendSegment(segments.get(i));
-		}
-		return result;
-	}
-
-	private boolean isRootTypeSelector(PathExpression path) {
-		List<Segment> segments = path.getSegments();
-		return (segments.size() == 1
-			&& segments.get(0).isSingleSelector()
-			&& segments.get(0).getFirstSelector() instanceof TypeSelector);
-	}
-
-	private boolean hasFieldLevelTypeSelectorSiblings(PathExpression rootTypePath, AssemblyState state) {
-		TypeSelector rootTypeSelector = (TypeSelector)rootTypePath.getSegments().get(0).getFirstSelector();
-		Class<?> rootType = rootTypeSelector.getTargetType();
-
-		for (PathExpression path : state.candidatesByPath.keySet()) {
-			if (path.equals(rootTypePath)) {
-				continue;
-			}
-			List<Segment> segments = path.getSegments();
-			if (segments.size() > 1
-				&& segments.get(0).isSingleSelector()
-				&& segments.get(0).getFirstSelector() instanceof TypeSelector) {
-				TypeSelector ts = (TypeSelector)segments.get(0).getFirstSelector();
-				if (ts.getTargetType().equals(rootType)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private @Nullable Object resolveThenApplyAncestorValue(
-		JvmNode node,
-		PathExpression currentPath,
-		AssemblyState state
-	) {
-		if (state.rootTypeSelectors.isEmpty()) {
-			return null;
-		}
-
-		for (Map.Entry<PathExpression, ValueCandidate> entry : state.rootTypeSelectors) {
-			TypeSelector typeSelector = (TypeSelector)entry.getKey().getSegments().get(0).getFirstSelector();
-
-			if (node.getConcreteType() != null && typeSelector.matchesType(node.getConcreteType().getRawType())) {
-				Object value = entry.getValue().value;
-				if (value instanceof LazyValueHolder) {
-					Object resolved = resolveLazyWithCache((LazyValueHolder)value, state);
-					if (resolved == LazyValueHolder.RECURSION_BLOCKED) {
-						return null;
-					}
-					return resolved;
-				}
-				return value;
-			}
-
-			List<Segment> pathSegments = currentPath.getSegments();
-			for (int pos = pathSegments.size() - 1; pos >= 0; pos--) {
-				PathExpression ancestorPath = buildPathUpTo(currentPath, pos - 1);
-				JvmNode ancestorNode = findNodeForPath(ancestorPath, state);
-				if (ancestorNode != null
-					&& ancestorNode.getConcreteType() != null
-					&& typeSelector.matchesType(ancestorNode.getConcreteType().getRawType())) {
-					Object value = entry.getValue().value;
-					Object resolved;
-					if (value instanceof LazyValueHolder) {
-						resolved = resolveLazyWithCache((LazyValueHolder)value, state);
-						if (resolved == LazyValueHolder.RECURSION_BLOCKED || resolved == null) {
-							return null;
-						}
-					} else {
-						resolved = value;
-					}
-
-					Object current = resolved;
-					for (int i = pos; i < pathSegments.size() && current != null; i++) {
-						Segment pathSeg = pathSegments.get(i);
-						Selector selector = pathSeg.getFirstSelector();
-
-						if (selector instanceof NameSelector) {
-							current = getFieldValueByName(current, ((NameSelector)selector).getName());
-						} else if (selector instanceof IndexSelector) {
-							current = getElementAtIndex(current, ((IndexSelector)selector).getIndex());
-						} else {
-							current = null;
-						}
-					}
-					if (current != null) {
-						return current;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	private static @Nullable Object getFieldValueByName(Object obj, String fieldName) {
-		Field field = TypeCache.getFieldsByName(obj.getClass()).get(fieldName);
-		if (field == null) {
-			return null;
-		}
-		try {
-			return field.get(obj);
-		} catch (IllegalAccessException e) {
-			return null;
-		}
-	}
-
-	private static @Nullable Object getElementAtIndex(Object container, int index) {
-		if (container instanceof List) {
-			List<?> list = (List<?>)container;
-			if (index >= 0 && index < list.size()) {
-				return list.get(index);
-			}
-			return null;
-		}
-		if (container.getClass().isArray()) {
-			int length = Array.getLength(container);
-			if (index >= 0 && index < length) {
-				return Array.get(container, index);
-			}
-			return null;
-		}
-		return null;
-	}
-
-	private @Nullable JvmNode findNodeForPath(PathExpression path, AssemblyState state) {
-		String pathStr = path.toExpression();
-		JvmNode node = state.nodeByPath.get(pathStr);
-		if (node != null) {
-			return node;
-		}
-		if (state.nodeTree != null) {
-			return state.nodeTree.resolve(path);
-		}
-		return null;
-	}
-
-	private @Nullable Object resolveLazyWithCache(LazyValueHolder holder, AssemblyState state) {
-		if (state.resolvedLazyCache.containsKey(holder)) {
-			return state.resolvedLazyCache.get(holder);
-		}
-		Object resolved = holder.getValue();
-		if (resolved != null && resolved != LazyValueHolder.RECURSION_BLOCKED) {
-			state.resolvedLazyCache.put(holder, resolved);
-		}
-		return resolved;
-	}
-
-	private boolean hasMatchingTypeSelector(JvmType nodeType, PathIndex pathIndex) {
-		Set<PathExpression> typePatternPaths = pathIndex.getTypePatternPaths();
-		if (typePatternPaths.isEmpty()) {
-			return false;
-		}
-
-		Class<?> rawType = nodeType.getRawType();
-		for (PathExpression pattern : typePatternPaths) {
-			List<Segment> segments = pattern.getSegments();
-			for (Segment segment : segments) {
-				if (segment.isSingleSelector() && segment.getFirstSelector() instanceof TypeSelector) {
-					TypeSelector typeSelector = (TypeSelector)segment.getFirstSelector();
-					if (typeSelector.matchesType(rawType)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean isUnderExcludedPath(PathExpression path, Set<PathExpression> excludedPaths) {
-		for (PathExpression excluded : excludedPaths) {
-			if (path.isChildOf(excluded)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -2132,7 +1725,7 @@ final class ValueProjectionAssembler {
 						if (result == null) {
 							result = new ArrayList<>(list);
 						}
-						result.set(i, resolveLazyValue(entry.getValue().value, false, state));
+						result.set(i, LazyResolver.resolveLazyValue(entry.getValue().value, false, state));
 						break;
 					}
 				}
@@ -2157,7 +1750,7 @@ final class ValueProjectionAssembler {
 							container = copy;
 							modified = true;
 						}
-						Object resolved = resolveLazyValue(entry.getValue().value, false, state);
+						Object resolved = LazyResolver.resolveLazyValue(entry.getValue().value, false, state);
 						if (resolved != null) {
 							Array.set(container, i, resolved);
 						}
@@ -2167,17 +1760,6 @@ final class ValueProjectionAssembler {
 			}
 		}
 		return container;
-	}
-
-	private @Nullable Object resolveLazyValue(@Nullable Object value, boolean isFromRegister, AssemblyState state) {
-		if (!(value instanceof LazyValueHolder)) {
-			return value;
-		}
-		// Register lazy: evaluate fresh each time (thenApply wraps entire object).
-		// User lazy: cached within one sample for consistency (e.g., setLazy with Arbitraries.of()).
-		return isFromRegister
-			? ((LazyValueHolder)value).getValue()
-			: resolveLazyWithCache((LazyValueHolder)value, state);
 	}
 
 	private CombinableArbitrary<?> traceAndReturnValue(
@@ -2345,255 +1927,6 @@ final class ValueProjectionAssembler {
 			return "name:" + nodeName;
 		} else {
 			return "type:" + node.getConcreteType().getRawType().getName();
-		}
-	}
-
-	private static final class PathIndex {
-
-		private static final Pattern INDEX_PATTERN = Pattern.compile("\\[\\d+]");
-
-		private final Map<PathExpression, Set<PathExpression>> childPathsByParent;
-		private final Set<PathExpression> wildcardParentPaths;
-		private final Set<PathExpression> typePatternPaths;
-
-		PathIndex(
-			Set<PathExpression> valuePaths,
-			Set<PathExpression> userContainerSizePaths,
-			Set<PathExpression> customizerPaths,
-			Set<PathExpression> notNullPaths
-		) {
-			this.childPathsByParent = new HashMap<>();
-			this.wildcardParentPaths = new HashSet<>();
-			this.typePatternPaths = new HashSet<>();
-
-			indexAncestors(valuePaths);
-			indexAncestors(userContainerSizePaths);
-			indexAncestors(customizerPaths);
-			indexAncestors(notNullPaths);
-
-			for (PathExpression sizePath : userContainerSizePaths) {
-				childPathsByParent.computeIfAbsent(sizePath, k -> new HashSet<>());
-			}
-		}
-
-		private void indexAncestors(Set<PathExpression> paths) {
-			for (PathExpression path : paths) {
-				if (path.hasTypeSelector()) {
-					typePatternPaths.add(path);
-					continue;
-				}
-
-				PathExpression ancestor = path.getParent();
-				while (ancestor != null && !ancestor.equals(path)) {
-					childPathsByParent.computeIfAbsent(ancestor, k -> new HashSet<>()).add(path);
-					PathExpression next = ancestor.getParent();
-					if (next != null && next.equals(ancestor)) {
-						break;
-					}
-					ancestor = next;
-				}
-
-				if (path.hasWildcard()) {
-					PathExpression wildcardParent = path.getParent();
-					if (wildcardParent != null) {
-						wildcardParentPaths.add(wildcardParent);
-					}
-				}
-			}
-		}
-
-		boolean hasChildPaths(PathExpression parentPath) {
-			if (childPathsByParent.containsKey(parentPath)) {
-				return true;
-			}
-			if (wildcardParentPaths.contains(parentPath)) {
-				return true;
-			}
-			String pathStr = parentPath.toExpression();
-			// Convert indexed paths ($.list[0]) to wildcard form ($.list[*]) to check wildcard coverage
-			if (pathStr.contains("[") && !pathStr.contains("[*]")) {
-				String wildcardForm = INDEX_PATTERN.matcher(pathStr).replaceAll("[*]");
-				PathExpression wildcardPath = PathExpression.of(wildcardForm);
-				return wildcardParentPaths.contains(wildcardPath)
-					|| childPathsByParent.containsKey(wildcardPath);
-			}
-			return false;
-		}
-
-		Set<PathExpression> getTypePatternPaths() {
-			return typePatternPaths;
-		}
-	}
-
-	static final class CachedTypeMetadata {
-
-		final PropertyNameResolver nameResolver;
-		final NullInjectGenerator nullInjectGenerator;
-		final boolean isContainerType;
-		final boolean hasCandidateConcretePropertyResolvers;
-
-		CachedTypeMetadata(
-			PropertyNameResolver nameResolver,
-			NullInjectGenerator nullInjectGenerator,
-			boolean isContainerType,
-			boolean hasCandidateConcretePropertyResolvers
-		) {
-			this.nameResolver = nameResolver;
-			this.nullInjectGenerator = nullInjectGenerator;
-			this.isContainerType = isContainerType;
-			this.hasCandidateConcretePropertyResolvers = hasCandidateConcretePropertyResolvers;
-		}
-	}
-
-	private static final class AssemblyState {
-
-		final JvmNodeTree nodeTree;
-		final Map<PathExpression, ValueCandidate> candidatesByPath;
-		final com.navercorp.fixturemonkey.api.property.TreeRootProperty rootProperty;
-		final FixtureMonkeyOptions options;
-		final com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext monkeyGeneratorContext;
-		final com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext loggingContext;
-		final Set<PathExpression> justPaths;
-		final Set<PathExpression> notNullPaths;
-		final Map<PathExpression, List<AnalysisResult.PostConditionFilter>> filtersByPath;
-		final Map<PathExpression, Integer> limitsByPath;
-		final InterfaceSelectionStrategy interfaceSelectionStrategy;
-		final long assemblySeed;
-		final AtomicInteger interfaceSelectionCounter;
-		final Map<PathExpression, List<AnalysisResult.PropertyCustomizer>> customizersByPath;
-		final TraceContext traceContext;
-		final Map<Class<?>, ArbitraryIntrospector> introspectorsByType;
-
-		final Map<JvmNode, JvmNodeTree> concreteTreeByNode;
-
-		final Map<JvmType, Boolean> containerTypeCache;
-
-		final Map<JvmNode, Property> propertyByNode;
-
-		final Set<PathExpression> userContainerSizePaths;
-
-		final PathIndex pathIndex;
-
-		final @Nullable NodeTreeAdapter nodeTreeAdapter;
-
-		final Function<JvmNode, Property> nodePropertyFactory;
-
-		final Map<JvmNode, Property> propertyPathPropertyByNode;
-
-		final Map<String, JvmNode> nodeByPath;
-
-		final Map<LazyValueHolder, Object> resolvedLazyCache;
-
-		final List<Map.Entry<PathExpression, ValueCandidate>> wildcardEntries;
-
-		final List<Map.Entry<PathExpression, ValueCandidate>> typeSelectorEntries;
-
-		final List<Map.Entry<PathExpression, ValueCandidate>> rootTypeSelectors;
-
-		final ValueDecomposer valueDecomposer;
-
-		final @Nullable ConcurrentHashMap<JvmType, CachedTypeMetadata> typeMetadataCache;
-
-		AssemblyState(
-			JvmNodeTree nodeTree,
-			Map<PathExpression, ValueCandidate> candidatesByPath,
-			com.navercorp.fixturemonkey.api.property.TreeRootProperty rootProperty,
-			FixtureMonkeyOptions options,
-			com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext monkeyGeneratorContext,
-			com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext loggingContext,
-			Set<PathExpression> justPaths,
-			Set<PathExpression> notNullPaths,
-			Map<PathExpression, List<AnalysisResult.PostConditionFilter>> filtersByPath,
-			Map<PathExpression, Integer> limitsByPath,
-			InterfaceSelectionStrategy interfaceSelectionStrategy,
-			Map<PathExpression, List<AnalysisResult.PropertyCustomizer>> customizersByPath,
-			TraceContext traceContext,
-			Map<Class<?>, ArbitraryIntrospector> introspectorsByType,
-			@Nullable NodeTreeAdapter nodeTreeAdapter,
-			Set<PathExpression> userContainerSizePaths
-		) {
-			this.nodeTree = nodeTree;
-			this.candidatesByPath = candidatesByPath;
-			this.rootProperty = rootProperty;
-			this.options = options;
-			this.monkeyGeneratorContext = monkeyGeneratorContext;
-			this.loggingContext = loggingContext;
-			this.justPaths = justPaths;
-			this.notNullPaths = notNullPaths;
-			this.filtersByPath = filtersByPath;
-			this.limitsByPath = limitsByPath;
-			this.interfaceSelectionStrategy = interfaceSelectionStrategy;
-			this.assemblySeed = ThreadLocalRandom.current().nextLong();
-			this.interfaceSelectionCounter = new AtomicInteger(0);
-			this.customizersByPath = customizersByPath;
-			this.traceContext = traceContext;
-			this.introspectorsByType = introspectorsByType;
-			this.nodeTreeAdapter = nodeTreeAdapter;
-
-			this.containerTypeCache = new HashMap<>();
-			this.propertyByNode = new IdentityHashMap<>();
-			this.concreteTreeByNode = new IdentityHashMap<>();
-			this.propertyPathPropertyByNode = new IdentityHashMap<>();
-			this.nodeByPath = new HashMap<>();
-			this.resolvedLazyCache = new IdentityHashMap<>();
-			this.valueDecomposer = new ValueDecomposer(
-				candidatesByPath,
-				limitsByPath,
-				nodeTree,
-				new ObjectValueExtractor()
-			);
-			this.userContainerSizePaths = userContainerSizePaths;
-			this.pathIndex = new PathIndex(
-				new HashSet<>(candidatesByPath.keySet()),
-				userContainerSizePaths,
-				new HashSet<>(customizersByPath.keySet()),
-				notNullPaths
-			);
-
-			List<Map.Entry<PathExpression, ValueCandidate>> wildcards = new ArrayList<>();
-			List<Map.Entry<PathExpression, ValueCandidate>> typeSelectors = new ArrayList<>();
-			List<Map.Entry<PathExpression, ValueCandidate>> rootTypeOnly = new ArrayList<>();
-			for (Map.Entry<PathExpression, ValueCandidate> entry : candidatesByPath.entrySet()) {
-				PathExpression pattern = entry.getKey();
-				if (pattern.hasWildcard()) {
-					wildcards.add(entry);
-				} else if (pattern.hasTypeSelector()) {
-					typeSelectors.add(entry);
-					List<Segment> segments = pattern.getSegments();
-					if (segments.size() == 1
-						&& segments.get(0).isSingleSelector()
-						&& segments.get(0).getFirstSelector() instanceof TypeSelector) {
-						rootTypeOnly.add(entry);
-					}
-				}
-			}
-			this.wildcardEntries = wildcards;
-			this.typeSelectorEntries = typeSelectors;
-			this.rootTypeSelectors = rootTypeOnly;
-
-			this.nodePropertyFactory = new JvmNodePropertyFactory(child -> {
-				JvmNode parent = nodeTree.getParent(child);
-				if (parent != null) {
-					return parent;
-				}
-				JvmNodeTree concreteTree = this.concreteTreeByNode.get(child);
-				if (concreteTree != null) {
-					return concreteTree.getParent(child);
-				}
-				return null;
-			});
-
-			ConcurrentHashMap<?, ?> rawCache = nodeTreeAdapter != null ? nodeTreeAdapter.getNodeMetadataCache() : null;
-			if (rawCache != null) {
-				@SuppressWarnings("unchecked")
-				ConcurrentHashMap<JvmType, CachedTypeMetadata> typedCache = (ConcurrentHashMap<
-					JvmType,
-					CachedTypeMetadata
-					>)rawCache;
-				this.typeMetadataCache = typedCache;
-			} else {
-				this.typeMetadataCache = null;
-			}
 		}
 	}
 }

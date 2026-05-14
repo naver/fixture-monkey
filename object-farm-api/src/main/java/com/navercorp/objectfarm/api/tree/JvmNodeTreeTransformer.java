@@ -320,10 +320,31 @@ public final class JvmNodeTreeTransformer {
 		}
 
 		List<JvmNode> resolvedElements = resolveContainerElementTypes(elements, currentPath);
-		ctx.allNodes.addAll(resolvedElements);
-		ctx.parentChildMap.put(containerNode, resolvedElements);
 
+		// Drop elements whose type would form a cycle (e.g. List<Self> nested inside Self).
+		// Without this, each element becomes an unexpanded recursion-break leaf and the assembler
+		// later asks the introspector to construct it with no children — Kotlin non-nullable
+		// constructor parameters reject the resulting null arguments. Truncating the container
+		// to the elements we can actually build keeps the recursion bounded.
+		List<JvmNode> retainedElements = new ArrayList<>(resolvedElements.size());
 		for (JvmNode element : resolvedElements) {
+			Class<?> elementRawType = element.getConcreteType().getRawType();
+			boolean wouldCycle = ancestors.contains(elementRawType)
+				&& (expansionContext == null
+					|| !expansionContext.shouldExpandPath(currentPath, elementRawType, ancestors));
+			if (!wouldCycle) {
+				retainedElements.add(element);
+			}
+		}
+
+		if (retainedElements.isEmpty()) {
+			return;
+		}
+
+		ctx.allNodes.addAll(retainedElements);
+		ctx.parentChildMap.put(containerNode, retainedElements);
+
+		for (JvmNode element : retainedElements) {
 			ctx.nodeToParent.put(element, containerNode);
 			Integer index = element.getIndex();
 			PathExpression elementPath = index != null ? currentPath.index(index) : currentPath;

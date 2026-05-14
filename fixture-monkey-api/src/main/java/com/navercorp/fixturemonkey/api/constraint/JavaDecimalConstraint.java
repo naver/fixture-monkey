@@ -24,7 +24,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-@API(since = "0.6.8", status = Status.MAINTAINED)
+@API(since = "0.6.8", status = Status.EXPERIMENTAL)
 public final class JavaDecimalConstraint {
 	@Nullable
 	private final BigDecimal min;

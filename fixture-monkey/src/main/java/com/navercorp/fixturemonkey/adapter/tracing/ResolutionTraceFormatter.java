@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.CacheStatusEn
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.ContainerSizeEntry;
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.InterfaceResolutionEntry;
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.JustPathEntry;
-import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.ManipulatorEntry;
+import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.DirectiveEntry;
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.ManipulatorOverrideEntry;
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.ManipulatorRecord;
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace.MergedCandidateEntry;
@@ -74,7 +74,7 @@ final class ResolutionTraceFormatter {
 		sb.append(" Fixture Monkey Resolution Trace\n");
 		sb.append(separator).append("\n\n");
 
-		List<ManipulatorEntry> manipulators = trace.getManipulators();
+		List<DirectiveEntry> manipulators = trace.getDirectives();
 		Map<PathExpression, @Nullable Object> valuesByPath = trace.getValuesByPath();
 		Map<PathExpression, Integer> valueOrderByPath = trace.getValueOrderByPath();
 		List<NodeCollision> nodeCollisions = trace.getNodeCollisions();
@@ -102,10 +102,10 @@ final class ResolutionTraceFormatter {
 		}
 
 		// 2. Analysis section
-		int analysisPathWidth = maxLength(manipulators, ManipulatorEntry::path) + 2;
+		int analysisPathWidth = maxLength(manipulators, DirectiveEntry::path) + 2;
 		sb.append("\u25b8 Analysis (").append(manipulators.size()).append(" manipulators)\n");
 		for (int i = 0; i < manipulators.size(); i++) {
-			ManipulatorEntry manipulatorEntry = manipulators.get(i);
+			DirectiveEntry manipulatorEntry = manipulators.get(i);
 			boolean isLast = (i == manipulators.size() - 1);
 			String prefix = isLast ? "  \u2514\u2500 " : "  \u251c\u2500 ";
 			sb.append(prefix)
@@ -506,7 +506,7 @@ final class ResolutionTraceFormatter {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
 
-		List<ManipulatorEntry> manipulators = trace.getManipulators();
+		List<DirectiveEntry> manipulators = trace.getDirectives();
 		Map<PathExpression, @Nullable Object> valuesByPath = trace.getValuesByPath();
 		Map<PathExpression, Integer> valueOrderByPath = trace.getValueOrderByPath();
 		List<NodeCollision> nodeCollisions = trace.getNodeCollisions();
@@ -519,7 +519,7 @@ final class ResolutionTraceFormatter {
 		sb.append("  \"analysis\": {\n");
 		sb.append("    \"manipulators\": [\n");
 		for (int i = 0; i < manipulators.size(); i++) {
-			ManipulatorEntry manipulatorEntry = manipulators.get(i);
+			DirectiveEntry manipulatorEntry = manipulators.get(i);
 			sb
 				.append("      {\"path\": \"")
 				.append(escapeJson(manipulatorEntry.path()))

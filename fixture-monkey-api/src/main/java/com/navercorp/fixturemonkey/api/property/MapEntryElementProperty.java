@@ -18,11 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,18 +29,18 @@ import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapEntryElementProperty implements Property {
+	private static final JvmType MAP_ENTRY_ELEMENT_JVM_TYPE = new JavaType(MapEntryElementType.class);
+
 	private final Property mapEntryProperty;
 
 	private final Property keyProperty;
 
 	private final Property valueProperty;
-
-	private final JvmType jvmType =
-		Types.toJvmType(generateAnnotatedTypeWithoutAnnotation(MapEntryElementType.class), Collections.emptyList());
 
 	public MapEntryElementProperty(
 		Property mapEntryProperty,
@@ -69,13 +65,8 @@ public final class MapEntryElementProperty implements Property {
 	}
 
 	@Override
-	public Type getType() {
-		return this.jvmType.getRawType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.jvmType.getAnnotatedType();
+	public JvmType getJvmType() {
+		return MAP_ENTRY_ELEMENT_JVM_TYPE;
 	}
 
 	@Override
@@ -87,20 +78,6 @@ public final class MapEntryElementProperty implements Property {
 	@Override
 	public List<Annotation> getAnnotations() {
 		return Collections.emptyList();
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		if (instance == null) {
-			return null;
-		}
-
-		Class<?> actualType = Types.getActualType(instance.getClass());
-		if (!(Map.class.isAssignableFrom(actualType) || Map.Entry.class.isAssignableFrom(actualType))) {
-			throw new IllegalArgumentException("given value is not Map or MapEntry type " + actualType);
-		}
-		return instance;
 	}
 
 	@Override

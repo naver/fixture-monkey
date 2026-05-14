@@ -24,12 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.adapter.NodeTreeAdapter;
+import com.navercorp.fixturemonkey.adapter.RuntimeTreeFactory;
 import com.navercorp.fixturemonkey.adapter.analysis.AnalysisResult;
 import com.navercorp.fixturemonkey.adapter.tracing.TraceContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
@@ -40,6 +41,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.option.InterfaceSelectionStrategy;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.tree.PathResolverContext;
 
 /**
  * Context for ValueProjection.assemble() containing all necessary information
@@ -129,10 +131,22 @@ public final class AssembleContext {
 	private final Map<Class<?>, ArbitraryIntrospector> introspectorsByType;
 
 	/**
-	 * NodeTreeAdapter for building concrete type trees.
-	 * Used to get properly structured trees for interface implementations.
+	 * Builds runtime-resolved trees (concrete/anonymous) during assembly.
 	 */
-	private final @Nullable NodeTreeAdapter nodeTreeAdapter;
+	private final @Nullable RuntimeTreeFactory runtimeTreeFactory;
+
+	/**
+	 * Path resolver context produced during planning. Passed to
+	 * {@link RuntimeTreeFactory#createAnonymousNodeTree} so the anonymous tree built at
+	 * assembly time sees the same resolution decisions as the planned tree.
+	 */
+	private final @Nullable PathResolverContext pathResolverContext;
+
+	/**
+	 * Cross-call cache for assembly node metadata. Type-erased here since {@code CachedTypeMetadata}
+	 * is package-private in this package.
+	 */
+	private final @Nullable ConcurrentHashMap<?, ?> nodeMetadataCache;
 
 	/**
 	 * Paths where the user has explicitly set container sizes via size() calls.
@@ -156,7 +170,9 @@ public final class AssembleContext {
 		this.valueOrderByPath = Collections.unmodifiableMap(new HashMap<>(builder.valueOrderByPath));
 		this.customizersByPath = Collections.unmodifiableMap(new HashMap<>(builder.customizersByPath));
 		this.introspectorsByType = Collections.unmodifiableMap(new HashMap<>(builder.introspectorsByType));
-		this.nodeTreeAdapter = builder.nodeTreeAdapter;
+		this.runtimeTreeFactory = builder.runtimeTreeFactory;
+		this.pathResolverContext = builder.pathResolverContext;
+		this.nodeMetadataCache = builder.nodeMetadataCache;
 		this.userContainerSizePaths = Collections.unmodifiableSet(new HashSet<>(builder.userContainerSizePaths));
 		this.typedPathValues = Collections.unmodifiableMap(new HashMap<>(builder.typedPathValues));
 		this.typedPathOrders = Collections.unmodifiableMap(new HashMap<>(builder.typedPathOrders));
@@ -323,12 +339,32 @@ public final class AssembleContext {
 	}
 
 	/**
-	 * Returns the NodeTreeAdapter for building concrete type trees.
+	 * Returns the {@link RuntimeTreeFactory} used for building runtime-resolved trees during assembly.
 	 *
-	 * @return the node tree adapter, or null if not set
+	 * @return the runtime tree factory, or null if not set
 	 */
-	public @Nullable NodeTreeAdapter getNodeTreeAdapter() {
-		return nodeTreeAdapter;
+	public @Nullable RuntimeTreeFactory getRuntimeTreeFactory() {
+		return runtimeTreeFactory;
+	}
+
+	/**
+	 * Returns the {@link PathResolverContext} produced during planning. Passed to
+	 * {@link RuntimeTreeFactory#createAnonymousNodeTree} during assembly so anonymous-tree
+	 * construction sees the same resolution decisions as the planned tree.
+	 *
+	 * @return the path resolver context, or null if not set
+	 */
+	public @Nullable PathResolverContext getPathResolverContext() {
+		return pathResolverContext;
+	}
+
+	/**
+	 * Returns the cross-call assembly node metadata cache.
+	 *
+	 * @return the metadata cache, or null if not set
+	 */
+	public @Nullable ConcurrentHashMap<?, ?> getNodeMetadataCache() {
+		return nodeMetadataCache;
 	}
 
 	/**
@@ -367,7 +403,9 @@ public final class AssembleContext {
 		private Map<PathExpression, List<AnalysisResult.PropertyCustomizer>> customizersByPath =
 			Collections.emptyMap();
 		private Map<Class<?>, ArbitraryIntrospector> introspectorsByType = Collections.emptyMap();
-		private @Nullable NodeTreeAdapter nodeTreeAdapter;
+		private @Nullable RuntimeTreeFactory runtimeTreeFactory;
+		private @Nullable PathResolverContext pathResolverContext;
+		private @Nullable ConcurrentHashMap<?, ?> nodeMetadataCache;
 		private Set<PathExpression> userContainerSizePaths = Collections.emptySet();
 		private Map<PathExpression, @Nullable Object> typedPathValues = Collections.emptyMap();
 		private Map<PathExpression, Integer> typedPathOrders = Collections.emptyMap();
@@ -496,13 +534,36 @@ public final class AssembleContext {
 		}
 
 		/**
-		 * Sets the NodeTreeAdapter for building concrete type trees.
+		 * Sets the {@link RuntimeTreeFactory} used for building runtime-resolved trees during assembly.
 		 *
-		 * @param nodeTreeAdapter the node tree adapter
+		 * @param runtimeTreeFactory the runtime tree factory
 		 * @return this builder
 		 */
-		public Builder nodeTreeAdapter(@Nullable NodeTreeAdapter nodeTreeAdapter) {
-			this.nodeTreeAdapter = nodeTreeAdapter;
+		public Builder runtimeTreeFactory(@Nullable RuntimeTreeFactory runtimeTreeFactory) {
+			this.runtimeTreeFactory = runtimeTreeFactory;
+			return this;
+		}
+
+		/**
+		 * Sets the {@link PathResolverContext} produced during planning, passed through to
+		 * {@link RuntimeTreeFactory#createAnonymousNodeTree} during assembly.
+		 *
+		 * @param pathResolverContext the path resolver context
+		 * @return this builder
+		 */
+		public Builder pathResolverContext(@Nullable PathResolverContext pathResolverContext) {
+			this.pathResolverContext = pathResolverContext;
+			return this;
+		}
+
+		/**
+		 * Sets the cross-call assembly node metadata cache.
+		 *
+		 * @param nodeMetadataCache the metadata cache
+		 * @return this builder
+		 */
+		public Builder nodeMetadataCache(@Nullable ConcurrentHashMap<?, ?> nodeMetadataCache) {
+			this.nodeMetadataCache = nodeMetadataCache;
 			return this;
 		}
 

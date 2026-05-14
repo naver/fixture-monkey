@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
-@API(since = "0.5.7", status = Status.MAINTAINED)
+@API(since = "0.5.7", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilderCandidate<T> {
 
 	Class<?> getClassType();

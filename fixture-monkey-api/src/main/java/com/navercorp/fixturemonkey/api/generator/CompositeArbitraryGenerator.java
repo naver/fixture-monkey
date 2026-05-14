@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
  * All {@link ArbitraryGenerator} are used in the declared order.
  * A particular {@link ArbitraryGenerator} will use the result of a previously declared {@link ArbitraryGenerator}.
  */
-@API(since = "0.6.2", status = Status.MAINTAINED)
+@API(since = "0.6.2", status = Status.EXPERIMENTAL)
 public final class CompositeArbitraryGenerator implements ArbitraryGenerator {
 	private final List<ArbitraryGenerator> arbitraryGenerators;
 

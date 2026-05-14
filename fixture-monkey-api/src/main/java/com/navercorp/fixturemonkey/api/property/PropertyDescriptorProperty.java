@@ -22,9 +22,6 @@ import static java.util.stream.Collectors.toMap;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,26 +38,26 @@ import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyDescriptorProperty implements Property {
 	private final JvmType jvmType;
 	private final PropertyDescriptor propertyDescriptor;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public PropertyDescriptorProperty(PropertyDescriptor propertyDescriptor) {
-		this(TypeCache.getAnnotatedType(propertyDescriptor), propertyDescriptor);
+		this(Types.toJvmType(
+				TypeCache.getAnnotatedType(propertyDescriptor), collectMethodAnnotations(propertyDescriptor)),
+			propertyDescriptor);
 	}
 
-	/**
-	 * In general, annotatedType uses the PropertyType of PropertyDescriptor.
-	 * When the Type of PropertyDescriptor is defined as generics, the refied type is not known.
-	 * Use this constructor when specifying a Type that provides a refied Generics type.
-	 *
-	 * @param annotatedType      annotatedType of the property
-	 * @param propertyDescriptor propertyDescriptor of the property
-	 * @see com.navercorp.fixturemonkey.api.type.Types
-	 */
-	public PropertyDescriptorProperty(AnnotatedType annotatedType, PropertyDescriptor propertyDescriptor) {
+	public PropertyDescriptorProperty(JvmType jvmType, PropertyDescriptor propertyDescriptor) {
+		this.jvmType = jvmType;
+		this.propertyDescriptor = propertyDescriptor;
+		this.annotationsMap = jvmType.getAnnotations().stream()
+			.collect(toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
+	}
+
+	private static List<Annotation> collectMethodAnnotations(PropertyDescriptor propertyDescriptor) {
 		List<Annotation> concatAnnotations = new ArrayList<>();
 		if (propertyDescriptor.getWriteMethod() != null) {
 			concatAnnotations.addAll(Arrays.asList(propertyDescriptor.getWriteMethod().getAnnotations()));
@@ -68,10 +65,7 @@ public final class PropertyDescriptorProperty implements Property {
 		if (propertyDescriptor.getReadMethod() != null) {
 			concatAnnotations.addAll(Arrays.asList(propertyDescriptor.getReadMethod().getAnnotations()));
 		}
-		this.jvmType = Types.toJvmType(annotatedType, concatAnnotations);
-		this.propertyDescriptor = propertyDescriptor;
-		this.annotationsMap = this.getAnnotations().stream()
-			.collect(toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
+		return concatAnnotations;
 	}
 
 	public PropertyDescriptor getPropertyDescriptor() {
@@ -79,13 +73,8 @@ public final class PropertyDescriptorProperty implements Property {
 	}
 
 	@Override
-	public Type getType() {
-		return this.getAnnotatedType().getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.jvmType.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.jvmType;
 	}
 
 	@Override
@@ -102,21 +91,6 @@ public final class PropertyDescriptorProperty implements Property {
 	public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
 		return Optional.ofNullable(this.annotationsMap.get(annotationClass))
 			.map(annotationClass::cast);
-	}
-
-	@Nullable
-	@Override
-	@SuppressWarnings("dereference.of.nullable")
-	public Object getValue(Object instance) {
-		try {
-			return this.propertyDescriptor.getReadMethod().invoke(instance);
-		} catch (InvocationTargetException | IllegalAccessException ex) {
-			throw new IllegalArgumentException(
-				"Can not invoke value. obj: " + instance.toString() + ", propertyName: "
-					+ this.propertyDescriptor.getName(),
-				ex
-			);
-		}
 	}
 
 	@Override
@@ -139,7 +113,7 @@ public final class PropertyDescriptorProperty implements Property {
 	@Override
 	public String toString() {
 		return "PropertyDescriptorProperty{"
-			+ "annotatedType=" + jvmType.getAnnotatedType()
+			+ "jvmType=" + jvmType
 			+ ", propertyDescriptor=" + propertyDescriptor + '}';
 	}
 }

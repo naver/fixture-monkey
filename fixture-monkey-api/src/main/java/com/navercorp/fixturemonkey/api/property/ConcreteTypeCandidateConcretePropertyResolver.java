@@ -18,17 +18,14 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.type.GenericType;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * This class is used to resolve more concrete types for a given interface.
@@ -36,7 +33,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
  *
  * @param <T> the type parameter of the interface
  */
-@API(since = "1.0.16", status = Status.EXPERIMENTAL)
+@API(since = "1.0.16", status = Status.MAINTAINED)
 public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements CandidateConcretePropertyResolver {
 	private final List<Class<? extends T>> concreteTypes;
 
@@ -57,41 +54,12 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 	@Override
 	@SuppressWarnings("type.argument.inference.crashed")
 	public List<Property> resolve(Property property) {
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
+		List<? extends JvmType> typeVariables = property.getJvmType().getTypeVariables();
 
-		if (!genericsTypes.isEmpty()) {
-			Type[] typeArguments = genericsTypes.stream()
-				.map(AnnotatedType::getType)
-				.toArray(Type[]::new);
-
+		if (!typeVariables.isEmpty()) {
 			return concreteTypes.stream()
-				.map(it -> {
-					Type concreteGenericType = new GenericType(it, typeArguments, null);
-
-					AnnotatedType genericAnnotatedType = new AnnotatedType() {
-						@Override
-						public Type getType() {
-							return concreteGenericType;
-						}
-
-						@Override
-						public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-							return property.getAnnotation(annotationClass).orElse(null);
-						}
-
-						@Override
-						public Annotation[] getAnnotations() {
-							return property.getAnnotations().toArray(new Annotation[0]);
-						}
-
-						@Override
-						public Annotation[] getDeclaredAnnotations() {
-							return property.getAnnotations().toArray(new Annotation[0]);
-						}
-					};
-
-					return new ConcreteTypeProperty(genericAnnotatedType, property);
-				})
+				.map(it -> new JavaType(it, typeVariables, property.getAnnotations()))
+				.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
 				.collect(Collectors.toList());
 		}
 

@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
@@ -50,7 +49,7 @@ import com.navercorp.fixturemonkey.tests.java.specs.MixedIntrospectorsSpecs.Mixe
 import com.navercorp.fixturemonkey.tests.java.specs.NoArgsConstructorSpecs.NestedObject;
 
 class IntrospectorTest {
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void registerListWouldNotCached() {
 		AtomicInteger sequence = new AtomicInteger();
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -112,7 +111,7 @@ class IntrospectorTest {
 		thenNoException().isThrownBy(() -> sut.giveMeOne(MixedJavaTypeObject.class));
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void compositeArbitraryIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(

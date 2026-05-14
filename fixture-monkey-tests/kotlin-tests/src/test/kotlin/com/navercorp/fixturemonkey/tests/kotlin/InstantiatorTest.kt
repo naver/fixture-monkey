@@ -101,6 +101,32 @@ class InstantiatorTest {
         then(actual).isEqualTo("bar")
     }
 
+    /**
+     * Reproduces the doc-examples scenario `InstantiateMethodsKotlinTest.specifyingParameterValues`:
+     * an aliased constructor parameter (`parameter<String>("productName")` against a parameter
+     * actually named `name`) plus a `set("productName", ...)` should land on the aliased
+     * parameter. The introspector ends up walking the value map by position because the alias
+     * hides the original parameter name from name-based matching, so it relies on the iteration
+     * order of the map ObjectCombinableArbitrary feeds to its combinator. Before the fix that
+     * map was a HashMap, and on JVMs / hashCode distributions where the bucket order disagrees
+     * with insertion order, the value lands on the wrong constructor parameter and Kotlin throws
+     * "argument type mismatch".
+     */
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByAliasedParameterPreservesValueAssignment() {
+        val actual = SUT.giveMeKotlinBuilder<MultiConstructorProduct>()
+            .instantiateBy {
+                constructor<MultiConstructorProduct> {
+                    parameter<String>("productName")
+                    parameter<Long>()
+                }
+            }
+            .set("productName", "specialProduct")
+            .sample()
+
+        then(actual.name).isEqualTo("specialProduct")
+    }
+
     @RepeatedTest(TEST_COUNT)
     fun instantiateRootType() {
         val actual = SUT.giveMeKotlinBuilder<Foo>()
@@ -618,6 +644,34 @@ class InstantiatorTest {
     class Bar<T>(val bar: T)
 
     class Baz(val foo: Foo, val bar: Bar<String>)
+
+    class MultiConstructorProduct {
+        val id: Long
+        val name: String
+        val price: Long
+        val options: List<String>
+
+        constructor() {
+            this.id = 0L
+            this.name = "defaultProduct"
+            this.price = 0L
+            this.options = emptyList()
+        }
+
+        constructor(name: String, price: Long) {
+            this.id = 0L
+            this.name = name
+            this.price = price
+            this.options = emptyList()
+        }
+
+        constructor(name: String, price: Long, options: List<String>) {
+            this.id = 0L
+            this.name = name
+            this.price = price
+            this.options = options
+        }
+    }
 
     companion object {
         private val SUT = FixtureMonkey.builder()

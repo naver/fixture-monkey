@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
@@ -48,14 +48,12 @@ class ValueProjectionPluginTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void javaTypeArbitraryGenerator() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTypeArbitraryGenerator(
 					new JavaTypeArbitraryGenerator() {
@@ -75,11 +73,10 @@ class ValueProjectionPluginTest {
 		then(actual).matches(Pattern.compile("\\d*"));
 	}
 
-	@Property
+	@Test
 	void javaTypeArbitraryGeneratorAffectsField() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTypeArbitraryGenerator(
 					new JavaTypeArbitraryGenerator() {
@@ -99,11 +96,10 @@ class ValueProjectionPluginTest {
 		then(actual).matches(it -> it == null || Pattern.compile("\\d*").matcher(it).matches());
 	}
 
-	@Property
+	@Test
 	void javaArbitraryResolver() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaArbitraryResolver(
 					new JavaArbitraryResolver() {
@@ -126,11 +122,10 @@ class ValueProjectionPluginTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Property
+	@Test
 	void javaArbitraryResolverAffectsField() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaArbitraryResolver(
 					new JavaArbitraryResolver() {
@@ -153,12 +148,11 @@ class ValueProjectionPluginTest {
 		then(actual).isIn("test", null);
 	}
 
-	@Property
+	@Test
 	void javaTimeTypeArbitraryGenerator() {
 		// given
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTimeTypeArbitraryGenerator(
 					new JavaTimeTypeArbitraryGenerator() {
@@ -178,12 +172,11 @@ class ValueProjectionPluginTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void javaTimeTypeArbitraryGeneratorAffectsField() {
 		// given
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTimeTypeArbitraryGenerator(
 					new JavaTimeTypeArbitraryGenerator() {
@@ -203,12 +196,11 @@ class ValueProjectionPluginTest {
 		then(actual).isIn(null, expected);
 	}
 
-	@Property
+	@Test
 	void javaTimeArbitraryResolver() {
 		// given
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTimeArbitraryResolver(
 					new JavaTimeArbitraryResolver() {
@@ -231,12 +223,11 @@ class ValueProjectionPluginTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Property
+	@Test
 	void javaTimeArbitraryResolverAffectsField() {
 		// given
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.plugin(
 				new JqwikPlugin().javaTimeArbitraryResolver(
 					new JavaTimeArbitraryResolver() {

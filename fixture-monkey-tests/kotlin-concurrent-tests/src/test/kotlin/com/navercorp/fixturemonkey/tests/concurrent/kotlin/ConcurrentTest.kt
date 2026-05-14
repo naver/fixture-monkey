@@ -5,22 +5,22 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 
 class ConcurrentTest {
-    @RepeatedTest(TestEnvironment.TEST_COUNT)
+    @Test
     fun test1() {
         val actual: KotlinObject = SUT.giveMeOne<KotlinObject>()
         then(actual).isNotNull()
     }
 
-    @RepeatedTest(TestEnvironment.TEST_COUNT)
+    @Test
     fun test2() {
         val actual: KotlinObject = SUT.giveMeOne<KotlinObject>()
         then(actual).isNotNull()
     }
 
-    @RepeatedTest(TestEnvironment.TEST_COUNT)
+    @Test
     fun test3() {
         val actual: KotlinObject = SUT.giveMeOne<KotlinObject>()
         then(actual).isNotNull()

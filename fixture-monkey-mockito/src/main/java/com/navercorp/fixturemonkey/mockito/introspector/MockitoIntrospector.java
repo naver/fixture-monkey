@@ -40,13 +40,13 @@ public final class MockitoIntrospector implements ArbitraryIntrospector, Matcher
 
 	@Override
 	public boolean match(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 		return Modifier.isAbstract(actualType.getModifiers());
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> actualType = Types.getActualType(context.getResolvedType());
+		Class<?> actualType = context.getResolvedType();
 		return new ArbitraryIntrospectorResult(
 			ArbitraryUtils.toCombinableArbitrary(Arbitraries.of(Mockito.mock(actualType)))
 		);

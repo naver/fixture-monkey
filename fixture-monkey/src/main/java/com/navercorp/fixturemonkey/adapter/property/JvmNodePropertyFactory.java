@@ -19,13 +19,11 @@
 package com.navercorp.fixturemonkey.adapter.property;
 
 import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -41,12 +39,12 @@ import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
 import com.navercorp.fixturemonkey.api.property.TypeNameProperty;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.nodecandidate.ConstructorParamCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.FieldAccessCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.MethodInvocationCreationMethod;
+import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -79,8 +77,7 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 	 * @return a {@link TypeParameterProperty} wrapping the type
 	 */
 	public static Property fromType(JvmType jvmType) {
-		AnnotatedType annotatedType = buildAnnotatedType(jvmType);
-		return new TypeParameterProperty(annotatedType);
+		return new TypeParameterProperty(jvmType);
 	}
 
 	/**
@@ -102,20 +99,19 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 	@Override
 	public Property apply(JvmNode node) {
 		JvmType jvmType = node.getConcreteType();
-		AnnotatedType annotatedType = buildAnnotatedType(jvmType);
 		CreationMethod creationMethod = node.getCreationMethod();
 		Boolean nullable = jvmType.getNullable();
 
 		if (creationMethod == null) {
-			return new TypeNameProperty(annotatedType, node.getNodeName(), nullable);
+			return new TypeNameProperty(jvmType, node.getNodeName(), nullable);
 		}
 
 		switch (creationMethod.getType()) {
 			case FIELD:
-				return new FieldProperty(annotatedType, ((FieldAccessCreationMethod)creationMethod).getField());
+				return new FieldProperty(jvmType, ((FieldAccessCreationMethod)creationMethod).getField(), nullable);
 			case CONSTRUCTOR:
 				ConstructorParamCreationMethod ctorMethod = (ConstructorParamCreationMethod)creationMethod;
-				java.lang.reflect.Constructor<?> ctor = ctorMethod.getConstructor();
+				Constructor<?> ctor = ctorMethod.getConstructor();
 
 				// Check if the actual constructor parameter is primitive.
 				// TypeReference<Int> boxes int to Integer, losing primitive info and
@@ -123,17 +119,23 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 				// Match by name since parameterIndex in ConstructorParamCreationMethod
 				// may not correspond to the actual constructor parameter position.
 				Class<?> actualParamType = findConstructorParamType(ctor, node.getNodeName());
+				JvmType paramJvmType = jvmType;
 				if (actualParamType != null && actualParamType.isPrimitive()) {
-					annotatedType = Types.generateAnnotatedTypeWithoutAnnotation(actualParamType);
+					paramJvmType = new JavaType(
+						actualParamType,
+						Collections.emptyList(),
+						Collections.emptyList(),
+						false
+					);
 					nullable = false;
 				}
 
-				Property paramProperty = new TypeNameProperty(annotatedType, node.getNodeName(), nullable);
+				Property paramProperty = new TypeNameProperty(paramJvmType, node.getNodeName(), nullable);
 				Property fieldProperty = findFieldProperty(ctor.getDeclaringClass(), node.getNodeName());
 				return new ConstructorProperty(paramProperty, ctor, fieldProperty, nullable);
 			case METHOD:
 				return fromMethodCreation(
-					annotatedType,
+					jvmType,
 					node.getNodeName(),
 					(MethodInvocationCreationMethod)creationMethod
 				);
@@ -150,8 +152,8 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 					) {
 						annotationSource = grandParent;
 					}
-					Property containerProperty = fromTypePreservingAnnotations(annotationSource.getConcreteType());
-					Property elementProperty = new TypeNameProperty(annotatedType, node.getNodeName(), null);
+					Property containerProperty = fromType(annotationSource.getConcreteType());
+					Property elementProperty = new TypeNameProperty(jvmType, node.getNodeName(), null);
 					return new DefaultContainerElementProperty(
 						containerProperty,
 						elementProperty,
@@ -159,54 +161,14 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 						node.getIndex() != null ? node.getIndex() : 0
 					);
 				}
-				return new TypeNameProperty(annotatedType, node.getNodeName(), null);
+				return new TypeNameProperty(jvmType, node.getNodeName(), null);
 			default:
-				return new TypeNameProperty(annotatedType, node.getNodeName(), null);
+				return new TypeNameProperty(jvmType, node.getNodeName(), null);
 		}
 	}
 
-	/**
-	 * Creates a {@link TypeParameterProperty} from a {@link JvmType}, ensuring all annotations
-	 * stored in the JvmType are preserved. Unlike {@link #fromType(JvmType)}, this method
-	 * bypasses the cached {@code AnnotatedType} which may not include annotations
-	 * merged from multiple sources (e.g., field + setter annotations via {@code CompositeProperty}).
-	 */
-	private static Property fromTypePreservingAnnotations(JvmType jvmType) {
-		List<Annotation> allAnnotations = jvmType.getAnnotations();
-		AnnotatedType baseType = buildAnnotatedType(jvmType);
-		Type type = baseType.getType();
-
-		AnnotatedType annotatedType = new AnnotatedType() {
-			@Override
-			public Type getType() {
-				return type;
-			}
-
-			@Override
-			@SuppressWarnings({"unchecked", "cast.unsafe"})
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-				return (T)allAnnotations
-					.stream()
-					.filter(a -> a.annotationType().equals(annotationClass))
-					.findFirst()
-					.orElse(null);
-			}
-
-			@Override
-			public Annotation[] getAnnotations() {
-				return allAnnotations.toArray(new Annotation[0]);
-			}
-
-			@Override
-			public Annotation[] getDeclaredAnnotations() {
-				return getAnnotations();
-			}
-		};
-		return new TypeParameterProperty(annotatedType);
-	}
-
 	private Property fromMethodCreation(
-		AnnotatedType annotatedType,
+		JvmType jvmType,
 		String name,
 		MethodInvocationCreationMethod method
 	) {
@@ -217,7 +179,7 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 		// so that AnonymousArbitraryIntrospector can recognize them
 		if (declaringClass.isInterface()) {
 			return new InterfaceJavaMethodProperty(
-				annotatedType,
+				jvmType,
 				name,
 				invokedMethod.getName(),
 				Arrays.asList(invokedMethod.getAnnotations())
@@ -226,13 +188,13 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 
 		PropertyDescriptor descriptor = TypeCache.getPropertyDescriptorsByPropertyName(declaringClass).get(name);
 		if (descriptor != null) {
-			return new PropertyDescriptorProperty(annotatedType, descriptor);
+			return new PropertyDescriptorProperty(jvmType, descriptor);
 		}
-		return new TypeNameProperty(annotatedType, name, null);
+		return new TypeNameProperty(jvmType, name, null);
 	}
 
 	private static @Nullable Class<?> findConstructorParamType(
-		java.lang.reflect.Constructor<?> constructor,
+		Constructor<?> constructor,
 		String paramName
 	) {
 		if (paramName == null) {
@@ -263,103 +225,11 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 		if (fieldName == null) {
 			return null;
 		}
-		java.lang.reflect.Field field = TypeCache.getFieldsByName(declaringClass).get(fieldName);
+		Field field = TypeCache.getFieldsByName(declaringClass).get(fieldName);
 		if (field != null) {
 			return new FieldProperty(field);
 		}
 		return null;
 	}
 
-	/**
-	 * Builds an {@link AnnotatedType} from a {@link JvmType}.
-	 * <p>
-	 * If the JvmType provides an AnnotatedType directly (for backward compatibility),
-	 * it will be used. Otherwise, a new AnnotatedType is constructed from the
-	 * raw type and annotations.
-	 *
-	 * @param jvmType the JvmType to convert
-	 * @return an AnnotatedType representing the JvmType
-	 */
-	static AnnotatedType buildAnnotatedType(JvmType jvmType) {
-		try {
-			AnnotatedType existing = jvmType.getAnnotatedType();
-			if (existing != null) {
-				return existing;
-			}
-		} catch (UnsupportedOperationException ignored) {
-		}
-
-		Class<?> rawType = jvmType.getRawType();
-		List<Annotation> annotations = jvmType.getAnnotations();
-		List<? extends JvmType> typeVariables = jvmType.getTypeVariables();
-
-		final Type type;
-		if (typeVariables != null && !typeVariables.isEmpty()) {
-			Type[] typeArgs = typeVariables
-				.stream()
-				.map(tv -> buildAnnotatedType(tv).getType())
-				.toArray(Type[]::new);
-			type = new ParameterizedType() {
-				@Override
-				public Type[] getActualTypeArguments() {
-					return typeArgs;
-				}
-
-				@Override
-				public Type getRawType() {
-					return rawType;
-				}
-
-				@Override
-				public @Nullable Type getOwnerType() {
-					return null;
-				}
-
-				@Override
-				public String toString() {
-					StringBuilder sb = new StringBuilder(rawType.getName());
-					if (typeArgs.length > 0) {
-						sb.append("<");
-						for (int i = 0; i < typeArgs.length; i++) {
-							if (i > 0) {
-								sb.append(", ");
-							}
-							sb.append(typeArgs[i].getTypeName());
-						}
-						sb.append(">");
-					}
-					return sb.toString();
-				}
-			};
-		} else {
-			type = rawType;
-		}
-
-		return new AnnotatedType() {
-			@Override
-			public Type getType() {
-				return type;
-			}
-
-			@Override
-			@SuppressWarnings({"unchecked", "cast.unsafe"})
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-				return (T)annotations
-					.stream()
-					.filter(a -> a.annotationType().equals(annotationClass))
-					.findFirst()
-					.orElse(null);
-			}
-
-			@Override
-			public Annotation[] getAnnotations() {
-				return annotations.toArray(new Annotation[0]);
-			}
-
-			@Override
-			public Annotation[] getDeclaredAnnotations() {
-				return getAnnotations();
-			}
-		};
-	}
 }

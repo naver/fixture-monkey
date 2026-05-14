@@ -1,6 +1,6 @@
 package com.navercorp.fixturemonkey.adapter.projection;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Unified value metadata for a single path in the assembly state.

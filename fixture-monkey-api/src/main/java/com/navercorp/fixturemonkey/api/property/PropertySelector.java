@@ -24,6 +24,6 @@ import org.apiguardian.api.API.Status;
 /**
  * It is a marker interface for selecting a specific property.
  */
-@API(since = "0.6.11", status = Status.MAINTAINED)
+@API(since = "0.6.11", status = Status.EXPERIMENTAL)
 public interface PropertySelector {
 }

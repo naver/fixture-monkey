@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.tests.java17;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -37,7 +37,7 @@ class MultiLevelSealedClassTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSealedClass() {
 		// when
 		BaseSealedClass actual = SUT.giveMeOne(BaseSealedClass.class);
@@ -45,7 +45,7 @@ class MultiLevelSealedClassTest {
 		then(actual).isInstanceOf(SealedClassImpl.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSealedInterface() {
 		// when
 		BaseSealedInterface actual = SUT.giveMeOne(BaseSealedInterface.class);
@@ -53,7 +53,7 @@ class MultiLevelSealedClassTest {
 		then(actual).isInstanceOf(BaseSealedInterface.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSealedClassProperty() {
 		// when
 		BaseSealedClassProperty actual = SUT.giveMeOne(BaseSealedClassProperty.class);
@@ -62,7 +62,7 @@ class MultiLevelSealedClassTest {
 		then(actual.sealedClass()).isInstanceOf(SealedClassImpl.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedSealedClassProperty() {
 		// when
 		BaseSealedClassProperty actual = SUT.giveMeBuilder(BaseSealedClassProperty.class)

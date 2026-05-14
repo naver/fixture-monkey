@@ -18,15 +18,16 @@
 
 package com.navercorp.fixturemonkey.adapter.analysis;
 
-import static com.navercorp.fixturemonkey.adapter.analysis.AnalysisResult.LazyManipulatorDescriptor;
 import static com.navercorp.fixturemonkey.adapter.analysis.AnalysisResult.PostConditionFilter;
 import static com.navercorp.fixturemonkey.adapter.analysis.AnalysisResult.PropertyCustomizer;
 import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
 import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
 import static com.navercorp.fixturemonkey.api.type.Types.isBoxedPrimitive;
 import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
+import static com.navercorp.fixturemonkey.api.type.Types.toJvmType;
 
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +39,6 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
@@ -47,31 +47,24 @@ import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.adapter.converter.PredicatePathConverter;
+import com.navercorp.fixturemonkey.adapter.directive.CustomizerDirective;
+import com.navercorp.fixturemonkey.adapter.directive.FilterDirective;
+import com.navercorp.fixturemonkey.adapter.directive.JustDirective;
+import com.navercorp.fixturemonkey.adapter.directive.LazyDirective;
+import com.navercorp.fixturemonkey.adapter.directive.NullityDirective;
+import com.navercorp.fixturemonkey.adapter.directive.SetDirective;
+import com.navercorp.fixturemonkey.adapter.directive.SizeDirective;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.adapter.tracing.ResolutionTrace;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.customizer.ApplyNodeCountManipulator;
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.customizer.CompositeNodeManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeCustomizerManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeFilterManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeNullityManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeSetDecomposedValueManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeSetJustManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeSetLazyManipulator;
+import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
 import com.navercorp.fixturemonkey.customizer.Values;
-import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
-import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodePredicateResolver;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
-import com.navercorp.fixturemonkey.tree.StaticNodeResolver;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.ExtractedField;
@@ -85,12 +78,13 @@ import com.navercorp.objectfarm.api.tree.PathContainerSizeResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 
 /**
- * Analyzes ArbitraryManipulator instances to extract topology-affecting information.
+ * Analyzes {@link PathDirective} instances to extract topology-affecting information.
  * <p>
- * This analyzer processes ArbitraryManipulators and extracts:
+ * This analyzer walks the directive list in order and extracts:
  * <ul>
  *   <li>Interface resolution information from value setters</li>
  *   <li>Generic type hints from value types</li>
+ *   <li>Container size resolvers (from explicit {@code size()} and decomposed values)</li>
  *   <li>Paths that should be excluded (null paths or just-set paths)</li>
  * </ul>
  */
@@ -100,32 +94,27 @@ public final class ManipulatorAnalyzer {
 	}
 
 	/**
-	 * Analyzes a list of ArbitraryManipulators and extracts topology-affecting information.
-	 * Uses Java field names for decomposed path expressions.
+	 * Analyzes a list of {@link PathDirective}s and extracts topology-affecting information.
+	 * <p>
+	 * The {@code nameResolver} is used when decomposing {@code set("$", complexObject)} values so
+	 * plugin-specific naming (e.g., Jackson {@code @JsonProperty}) is preserved on the produced
+	 * child paths. Pass {@code null} to fall back to {@link Property#getName()}.
 	 *
-	 * @param manipulators the list of ArbitraryManipulators to analyze
-	 * @return the analysis result containing resolvers and just paths
+	 * @param directives   the list of directives to analyze
+	 * @param nameResolver per-property name resolver applied to decomposed child paths
 	 */
-	public static AnalysisResult analyze(List<ArbitraryManipulator> manipulators) {
-		return analyze(manipulators, Property::getName);
-	}
-
-	/**
-	 * Analyzes a list of ArbitraryManipulators and extracts topology-affecting information.
-	 *
-	 * @param manipulators the list of ArbitraryManipulators to analyze
-	 * @param nameResolver resolves property names for decomposed path expressions
-	 * @return the analysis result containing resolvers and just paths
-	 */
-	public static AnalysisResult analyze(List<ArbitraryManipulator> manipulators, DecomposeNameResolver nameResolver) {
+	public static AnalysisResult analyze(
+		List<PathDirective> directives,
+		@Nullable Function<Property, String> nameResolver
+	) {
 		List<PathResolver<InterfaceResolver>> interfaceResolvers = new ArrayList<>();
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers = new ArrayList<>();
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers = new ArrayList<>();
 		Map<PathExpression, Integer> containerSizeSequenceByPath = new HashMap<>();
+		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath = new HashMap<>();
 		List<PathExpression> justPaths = new ArrayList<>();
 		Set<PathExpression> notNullPaths = new HashSet<>();
 		Map<PathExpression, @Nullable Object> valuesByPath = new HashMap<>();
-		List<LazyManipulatorDescriptor> lazyManipulators = new ArrayList<>();
 		Map<PathExpression, List<PostConditionFilter>> filtersByPath = new HashMap<>();
 		Map<PathExpression, Integer> limitsByPath = new HashMap<>();
 		Map<PathExpression, Integer> valueOrderByPath = new HashMap<>();
@@ -133,31 +122,29 @@ public final class ManipulatorAnalyzer {
 		List<ResolutionTrace.NodeCollision> nodeCollisions = new ArrayList<>();
 		boolean strictMode = false;
 
-		for (int order = 0; order < manipulators.size(); order++) {
-			ArbitraryManipulator manipulator = manipulators.get(order);
+		for (int order = 0; order < directives.size(); order++) {
+			PathDirective directive = directives.get(order);
 
-			// Skip registered manipulators (those using StaticNodeResolver)
-			// They are handled via type-based resolution, not path-based resolution
-			if (hasStaticNodeResolver(manipulator.getNodeResolver())) {
+			// Registered directives are handled via type-based resolution, not path-based resolution
+			if (directive.registered()) {
 				continue;
 			}
 
-			// Check if strict mode is enabled (any manipulator with ApplyStrictModeResolver)
-			if (!strictMode && hasStrictModeResolver(manipulator.getNodeResolver())) {
+			if (!strictMode && directive.strict()) {
 				strictMode = true;
 			}
 
-			analyzeManipulator(
-				manipulator,
+			analyzeDirective(
+				directive,
 				order,
 				interfaceResolvers,
 				genericTypeResolvers,
 				containerSizeResolvers,
 				containerSizeSequenceByPath,
+				latestSizeDirectiveByPath,
 				justPaths,
 				notNullPaths,
 				valuesByPath,
-				lazyManipulators,
 				filtersByPath,
 				limitsByPath,
 				valueOrderByPath,
@@ -172,10 +159,10 @@ public final class ManipulatorAnalyzer {
 			genericTypeResolvers,
 			containerSizeResolvers,
 			containerSizeSequenceByPath,
+			latestSizeDirectiveByPath,
 			justPaths,
 			notNullPaths,
 			valuesByPath,
-			lazyManipulators,
 			filtersByPath,
 			limitsByPath,
 			valueOrderByPath,
@@ -186,7 +173,7 @@ public final class ManipulatorAnalyzer {
 	}
 
 	/**
-	 * Returns an empty AnalysisResult for cases where there are no manipulators.
+	 * Returns an empty AnalysisResult for cases where there are no directives.
 	 * This is a performance optimization to avoid creating empty collections repeatedly.
 	 */
 	public static AnalysisResult emptyResult() {
@@ -200,10 +187,10 @@ public final class ManipulatorAnalyzer {
 		Collections.emptyList(),
 		Collections.emptyList(),
 		Collections.emptyMap(),
+		Collections.emptyMap(),
 		Collections.emptyList(),
 		Collections.emptySet(),
 		Collections.emptyMap(),
-		Collections.emptyList(),
 		Collections.emptyMap(),
 		Collections.emptyMap(),
 		Collections.emptyMap(),
@@ -212,145 +199,43 @@ public final class ManipulatorAnalyzer {
 		false
 	);
 
-	private static void analyzeManipulator(
-		ArbitraryManipulator manipulator,
+	private static void analyzeDirective(
+		PathDirective directive,
 		int order,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		Map<PathExpression, Integer> containerSizeSequenceByPath,
+		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath,
 		List<PathExpression> justPaths,
 		Set<PathExpression> notNullPaths,
 		Map<PathExpression, @Nullable Object> valuesByPath,
-		List<LazyManipulatorDescriptor> lazyManipulators,
 		Map<PathExpression, List<PostConditionFilter>> filtersByPath,
 		Map<PathExpression, Integer> limitsByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
 		Map<PathExpression, List<PropertyCustomizer>> customizersByPath,
 		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		DecomposeNameResolver nameResolver
+		@Nullable Function<Property, String> nameResolver
 	) {
-		NodeResolver nodeResolver = manipulator.getNodeResolver();
-		NodeManipulator nodeManipulator = manipulator.getNodeManipulator();
+		PathExpression pathExpression = directive.path();
+		int limit = directive.limit();
+		if (limit > 0) {
+			limitsByPath.put(pathExpression, limit);
+		}
 
-		List<NextNodePredicate> predicates = extractPredicates(nodeResolver);
-		PathExpression pathExpression = PredicatePathConverter.convert(predicates, nameResolver);
-
-		analyzeNodeManipulator(
-			nodeManipulator,
-			pathExpression,
-			order,
-			interfaceResolvers,
-			genericTypeResolvers,
-			containerSizeResolvers,
-			containerSizeSequenceByPath,
-			justPaths,
-			notNullPaths,
-			valuesByPath,
-			lazyManipulators,
-			filtersByPath,
-			limitsByPath,
-			null,
-			valueOrderByPath,
-			customizersByPath,
-			nodeCollisions,
-			nameResolver
-		);
-	}
-
-	private static void analyzeNodeManipulator(
-		NodeManipulator nodeManipulator,
-		PathExpression pathExpression,
-		int order,
-		List<PathResolver<InterfaceResolver>> interfaceResolvers,
-		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
-		Map<PathExpression, Integer> containerSizeSequenceByPath,
-		List<PathExpression> justPaths,
-		Set<PathExpression> notNullPaths,
-		Map<PathExpression, @Nullable Object> valuesByPath,
-		List<LazyManipulatorDescriptor> lazyManipulators,
-		Map<PathExpression, List<PostConditionFilter>> filtersByPath,
-		Map<PathExpression, Integer> limitsByPath,
-		@Nullable Integer limit,
-		Map<PathExpression, Integer> valueOrderByPath,
-		Map<PathExpression, List<PropertyCustomizer>> customizersByPath,
-		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		DecomposeNameResolver nameResolver
-	) {
-		if (nodeManipulator instanceof CompositeNodeManipulator) {
-			CompositeNodeManipulator composite = (CompositeNodeManipulator)nodeManipulator;
-			for (NodeManipulator inner : composite.getManipulators()) {
-				analyzeNodeManipulator(
-					inner,
-					pathExpression,
-					order,
-					interfaceResolvers,
-					genericTypeResolvers,
-					containerSizeResolvers,
-					containerSizeSequenceByPath,
-					justPaths,
-					notNullPaths,
-					valuesByPath,
-					lazyManipulators,
-					filtersByPath,
-					limitsByPath,
-					limit,
-					valueOrderByPath,
-					customizersByPath,
-					nodeCollisions,
-					nameResolver
-				);
-			}
+		if (directive instanceof FilterDirective) {
+			FilterDirective filterDirective = (FilterDirective)directive;
+			filtersByPath
+				.computeIfAbsent(pathExpression, k -> new ArrayList<>())
+				.add(new PostConditionFilter(filterDirective.type(), filterDirective.filter()));
 			return;
 		}
 
-		if (nodeManipulator instanceof ApplyNodeCountManipulator) {
-			ApplyNodeCountManipulator countManipulator = (ApplyNodeCountManipulator)nodeManipulator;
-			int extractedLimit = countManipulator.getCount();
-			if (extractedLimit > 0) {
-				limitsByPath.put(pathExpression, extractedLimit);
-			}
-			analyzeNodeManipulator(
-				countManipulator.getNodeManipulator(),
-				pathExpression,
-				order,
-				interfaceResolvers,
-				genericTypeResolvers,
-				containerSizeResolvers,
-				containerSizeSequenceByPath,
-				justPaths,
-				notNullPaths,
-				valuesByPath,
-				lazyManipulators,
-				filtersByPath,
-				limitsByPath,
-				extractedLimit,
-				valueOrderByPath,
-				customizersByPath,
-				nodeCollisions,
-				nameResolver
-			);
-			return;
-		}
-
-		if (nodeManipulator instanceof NodeFilterManipulator) {
-			NodeFilterManipulator filterManipulator = (NodeFilterManipulator)nodeManipulator;
-			PostConditionFilter filter = extractPostConditionFilter(filterManipulator);
-			if (filter != null) {
-				filtersByPath.computeIfAbsent(pathExpression, k -> new ArrayList<>()).add(filter);
-			}
-			return;
-		}
-
-		if (nodeManipulator instanceof NodeCustomizerManipulator) {
-			@SuppressWarnings("unchecked")
-			NodeCustomizerManipulator<?> customizerManipulator = (NodeCustomizerManipulator<?>)nodeManipulator;
-			@SuppressWarnings("unchecked")
-			Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer = (Function<
-				CombinableArbitrary<?>,
-				CombinableArbitrary<?>
-				>)(Function<?, ?>)customizerManipulator.getArbitraryCustomizer();
+		if (directive instanceof CustomizerDirective) {
+			CustomizerDirective<?> customizerDirective = (CustomizerDirective<?>)directive;
+			@SuppressWarnings({"unchecked", "rawtypes"})
+			Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer =
+				(Function)customizerDirective.customizer();
 			boolean afterSet = valuesByPath.containsKey(pathExpression);
 			customizersByPath
 				.computeIfAbsent(pathExpression, k -> new ArrayList<>())
@@ -358,10 +243,9 @@ public final class ManipulatorAnalyzer {
 			return;
 		}
 
-		if (nodeManipulator instanceof NodeSetDecomposedValueManipulator) {
-			analyzeDecomposedValueManipulator(
-				(NodeSetDecomposedValueManipulator<?>)nodeManipulator,
-				pathExpression,
+		if (directive instanceof SetDirective) {
+			analyzeSetDirective(
+				(SetDirective)directive,
 				interfaceResolvers,
 				genericTypeResolvers,
 				containerSizeResolvers,
@@ -371,28 +255,25 @@ public final class ManipulatorAnalyzer {
 				nodeCollisions,
 				nameResolver
 			);
-		} else if (nodeManipulator instanceof NodeSetJustManipulator) {
-			// Values.just() creates truly immutable values - child values should NOT be applied.
-			// This is intentional: when a user sets Values.just(object), they want that exact object
-			// without any modifications. Subsequent set("child", value) calls are ignored.
-			// This is the ONLY case where child path values are ignored.
-			NodeSetJustManipulator justManipulator = (NodeSetJustManipulator)nodeManipulator;
-			Object value = justManipulator.getValue();
+			return;
+		}
+
+		if (directive instanceof JustDirective) {
+			JustDirective justDirective = (JustDirective)directive;
+			Object value = justDirective.value();
 			if (value != null) {
 				recordCollisionIfExists(pathExpression, order, value, valuesByPath, valueOrderByPath, nodeCollisions);
 				valuesByPath.put(pathExpression, value);
 				valueOrderByPath.put(pathExpression, order);
 			}
 			justPaths.add(pathExpression);
-		} else if (nodeManipulator instanceof NodeNullityManipulator) {
-			// setNull() just sets the value to null - child values CAN override this.
-			// Following the "more specific path wins" rule: setNull("object") + set("object.str", "x")
-			// results in object.str = "x" (the more specific path wins).
-			// setNotNull() removes any null value that was previously set for this path
-			// and also sets null injection to 0 for this path.
-			NodeNullityManipulator nullityManipulator = (NodeNullityManipulator)nodeManipulator;
-			int nullitySequence = nullityManipulator.getSequence();
-			if (nullityManipulator.isToNull()) {
+			return;
+		}
+
+		if (directive instanceof NullityDirective) {
+			NullityDirective nullityDirective = (NullityDirective)directive;
+			int nullitySequence = nullityDirective.sequence();
+			if (nullityDirective.toNull()) {
 				recordCollisionIfExists(
 					pathExpression,
 					nullitySequence,
@@ -405,23 +286,18 @@ public final class ManipulatorAnalyzer {
 				valueOrderByPath.put(pathExpression, nullitySequence);
 				notNullPaths.remove(pathExpression);
 			} else {
-				// setNotNull: remove any previously set null value for this path
 				if (valuesByPath.containsKey(pathExpression) && valuesByPath.get(pathExpression) == null) {
 					valuesByPath.remove(pathExpression);
 					valueOrderByPath.remove(pathExpression);
 				}
-				// Track this path as requiring non-null (null injection = 0)
 				notNullPaths.add(pathExpression);
 			}
-		} else if (nodeManipulator instanceof NodeSetLazyManipulator) {
-			NodeSetLazyManipulator<?> lazyManipulator = (NodeSetLazyManipulator<?>)nodeManipulator;
-			if (limit != null) {
-				limitsByPath.put(pathExpression, limit);
-			}
-			// Evaluate lazy immediately and decompose - same flow as other values
-			analyzeLazyManipulator(
-				lazyManipulator,
-				pathExpression,
+			return;
+		}
+
+		if (directive instanceof LazyDirective) {
+			analyzeLazyDirective(
+				(LazyDirective)directive,
 				interfaceResolvers,
 				genericTypeResolvers,
 				containerSizeResolvers,
@@ -432,12 +308,76 @@ public final class ManipulatorAnalyzer {
 				nodeCollisions,
 				nameResolver
 			);
+			return;
+		}
+
+		if (directive instanceof SizeDirective) {
+			analyzeSizeDirective(
+				(SizeDirective)directive,
+				containerSizeResolvers,
+				containerSizeSequenceByPath,
+				latestSizeDirectiveByPath
+			);
 		}
 	}
 
-	private static void analyzeDecomposedValueManipulator(
-		NodeSetDecomposedValueManipulator<?> manipulator,
-		PathExpression pathExpression,
+	private static void analyzeSizeDirective(
+		SizeDirective directive,
+		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
+		Map<PathExpression, Integer> containerSizeSequenceByPath,
+		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath
+	) {
+		PathExpression path = directive.path();
+		int sequence = directive.sequence();
+
+		Integer existingSequence = containerSizeSequenceByPath.get(path);
+		if (existingSequence != null && existingSequence > sequence) {
+			return;
+		}
+		if (existingSequence != null) {
+			containerSizeResolvers.removeIf(existing -> path.equals(getResolverPath(existing)));
+		}
+		containerSizeSequenceByPath.put(path, sequence);
+		latestSizeDirectiveByPath.put(path, directive);
+		containerSizeResolvers.add(buildExplicitSizeResolver(directive));
+	}
+
+	private static PathResolver<ContainerSizeResolver> buildExplicitSizeResolver(SizeDirective directive) {
+		ArbitraryContainerInfo containerInfo = directive.containerInfo();
+		int fixedSize = containerInfo.getRandomSize();
+
+		ContainerSizeResolver sizeResolver = containerType -> {
+			if (containerType == null) {
+				return fixedSize;
+			}
+			Class<?> rawType = containerType.getRawType();
+			List<? extends com.navercorp.objectfarm.api.type.JvmType> typeVariables = containerType.getTypeVariables();
+			Class<?> enumType = null;
+			if (!typeVariables.isEmpty()) {
+				if (java.util.Set.class.isAssignableFrom(rawType)) {
+					Class<?> elementType = typeVariables.get(0).getRawType();
+					if (elementType.isEnum()) {
+						enumType = elementType;
+					}
+				} else if (Map.class.isAssignableFrom(rawType)) {
+					Class<?> keyType = typeVariables.get(0).getRawType();
+					if (keyType.isEnum()) {
+						enumType = keyType;
+					}
+				}
+			}
+			if (enumType == null) {
+				return fixedSize;
+			}
+			Object[] constants = enumType.getEnumConstants();
+			return constants != null ? Math.min(fixedSize, constants.length) : fixedSize;
+		};
+
+		return new PathContainerSizeResolver(directive.path(), sizeResolver);
+	}
+
+	private static void analyzeSetDirective(
+		SetDirective directive,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
@@ -445,15 +385,15 @@ public final class ManipulatorAnalyzer {
 		Map<PathExpression, @Nullable Object> valuesByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
 		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		DecomposeNameResolver nameResolver
+		@Nullable Function<Property, String> nameResolver
 	) {
-		Object value = manipulator.getValue();
+		PathExpression pathExpression = directive.path();
+		Object value = directive.value();
 		if (value == null) {
 			return;
 		}
 
-		// Use the manipulator's factory sequence for priority comparison
-		int factorySequence = manipulator.getSequence();
+		int factorySequence = directive.sequence();
 
 		// Remove existing indexed child paths under this path before adding new values
 		// This handles the case where a container is set multiple times
@@ -472,7 +412,7 @@ public final class ManipulatorAnalyzer {
 			.keySet()
 			.removeIf(key -> key.toExpression().startsWith(indexPrefix) && !valuesByPath.containsKey(key));
 
-		DecomposedContainerValueFactory factory = manipulator.getDecomposedContainerValueFactory();
+		DecomposedContainerValueFactory factory = directive.decomposedContainerValueFactory();
 		ContainerDetector containerDetector = createContainerDetector(factory);
 		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver);
 
@@ -538,13 +478,12 @@ public final class ManipulatorAnalyzer {
 	}
 
 	/**
-	 * Analyzes a lazy manipulator by evaluating it immediately and decomposing the result.
-	 * This follows the same flow as decomposed value manipulators, ensuring consistent
+	 * Analyzes a lazy directive by evaluating it immediately and decomposing the result.
+	 * This follows the same flow as decomposed value directives, ensuring consistent
 	 * value ordering and priority handling.
 	 */
-	private static void analyzeLazyManipulator(
-		NodeSetLazyManipulator<?> manipulator,
-		PathExpression pathExpression,
+	private static void analyzeLazyDirective(
+		LazyDirective directive,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
@@ -553,9 +492,10 @@ public final class ManipulatorAnalyzer {
 		Map<PathExpression, @Nullable Object> valuesByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
 		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		DecomposeNameResolver nameResolver
+		@Nullable Function<Property, String> nameResolver
 	) {
-		LazyArbitrary<?> lazyArbitrary = manipulator.getLazyArbitrary();
+		PathExpression pathExpression = directive.path();
+		LazyArbitrary<?> lazyArbitrary = directive.lazyArbitrary();
 		Object value = lazyArbitrary.getValue();
 
 		if (value == null) {
@@ -563,14 +503,14 @@ public final class ManipulatorAnalyzer {
 			// (e.g., Map key null check: "Map key cannot be null.")
 			recordCollisionIfExists(
 				pathExpression,
-				manipulator.getSequence(),
+				directive.sequence(),
 				null,
 				valuesByPath,
 				valueOrderByPath,
 				nodeCollisions
 			);
 			valuesByPath.put(pathExpression, null);
-			valueOrderByPath.put(pathExpression, manipulator.getSequence());
+			valueOrderByPath.put(pathExpression, directive.sequence());
 			lazyArbitrary.clear();
 			return;
 		}
@@ -581,14 +521,14 @@ public final class ManipulatorAnalyzer {
 			if (value == null) {
 				recordCollisionIfExists(
 					pathExpression,
-					manipulator.getSequence(),
+					directive.sequence(),
 					null,
 					valuesByPath,
 					valueOrderByPath,
 					nodeCollisions
 				);
 				valuesByPath.put(pathExpression, null);
-				valueOrderByPath.put(pathExpression, manipulator.getSequence());
+				valueOrderByPath.put(pathExpression, directive.sequence());
 				lazyArbitrary.clear();
 				return;
 			}
@@ -600,22 +540,21 @@ public final class ManipulatorAnalyzer {
 			if (justValue != null) {
 				recordCollisionIfExists(
 					pathExpression,
-					manipulator.getSequence(),
+					directive.sequence(),
 					justValue,
 					valuesByPath,
 					valueOrderByPath,
 					nodeCollisions
 				);
 				valuesByPath.put(pathExpression, justValue);
-				valueOrderByPath.put(pathExpression, manipulator.getSequence());
+				valueOrderByPath.put(pathExpression, directive.sequence());
 			}
 			justPaths.add(pathExpression);
 			lazyArbitrary.clear();
 			return;
 		}
 
-		// Use the manipulator's factory sequence for priority comparison
-		int factorySequence = manipulator.getSequence();
+		int factorySequence = directive.sequence();
 
 		// Remove existing child paths under this path before adding new values
 		// Only remove child paths with lower sequence (older values)
@@ -628,7 +567,7 @@ public final class ManipulatorAnalyzer {
 			);
 		valueOrderByPath.keySet().removeIf(key -> key.isChildOf(pathExpression) && !valuesByPath.containsKey(key));
 
-		// Use standard container detector and name-resolving field extractor for lazy values
+		// Use standard container detector and property-aware field extractor for lazy values
 		ContainerDetector containerDetector = ContainerDetector.standard();
 		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver);
 
@@ -730,14 +669,19 @@ public final class ManipulatorAnalyzer {
 	}
 
 	/**
-	 * Creates a FieldExtractor that uses Property-based field extraction.
-	 *
-	 * @param nameResolver resolves property names for path expressions
+	 * Creates a FieldExtractor for value decomposition.
+	 * <p>
+	 * Uses {@link FieldPropertyGenerator}/{@link com.navercorp.fixturemonkey.api.property.FieldProperty}
+	 * to enumerate child properties so plugin-specific {@link PropertyNameResolver}s (e.g., Jackson
+	 * {@code @JsonProperty}) take effect, but reads each value via direct {@link Field#get(Object)}
+	 * — never through {@code Property.getValue}.
 	 */
-	private static FieldExtractor createFieldExtractor(DecomposeNameResolver nameResolver) {
+	@SuppressWarnings({"argument", "type.argument", "methodref.return", "return"})
+	private static FieldExtractor createFieldExtractor(@Nullable Function<Property, String> nameResolver) {
+		Function<Property, String> resolver = nameResolver != null ? nameResolver : Property::getName;
 		return new FieldExtractor() {
 			@Override
-			public Map<String, ExtractedField> extractFields(Object value, String basePath) {
+			public Map<String, ExtractedField> extractFields(@Nullable Object value, String basePath) {
 				List<Property> childProperties = getChildProperties(value);
 				if (childProperties == null) {
 					return new HashMap<>();
@@ -745,29 +689,29 @@ public final class ManipulatorAnalyzer {
 
 				Map<String, ExtractedField> result = new HashMap<>();
 				for (Property childProperty : childProperties) {
-					String childPath = basePath + "." + nameResolver.resolve(childProperty);
-					Class<?> declaredType = com.navercorp.fixturemonkey.api.type.Types.getActualType(
-						childProperty.getType());
-					result.put(childPath, new ExtractedField(childProperty.getValue(value), declaredType));
+					String name = resolver.apply(childProperty);
+					if (name == null) {
+						continue;
+					}
+					String childPath = basePath + "." + name;
+					Class<?> declaredType = childProperty.getJvmType().getRawType();
+					Object fieldValue = readPropertyValue(childProperty, value);
+					result.put(childPath, new ExtractedField(fieldValue, declaredType));
 				}
 				return result;
 			}
 
-			private @Nullable List<Property> getChildProperties(Object value) {
+			private @Nullable List<Property> getChildProperties(@Nullable Object value) {
 				if (value == null) {
 					return null;
 				}
-
 				Class<?> clazz = value.getClass();
-
 				if (clazz.isPrimitive() || clazz == String.class || clazz.isEnum() || clazz.isArray()) {
 					return null;
 				}
-
 				if (isBoxedPrimitive(clazz)) {
 					return null;
 				}
-
 				if (
 					value instanceof Collection
 						|| value instanceof Map
@@ -776,15 +720,25 @@ public final class ManipulatorAnalyzer {
 				) {
 					return null;
 				}
-
 				if (isJavaType(clazz)) {
 					return null;
 				}
-
-				AnnotatedType annotatedType =
-					generateAnnotatedTypeWithoutAnnotation(clazz);
-				Property parentProperty = new TypeParameterProperty(annotatedType);
+				AnnotatedType annotatedType = generateAnnotatedTypeWithoutAnnotation(clazz);
+				Property parentProperty = new TypeParameterProperty(toJvmType(annotatedType, Collections.emptyList()));
 				return FIELD_PROPERTY_GENERATOR.generateChildProperties(parentProperty);
+			}
+
+			private @Nullable Object readPropertyValue(Property property, @Nullable Object instance) {
+				if (instance == null || !(property instanceof FieldProperty)) {
+					return null;
+				}
+				Field field = ((FieldProperty)property).getField();
+				try {
+					field.setAccessible(true);
+					return field.get(instance);
+				} catch (IllegalAccessException ex) {
+					return null;
+				}
 			}
 		};
 	}
@@ -800,103 +754,4 @@ public final class ManipulatorAnalyzer {
 		return null;
 	}
 
-	private static PostConditionFilter extractPostConditionFilter(NodeFilterManipulator filterManipulator) {
-		Class<?> type = filterManipulator.getType();
-		Predicate<?> filter = filterManipulator.getFilter();
-		return new PostConditionFilter(type, filter);
-	}
-
-	/**
-	 * Checks if any manipulator in the list contains a StaticNodeResolver,
-	 * indicating the presence of registered manipulators.
-	 *
-	 * @param manipulators the list of manipulators to check
-	 * @return true if any manipulator uses StaticNodeResolver
-	 */
-	public static boolean hasRegisteredManipulators(List<ArbitraryManipulator> manipulators) {
-		for (ArbitraryManipulator manipulator : manipulators) {
-			if (hasStaticNodeResolver(manipulator.getNodeResolver())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if the NodeResolver contains a StaticNodeResolver, indicating this is
-	 * a registered manipulator (from registerBuilder).
-	 *
-	 * @param nodeResolver the node resolver to check
-	 * @return true if it contains a StaticNodeResolver
-	 */
-	public static boolean hasStaticNodeResolver(NodeResolver nodeResolver) {
-		if (nodeResolver instanceof StaticNodeResolver) {
-			return true;
-		} else if (nodeResolver instanceof CompositeNodeResolver) {
-			CompositeNodeResolver composite = (CompositeNodeResolver)nodeResolver;
-			for (NodeResolver childResolver : composite.getNodeResolvers()) {
-				if (hasStaticNodeResolver(childResolver)) {
-					return true;
-				}
-			}
-		} else if (nodeResolver instanceof ApplyStrictModeResolver) {
-			ApplyStrictModeResolver strict = (ApplyStrictModeResolver)nodeResolver;
-			return hasStaticNodeResolver(strict.getNodeResolver());
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if the NodeResolver contains an ApplyStrictModeResolver, indicating this
-	 * manipulator should throw an exception if the path doesn't exist.
-	 */
-	private static boolean hasStrictModeResolver(NodeResolver nodeResolver) {
-		if (nodeResolver instanceof ApplyStrictModeResolver) {
-			return true;
-		} else if (nodeResolver instanceof CompositeNodeResolver) {
-			CompositeNodeResolver composite = (CompositeNodeResolver)nodeResolver;
-			for (NodeResolver childResolver : composite.getNodeResolvers()) {
-				if (hasStrictModeResolver(childResolver)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private static List<NextNodePredicate> extractPredicates(NodeResolver nodeResolver) {
-		List<NextNodePredicate> predicates = new ArrayList<>();
-		extractPredicatesRecursive(nodeResolver, predicates);
-		return predicates;
-	}
-
-	private static void extractPredicatesRecursive(NodeResolver nodeResolver, List<NextNodePredicate> predicates) {
-		if (nodeResolver instanceof ApplyStrictModeResolver) {
-			// Unwrap strict mode resolver and continue with the inner resolver
-			ApplyStrictModeResolver strictResolver = (ApplyStrictModeResolver)nodeResolver;
-			extractPredicatesRecursive(strictResolver.getNodeResolver(), predicates);
-		} else if (nodeResolver instanceof CompositeNodeResolver) {
-			CompositeNodeResolver composite = (CompositeNodeResolver)nodeResolver;
-			for (NodeResolver childResolver : composite.getNodeResolvers()) {
-				extractPredicatesRecursive(childResolver, predicates);
-			}
-		} else if (nodeResolver instanceof NodePredicateResolver) {
-			NextNodePredicate predicate = ((NodePredicateResolver)nodeResolver).getNextNodePredicate();
-			if (predicate != null) {
-				predicates.add(predicate);
-			}
-		}
-	}
-
-	/**
-	 * Resolves the name of a property for use in decomposed path expressions.
-	 * <p>
-	 * This allows plugins (e.g., Jackson) to map Java field names to their
-	 * serialized names (e.g., {@code @JsonProperty} values) during decompose,
-	 * ensuring decomposed paths match the tree node paths built by the assembler.
-	 */
-	@FunctionalInterface
-	public interface DecomposeNameResolver {
-		@Nullable String resolve(Property property);
-	}
 }

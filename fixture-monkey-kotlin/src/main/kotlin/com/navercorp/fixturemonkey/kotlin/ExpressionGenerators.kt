@@ -10,9 +10,9 @@ import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
-import java.lang.reflect.AnnotatedType
+import com.navercorp.objectfarm.api.type.JavaType
+import com.navercorp.objectfarm.api.type.JvmType
 import java.lang.reflect.Field
-import java.lang.reflect.Type
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
@@ -477,37 +477,28 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
         property.javaField?.annotations?.toList() ?: listOf()
 
     /**
-     * If backed only by a getter, {@code javaProperty} or {@code javaField} may be null and cause NPE.
-     * To avoid this, returns {@link Types.UnidentifiableType} when the type cannot be identified.
-     *
-     * @see com.navercorp.fixturemonkey.kotlin.expression.root
+     * If backed only by a getter, the field may be null. Returns
+     * [Types.UnidentifiableType] when the type cannot be identified.
      */
-    override fun getType(): Class<*> = property.javaField?.type ?: Types.UnidentifiableType::class.java
-
-    /**
-     * If backed only by a getter, {@code javaProperty} or {@code javaField} may be null and cause NPE.
-     * To avoid this, returns {@link Types.UnidentifiableType} when the type cannot be identified.
-     *
-     * @see com.navercorp.fixturemonkey.kotlin.expression.root
-     */
-    override fun getAnnotatedType(): AnnotatedType =
-        property.javaField?.annotatedType ?: object : AnnotatedType {
-            override fun getType(): Type = Types.UnidentifiableType::class.java
-
-            override fun getAnnotations(): Array<Annotation> = emptyArray()
-
-            override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T? = null
-
-            override fun getDeclaredAnnotations(): Array<Annotation> = emptyArray()
+    private val cachedJvmType: JvmType = run {
+        val fieldAnnotatedType = property.javaField?.annotatedType
+        if (fieldAnnotatedType != null) {
+            Types.toJvmType(
+                fieldAnnotatedType,
+                getAnnotations(),
+                property.returnType.isMarkedNullable,
+            )
+        } else {
+            JavaType(Types.UnidentifiableType::class.java)
         }
+    }
+
+    override fun getJvmType(): JvmType = cachedJvmType
 
     override fun getName(): String = property.name
 
     override fun getAnnotations(): List<Annotation> =
         (propertyAnnotations + getterAnnotations + fieldAnnotations).distinct()
-
-    @Suppress("UNCHECKED_CAST")
-    override fun getValue(instance: Any): Any? = property.get(instance as V)
 
     override fun isNullable(): Boolean = property.returnType.isMarkedNullable
 }
@@ -535,18 +526,21 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     private val fieldAnnotations: List<Annotation> =
         javaField?.annotations?.toList() ?: listOf()
 
-    override fun getType(): Class<*> = type
+    private val cachedJvmType: JvmType = run {
+        val fieldAnnotatedType = property?.javaField?.annotatedType ?: javaField?.annotatedType
+        if (fieldAnnotatedType != null) {
+            Types.toJvmType(fieldAnnotatedType, getAnnotations(), getter.returnType.isMarkedNullable)
+        } else {
+            JavaType(type, emptyList(), getAnnotations(), getter.returnType.isMarkedNullable)
+        }
+    }
 
-    override fun getAnnotatedType(): AnnotatedType? =
-        property?.javaField?.annotatedType ?: javaField?.annotatedType
+    override fun getJvmType(): JvmType = cachedJvmType
 
     override fun getName(): String = propertyName
 
     override fun getAnnotations(): List<Annotation> =
         (propertyAnnotations + getterAnnotations + fieldAnnotations).distinct()
-
-    @Suppress("UNCHECKED_CAST")
-    override fun getValue(instance: Any?): Any? = getter.invoke(instance as V)
 
     override fun isNullable(): Boolean = getter.returnType.isMarkedNullable
 }

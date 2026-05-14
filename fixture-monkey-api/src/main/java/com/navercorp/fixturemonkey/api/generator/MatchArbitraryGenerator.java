@@ -38,7 +38,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
  * the next {@link ArbitraryGenerator} will be used.
  * If there are one or more {@link ArbitraryGenerator} that match the condition, the first one is used.
  */
-@API(since = "0.6.12", status = Status.MAINTAINED)
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public final class MatchArbitraryGenerator implements ArbitraryGenerator {
 	private final List<ArbitraryGenerator> arbitraryGenerators;
 

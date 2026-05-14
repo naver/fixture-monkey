@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext;
 
-@API(since = "0.6.0", status = Status.MAINTAINED)
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class FailoverIntrospector implements ArbitraryIntrospector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FailoverIntrospector.class);
 
@@ -64,7 +64,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 						String.format(
 							"\"%s\" is failed to introspect \"%s\" type.",
 							introspector.getClass().getSimpleName(),
-							((Class<?>)context.getResolvedProperty().getType()).getName()
+							context.getResolvedProperty().getJvmType().getRawType().getName()
 						),
 						ex
 					);
@@ -94,7 +94,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 									String.format(
 										"\"%s\" is failed to introspect \"%s\" type.",
 										Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
-										((Class<?>)context.getResolvedProperty().getType()).getName()
+										context.getResolvedProperty().getJvmType().getRawType().getName()
 									),
 									ex
 								);
@@ -105,7 +105,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					throw new IllegalArgumentException(
 						String.format(
 							"Failed to generate type \"%s\"",
-							((Class<?>)context.getResolvedProperty().getType()).getSimpleName()
+							context.getResolvedProperty().getJvmType().getRawType().getSimpleName()
 						)
 					);
 				}
@@ -126,7 +126,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 									String.format(
 										"\"%s\" is failed to introspect type \"%s\"",
 										Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
-										((Class<?>)context.getResolvedProperty().getType()).getName()
+										context.getResolvedProperty().getJvmType().getRawType().getName()
 									),
 									ex
 								);
@@ -137,7 +137,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					throw new IllegalArgumentException(
 						String.format(
 							"Failed to generate type \"%s\"",
-							((Class<?>)context.getResolvedProperty().getType()).getSimpleName()
+							context.getResolvedProperty().getJvmType().getRawType().getSimpleName()
 						)
 					);
 				}

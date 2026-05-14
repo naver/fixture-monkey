@@ -53,7 +53,7 @@ import com.navercorp.fixturemonkey.expression.DefaultDeclarativeExpression;
  * </p>
  */
 @SuppressWarnings("UnusedReturnValue")
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class InnerSpec {
 	private static final int FIRST_MANIPULATOR_SEQUENCE = 0;
 
@@ -667,7 +667,7 @@ public final class InnerSpec {
 		for (InnerSpec spec : innerSpec.innerSpecs) {
 			ManipulatorHolderSet traversed = traverse(spec);
 			nodeSetManipulatorSnapshots.addAll(traversed.getNodeResolverObjectHolders());
-			containerInfoManipulators.addAll(traversed.getContainerInfoManipulators());
+			containerInfoManipulators.addAll(traversed.getSizeDirectives());
 			postConditionManipulators.addAll(traversed.getPostConditionManipulators());
 		}
 

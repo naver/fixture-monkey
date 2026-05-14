@@ -45,7 +45,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
  * This avoids {@code NullPointerException} when default methods chain through abstract
  * wither/setter methods.
  */
-@API(since = "0.5.5", status = Status.MAINTAINED)
+@API(since = "0.5.5", status = Status.EXPERIMENTAL)
 public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	public static final AnonymousArbitraryIntrospector INSTANCE = new AnonymousArbitraryIntrospector();
 
@@ -53,7 +53,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 
 	@Override
 	public boolean match(Property property) {
-		return Modifier.isInterface(Types.getActualType(property.getType()).getModifiers());
+		return Modifier.isInterface(property.getJvmType().getRawType().getModifiers());
 	}
 
 	/**
@@ -66,7 +66,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 
 		if (!match(property)) {
 			LOGGER.warn("Given type {} is not an interface. You must use another ArbitraryIntrospector", type);

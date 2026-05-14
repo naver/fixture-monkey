@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.adapter;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.adapter.ValueProjectionAssembleSpecs.ChildValue;
@@ -38,24 +38,23 @@ class ValueProjectionBasicGenerationTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
-		.plugin(new JavaNodeTreeAdapterPlugin())
 		.build();
 
-	@Property
+	@Test
 	void generateString() {
 		String actual = SUT.giveMeOne(String.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void generateInteger() {
 		Integer actual = SUT.giveMeOne(Integer.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void generateSimpleObject() {
 		StringValue actual = SUT.giveMeOne(StringValue.class);
 
@@ -63,7 +62,7 @@ class ValueProjectionBasicGenerationTest {
 		then(actual.getValue()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void generateNestedObject() {
 		Order actual = SUT.giveMeOne(Order.class);
 
@@ -72,7 +71,7 @@ class ValueProjectionBasicGenerationTest {
 		then(actual.getProduct().getName()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void generateListObject() {
 		StringListHolder actual = SUT.giveMeOne(StringListHolder.class);
 
@@ -80,21 +79,21 @@ class ValueProjectionBasicGenerationTest {
 		then(actual.getValues()).isNotNull();
 	}
 
-	@Property
+	@Test
 	void generatePrimitiveArray() {
 		int[] actual = SUT.giveMeBuilder(IntArrayHolder.class).fixed().sample().getValues();
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleObjectField() {
 		ObjectValue actual = SUT.giveMeOne(ObjectValue.class);
 
 		then(actual).isNotNull();
 	}
 
-	@Property
+	@Test
 	void sampleChildValue() {
 		ChildValue actual = SUT.giveMeOne(ChildValue.class);
 

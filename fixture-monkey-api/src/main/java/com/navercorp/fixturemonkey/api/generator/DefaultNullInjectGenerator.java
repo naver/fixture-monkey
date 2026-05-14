@@ -31,7 +31,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	public static final double NOT_NULL_INJECT = 0.0d;
 	public static final double DEFAULT_NULL_INJECT = 0.2d;
@@ -120,7 +120,7 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			return NOT_NULL_INJECT;
 		}
 
-		if (Types.getActualType(context.getProperty().getType()).isPrimitive()) {
+		if (context.getProperty().getJvmType().getRawType().isPrimitive()) {
 			return NOT_NULL_INJECT;
 		}
 

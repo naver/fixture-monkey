@@ -18,27 +18,31 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import net.jqwik.api.Property;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Value;
+
+import java.util.Collections;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson3.plugin.Jackson3Plugin;
 
 public class FixtureMonkeyExpressionGenerator3Test {
 	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
 
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
-	@Property
+	@Test
 	void setJsonPropertyWithExpressionGenerator() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -48,7 +52,9 @@ public class FixtureMonkeyExpressionGenerator3Test {
 		};
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
-				DEFAULT_PROPERTY_GENERATOR.generateChildProperties(new RootProperty(typeReference.getAnnotatedType()))
+				DEFAULT_PROPERTY_GENERATOR.generateChildProperties(new RootProperty(
+					new TypeParameterProperty(Types.toJvmType(typeReference.getAnnotatedType(), Collections.emptyList()))
+				))
 					.stream()
 					.filter(it -> "value".equals(it.getName()))
 					.findFirst()

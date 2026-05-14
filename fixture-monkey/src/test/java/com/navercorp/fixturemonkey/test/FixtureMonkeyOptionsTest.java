@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Example;
+import org.junit.jupiter.api.Test;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
@@ -113,7 +113,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapperList
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
 
 class FixtureMonkeyOptionsTest {
-	@Example
+	@Test
 	void strictModeSetWrongExpressionThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
@@ -125,7 +125,7 @@ class FixtureMonkeyOptionsTest {
 			.hasMessageContaining("No matching results for given NodeResolvers.");
 	}
 
-	@Example
+	@Test
 	void strictModeSizeWrongExpressionThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
@@ -137,7 +137,7 @@ class FixtureMonkeyOptionsTest {
 			.hasMessageContaining("No matching results for given container expression.");
 	}
 
-	@Example
+	@Test
 	void strictModeSizeNestedWrongExpressionThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
@@ -149,7 +149,7 @@ class FixtureMonkeyOptionsTest {
 			.hasMessageContaining("No matching results for given container expression.");
 	}
 
-	@Example
+	@Test
 	void strictModeSetWrongExpressionAfterPushAssignableTypePropertyNameResolverThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.useExpressionStrictMode()
@@ -164,7 +164,7 @@ class FixtureMonkeyOptionsTest {
 			.hasMessageContaining("No matching results for given NodeResolvers.");
 	}
 
-	@Example
+	@Test
 	void strictModeSizeWrongExpressionAfterPushAssignableTypePropertyNameResolverThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.useExpressionStrictMode()
@@ -179,7 +179,7 @@ class FixtureMonkeyOptionsTest {
 			.hasMessageContaining("No matching results for given container expression.");
 	}
 
-	@Example
+	@Test
 	void strictModeSetWrongExpressionAfterDefaultPropertyNameResolverThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.useExpressionStrictMode()
@@ -194,7 +194,7 @@ class FixtureMonkeyOptionsTest {
 			.hasMessageContaining("No matching results for given NodeResolvers.");
 	}
 
-	@Example
+	@Test
 	void strictModeSizeWrongExpressionAfterDefaultPropertyNameResolverThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.useExpressionStrictMode()
@@ -209,7 +209,7 @@ class FixtureMonkeyOptionsTest {
 			.hasMessageContaining("No matching results for given container expression.");
 	}
 
-	@Example
+	@Test
 	void notStrictModeSetWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
@@ -219,7 +219,7 @@ class FixtureMonkeyOptionsTest {
 				.sample());
 	}
 
-	@Example
+	@Test
 	void notStrictModeSizeWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
@@ -229,7 +229,7 @@ class FixtureMonkeyOptionsTest {
 				.sample());
 	}
 
-	@Example
+	@Test
 	void strictModeMultiOperationValidExpression() {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
@@ -246,7 +246,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo("expected");
 	}
 
-	@Example
+	@Test
 	void pushAssignableTypeNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeNullInjectGenerator(
@@ -260,7 +260,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void pushExactTypeNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeNullInjectGenerator(
@@ -274,7 +274,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void pushNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushNullInjectGenerator(
@@ -287,7 +287,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void defaultNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNullInjectGenerator((context) -> 1.0d)
@@ -298,7 +298,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void pushExactTypePropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypePropertyNameResolver(String.class, (property) -> "string")
@@ -313,7 +313,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void pushAssignableTypePropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypePropertyNameResolver(Interface.class, (property) -> "interface")
@@ -329,7 +329,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void pushPropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushPropertyNameResolver(MatcherOperator.exactTypeMatchOperator(String.class, (property) -> "string"))
@@ -344,7 +344,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void defaultPropertyNameResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultPropertyNameResolver((property) -> "'" + property.getName() + "'")
@@ -359,7 +359,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void pushAssignableTypeArbitraryIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeArbitraryIntrospector(
@@ -375,7 +375,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void pushExactTypeArbitraryIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeArbitraryIntrospector(
@@ -391,7 +391,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void pushArbitraryIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushArbitraryIntrospector(
@@ -409,7 +409,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void objectIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(
@@ -426,19 +426,19 @@ class FixtureMonkeyOptionsTest {
 		then(complexObject).isNull();
 	}
 
-	@Example
+	@Test
 	void pushArbitraryContainerInfoGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
-						if (Types.getActualType(property.getType()).isArray()
-							|| Types.getGenericsTypes(property.getAnnotatedType()).isEmpty()) {
+						if (property.getJvmType().getRawType().isArray()
+							|| property.getJvmType().getTypeVariables().isEmpty()) {
 							return false;
 						}
 
-						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
-						Class<?> type = Types.getActualType(elementType);
+						com.navercorp.objectfarm.api.type.JvmType elementType = property.getJvmType().getTypeVariables().get(0);
+						Class<?> type = elementType.getRawType();
 						return type.isAssignableFrom(String.class);
 					},
 					(context) -> new ArbitraryContainerInfo(5, 5)
@@ -452,19 +452,19 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(5);
 	}
 
-	@Example
+	@Test
 	void pushArbitraryContainerInfoGeneratorNotMatching() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
-						if (Types.getActualType(property.getType()).isArray()
-							|| Types.getGenericsTypes(property.getAnnotatedType()).isEmpty()) {
+						if (property.getJvmType().getRawType().isArray()
+							|| property.getJvmType().getTypeVariables().isEmpty()) {
 							return false;
 						}
 
-						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
-						Class<?> type = Types.getActualType(elementType);
+						com.navercorp.objectfarm.api.type.JvmType elementType = property.getJvmType().getTypeVariables().get(0);
+						Class<?> type = elementType.getRawType();
 						return type.isAssignableFrom(String.class);
 					},
 					(context) -> new ArbitraryContainerInfo(5, 5)
@@ -478,7 +478,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSizeBetween(0, 3);
 	}
 
-	@Example
+	@Test
 	void defaultArbitraryContainerMaxSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 1))
@@ -490,7 +490,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSizeLessThanOrEqualTo(1);
 	}
 
-	@Example
+	@Test
 	void defaultArbitraryContainerInfo() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
@@ -502,7 +502,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(3);
 	}
 
-	@Example
+	@Test
 	void javaTypeArbitraryGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -521,7 +521,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).matches(Pattern.compile("\\d*"));
 	}
 
-	@Example
+	@Test
 	void javaTypeArbitraryGeneratorAffectsField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -541,7 +541,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).matches(it -> it == null || Pattern.compile("\\d*").matcher(it).matches());
 	}
 
-	@Example
+	@Test
 	void javaArbitraryResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -561,7 +561,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void javaArbitraryResolverAffectsField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -582,7 +582,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isIn("test", null);
 	}
 
-	@Example
+	@Test
 	void javaTimeTypeArbitraryGenerator() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -602,7 +602,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void javaTimeTypeArbitraryGeneratorAffectsField() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -623,7 +623,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isIn(null, expected);
 	}
 
-	@Example
+	@Test
 	void javaTimeArbitraryResolver() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -646,7 +646,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void javaTimeArbitraryResolverAffectsField() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -670,7 +670,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isIn(expected, null);
 	}
 
-	@Example
+	@Test
 	void alterArbitraryValidator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.arbitraryValidator(obj -> {
@@ -682,7 +682,7 @@ class FixtureMonkeyOptionsTest {
 			.isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 
-	@Example
+	@Test
 	void defaultNotNull() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -694,7 +694,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void defaultNotNullNotWorksWhenSetDefaultNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNullInjectGenerator(
@@ -716,7 +716,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void pushExceptGenerateType() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExceptGenerateType(new ExactTypeMatcher(String.class))
@@ -727,7 +727,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void addExceptGenerateClass() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGenerateClass(Timestamp.class)
@@ -738,7 +738,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void addExceptGenerateClassNotGenerateField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGenerateClass(String.class)
@@ -750,7 +750,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void addExceptGeneratePackage() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGeneratePackage("java.lang")
@@ -761,7 +761,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void addExceptGeneratePackageNotGenerateField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGeneratePackage("java.lang")
@@ -773,7 +773,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void registerInstance() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
@@ -784,7 +784,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void registerField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
@@ -796,7 +796,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void registerGroup() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerGroup(RegisterGroup.class)
@@ -813,7 +813,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual3.getIntValue()).isEqualTo(RegisterGroup.FIXED_INT_VALUE.getIntValue());
 	}
 
-	@Example
+	@Test
 	void registerBuilderGroup() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerGroup(new ChildBuilderGroup())
@@ -830,7 +830,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual3.getIntValue()).isEqualTo(ChildBuilderGroup.FIXED_INT_VALUE.getIntValue());
 	}
 
-	@Example
+	@Test
 	void registerSetFirst() {
 		String expected = "test2";
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -844,7 +844,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void registerWithPriority() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test2"), 2)
@@ -858,7 +858,7 @@ class FixtureMonkeyOptionsTest {
 	}
 
 
-	@Example
+	@Test
 	void nullableElement() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNullInjectGenerator(
@@ -879,7 +879,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).allMatch(Objects::isNull);
 	}
 
-	@Example
+	@Test
 	void generateNewContainer() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
@@ -893,7 +893,7 @@ class FixtureMonkeyOptionsTest {
 		then(pair).isNotNull();
 	}
 
-	@Example
+	@Test
 	void decomposeNewContainer() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
@@ -923,7 +923,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual1).isEqualTo(actual2);
 	}
 
-	@Example
+	@Test
 	void decomposeNewContainerByAddContainerType() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addContainerType(
@@ -949,7 +949,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual1).isEqualTo(actual2);
 	}
 
-	@Example
+	@Test
 	void decomposeNewContainerByAddContainerTypeInterface() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addContainerType(
@@ -973,7 +973,7 @@ class FixtureMonkeyOptionsTest {
 				})));
 	}
 
-	@Example
+	@Test
 	void plugin() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin((optionsBuilder) -> optionsBuilder.insertFirstNullInjectGenerators(String.class, (context) -> 1.0d))
@@ -986,7 +986,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(null);
 	}
 
-	@Example
+	@Test
 	void registerMultipleTimesWithHierarchyReturnsCorrectOrder() {
 		String expected = "test";
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1002,7 +1002,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void generateWithBuilderArbitraryIntrospector() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1015,7 +1015,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	@Example
+	@Test
 	void generateWithBuilderArbitraryIntrospectorDefaultBuilderMethod() {
 		// given
 		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
@@ -1031,7 +1031,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	@Example
+	@Test
 	void generateWithBuilderArbitraryIntrospectorDefaultBuildMethod() {
 		// given
 		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
@@ -1047,7 +1047,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	@Example
+	@Test
 	void registerRootAndChildElementGeneratingRoot() {
 		// given
 		String expected = "test";
@@ -1067,7 +1067,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void registerSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 1))
@@ -1079,7 +1079,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(1);
 	}
 
-	@Example
+	@Test
 	void registerFieldSet() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(StringWrapper.class, fixture -> fixture.giveMeBuilder(StringWrapper.class).set("value", "test"))
@@ -1091,7 +1091,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).allMatch(it -> "test".equals(it.getValue()));
 	}
 
-	@Example
+	@Test
 	void registerFieldSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
@@ -1106,7 +1106,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).allMatch(it -> it.getValues().size() == 1);
 	}
 
-	@Example
+	@Test
 	void sizeRegisteredElement() {
 		String expected = "test";
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1121,7 +1121,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void sizeBiggerThanRegisterSized() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 3))
@@ -1135,7 +1135,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(10);
 	}
 
-	@Example
+	@Test
 	void registerObjectNotFixed() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, it -> it.giveMeBuilder(String.class).set("$", Arbitraries.strings().ofLength(10)))
@@ -1150,7 +1150,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSizeGreaterThan(1);
 	}
 
-	@Example
+	@Test
 	void registerParentSetNullChildAndChildRegistered() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(SimpleObject.class, fixture -> fixture.giveMeBuilder(SimpleObject.class).set("str", "test"))
@@ -1167,7 +1167,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void sampleNullableContainerWhenOptionNullableContainerIsSetReturnsNull() {
 		DefaultNullInjectGenerator nullInjectGenerator = new DefaultNullInjectGenerator(
 			ALWAYS_NULL_INJECT,
@@ -1187,7 +1187,7 @@ class FixtureMonkeyOptionsTest {
 		then(values).isNull();
 	}
 
-	@Example
+	@Test
 	void applySizeWhenRegisteredWithSize() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1206,7 +1206,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(10);
 	}
 
-	@Example
+	@Test
 	void sizeWhenRegisterSizeInApply() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1226,7 +1226,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(2);
 	}
 
-	@Example
+	@Test
 	void sizeWhenRegisterApply() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1248,7 +1248,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(2);
 	}
 
-	@Example
+	@Test
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMaxSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 5))
@@ -1260,7 +1260,7 @@ class FixtureMonkeyOptionsTest {
 		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Example
+	@Test
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
@@ -1272,7 +1272,7 @@ class FixtureMonkeyOptionsTest {
 		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Example
+	@Test
 	void sampleEnumSetWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
@@ -1284,7 +1284,7 @@ class FixtureMonkeyOptionsTest {
 		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 
-	@Example
+	@Test
 	void interfaceImplements() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -1304,7 +1304,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isIn(1, "fixed");
 	}
 
-	@Example
+	@Test
 	void sampleGenericInterface() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -1329,7 +1329,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isIn(1, "fixed");
 	}
 
-	@Example
+	@Test
 	void sampleGenericInterfaceReturnsDiff() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -1356,7 +1356,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSize(2);
 	}
 
-	@Example
+	@Test
 	void sampleInterfaceChildWhenOptionHasHierarchy() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
@@ -1382,7 +1382,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(2);
 	}
 
-	@Example
+	@Test
 	void sampleConcreteWhenHasSameNameProperty() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -1400,7 +1400,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void setConcreteListWithNoParentValue() {
 		// given
 		List<Class<? extends AbstractNoneValue>> implementations = new ArrayList<>();
@@ -1431,7 +1431,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void setConcreteClassWhenHasParentValue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1453,7 +1453,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void setConcreteClassWhenHasNoParentValue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -1478,7 +1478,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void setConcreteList() {
 		// given
 		List<Class<? extends AbstractValue>> implementations = new ArrayList<>();
@@ -1511,7 +1511,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void sampleSelfRecursiveAbstract() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -1529,7 +1529,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void sizeElementWhenRegisteredSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
@@ -1548,7 +1548,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).allMatch(it -> it.getValues().size() >= 3 && it.getValues().size() <= 5);
 	}
 
-	@Example
+	@Test
 	void samePropertyDiffImplementations() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -1571,7 +1571,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isEqualTo("expected");
 	}
 
-	@Example
+	@Test
 	void sampleWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -1592,7 +1592,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void filterWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -1611,7 +1611,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isUpperCase();
 	}
 
-	@Example
+	@Test
 	void filterIsoControlCharacterWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
@@ -1627,7 +1627,7 @@ class FixtureMonkeyOptionsTest {
 		});
 	}
 
-	@Example
+	@Test
 	void multipleFiltersWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -1656,7 +1656,7 @@ class FixtureMonkeyOptionsTest {
 		});
 	}
 
-	@Example
+	@Test
 	void alterDefaultArbitraryGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryGenerator(generator -> new MatchArbitraryGenerator(
@@ -1674,7 +1674,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void skipArbitraryGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryGenerator(generator -> new CompositeArbitraryGenerator(
@@ -1691,7 +1691,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void uniqueArbitraryGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryGenerator(UniqueArbitraryGenerator::new)
@@ -1703,7 +1703,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSameSizeAs(expected);
 	}
 
-	@Example
+	@Test
 	void allArbitraryGeneratorSkipReturnsNull() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryGenerator(generator -> (
@@ -1721,7 +1721,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isNull();
 	}
 
-	@Example
+	@Test
 	void setConcrete() {
 		// given
 		List<Class<? extends AbstractValue>> implementations = new ArrayList<>();

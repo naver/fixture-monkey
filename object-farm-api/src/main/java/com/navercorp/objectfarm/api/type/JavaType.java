@@ -20,6 +20,7 @@ package com.navercorp.objectfarm.api.type;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -35,32 +36,40 @@ public final class JavaType implements JvmType {
 	private final List<? extends JvmType> typeVariables;
 	private final List<Annotation> annotations;
 	@Nullable
-	private final AnnotatedType annotatedType;
+	private final JvmType componentType;
+	@Nullable
+	private final Boolean nullable;
 	private int cachedHashCode;
 
 	public JavaType(Class<?> rawType) {
-		this(rawType, Collections.emptyList(), Collections.emptyList(), null);
+		this(rawType, Collections.emptyList(), Collections.emptyList());
 	}
 
 	public JavaType(Class<?> rawType, List<? extends JvmType> typeVariables, List<Annotation> annotations) {
-		this.rawType = rawType;
-		this.typeVariables = typeVariables;
-		this.annotations = annotations;
-		this.annotatedType = null;
+		this(rawType, typeVariables, annotations, deriveComponentType(rawType, typeVariables), null);
 	}
 
-	// for backward compatibility
-	@Deprecated
 	public JavaType(
 		Class<?> rawType,
-		List<JvmType> typeVariables,
+		List<? extends JvmType> typeVariables,
 		List<Annotation> annotations,
-		@Nullable AnnotatedType annotatedType
+		@Nullable Boolean nullable
+	) {
+		this(rawType, typeVariables, annotations, deriveComponentType(rawType, typeVariables), nullable);
+	}
+
+	public JavaType(
+		Class<?> rawType,
+		List<? extends JvmType> typeVariables,
+		List<Annotation> annotations,
+		@Nullable JvmType componentType,
+		@Nullable Boolean nullable
 	) {
 		this.rawType = rawType;
 		this.typeVariables = typeVariables;
 		this.annotations = annotations;
-		this.annotatedType = annotatedType;
+		this.componentType = componentType;
+		this.nullable = nullable;
 	}
 
 	public JavaType(ObjectTypeReference<?> typeReference) {
@@ -71,11 +80,10 @@ public final class JavaType implements JvmType {
 		this.typeVariables = Types.getGenericsTypes(resolvedType).stream()
 			.map(annotatedType -> new JavaType(Types.toTypeReference(annotatedType)))
 			.collect(Collectors.toList());
+		this.componentType = resolveComponentType(resolvedType, this.rawType);
 		this.annotations = Arrays.stream(resolvedType.getAnnotations())
 			.collect(Collectors.toList());
-		// Don't store the annotatedType if it contains wildcards in type arguments,
-		// so that JvmNodePropertyAdapter will build a new AnnotatedType from resolved components
-		this.annotatedType = Types.containsWildcardTypeArguments(resolvedType) ? null : resolvedType;
+		this.nullable = null;
 	}
 
 	private static Class<?> resolveRawType(AnnotatedType annotatedType) {
@@ -84,9 +92,33 @@ public final class JavaType implements JvmType {
 			// For GenericArrayType, we need the array class, not the component class
 			GenericArrayType genericArrayType = (GenericArrayType)type;
 			Class<?> componentClass = Types.getActualType(genericArrayType.getGenericComponentType());
-			return java.lang.reflect.Array.newInstance(componentClass, 0).getClass();
+			return Array.newInstance(componentClass, 0).getClass();
 		}
 		return Types.getActualType(annotatedType);
+	}
+
+	@Nullable
+	private static JvmType resolveComponentType(AnnotatedType annotatedType, Class<?> rawType) {
+		Type type = annotatedType.getType();
+		if (type instanceof GenericArrayType) {
+			Type genericComponentType = ((GenericArrayType)type).getGenericComponentType();
+			return new JavaType(Types.toTypeReference(Types.generateAnnotatedTypeWithoutAnnotation(genericComponentType)));
+		}
+		if (rawType.isArray()) {
+			return new JavaType(rawType.getComponentType());
+		}
+		return null;
+	}
+
+	@Nullable
+	private static JvmType deriveComponentType(Class<?> rawType, List<? extends JvmType> typeVariables) {
+		if (!rawType.isArray()) {
+			return null;
+		}
+		Class<?> componentClass = rawType.getComponentType();
+		// Preserve the legacy convention: when constructing an array type with typeVariables,
+		// those typeVariables represent the component type's generics.
+		return new JavaType(componentClass, typeVariables, Collections.emptyList());
 	}
 
 	@Override
@@ -104,26 +136,16 @@ public final class JavaType implements JvmType {
 		return annotations;
 	}
 
-	/**
-	 * It is for backward compatibility. Recommend to use the {@link #getRawType()} or {@link #getTypeVariables()}
-	 */
-	@Deprecated
 	@Override
 	@Nullable
-	@SuppressWarnings("override.return")
-	public AnnotatedType getAnnotatedType() {
-		return annotatedType;
+	public Boolean getNullable() {
+		return nullable;
 	}
 
 	@Override
 	@Nullable
 	public JvmType getComponentType() {
-		if (!rawType.isArray()) {
-			return null;
-		}
-		Class<?> componentClass = rawType.getComponentType();
-		// For array types, typeVariables holds the component type's type variables
-		return new JavaType(componentClass, typeVariables, Collections.emptyList());
+		return componentType;
 	}
 
 	@Override
@@ -134,14 +156,15 @@ public final class JavaType implements JvmType {
 		JavaType javaType = (JavaType)obj;
 		return Objects.equals(rawType, javaType.rawType)
 			&& Objects.equals(typeVariables, javaType.typeVariables)
-			&& Objects.equals(annotations, javaType.annotations);
+			&& Objects.equals(annotations, javaType.annotations)
+			&& Objects.equals(componentType, javaType.componentType);
 	}
 
 	@Override
 	public int hashCode() {
 		int hash = cachedHashCode;
 		if (hash == 0) {
-			hash = Objects.hash(rawType, typeVariables, annotations);
+			hash = Objects.hash(rawType, typeVariables, annotations, componentType);
 			if (hash == 0) {
 				hash = 1;
 			}

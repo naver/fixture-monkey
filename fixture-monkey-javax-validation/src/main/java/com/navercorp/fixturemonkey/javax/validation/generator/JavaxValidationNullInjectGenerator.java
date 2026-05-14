@@ -67,7 +67,7 @@ public final class JavaxValidationNullInjectGenerator implements NullInjectGener
 			return 0.0d;
 		}
 
-		if (Types.getActualType(context.getProperty().getType()) == String.class) {
+		if (context.getProperty().getJvmType().getRawType() == String.class) {
 			if (annotations.contains(NotBlank.class) || annotations.contains(NotEmpty.class)) {
 				return 0.0d;
 			}

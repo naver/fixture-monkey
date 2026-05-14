@@ -55,7 +55,7 @@ public final class Jackson3MapArbitraryIntrospector implements ArbitraryIntrospe
 
 	@Override
 	public boolean match(Property property) {
-		return Map.class.isAssignableFrom(Types.getActualType(property.getType()));
+		return Map.class.isAssignableFrom(property.getJvmType().getRawType());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,21 +64,23 @@ public final class Jackson3MapArbitraryIntrospector implements ArbitraryIntrospe
 		TypeFactory typeFactory = TypeFactory.createDefaultInstance();
 
 		Property property = context.getResolvedProperty();
-		Class<? extends Map<?, ?>> containerType = (Class<? extends Map<?, ?>>)Types.getActualType(property.getType());
+		Class<? extends Map<?, ?>> containerType = (Class<? extends Map<?, ?>>)property.getJvmType().getRawType();
 
-		AnnotatedType keyAnnotatedType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
-		AnnotatedType valueAnnotatedType = Types.getGenericsTypes(property.getAnnotatedType()).get(1);
+		Type keyReflectionType =
+			Types.toAnnotatedType(property.getJvmType().getTypeVariables().get(0)).getType();
+		Type valueReflectionType =
+			Types.toAnnotatedType(property.getJvmType().getTypeVariables().get(1)).getType();
 		JavaType keyType = typeFactory.constructType(new Jackson3TypeReference<>() {
 			@Override
 			public Type getType() {
-				return keyAnnotatedType.getType();
+				return keyReflectionType;
 			}
 		});
 
 		JavaType valueType = typeFactory.constructType(new Jackson3TypeReference<Object>() {
 			@Override
 			public Type getType() {
-				return valueAnnotatedType.getType();
+				return valueReflectionType;
 			}
 		});
 

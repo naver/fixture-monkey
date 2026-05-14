@@ -83,8 +83,8 @@ class KotlinNullInjectGenerator(
         if (nullable == null) {
             val ownerProperty = context.ownerProperty
             if (ownerProperty != null) {
-                val ownerType = ownerProperty.objectProperty?.property?.type
-                if (ownerType is Class<*> && KotlinTypeDetector.isKotlinType(ownerType)) {
+                val ownerType = ownerProperty.objectProperty?.property?.jvmType?.rawType
+                if (ownerType != null && KotlinTypeDetector.isKotlinType(ownerType)) {
                     val ownerNullable = KotlinNullabilityUtils.isNullableByOwnerType(ownerType, property.name)
                     if (ownerNullable == false) {
                         return NOT_NULL_INJECT

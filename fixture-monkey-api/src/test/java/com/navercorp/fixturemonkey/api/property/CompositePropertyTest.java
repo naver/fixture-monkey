@@ -26,8 +26,8 @@ import java.lang.reflect.Field;
 
 import javax.annotation.CheckForNull;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 class CompositePropertyTest {
@@ -54,7 +54,7 @@ class CompositePropertyTest {
 		CompositeProperty sut = new CompositeProperty(primaryProperty, secondaryProperty);
 
 		then(sut.getAnnotations()).hasSize(2);
-		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(NonNull.class);
+		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(Nonnull.class);
 		then(sut.getAnnotations().get(1).annotationType()).isEqualTo(Nullable.class);
 	}
 
@@ -67,7 +67,7 @@ class CompositePropertyTest {
 
 		CompositeProperty sut = new CompositeProperty(primaryProperty, secondaryProperty);
 
-		then(sut.getAnnotation(NonNull.class)).isPresent();
+		then(sut.getAnnotation(Nonnull.class)).isPresent();
 		then(sut.getAnnotation(Nullable.class)).isPresent();
 	}
 
@@ -96,7 +96,7 @@ class CompositePropertyTest {
 	}
 
 	@Test
-	void getAnnotatedType() {
+	void getJvmType() {
 		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
 		PropertyDescriptorProperty primaryProperty = new PropertyDescriptorProperty(propertyDescriptor);
 		Field field = getNameField();
@@ -104,20 +104,7 @@ class CompositePropertyTest {
 
 		CompositeProperty sut = new CompositeProperty(primaryProperty, secondaryProperty);
 
-		then(sut.getAnnotatedType().getType()).isEqualTo(String.class);
-	}
-
-	@Test
-	void getValue() {
-		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
-		PropertyDescriptorProperty primaryProperty = new PropertyDescriptorProperty(propertyDescriptor);
-		Field field = getNameField();
-		FieldProperty secondaryProperty = new FieldProperty(field);
-
-		CompositeProperty sut = new CompositeProperty(primaryProperty, secondaryProperty);
-
-		PropertyValue propertyValue = new PropertyValue("hello world");
-		then(sut.getValue(propertyValue)).isEqualTo("hello world");
+		then(sut.getJvmType().getRawType()).isEqualTo(String.class);
 	}
 
 	@Test

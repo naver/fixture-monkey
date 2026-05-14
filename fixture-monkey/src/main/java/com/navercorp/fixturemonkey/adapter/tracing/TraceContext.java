@@ -21,7 +21,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  *   <li>Micrometer Timer - {@link TimingSample} for timing measurements</li>
  * </ul>
  *
- * @see AdapterTracer
+ * @see AssemblyTracer
  * @see TimingSample
  */
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)

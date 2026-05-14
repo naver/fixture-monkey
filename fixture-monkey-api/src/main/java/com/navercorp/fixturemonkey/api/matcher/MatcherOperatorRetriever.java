@@ -18,18 +18,17 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import static org.apiguardian.api.API.Status.INTERNAL;
-
 import java.util.List;
 
 import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
 /**
  * It is for internal use only.
  */
-@API(since = "1.1.16", status = INTERNAL)
+@API(since = "1.1.16", status = Status.INTERNAL)
 public interface MatcherOperatorRetriever<T> {
 	List<MatcherOperator<T>> getList();
 

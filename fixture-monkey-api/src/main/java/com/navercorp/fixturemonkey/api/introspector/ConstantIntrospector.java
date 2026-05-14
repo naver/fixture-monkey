@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.ConstantProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "1.0.17", status = Status.EXPERIMENTAL)
+@API(since = "1.0.17", status = Status.MAINTAINED)
 public final class ConstantIntrospector implements ArbitraryIntrospector, Matcher {
 	public static final ConstantIntrospector INSTANCE = new ConstantIntrospector();
 
@@ -47,7 +47,7 @@ public final class ConstantIntrospector implements ArbitraryIntrospector, Matche
 		}
 
 		return new ArbitraryIntrospectorResult(
-			CombinableArbitrary.from(() -> constantProperty.getValue(null))
+			CombinableArbitrary.from(((ConstantProperty)constantProperty)::getConstantValue)
 		);
 	}
 }

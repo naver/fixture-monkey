@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
  * It resolves the concrete type {@link Property} of the given {@link Property}.
  */
 @FunctionalInterface
-@API(since = "1.0.16", status = Status.EXPERIMENTAL)
+@API(since = "1.0.16", status = Status.MAINTAINED)
 public interface CandidateConcretePropertyResolver {
 	/**
 	 * resolves the candidate concrete type properties for the given property.

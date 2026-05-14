@@ -50,7 +50,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	private final Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector;
 
@@ -60,13 +60,13 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 
 	@Override
 	public boolean match(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 		return this.introspector.containsKey(actualType);
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> type = Types.getActualType(context.getResolvedType());
+		Class<?> type = context.getResolvedType();
 		return this.introspector.getOrDefault(
 				type,
 				ctx -> ArbitraryIntrospectorResult.NOT_INTROSPECTED

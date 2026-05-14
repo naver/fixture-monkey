@@ -111,7 +111,7 @@ public final class PriorityConstructorArbitraryIntrospector implements Arbitrary
 
 	@SuppressWarnings("assignment")
 	private ConstructorArbitraryIntrospector getConstructorArbitraryIntrospector(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 
 		return constructorIntrospectorsByProperty.computeIfAbsent(
 			property,

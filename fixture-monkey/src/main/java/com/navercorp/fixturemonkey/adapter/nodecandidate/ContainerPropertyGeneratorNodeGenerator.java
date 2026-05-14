@@ -40,12 +40,15 @@ import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JvmContainerNodeGenerator;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod;
+import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.type.JvmType;
 
@@ -101,9 +104,18 @@ public final class ContainerPropertyGeneratorNodeGenerator implements JvmContain
 
 		List<Property> childProperties = containerProperty.getElementProperties();
 		List<JvmNode> elements = new ArrayList<>(childProperties.size());
-		for (Property childProperty : childProperties) {
-			JvmType elementType = Types.toJvmType(childProperty.getAnnotatedType(), childProperty.getAnnotations());
-			elements.add(new JavaNode(elementType, ""));
+		for (int i = 0; i < childProperties.size(); i++) {
+			Property childProperty = childProperties.get(i);
+			JvmType elementType = childProperty.getJvmType();
+			int index = i;
+			if (childProperty instanceof ContainerElementProperty) {
+				Integer propIndex = ((ContainerElementProperty)childProperty).getIndex();
+				if (propIndex != null) {
+					index = propIndex;
+				}
+			}
+			CreationMethod creationMethod = new ContainerElementCreationMethod(index);
+			elements.add(new JavaNode(elementType, "[" + index + "]", index, creationMethod));
 		}
 		return elements;
 	}

@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.api.matcher;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "1.0.4", status = Status.EXPERIMENTAL)
+@API(since = "1.0.4", status = Status.MAINTAINED)
 public final class TreeMatcherOperator<T> implements TreeMatcher {
 	private final TreeMatcher matcher;
 	private final T operator;
