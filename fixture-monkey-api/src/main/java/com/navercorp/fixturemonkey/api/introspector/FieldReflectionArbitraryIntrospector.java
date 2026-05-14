@@ -40,9 +40,8 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
-import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final FieldReflectionArbitraryIntrospector INSTANCE = new FieldReflectionArbitraryIntrospector();
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldReflectionArbitraryIntrospector.class);

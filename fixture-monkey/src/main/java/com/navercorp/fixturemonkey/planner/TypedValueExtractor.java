@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.customizer.JustDirective;
@@ -45,7 +43,6 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * {@code setNull()} calls in registered builders, and their conversion into
  * TypeSelector-based PathExpression entries.
  */
-@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class TypedValueExtractor {
 	private TypedValueExtractor() {
 	}

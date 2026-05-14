@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapValueElementProperty implements Property {
 	private final Property mapProperty;
 

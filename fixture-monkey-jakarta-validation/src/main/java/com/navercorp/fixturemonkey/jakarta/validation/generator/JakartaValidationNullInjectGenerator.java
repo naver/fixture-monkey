@@ -34,7 +34,6 @@ import jakarta.validation.constraints.Null;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationNullInjectGenerator implements NullInjectGenerator {

@@ -69,7 +69,7 @@ import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryResolver {
 
 	private final MonkeyContext monkeyContext;

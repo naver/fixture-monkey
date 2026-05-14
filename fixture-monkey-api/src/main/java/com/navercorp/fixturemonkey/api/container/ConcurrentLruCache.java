@@ -33,7 +33,7 @@ import org.jspecify.annotations.Nullable;
  * @param <K> key of the cache
  * @param <V> value of the cache
  */
-@API(since = "0.5.10", status = Status.EXPERIMENTAL)
+@API(since = "0.5.10", status = Status.MAINTAINED)
 @SuppressWarnings({"contracts", "override", "return"})
 public final class ConcurrentLruCache<K, V> implements Map<K, V> {
 	private final Map<K, V> lruCache;

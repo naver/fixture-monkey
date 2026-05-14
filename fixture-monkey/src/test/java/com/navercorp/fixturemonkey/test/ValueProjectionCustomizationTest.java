@@ -451,7 +451,8 @@ class ValueProjectionCustomizationTest {
 					return false;
 				}
 
-				com.navercorp.objectfarm.api.type.JvmType elementType = property.getJvmType().getTypeVariables().get(0);
+				com.navercorp.objectfarm.api.type.JvmType elementType =
+					property.getJvmType().getTypeVariables().get(0);
 				Class<?> type = elementType.getRawType();
 				return type.isAssignableFrom(String.class);
 			},
@@ -486,7 +487,8 @@ class ValueProjectionCustomizationTest {
 							return false;
 						}
 
-						com.navercorp.objectfarm.api.type.JvmType elementType = property.getJvmType().getTypeVariables().get(0);
+						com.navercorp.objectfarm.api.type.JvmType elementType =
+							property.getJvmType().getTypeVariables().get(0);
 						Class<?> type = elementType.getRawType();
 						return type.isAssignableFrom(String.class);
 					},

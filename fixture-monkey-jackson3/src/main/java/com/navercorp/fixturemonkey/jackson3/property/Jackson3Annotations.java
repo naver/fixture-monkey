@@ -29,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public abstract class Jackson3Annotations {

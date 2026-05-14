@@ -14,9 +14,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
-import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 
 @SuppressWarnings("unused")
 @BenchmarkMode(Mode.AverageTime)

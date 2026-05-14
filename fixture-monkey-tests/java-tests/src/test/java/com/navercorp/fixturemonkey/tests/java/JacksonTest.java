@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
@@ -30,7 +29,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.tests.java.specs.ImmutableSpecs.ContainerObject;
@@ -60,6 +58,7 @@ import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.TypeWithAnnotat
 import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.TypeWithAnnotationsIncludeWrapperObjectList;
 import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.TypeWithAnnotationsList;
 import com.navercorp.fixturemonkey.tests.java.specs.JacksonSpecs.TypeWithAnnotationsValue;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 
 class JacksonTest {
 

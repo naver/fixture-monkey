@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
  *
  * @see Instantiator
  */
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public interface ConstructorInstantiator<T> extends Instantiator {
 	/**
 	 * Gets a list of types representing the input parameter types of the constructor.

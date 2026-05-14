@@ -41,7 +41,7 @@ import com.github.curiousoddman.rgxgen.config.RgxGenOption;
 import com.github.curiousoddman.rgxgen.config.RgxGenProperties;
 import com.mifmif.common.regex.Generex;
 
-@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+@API(since = "0.6.9", status = Status.MAINTAINED)
 public final class RegexGenerator {
 	private static final int DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC = 10;
 	private static final int FLAG_CASE_INSENSITIVE = 2;

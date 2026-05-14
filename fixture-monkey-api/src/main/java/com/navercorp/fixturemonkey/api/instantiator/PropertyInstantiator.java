@@ -18,9 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.instantiator;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 /**
  * The {@link PropertyInstantiator} interface represents a DSL for constructing objects of type T
  * using a no-args constructor and properties. It extends the {@link Instantiator} interface.
@@ -28,6 +25,5 @@ import org.apiguardian.api.API.Status;
  * @param <T> The type of objects that can be instantiated using the no-args constructor and properties.
  * @see Instantiator
  */
-@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public interface PropertyInstantiator<T> extends Instantiator {
 }

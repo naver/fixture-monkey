@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class ManipulatorSet {
 	/**
 	 * All user-issued path directives — set / null / lazy / filter / customizer / size — in

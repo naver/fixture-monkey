@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
 	/**
 	 * A cached field-based property generator that generates properties from fields.

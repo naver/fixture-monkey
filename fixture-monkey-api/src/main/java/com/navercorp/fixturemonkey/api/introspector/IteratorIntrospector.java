@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IteratorIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IteratorIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Iterator.class);

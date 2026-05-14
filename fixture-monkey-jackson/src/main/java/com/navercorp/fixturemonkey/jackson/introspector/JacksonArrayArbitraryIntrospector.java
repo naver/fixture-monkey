@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.jackson.introspector;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -36,7 +35,6 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 import com.navercorp.fixturemonkey.jackson.type.JacksonTypeReference;
 

@@ -179,7 +179,7 @@ class MiscTest {
 		then(optionSizes).as("options sizes should be 0 from explicit size()").containsExactly(0);
 	}
 
-@Test
+	@Test
 	void setFieldThenSetRootDecomposed_laterRootOverridesEarlierField() {
 		// given
 		SimpleObject earlierField = new SimpleObject();

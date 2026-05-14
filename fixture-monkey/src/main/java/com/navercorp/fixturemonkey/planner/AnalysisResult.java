@@ -25,8 +25,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
@@ -49,7 +47,6 @@ import com.navercorp.objectfarm.api.tree.PathResolver;
  * - Values.just() creates truly immutable values where child paths are ignored.
  * - This is intentional: when a user sets Values.just(object), they want that exact object.
  */
-@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class AnalysisResult {
 	private final List<PathResolver<InterfaceResolver>> interfaceResolvers;
 	private final List<PathResolver<GenericTypeResolver>> genericTypeResolvers;

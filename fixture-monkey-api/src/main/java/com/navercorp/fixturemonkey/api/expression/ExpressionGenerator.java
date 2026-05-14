@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ExpressionGenerator extends PropertySelector {
 	@SuppressWarnings("nullness")

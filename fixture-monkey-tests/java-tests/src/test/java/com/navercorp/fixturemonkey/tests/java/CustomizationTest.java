@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot;
 import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedString;
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;

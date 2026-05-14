@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 /**
  * It would be moved into jqwik module in 0.7.0.
  */
-@API(since = "0.6.3", status = Status.EXPERIMENTAL)
+@API(since = "0.6.3", status = Status.MAINTAINED)
 public final class JqwikJavaTypeArbitraryGeneratorSet implements JavaTypeArbitraryGeneratorSet {
 	private final JavaTypeArbitraryGenerator arbitraryGenerator;
 	private final JavaArbitraryResolver arbitraryResolver;

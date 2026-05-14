@@ -42,7 +42,6 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson3.FixtureMonkeyJackson3;
 import com.navercorp.fixturemonkey.jackson3.generator.Jackson3JsonNodeContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.jackson3.introspector.Jackson3ArrayArbitraryIntrospector;

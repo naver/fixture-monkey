@@ -39,7 +39,7 @@ import com.navercorp.objectfarm.api.type.JvmTypes;
 /**
  * Generates field properties including not only declared fields but also super class fields and interface fields.
  */
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 public final class FieldPropertyGenerator implements PropertyGenerator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldPropertyGenerator.class);
 	private static final Predicate<Field> CONSTANT_FIELD_PREDICATE =

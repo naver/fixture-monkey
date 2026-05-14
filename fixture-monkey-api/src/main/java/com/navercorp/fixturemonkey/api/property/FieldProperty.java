@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FieldProperty implements Property {
 	private final JvmType jvmType;
 	private final Field field;

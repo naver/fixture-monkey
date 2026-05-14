@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ContainerProperty {
 	private final List<Property> elementProperties;
 

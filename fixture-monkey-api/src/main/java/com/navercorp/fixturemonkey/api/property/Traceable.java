@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 /**
  * An interface for finding the location of given property resides.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface Traceable {
 	/**

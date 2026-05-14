@@ -47,7 +47,8 @@ public final class PropertyJsonSubTypesConcreteTypeResolver implements Candidate
 	public List<Property> resolve(Property property) {
 		JsonSubTypes jsonSubTypes = getJacksonAnnotation(property, JsonSubTypes.class);
 		if (jsonSubTypes == null) {
-			throw new IllegalArgumentException("@JsonSubTypes is not found " + property.getJvmType().getRawType().getTypeName());
+			throw new IllegalArgumentException(
+				"@JsonSubTypes is not found " + property.getJvmType().getRawType().getTypeName());
 		}
 
 		Class<?> type = getRandomJsonSubType(jsonSubTypes);

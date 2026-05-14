@@ -77,7 +77,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T>,
 	ObjectBuilder<T>, ArbitraryBuilderContextProvider {
 	private final TreeRootProperty rootProperty;

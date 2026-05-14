@@ -34,7 +34,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationNullInjectGenerator implements NullInjectGenerator {

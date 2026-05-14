@@ -37,7 +37,6 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospe
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.26", status = Status.EXPERIMENTAL)
 public final class PriorityConstructorArbitraryIntrospector implements ArbitraryIntrospector {

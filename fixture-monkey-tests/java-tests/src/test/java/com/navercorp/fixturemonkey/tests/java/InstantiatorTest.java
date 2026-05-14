@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.factoryMethod;
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.lang.reflect.Modifier;

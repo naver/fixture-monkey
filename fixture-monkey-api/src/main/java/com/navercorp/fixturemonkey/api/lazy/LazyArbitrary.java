@@ -30,7 +30,7 @@ import org.apiguardian.api.API.Status;
  * But it could initialize value multiple times if call clear() method.
  * Due to supporting {@link net.jqwik.api.Arbitrary}.
  **/
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public interface LazyArbitrary<T> {
 	T getValue();
 

@@ -45,7 +45,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 /**
  * It would be moved into jqwik module in 0.7.0.
  */
-@API(since = "0.6.3", status = Status.EXPERIMENTAL)
+@API(since = "0.6.3", status = Status.MAINTAINED)
 public final class JqwikJavaTimeArbitraryGeneratorSet implements JavaTimeArbitraryGeneratorSet {
 	private final JavaTimeTypeArbitraryGenerator arbitraryGenerator;
 	private final JavaTimeArbitraryResolver arbitraryResolver;

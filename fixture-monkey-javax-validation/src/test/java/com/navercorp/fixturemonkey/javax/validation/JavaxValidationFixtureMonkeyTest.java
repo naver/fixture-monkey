@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.javax.validation;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -40,8 +39,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIf;
-
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;

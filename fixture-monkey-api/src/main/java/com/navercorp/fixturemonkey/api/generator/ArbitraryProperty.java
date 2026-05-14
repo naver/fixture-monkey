@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
 import com.navercorp.fixturemonkey.api.tree.TreeProperty;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryProperty extends TreeProperty {
 	private final List<ConcreteTypeDefinition> concreteTypeDefinitions;
 	private final double nullInject;

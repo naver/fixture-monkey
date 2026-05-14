@@ -34,7 +34,6 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * This plugin is used to extend an interface.

@@ -34,9 +34,8 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public final class FactoryMethodArbitraryIntrospector implements ArbitraryIntrospector {
 	private final FactoryMethodWithParameterNames factoryMethodWithParameterNames;
 

@@ -50,7 +50,8 @@ public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateC
 
 		JsonSubTypes jsonSubTypes = getJacksonAnnotation(containerProperty, JsonSubTypes.class);
 		if (jsonSubTypes == null) {
-			throw new IllegalArgumentException("@JsonSubTypes is not found " + property.getJvmType().getRawType().getTypeName());
+			throw new IllegalArgumentException(
+				"@JsonSubTypes is not found " + property.getJvmType().getRawType().getTypeName());
 		}
 
 		Class<?> type = getRandomJsonSubType(jsonSubTypes);

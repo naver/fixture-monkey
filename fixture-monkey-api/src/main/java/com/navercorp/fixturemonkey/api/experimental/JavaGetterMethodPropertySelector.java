@@ -19,14 +19,10 @@ package com.navercorp.fixturemonkey.api.experimental;
 
 import com.navercorp.fixturemonkey.api.expression.JavaGetterMethodReference;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 /**
  * It is deprecated. Use {@link com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector} instead.
  */
 @Deprecated
-@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public class JavaGetterMethodPropertySelector {
 	/**
 	 * It is deprecated.

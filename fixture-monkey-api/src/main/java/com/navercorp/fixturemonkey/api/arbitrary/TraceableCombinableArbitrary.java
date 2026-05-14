@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.property.Traceable;
 /**
  * It is a delegate implementation of CombinableArbitrary for logging.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class TraceableCombinableArbitrary<T> implements CombinableArbitrary<T>, Traceable {
 	private final CombinableArbitrary<T> combinableArbitrary;
 	private final PropertyPath propertyPath;

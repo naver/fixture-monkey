@@ -32,7 +32,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public abstract class TypeReference<T> {
 	private final AnnotatedType annotatedType;
 	// Lazy because Types.toTypeReference produces anonymous subclasses that override getAnnotatedType()

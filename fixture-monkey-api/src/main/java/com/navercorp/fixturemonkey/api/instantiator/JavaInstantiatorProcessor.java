@@ -56,7 +56,7 @@ import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 	private static final ConstructorParameterPropertyGenerator JAVA_CONSTRUCTOR_PROPERTY_GENERATOR =
 		new ConstructorParameterPropertyGenerator(

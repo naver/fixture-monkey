@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 /**
  * Introspects specific properties matched by {@link Matcher}.
  */
-@API(since = "0.6.2", status = Status.EXPERIMENTAL)
+@API(since = "0.6.2", status = Status.MAINTAINED)
 public final class TypedArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	private final MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector;
 

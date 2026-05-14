@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FailoverIntrospector implements ArbitraryIntrospector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FailoverIntrospector.class);
 

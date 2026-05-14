@@ -34,7 +34,6 @@ import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * {@code FixtureMonkey} → {@code ArbitraryBuilder} → {@code ObjectTree} → {@link CombinableArbitrary}

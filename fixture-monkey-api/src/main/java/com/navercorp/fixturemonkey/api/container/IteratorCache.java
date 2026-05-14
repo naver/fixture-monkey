@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
  * It is used for caching {@link Iterator}.
  * It is necessary for using the elements of {@link Iterator} because {@link Iterator} could only be retrieved once.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class IteratorCache {
 	private static final ConcurrentLruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new ConcurrentLruCache<>(2048);
 

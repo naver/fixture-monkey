@@ -57,7 +57,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
 @SuppressWarnings("UnusedReturnValue")
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaDefaultArbitraryGeneratorBuilder {
 	public static final ArbitraryIntrospector JAVA_INTROSPECTOR = new MatchArbitraryIntrospector(
 		Arrays.asList(

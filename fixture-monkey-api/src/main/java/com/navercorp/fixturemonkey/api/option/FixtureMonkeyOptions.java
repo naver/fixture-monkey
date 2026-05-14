@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.option;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,7 +85,6 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;

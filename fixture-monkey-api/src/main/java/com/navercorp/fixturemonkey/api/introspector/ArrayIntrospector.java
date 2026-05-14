@@ -33,7 +33,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ArrayIntrospector.class);
 

@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.jspecify.annotations.Nullable;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 

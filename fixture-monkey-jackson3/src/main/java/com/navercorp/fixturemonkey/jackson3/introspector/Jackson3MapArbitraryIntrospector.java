@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.jackson3.introspector;
 
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Map;
 

@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.type.TypeCache;
 /**
  * Generates JavaBeans properties which have getter method.
  */
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 public final class JavaBeansPropertyGenerator implements PropertyGenerator {
 	private final Predicate<PropertyDescriptor> propertyDescriptorPredicate;
 	private final Matcher matcher;

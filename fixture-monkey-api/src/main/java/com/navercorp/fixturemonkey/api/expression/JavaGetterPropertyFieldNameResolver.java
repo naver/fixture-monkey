@@ -22,10 +22,6 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class JavaGetterPropertyFieldNameResolver {
 	private static final String GET_PREFIX = "get";
 	private static final String IS_PREFIX = "is";

@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
  *
  * @see Instantiator
  */
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public interface FactoryMethodInstantiator<T> extends Instantiator {
 	String getFactoryMethodName();
 

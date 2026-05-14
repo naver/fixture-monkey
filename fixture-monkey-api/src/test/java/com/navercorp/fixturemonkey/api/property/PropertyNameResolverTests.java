@@ -17,13 +17,12 @@
  */
 package com.navercorp.fixturemonkey.api.property;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 

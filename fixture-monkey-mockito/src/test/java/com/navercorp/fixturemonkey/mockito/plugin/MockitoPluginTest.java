@@ -18,11 +18,12 @@
 
 package com.navercorp.fixturemonkey.mockito.plugin;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+
+import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
 

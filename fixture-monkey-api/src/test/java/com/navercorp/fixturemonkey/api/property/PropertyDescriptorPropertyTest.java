@@ -25,6 +25,7 @@ import java.beans.PropertyDescriptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.Test;
 
 class PropertyDescriptorPropertyTest {

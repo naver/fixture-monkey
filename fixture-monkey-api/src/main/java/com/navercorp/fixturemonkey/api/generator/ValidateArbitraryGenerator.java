@@ -57,7 +57,7 @@ import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+@API(since = "0.6.9", status = Status.MAINTAINED)
 public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 	private static final ZoneOffset ZONE_OFFSET = OffsetTime.now().getOffset();
 

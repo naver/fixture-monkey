@@ -38,7 +38,7 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public interface JavaArbitraryResolver {
 	default Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
 		return stringArbitrary;

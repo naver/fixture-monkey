@@ -33,7 +33,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class OptionalIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public boolean match(Property property) {

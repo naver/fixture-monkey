@@ -190,11 +190,13 @@ final class ValueProjectionAssembler {
 			if (isValueSet && hasChildValues) {
 				ValueCandidate nullCandidate = state.candidatesByPath.get(currentPath);
 				if (nullCandidate != null && nullCandidate.value == null) {
-					boolean hasActualChildCandidates = PathMatcher.hasChildCandidateValues(currentPath, state.candidatesByPath);
+					boolean hasActualChildCandidates =
+						PathMatcher.hasChildCandidateValues(currentPath, state.candidatesByPath);
 					if (!hasActualChildCandidates) {
 						return wrapValueWithFiltersAndCustomizers(null, currentPath, currentRawType, state);
 					}
-					if (PathMatcher.isNullSetAfterAllChildren(nullCandidate.order, currentPath, state.candidatesByPath)) {
+					if (PathMatcher.isNullSetAfterAllChildren(
+						nullCandidate.order, currentPath, state.candidatesByPath)) {
 						return wrapValueWithFiltersAndCustomizers(null, currentPath, currentRawType, state);
 					}
 				}
@@ -243,7 +245,8 @@ final class ValueProjectionAssembler {
 					}
 
 					// Root TypeSelector matched but field-level siblings exist → decompose and fall through
-					if (PathMatcher.isRootTypeSelector(bestPath) && PathMatcher.hasFieldLevelTypeSelectorSiblings(bestPath, state)) {
+					if (PathMatcher.isRootTypeSelector(bestPath)
+						&& PathMatcher.hasFieldLevelTypeSelectorSiblings(bestPath, state)) {
 						state.candidatesByPath.put(currentPath, bestCandidate.withValue(setValue));
 						isValueSet = true;
 					} else {
@@ -401,7 +404,8 @@ final class ValueProjectionAssembler {
 			Property nodeProperty = state.propertyByNode.computeIfAbsent(node, state.nodePropertyFactory);
 			TypeMetadataResolver.writeBackTypeMetadata(node, nodeProperty, state);
 
-			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(node, nodeProperty, state);
+			PropertyNameResolver nameResolver =
+				TypeMetadataResolver.resolveNameResolver(node, nodeProperty, state);
 
 			ObjectProperty objectProperty = new ObjectProperty(nodeProperty, nameResolver, node.getIndex());
 
@@ -414,7 +418,8 @@ final class ValueProjectionAssembler {
 				isCurrentTypeContainer,
 				nameResolver
 			);
-			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(node, nodeProperty, state).generate(nullInjectContext);
+			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(node, nodeProperty, state)
+				.generate(nullInjectContext);
 
 			// Primitive slots cannot hold null; the introspector would throw IllegalArgumentException
 			// when the array/setter writes the null produced by injectNull.
@@ -496,7 +501,8 @@ final class ValueProjectionAssembler {
 
 				Property childProperty = state.propertyByNode.computeIfAbsent(childNode, state.nodePropertyFactory);
 				TypeMetadataResolver.writeBackTypeMetadata(childNode, childProperty, state);
-				PropertyNameResolver childNameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
+				PropertyNameResolver childNameResolver =
+					TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 
 				ObjectProperty childObjectProperty = new ObjectProperty(
 					childProperty,
@@ -515,7 +521,9 @@ final class ValueProjectionAssembler {
 					childIsContainer,
 					childNameResolver
 				);
-				double childNullInject = TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state).generate(
+				double childNullInject =
+					TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state)
+					.generate(
 					childNullInjectContext
 				);
 
@@ -998,7 +1006,8 @@ final class ValueProjectionAssembler {
 			Property valueProperty = state.propertyByNode.computeIfAbsent(valueNode, state.nodePropertyFactory);
 
 			Property nodeProperty = state.propertyByNode.computeIfAbsent(mapEntryNode, state.nodePropertyFactory);
-			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(mapEntryNode, nodeProperty, state);
+			PropertyNameResolver nameResolver =
+				TypeMetadataResolver.resolveNameResolver(mapEntryNode, nodeProperty, state);
 
 			ObjectProperty objectProperty = new ObjectProperty(nodeProperty, nameResolver, mapEntryNode.getIndex());
 
@@ -1011,7 +1020,8 @@ final class ValueProjectionAssembler {
 				isContainer,
 				nameResolver
 			);
-			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(mapEntryNode, nodeProperty, state).generate(
+			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(mapEntryNode, nodeProperty, state)
+				.generate(
 				nullInjectContext
 			);
 
@@ -1369,7 +1379,8 @@ final class ValueProjectionAssembler {
 		try {
 			Property nodeProperty = state.propertyByNode.computeIfAbsent(node, state.nodePropertyFactory);
 			TypeMetadataResolver.writeBackTypeMetadata(node, nodeProperty, state);
-			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(node, nodeProperty, state);
+			PropertyNameResolver nameResolver =
+				TypeMetadataResolver.resolveNameResolver(node, nodeProperty, state);
 
 			ObjectProperty objectProperty = new ObjectProperty(nodeProperty, nameResolver, node.getIndex());
 
@@ -1380,7 +1391,8 @@ final class ValueProjectionAssembler {
 				isContainer,
 				nameResolver
 			);
-			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(node, nodeProperty, state).generate(nullInjectContext);
+			double nullInject = TypeMetadataResolver.resolveNullInjectGenerator(node, nodeProperty, state)
+				.generate(nullInjectContext);
 
 			// Primitive slots cannot hold null; the introspector would throw IllegalArgumentException
 			// when the array/setter writes the null produced by injectNull.
@@ -1423,7 +1435,8 @@ final class ValueProjectionAssembler {
 
 				Property childProperty = state.propertyByNode.computeIfAbsent(childNode, state.nodePropertyFactory);
 				TypeMetadataResolver.writeBackTypeMetadata(childNode, childProperty, state);
-				PropertyNameResolver childNameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
+				PropertyNameResolver childNameResolver =
+					TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 
 				ObjectProperty childObjectProperty = new ObjectProperty(
 					childProperty,
@@ -1442,7 +1455,9 @@ final class ValueProjectionAssembler {
 					childIsContainer,
 					childNameResolver
 				);
-				double childNullInject = TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state).generate(
+				double childNullInject =
+					TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state)
+					.generate(
 					childNullInjectContext
 				);
 
@@ -1566,7 +1581,8 @@ final class ValueProjectionAssembler {
 		AssemblyState state
 	) {
 		FixtureMonkeyOptions options = state.options;
-		PropertyNameResolver childNameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
+		PropertyNameResolver childNameResolver =
+			TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 
 		ObjectProperty childObjectProperty = new ObjectProperty(childProperty, childNameResolver, childNode.getIndex());
 
@@ -1581,7 +1597,8 @@ final class ValueProjectionAssembler {
 			childIsContainer,
 			childNameResolver
 		);
-		double childNullInject = TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state).generate(
+		double childNullInject = TypeMetadataResolver.resolveNullInjectGenerator(childNode, childProperty, state)
+			.generate(
 			childNullInjectContext
 		);
 
@@ -1614,7 +1631,8 @@ final class ValueProjectionAssembler {
 			return parentPath.index(index);
 		} else if (nodeName != null) {
 			Property childProperty = state.propertyByNode.computeIfAbsent(childNode, state.nodePropertyFactory);
-			PropertyNameResolver nameResolver = TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
+			PropertyNameResolver nameResolver =
+				TypeMetadataResolver.resolveNameResolver(childNode, childProperty, state);
 			String resolvedName = nameResolver.resolve(childProperty);
 
 			return parentPath.child(resolvedName);

@@ -23,6 +23,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 }

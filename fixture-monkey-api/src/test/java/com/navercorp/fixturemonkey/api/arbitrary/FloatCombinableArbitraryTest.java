@@ -22,7 +22,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 

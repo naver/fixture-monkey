@@ -209,7 +209,8 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 			Collections.emptyMap(),
 			Collections.emptyMap()
 		);
-		JvmNodeCandidateTree candidateTree = treeCache.getOrBuildCandidateTree(resolvedRootType, context, options, false);
+		JvmNodeCandidateTree candidateTree =
+			treeCache.getOrBuildCandidateTree(resolvedRootType, context, options, false);
 
 		PathResolverContext.Builder resolverContextBuilder = PathResolverContext.builder().resolutionListener(
 			resolutionListener

@@ -51,7 +51,7 @@ import com.navercorp.objectfarm.api.type.JvmTypes;
  * Generates properties representing constructor parameters.
  * It might be a field as well.
  */
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 public final class ConstructorParameterPropertyGenerator implements PropertyGenerator {
 	private final Function<Property, List<Constructor<?>>> constructorsSupplier;
 	private final Predicate<Constructor<?>> constructorPredicate;
@@ -131,7 +131,8 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			.collect(Collectors.toList());
 
 		List<String> resolvedParameterNames = resolvedParameterNames(parameterNamesByConstructor, inputParameterNames);
-		List<JvmType> resolvedTypes = resolveParameterJvmTypes(resolvedParameterJvmTypes, context.getInputParameterTypes());
+		List<JvmType> resolvedTypes =
+			resolveParameterJvmTypes(resolvedParameterJvmTypes, context.getInputParameterTypes());
 
 		Map<String, Field> fieldsByName = TypeCache.getFieldsByName(type);
 		boolean anyReceiverParameter = constructor.getAnnotatedReceiverType() != null

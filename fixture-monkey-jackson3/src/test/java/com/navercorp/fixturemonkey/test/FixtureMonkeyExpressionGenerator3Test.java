@@ -18,15 +18,15 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.Collections;
+
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Value;
-
-import java.util.Collections;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
@@ -53,7 +53,8 @@ public class FixtureMonkeyExpressionGenerator3Test {
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
 				DEFAULT_PROPERTY_GENERATOR.generateChildProperties(new RootProperty(
-					new TypeParameterProperty(Types.toJvmType(typeReference.getAnnotatedType(), Collections.emptyList()))
+					new TypeParameterProperty(
+						Types.toJvmType(typeReference.getAnnotatedType(), Collections.emptyList()))
 				))
 					.stream()
 					.filter(it -> "value".equals(it.getName()))

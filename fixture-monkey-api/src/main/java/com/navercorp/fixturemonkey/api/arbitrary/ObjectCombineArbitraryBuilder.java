@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class ObjectCombineArbitraryBuilder {
 	private final Map<ArbitraryProperty, CombinableArbitrary<?>> arbitraryListByArbitraryProperty;
 

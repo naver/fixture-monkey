@@ -19,14 +19,12 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;

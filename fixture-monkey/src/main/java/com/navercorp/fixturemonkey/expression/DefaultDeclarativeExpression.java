@@ -27,7 +27,6 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * Default implementation of {@link DeclarativeExpression}. Each builder call returns a new
  * instance carrying the accumulated {@link PathExpression}.
  */
-@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class DefaultDeclarativeExpression implements DeclarativeExpression {
 	private final PathExpression path;
 

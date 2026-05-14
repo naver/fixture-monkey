@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 /**
  * A property representing a method.
  */
-@API(since = "0.5.5", status = Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 public interface MethodProperty extends Property {
 	/**
 	 * Get the name of given method.

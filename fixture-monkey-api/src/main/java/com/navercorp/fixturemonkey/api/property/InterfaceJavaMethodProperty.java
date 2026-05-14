@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,13 +30,12 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * An interface method property for Java.
  */
-@API(since = "0.5.5", status = Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 public final class InterfaceJavaMethodProperty implements MethodProperty {
 	private final JvmType returnJvmType;
 	private final String name;

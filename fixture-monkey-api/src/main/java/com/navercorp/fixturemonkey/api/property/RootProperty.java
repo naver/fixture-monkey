@@ -7,7 +7,7 @@ import org.apiguardian.api.API.Status;
  * It is a property for a root type.
  * It does not support the equivalence of the type.
  */
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class RootProperty implements TreeRootProperty {
 	private final Property delgeatedProperty;
 

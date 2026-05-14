@@ -45,7 +45,7 @@ import com.navercorp.fixturemonkey.api.property.Traceable;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryGeneratorContext implements Traceable {
 	private final Property resolvedProperty;
 	private final ArbitraryProperty property;
@@ -130,7 +130,8 @@ public final class ArbitraryGeneratorContext implements Traceable {
 
 	public Map<ArbitraryProperty, CombinableArbitrary<?>> getCombinableArbitrariesByArbitraryProperty() {
 		// Preserve declaration order so downstream introspectors (e.g. KotlinConstructorArbitraryIntrospector
-		// fallback that walks values by position, BeanArbitraryIntrospector relaying into ObjectCombineArbitraryBuilder)
+		// fallback that walks values by position, BeanArbitraryIntrospector relaying into
+		// ObjectCombineArbitraryBuilder)
 		// see children in the same order they were registered. Collectors.toMap defaults to HashMap, which would
 		// surface entries in hash-bucket order and shift the random stream.
 		return new LinkedHashMap<>(arbitraryListByArbitraryProperty.getValue());

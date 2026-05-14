@@ -33,13 +33,11 @@ import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapContainerPropertyGenerator implements ContainerPropertyGenerator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapContainerPropertyGenerator.class);
-	private static final JvmType DEFAULT_ELEMENT_JVM_TYPE = new JavaType(String.class);
 
 	public static final MapContainerPropertyGenerator INSTANCE = new MapContainerPropertyGenerator();
 

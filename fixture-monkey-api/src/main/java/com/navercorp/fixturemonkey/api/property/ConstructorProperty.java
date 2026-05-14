@@ -35,7 +35,7 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.4.2", status = Status.EXPERIMENTAL)
+@API(since = "0.4.2", status = Status.MAINTAINED)
 public final class ConstructorProperty implements Property {
 	private final Property parameterProperty;
 	private final Constructor<?> constructor;

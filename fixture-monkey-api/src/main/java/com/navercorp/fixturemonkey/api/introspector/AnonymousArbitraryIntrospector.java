@@ -34,7 +34,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * It generates the anonymous object of interface which has no-argument methods.
@@ -45,7 +44,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
  * This avoids {@code NullPointerException} when default methods chain through abstract
  * wither/setter methods.
  */
-@API(since = "0.5.5", status = Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	public static final AnonymousArbitraryIntrospector INSTANCE = new AnonymousArbitraryIntrospector();
 

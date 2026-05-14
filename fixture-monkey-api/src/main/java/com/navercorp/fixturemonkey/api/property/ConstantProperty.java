@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "1.0.17", status = Status.EXPERIMENTAL)
+@API(since = "1.0.17", status = Status.MAINTAINED)
 public final class ConstantProperty implements Property {
 	private final JvmType jvmType;
 	@Nullable

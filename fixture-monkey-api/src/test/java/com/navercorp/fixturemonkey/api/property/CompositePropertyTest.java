@@ -25,9 +25,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
 import javax.annotation.CheckForNull;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.Test;
 
 class CompositePropertyTest {

@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;

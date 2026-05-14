@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
@@ -33,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;

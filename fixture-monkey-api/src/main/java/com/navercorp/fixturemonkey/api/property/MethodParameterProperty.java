@@ -25,15 +25,11 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 /**
  * It is deprecated.
  * Use {@link TypeNameProperty} instead.
  */
 @Deprecated
-@API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class MethodParameterProperty implements Property {
 	private final JvmType jvmType;
 	@Nullable
