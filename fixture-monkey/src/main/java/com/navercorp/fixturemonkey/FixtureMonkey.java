@@ -34,8 +34,8 @@ import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.adapter.AssemblyPlanner;
-import com.navercorp.fixturemonkey.adapter.tracing.AssemblyTracer;
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
@@ -52,7 +52,7 @@ import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
-import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
+import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.objectfarm.api.expression.PathExpression;

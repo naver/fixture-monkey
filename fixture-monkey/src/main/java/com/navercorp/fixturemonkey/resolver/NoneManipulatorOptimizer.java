@@ -23,7 +23,7 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.adapter.directive.PathDirective;
+import com.navercorp.fixturemonkey.customizer.PathDirective;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NoneManipulatorOptimizer implements ManipulatorOptimizer {

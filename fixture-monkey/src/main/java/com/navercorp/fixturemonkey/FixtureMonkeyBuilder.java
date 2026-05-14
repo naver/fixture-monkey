@@ -33,8 +33,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.adapter.AssemblyPlanner;
-import com.navercorp.fixturemonkey.adapter.tracing.AssemblyTracer;
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;

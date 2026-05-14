@@ -16,17 +16,24 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
-
-import java.util.List;
+package com.navercorp.fixturemonkey.plugin;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.PathDirective;
-
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<PathDirective> manipulators);
+/**
+ * Determines whether a given type is a leaf type that should not be expanded further.
+ * <p>
+ * Leaf types (e.g. Java standard library types, Kotlin standard types) are terminal nodes
+ * in the object tree and their internal fields should not be traversed.
+ */
+@API(since = "1.1.17", status = Status.EXPERIMENTAL)
+public interface LeafTypeRegistry {
+	/**
+	 * Checks whether the given type is a leaf type.
+	 *
+	 * @param type the class to check
+	 * @return true if the type is a leaf type
+	 */
+	boolean isLeafType(Class<?> type);
 }

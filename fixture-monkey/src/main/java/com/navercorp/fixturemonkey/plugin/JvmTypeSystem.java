@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.plugin;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.adapter.AssemblyPlanner;
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
 
 /**
  * Narrow SPI handed to {@link JvmTypeSystemPlugin#configure} that exposes only the

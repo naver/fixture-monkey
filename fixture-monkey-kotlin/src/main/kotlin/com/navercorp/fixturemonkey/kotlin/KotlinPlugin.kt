@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
-import com.navercorp.fixturemonkey.adapter.AssemblyPlanner
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.MatchPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator

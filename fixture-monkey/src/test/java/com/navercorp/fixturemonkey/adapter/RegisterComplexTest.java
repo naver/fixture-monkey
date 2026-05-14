@@ -30,7 +30,7 @@ import net.jqwik.api.Arbitraries;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.adapter.tracing.AssemblyTracer;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DeepObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DoubleNestedStringListWrapper;
