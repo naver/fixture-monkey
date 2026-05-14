@@ -24,13 +24,13 @@ import java.util.Random;
 
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
-import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.SeedSnapshot;

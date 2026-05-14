@@ -21,40 +21,28 @@ package com.navercorp.fixturemonkey.projection;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.BaseStream;
 
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
-import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.TraceableCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.option.InterfaceSelectionStrategy;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
@@ -67,10 +55,10 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
-import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
-import com.navercorp.objectfarm.api.input.ObjectValueExtractor;
 import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JvmMapEntryNode;
 import com.navercorp.objectfarm.api.node.JvmMapNode;
@@ -602,7 +590,6 @@ final class ValueProjectionAssembler {
 			} else {
 				result = options.getDefaultArbitraryGenerator().generate(context);
 			}
-
 
 			result = applyFilters(result, currentPath, currentRawType, state);
 			result = applyCustomizers(result, currentPath, state);

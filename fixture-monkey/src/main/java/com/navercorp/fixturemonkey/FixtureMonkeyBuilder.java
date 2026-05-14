@@ -33,9 +33,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
-import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
-import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -65,9 +62,12 @@ import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalFixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
+import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.seed.SeedFileLoader;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)

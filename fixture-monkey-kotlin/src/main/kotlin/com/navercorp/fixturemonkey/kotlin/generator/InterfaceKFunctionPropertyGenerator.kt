@@ -22,7 +22,6 @@ import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPr
 import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
-import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName

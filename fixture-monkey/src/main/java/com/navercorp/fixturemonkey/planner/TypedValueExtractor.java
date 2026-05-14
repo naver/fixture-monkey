@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.customizer.JustDirective;
@@ -36,9 +38,6 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 /**
  * Extracts typed values from {@link PathDirective}s and converts them to path expressions.
  * <p>

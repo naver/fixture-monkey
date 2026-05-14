@@ -35,21 +35,20 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JvmContainerNodeGenerator;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
-import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**

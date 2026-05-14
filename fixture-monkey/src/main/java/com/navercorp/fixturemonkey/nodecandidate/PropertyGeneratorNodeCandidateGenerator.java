@@ -18,26 +18,23 @@
 
 package com.navercorp.fixturemonkey.nodecandidate;
 
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.ConstructorProperty;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.nodecandidate.ConstructorParamCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.FieldAccessCreationMethod;
@@ -45,7 +42,6 @@ import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.MethodInvocationCreationMethod;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**

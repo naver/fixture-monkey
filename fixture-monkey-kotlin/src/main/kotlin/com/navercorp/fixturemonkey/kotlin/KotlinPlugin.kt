@@ -51,7 +51,6 @@ import com.navercorp.fixturemonkey.kotlin.node.KotlinNodeCandidateGenerator
 import com.navercorp.fixturemonkey.kotlin.node.KotlinNodePromoters
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.KotlinNullabilityUtils
-import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType

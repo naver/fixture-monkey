@@ -27,11 +27,11 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.customizer.PathDirective;
-import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.customizer.PathDirective;
+import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)

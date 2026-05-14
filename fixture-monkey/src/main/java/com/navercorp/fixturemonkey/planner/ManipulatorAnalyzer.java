@@ -18,13 +18,13 @@
 
 package com.navercorp.fixturemonkey.planner;
 
-import static com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
-import static com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
 import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
 import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
 import static com.navercorp.fixturemonkey.api.type.Types.isBoxedPrimitive;
 import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
 import static com.navercorp.fixturemonkey.api.type.Types.toJvmType;
+import static com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
+import static com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
 
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
@@ -47,24 +47,24 @@ import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.customizer.CustomizerDirective;
 import com.navercorp.fixturemonkey.customizer.FilterDirective;
 import com.navercorp.fixturemonkey.customizer.JustDirective;
 import com.navercorp.fixturemonkey.customizer.LazyDirective;
 import com.navercorp.fixturemonkey.customizer.NullityDirective;
+import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SetDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.tracing.ResolutionTrace;
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
-import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.property.FieldProperty;
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.Values;
+import com.navercorp.fixturemonkey.tracing.ResolutionTrace;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.ExtractedField;

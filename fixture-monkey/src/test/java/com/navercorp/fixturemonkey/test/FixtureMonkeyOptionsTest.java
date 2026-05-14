@@ -24,7 +24,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
-import java.lang.reflect.AnnotatedType;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,9 +37,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Test;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import org.junit.jupiter.api.Test;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
@@ -69,7 +69,6 @@ import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteStringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneValue;
@@ -856,7 +855,6 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).isEqualTo("test");
 	}
-
 
 	@Test
 	void nullableElement() {

@@ -30,9 +30,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.planner.RuntimeTreeFactory;
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
-import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext;
@@ -40,6 +37,9 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.option.InterfaceSelectionStrategy;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.planner.RuntimeTreeFactory;
+import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 

@@ -25,9 +25,6 @@ import org.apiguardian.api.API
 import org.slf4j.LoggerFactory
 import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KProperty
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.javaField
-import kotlin.reflect.jvm.javaMethod
 
 @API(since = "0.4.0", status = API.Status.MAINTAINED)
 data class KPropertyProperty(

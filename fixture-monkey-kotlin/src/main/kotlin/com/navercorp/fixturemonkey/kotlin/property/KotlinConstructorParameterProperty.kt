@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.Types
-import com.navercorp.fixturemonkey.kotlin.type.actualType
-import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import com.navercorp.objectfarm.api.type.JvmType
 import java.lang.reflect.AnnotatedType
 import java.util.Optional

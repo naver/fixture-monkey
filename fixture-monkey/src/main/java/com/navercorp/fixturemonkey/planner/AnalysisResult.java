@@ -25,20 +25,19 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.tracing.ResolutionTrace;
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 /**
  * Result of analyzing a list of {@link com.navercorp.fixturemonkey.customizer.PathDirective}s.
  * <p>

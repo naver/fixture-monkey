@@ -25,7 +25,6 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
-import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.KotlinConstructorParameterPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda

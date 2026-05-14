@@ -33,8 +33,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.jqwik.api.Arbitraries;
 import org.junit.jupiter.api.Test;
+
+import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;

@@ -24,7 +24,6 @@ import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
-import java.lang.reflect.ParameterizedType
 import java.time.Instant
 import java.util.Collections
 import javax.annotation.Nullable
@@ -36,9 +35,11 @@ class KotlinPropertyCacheTest {
         val typeReference = object : TypeReference<SampleValue>() {}
 
         // when
-        val actual = getMemberProperties(RootProperty(
-            TypeParameterProperty(Types.toJvmType(typeReference.annotatedType, Collections.emptyList()))
-        ))
+        val actual = getMemberProperties(
+            RootProperty(
+                TypeParameterProperty(Types.toJvmType(typeReference.annotatedType, Collections.emptyList()))
+            )
+        )
 
         then(actual).hasSize(1)
         then(actual[0].jvmType.rawType).isEqualTo(String::class.java)
@@ -54,9 +55,11 @@ class KotlinPropertyCacheTest {
         val typeReference = object : TypeReference<GenericSample<String>>() {}
 
         // when
-        val actual = getMemberProperties(RootProperty(
-            TypeParameterProperty(Types.toJvmType(typeReference.annotatedType, Collections.emptyList()))
-        ))
+        val actual = getMemberProperties(
+            RootProperty(
+                TypeParameterProperty(Types.toJvmType(typeReference.annotatedType, Collections.emptyList()))
+            )
+        )
 
         then(actual).hasSize(6)
         val sorted = actual.sortedBy { it.name }

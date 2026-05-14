@@ -24,25 +24,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.planner.AssemblyPlan;
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.customizer.JustDirective;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SetDirective;
+import com.navercorp.fixturemonkey.customizer.SizeDirective;
+import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.planner.AssemblyPlan;
 import com.navercorp.fixturemonkey.projection.LazyValueHolder;
 import com.navercorp.fixturemonkey.projection.ValueProjection;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 /**
  * Builds the resolution trace from collected data and invokes the tracer.
  */

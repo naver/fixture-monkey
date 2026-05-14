@@ -22,13 +22,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 /**
  * Holds a LazyArbitrary for deferred evaluation during assembly.
  * This allows lazy values to participate in the type-based priority mechanism.
