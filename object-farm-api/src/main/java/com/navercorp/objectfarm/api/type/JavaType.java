@@ -102,7 +102,10 @@ public final class JavaType implements JvmType {
 		Type type = annotatedType.getType();
 		if (type instanceof GenericArrayType) {
 			Type genericComponentType = ((GenericArrayType)type).getGenericComponentType();
-			return new JavaType(Types.toTypeReference(Types.generateAnnotatedTypeWithoutAnnotation(genericComponentType)));
+			return new JavaType(
+				Types.toTypeReference(Types.generateAnnotatedTypeWithoutAnnotation(genericComponentType)
+				)
+			);
 		}
 		if (rawType.isArray()) {
 			return new JavaType(rawType.getComponentType());

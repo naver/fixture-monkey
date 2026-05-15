@@ -32,8 +32,7 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 public abstract class Jackson3Annotations {
-	@Nullable
-	public static <T extends Annotation> T getJacksonAnnotation(Property property, Class<T> annotationClass) {
+	public static @Nullable <T extends Annotation> T getJacksonAnnotation(Property property, Class<T> annotationClass) {
 		T propertyAnnotation = property.getAnnotation(annotationClass).orElse(null);
 		if (propertyAnnotation != null) {
 			return propertyAnnotation;

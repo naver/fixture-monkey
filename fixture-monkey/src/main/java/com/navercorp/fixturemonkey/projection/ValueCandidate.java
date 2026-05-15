@@ -13,8 +13,7 @@ import org.jspecify.annotations.Nullable;
  * decomposed paths are recorded in TraceContext.decomposedPaths.
  */
 final class ValueCandidate {
-	@Nullable
-	final Object value;
+	final @Nullable Object value;
 	final ValueOrder order;
 
 	ValueCandidate(@Nullable Object value, ValueOrder order) {
