@@ -85,10 +85,8 @@ public final class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private boolean experimentalFileSeedEnabled = false;
 	private long seed = System.nanoTime();
-	@Nullable
-	private AssemblyPlanner assemblyPlanner;
-	@Nullable
-	private AssemblyTracer tracer;
+	private @Nullable AssemblyPlanner assemblyPlanner;
+	private @Nullable AssemblyTracer tracer;
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);

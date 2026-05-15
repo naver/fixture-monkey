@@ -99,8 +99,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 	// Tracks the global Random instance used for the most recent adapt() call.
 	// When Randoms.newGlobalSeed() creates a new instance (e.g. via @Seed), reference inequality
 	// triggers a SeedState reset so seeded reruns produce deterministic container sizes.
-	@Nullable
-	private Random lastSeenRandom;
+	private @Nullable Random lastSeenRandom;
 
 	// Performance optimization cache for (JvmNodeContext, JvmNodeCandidateTree) — keyed by (type, options identity).
 	// NOTE: AssemblyPlan/JvmNodeTree are NOT cached because container sizes must vary on each call.
