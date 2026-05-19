@@ -30,8 +30,8 @@ import org.apiguardian.api.API;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * It is a property for a fixed single element of a container. ex, Optional, Function, Supplier
@@ -75,7 +75,7 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 		if (base.getAnnotations().equals(annotations)) {
 			return base;
 		}
-		return new JavaType(
+		return new ReflectiveJvmType(
 			base.getRawType(),
 			base.getTypeVariables(),
 			annotations,

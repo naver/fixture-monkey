@@ -26,11 +26,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-class JavaTypeTest {
+class ReflectiveJvmTypeTest {
 	@Test
 	void componentType_isNullForNonArrayType() {
 		// given
-		JvmType type = new JavaType(new ObjectTypeReference<List<String>>() {
+		JvmType type = new ReflectiveJvmType(new ObjectTypeReference<List<String>>() {
 		});
 
 		// then
@@ -40,7 +40,7 @@ class JavaTypeTest {
 	@Test
 	void componentType_preservesRawComponentForPlainArrayClass() {
 		// given
-		JvmType type = new JavaType(String[].class);
+		JvmType type = new ReflectiveJvmType(String[].class);
 
 		// when
 		JvmType componentType = type.getComponentType();
@@ -53,7 +53,7 @@ class JavaTypeTest {
 	@Test
 	void componentType_preservesGenericsForGenericArrayType() {
 		// given
-		JvmType arrayType = new JavaType(new ObjectTypeReference<List<String>[]>() {
+		JvmType arrayType = new ReflectiveJvmType(new ObjectTypeReference<List<String>[]>() {
 		});
 
 		// when
@@ -70,7 +70,7 @@ class JavaTypeTest {
 	@Test
 	void componentType_preservesNestedGenericsForGenericArrayType() {
 		// given
-		JvmType arrayType = new JavaType(new ObjectTypeReference<Map<String, Integer>[]>() {
+		JvmType arrayType = new ReflectiveJvmType(new ObjectTypeReference<Map<String, Integer>[]>() {
 		});
 
 		// when
@@ -88,14 +88,14 @@ class JavaTypeTest {
 	@Test
 	void componentType_explicitlyProvided_isStoredAndReturned() {
 		// given
-		JvmType explicitComponent = new JavaType(
+		JvmType explicitComponent = new ReflectiveJvmType(
 			List.class,
-			Collections.singletonList(new JavaType(Integer.class)),
+			Collections.singletonList(new ReflectiveJvmType(Integer.class)),
 			Collections.emptyList()
 		);
 
 		// when
-		JvmType arrayType = new JavaType(
+		JvmType arrayType = new ReflectiveJvmType(
 			List[].class,
 			Collections.emptyList(),
 			Collections.emptyList(),
@@ -110,24 +110,24 @@ class JavaTypeTest {
 	@Test
 	void equals_considersComponentType() {
 		// given
-		JvmType componentA = new JavaType(
+		JvmType componentA = new ReflectiveJvmType(
 			List.class,
-			Collections.singletonList(new JavaType(String.class)),
+			Collections.singletonList(new ReflectiveJvmType(String.class)),
 			Collections.emptyList()
 		);
-		JvmType componentB = new JavaType(
+		JvmType componentB = new ReflectiveJvmType(
 			List.class,
-			Collections.singletonList(new JavaType(Integer.class)),
+			Collections.singletonList(new ReflectiveJvmType(Integer.class)),
 			Collections.emptyList()
 		);
-		JvmType arrayA = new JavaType(
+		JvmType arrayA = new ReflectiveJvmType(
 			List[].class,
 			Collections.emptyList(),
 			Collections.emptyList(),
 			componentA,
 			null
 		);
-		JvmType arrayB = new JavaType(
+		JvmType arrayB = new ReflectiveJvmType(
 			List[].class,
 			Collections.emptyList(),
 			Collections.emptyList(),

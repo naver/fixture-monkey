@@ -10,7 +10,7 @@ import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
-import com.navercorp.objectfarm.api.type.JavaType
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType
 import com.navercorp.objectfarm.api.type.JvmType
 import java.lang.reflect.Field
 import kotlin.reflect.KFunction1
@@ -489,7 +489,7 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
                 property.returnType.isMarkedNullable,
             )
         } else {
-            JavaType(Types.UnidentifiableType::class.java)
+            ReflectiveJvmType(Types.UnidentifiableType::class.java)
         }
     }
 
@@ -531,7 +531,7 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
         if (fieldAnnotatedType != null) {
             Types.toJvmType(fieldAnnotatedType, getAnnotations(), getter.returnType.isMarkedNullable)
         } else {
-            JavaType(type, emptyList(), getAnnotations(), getter.returnType.isMarkedNullable)
+            ReflectiveJvmType(type, emptyList(), getAnnotations(), getter.returnType.isMarkedNullable)
         }
     }
 

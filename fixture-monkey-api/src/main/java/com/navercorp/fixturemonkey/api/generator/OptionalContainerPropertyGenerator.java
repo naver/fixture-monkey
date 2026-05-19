@@ -31,16 +31,16 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class OptionalContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final OptionalContainerPropertyGenerator INSTANCE = new OptionalContainerPropertyGenerator();
 
-	private static final JvmType INTEGER_TYPE = new JavaType(Integer.class);
-	private static final JvmType LONG_TYPE = new JavaType(Long.class);
-	private static final JvmType DOUBLE_TYPE = new JavaType(Double.class);
+	private static final JvmType INTEGER_TYPE = new ReflectiveJvmType(Integer.class);
+	private static final JvmType LONG_TYPE = new ReflectiveJvmType(Long.class);
+	private static final JvmType DOUBLE_TYPE = new ReflectiveJvmType(Double.class);
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
 
 	@Override

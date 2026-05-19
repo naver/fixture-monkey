@@ -32,7 +32,7 @@ import org.jspecify.annotations.Nullable;
 public abstract class JvmTypes {
 	public static JvmType resolveJvmType(JvmType parentType, Type type, List<Annotation> annotations) {
 		if (!Types.isGenericType(type)) {
-			return new JavaType(Types.getActualType(type), Collections.emptyList(), annotations);
+			return new ReflectiveJvmType(Types.getActualType(type), Collections.emptyList(), annotations);
 		}
 
 		if (type instanceof TypeVariable) {
@@ -46,7 +46,7 @@ public abstract class JvmTypes {
 					merged.add(annotation);
 				}
 			}
-			return new JavaType(
+			return new ReflectiveJvmType(
 				resolved.getRawType(),
 				resolved.getTypeVariables(),
 				merged,
@@ -56,7 +56,7 @@ public abstract class JvmTypes {
 
 		List<JvmType> typeArguments = resolveTypeArguments(parentType, type);
 
-		return new JavaType(
+		return new ReflectiveJvmType(
 			Types.getActualType(type),
 			typeArguments,
 			annotations
@@ -103,7 +103,7 @@ public abstract class JvmTypes {
 		if (!parentTypeVariables.isEmpty()) {
 			return parentTypeVariables.get(0);
 		}
-		return new JavaType(Object.class);
+		return new ReflectiveJvmType(Object.class);
 	}
 
 	@Nullable
@@ -166,9 +166,9 @@ public abstract class JvmTypes {
 		for (int i = 0; i < declaredVars.length && i < actualArgs.length; i++) {
 			if (declaredVars[i].getName().equals(typeVariable.getName())) {
 				if (actualArgs[i] instanceof Class<?>) {
-					return new JavaType((Class<?>)actualArgs[i]);
+					return new ReflectiveJvmType((Class<?>)actualArgs[i]);
 				}
-				return new JavaType(Types.getActualType(actualArgs[i]));
+				return new ReflectiveJvmType(Types.getActualType(actualArgs[i]));
 			}
 		}
 		return null;
@@ -228,10 +228,10 @@ public abstract class JvmTypes {
 		if (type instanceof ParameterizedType) {
 			Class<?> rawType = Types.getActualType(type);
 			List<JvmType> typeArguments = resolveTypeArguments(parentType, type);
-			return new JavaType(rawType, typeArguments, Collections.emptyList());
+			return new ReflectiveJvmType(rawType, typeArguments, Collections.emptyList());
 		}
 
-		return new JavaType(Types.getActualType(type));
+		return new ReflectiveJvmType(Types.getActualType(type));
 	}
 
 	/**
@@ -240,18 +240,18 @@ public abstract class JvmTypes {
 	private static JvmType resolveErasedType(Type type, @Nullable JvmType parentTypeVar) {
 		if (type instanceof TypeVariable) {
 			if (parentTypeVar == null) {
-				return new JavaType(Object.class);
+				return new ReflectiveJvmType(Object.class);
 			}
 			return parentTypeVar;
 		}
 
 		if (type instanceof ParameterizedType) {
 			Class<?> rawType = Types.getActualType(type);
-			JvmType dummyParent = new JavaType(Object.class);
+			JvmType dummyParent = new ReflectiveJvmType(Object.class);
 			List<JvmType> typeArguments = resolveTypeArguments(dummyParent, type);
-			return new JavaType(rawType, typeArguments, Collections.emptyList());
+			return new ReflectiveJvmType(rawType, typeArguments, Collections.emptyList());
 		}
 
-		return new JavaType(Types.getActualType(type));
+		return new ReflectiveJvmType(Types.getActualType(type));
 	}
 }

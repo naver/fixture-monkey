@@ -27,8 +27,8 @@ import java.util.OptionalLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * A {@link JvmContainerNodeGenerator} implementation for generating element nodes
@@ -92,13 +92,13 @@ public final class JavaSingleElementContainerNodeGenerator implements JvmContain
 	private JvmType getElementType(JvmType containerType, Class<?> rawType) {
 		// OptionalInt, OptionalLong, OptionalDouble have fixed element types
 		if (OptionalInt.class.isAssignableFrom(rawType)) {
-			return new JavaType(Integer.class);
+			return new ReflectiveJvmType(Integer.class);
 		}
 		if (OptionalLong.class.isAssignableFrom(rawType)) {
-			return new JavaType(Long.class);
+			return new ReflectiveJvmType(Long.class);
 		}
 		if (OptionalDouble.class.isAssignableFrom(rawType)) {
-			return new JavaType(Double.class);
+			return new ReflectiveJvmType(Double.class);
 		}
 
 		// Supplier<T> and Optional<T> - extract T from type variables
@@ -109,6 +109,6 @@ public final class JavaSingleElementContainerNodeGenerator implements JvmContain
 		}
 
 		// Fallback to Object if no type variable is present
-		return new JavaType(Object.class);
+		return new ReflectiveJvmType(Object.class);
 	}
 }

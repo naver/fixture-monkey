@@ -60,9 +60,9 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ObjectTypeReference;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public abstract class Types {
@@ -624,14 +624,14 @@ public abstract class Types {
 
 		List<JvmType> generics = Types.getGenericsTypes(annotatedType).stream()
 			.map(
-				genericAnnotatedType -> (JvmType)new JavaType(new ObjectTypeReference<Object>() {
+				genericAnnotatedType -> (JvmType)new ReflectiveJvmType(new ObjectTypeReference<Object>() {
 					@Override
 					public AnnotatedType getAnnotatedType() {
 						return genericAnnotatedType;
 					}
 				}))
 			.collect(Collectors.toList());
-		return new JavaType(
+		return new ReflectiveJvmType(
 			rawType,
 			generics,
 			concatAnnotations,

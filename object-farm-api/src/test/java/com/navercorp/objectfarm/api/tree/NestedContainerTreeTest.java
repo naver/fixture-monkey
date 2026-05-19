@@ -19,14 +19,14 @@ import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class NestedContainerTreeTest {
 	@Test
 	void stringValueCandidateTreeHasValueField() {
 		// Given
 		JavaNodeContext context = createContext();
-		JavaType stringValueType = new JavaType(StringValue.class);
+		ReflectiveJvmType stringValueType = new ReflectiveJvmType(StringValue.class);
 
 		// When
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(stringValueType, context)
@@ -46,7 +46,7 @@ class NestedContainerTreeTest {
 		// Given
 		JavaNodeContext context = createContext();
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType rootType = new JavaType(NestedStringListHolder.class);
+		ReflectiveJvmType rootType = new ReflectiveJvmType(NestedStringListHolder.class);
 
 		// Build candidate tree
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(rootType, context)

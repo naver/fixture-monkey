@@ -33,7 +33,7 @@ import com.navercorp.objectfarm.api.node.specs.InterfaceSpecs.Interface;
 import com.navercorp.objectfarm.api.node.specs.InterfaceSpecs.InterfaceWithField;
 import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Tests for JvmNodeCandidateTree.
@@ -56,7 +56,7 @@ class JvmNodeCandidateTreeTest {
 		.interfaceResolver(
 			jvmType -> {
 				if (jvmType.getRawType() == Interface.class) {
-					return new JavaType(InterfaceWithField.class);
+					return new ReflectiveJvmType(InterfaceWithField.class);
 				}
 				return jvmType;
 			}
@@ -66,7 +66,9 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void getChildrenWithExistingParentShouldReturnChildren() {
 		// given
-		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new JavaType(String.class), CONTEXT).build();
+		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(String.class), CONTEXT
+		).build();
 
 		// when
 		List<JvmNodeCandidate> children = tree.getChildren(tree.getRootNode());
@@ -78,7 +80,9 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void constructorWithRootNodeShouldCreateTree() {
 		// given & when
-		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new JavaType(String.class), CONTEXT).build();
+		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(String.class), CONTEXT
+		).build();
 
 		// then
 		then(tree).isNotNull();
@@ -89,7 +93,9 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void containsWithExistingNodeShouldReturnTrue() {
 		// given
-		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new JavaType(String.class), CONTEXT).build();
+		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(String.class), CONTEXT
+		).build();
 
 		// when & then
 		then(tree.contains(tree.getRootNode())).isTrue();
@@ -98,8 +104,12 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void containsWithNonExistingNodeShouldReturnFalse() {
 		// given
-		JavaNodeCandidate rootNode = new JavaNodeCandidate(new JavaType(String.class), "root");
-		JavaNodeCandidate otherNode = new JavaNodeCandidate(new JavaType(Integer.class), "other");
+		JavaNodeCandidate rootNode = new JavaNodeCandidate(
+			new ReflectiveJvmType(String.class), "root"
+		);
+		JavaNodeCandidate otherNode = new JavaNodeCandidate(
+			new ReflectiveJvmType(Integer.class), "other"
+		);
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(rootNode, CONTEXT).build();
 
 		// when & then
@@ -110,7 +120,11 @@ class JvmNodeCandidateTreeTest {
 	void treeWithListTypeShouldBeLeafNode() {
 		// given - Container types are leaf nodes in JvmNodeCandidateTree
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
-			new JavaType(List.class, Collections.singletonList(new JavaType(String.class)), Collections.emptyList()),
+			new ReflectiveJvmType(
+				List.class,
+				Collections.singletonList(new ReflectiveJvmType(String.class)),
+				Collections.emptyList()
+			),
 			CONTEXT
 		).build();
 
@@ -124,7 +138,9 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void treeWithArrayTypeShouldBeLeafNode() {
 		// given - Container types are leaf nodes in JvmNodeCandidateTree
-		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new JavaType(String[].class), CONTEXT).build();
+		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(String[].class), CONTEXT
+		).build();
 
 		// when
 		List<JvmNodeCandidate> children = tree.getChildren(tree.getRootNode());
@@ -137,8 +153,14 @@ class JvmNodeCandidateTreeTest {
 	void treeWithMapTypeShouldBeLeafNode() {
 		// given - Container types are leaf nodes in JvmNodeCandidateTree
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
-			new JavaType(Map.class, java.util.Arrays.asList(new JavaType(String.class), new JavaType(Integer.class)),
-				Collections.emptyList()),
+			new ReflectiveJvmType(
+				Map.class,
+				java.util.Arrays.asList(
+					new ReflectiveJvmType(String.class),
+					new ReflectiveJvmType(Integer.class)
+				),
+				Collections.emptyList()
+			),
 			CONTEXT
 		).build();
 
@@ -152,7 +174,9 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void treeWithCustomClassShouldGenerateFieldCandidates() {
 		// given
-		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new JavaType(TestClass.class), CONTEXT).build();
+		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(TestClass.class), CONTEXT
+		).build();
 
 		// when
 		List<JvmNodeCandidate> children = tree.getChildren(tree.getRootNode());
@@ -164,7 +188,9 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void getChildrenWithNullParentShouldReturnEmptyList() {
 		// given
-		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new JavaType(String.class), CONTEXT).build();
+		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(String.class), CONTEXT
+		).build();
 
 		// when
 		List<JvmNodeCandidate> children = tree.getChildren(null);
@@ -177,7 +203,7 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void treeWithPrimitiveTypeShouldNotGenerateChildren() {
 		// given
-		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new JavaType(int.class), CONTEXT).build();
+		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(new ReflectiveJvmType(int.class), CONTEXT).build();
 
 		// when
 		List<JvmNodeCandidate> children = tree.getChildren(tree.getRootNode());
@@ -190,7 +216,7 @@ class JvmNodeCandidateTreeTest {
 	void selfReferenceClassShouldHaveExactlyTwoNodes() {
 		// given & when
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SelfReferenceClass.class), CONTEXT
+			new ReflectiveJvmType(SelfReferenceClass.class), CONTEXT
 		).build();
 
 		// then
@@ -208,7 +234,7 @@ class JvmNodeCandidateTreeTest {
 	void mutualReferenceClassesShouldDetectCycle() {
 		// given & when
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
-			new JavaType(ClassA.class), CONTEXT
+			new ReflectiveJvmType(ClassA.class), CONTEXT
 		).build();
 
 		// then
@@ -232,7 +258,7 @@ class JvmNodeCandidateTreeTest {
 	void threeWayCircularReferenceShouldDetectCycle() {
 		// given & when
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(
-			new JavaType(ClassX.class), CONTEXT
+			new ReflectiveJvmType(ClassX.class), CONTEXT
 		).build();
 
 		// then
@@ -243,7 +269,7 @@ class JvmNodeCandidateTreeTest {
 	void treeWithTreeContextShouldCacheSubtree() {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType userType = new JavaType(TestUser.class);
+		ReflectiveJvmType userType = new ReflectiveJvmType(TestUser.class);
 
 		// when
 		JvmNodeCandidateTree tree = new JvmNodeCandidateTree.Builder(userType, CONTEXT)
@@ -258,7 +284,7 @@ class JvmNodeCandidateTreeTest {
 	void secondTreeWithSameTypeShouldUseCachedSubtree() {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType addressType = new JavaType(TestAddress.class);
+		ReflectiveJvmType addressType = new ReflectiveJvmType(TestAddress.class);
 
 		new JvmNodeCandidateTree.Builder(addressType, CONTEXT)
 			.withTreeContext(treeContext)
@@ -279,10 +305,10 @@ class JvmNodeCandidateTreeTest {
 	void isCachedShouldReturnTrueForCachedType() {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType addressType = new JavaType(TestAddress.class);
+		ReflectiveJvmType addressType = new ReflectiveJvmType(TestAddress.class);
 
 		// when
-		new JvmNodeCandidateTree.Builder(new JavaType(TestUser.class), CONTEXT)
+		new JvmNodeCandidateTree.Builder(new ReflectiveJvmType(TestUser.class), CONTEXT)
 			.withTreeContext(treeContext)
 			.build();
 
@@ -295,7 +321,7 @@ class JvmNodeCandidateTreeTest {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
 
-		new JvmNodeCandidateTree.Builder(new JavaType(TestUser.class), CONTEXT)
+		new JvmNodeCandidateTree.Builder(new ReflectiveJvmType(TestUser.class), CONTEXT)
 			.withTreeContext(treeContext)
 			.build();
 
@@ -311,7 +337,7 @@ class JvmNodeCandidateTreeTest {
 	@Test
 	void sameTypeProducesSameDeterministicTree() {
 		// given - Trees for the same type should be identical
-		JavaType userType = new JavaType(TestUser.class);
+		ReflectiveJvmType userType = new ReflectiveJvmType(TestUser.class);
 
 		// when
 		JvmNodeCandidateTree tree1 = new JvmNodeCandidateTree.Builder(userType, CONTEXT).build();
@@ -325,9 +351,9 @@ class JvmNodeCandidateTreeTest {
 	void preBuildResolvedTypesShouldCacheContainerElementTypes() {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType listOfAddressType = new JavaType(
+		ReflectiveJvmType listOfAddressType = new ReflectiveJvmType(
 			List.class,
-			Collections.singletonList(new JavaType(TestAddress.class)),
+			Collections.singletonList(new ReflectiveJvmType(TestAddress.class)),
 			Collections.emptyList()
 		);
 
@@ -338,14 +364,14 @@ class JvmNodeCandidateTreeTest {
 			.build();
 
 		// then - TestAddress should be pre-built and cached
-		then(treeContext.isCached(new JavaType(TestAddress.class))).isTrue();
+		then(treeContext.isCached(new ReflectiveJvmType(TestAddress.class))).isTrue();
 	}
 
 	@Test
 	void preBuildResolvedTypesShouldCacheInterfaceImplementationTypes() {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType interfaceType = new JavaType(Interface.class);
+		ReflectiveJvmType interfaceType = new ReflectiveJvmType(Interface.class);
 
 		// when - build with pre-build enabled
 		new JvmNodeCandidateTree.Builder(interfaceType, CONTEXT)
@@ -354,16 +380,16 @@ class JvmNodeCandidateTreeTest {
 			.build();
 
 		// then - InterfaceWithField (the implementation) should be pre-built and cached
-		then(treeContext.isCached(new JavaType(InterfaceWithField.class))).isTrue();
+		then(treeContext.isCached(new ReflectiveJvmType(InterfaceWithField.class))).isTrue();
 	}
 
 	@Test
 	void preBuildResolvedTypesDisabledShouldNotCacheElementTypes() {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType listOfAddressType = new JavaType(
+		ReflectiveJvmType listOfAddressType = new ReflectiveJvmType(
 			List.class,
-			Collections.singletonList(new JavaType(TestAddress.class)),
+			Collections.singletonList(new ReflectiveJvmType(TestAddress.class)),
 			Collections.emptyList()
 		);
 
@@ -374,16 +400,16 @@ class JvmNodeCandidateTreeTest {
 			.build();
 
 		// then - TestAddress should NOT be cached
-		then(treeContext.isCached(new JavaType(TestAddress.class))).isFalse();
+		then(treeContext.isCached(new ReflectiveJvmType(TestAddress.class))).isFalse();
 	}
 
 	@Test
 	void preBuildResolvedTypesWithMapShouldCacheKeyAndValueTypes() {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
-		JavaType mapType = new JavaType(
+		ReflectiveJvmType mapType = new ReflectiveJvmType(
 			Map.class,
-			java.util.Arrays.asList(new JavaType(TestAddress.class), new JavaType(TestUser.class)),
+			java.util.Arrays.asList(new ReflectiveJvmType(TestAddress.class), new ReflectiveJvmType(TestUser.class)),
 			Collections.emptyList()
 		);
 
@@ -394,8 +420,8 @@ class JvmNodeCandidateTreeTest {
 			.build();
 
 		// then - Both key and value types should be pre-built and cached
-		then(treeContext.isCached(new JavaType(TestAddress.class))).isTrue();
-		then(treeContext.isCached(new JavaType(TestUser.class))).isTrue();
+		then(treeContext.isCached(new ReflectiveJvmType(TestAddress.class))).isTrue();
+		then(treeContext.isCached(new ReflectiveJvmType(TestUser.class))).isTrue();
 	}
 
 	@Test
@@ -403,9 +429,9 @@ class JvmNodeCandidateTreeTest {
 		// given
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
 		// List<ClassWithListField> where ClassWithListField has List<TestAddress>
-		JavaType listType = new JavaType(
+		ReflectiveJvmType listType = new ReflectiveJvmType(
 			List.class,
-			Collections.singletonList(new JavaType(ClassWithListField.class)),
+			Collections.singletonList(new ReflectiveJvmType(ClassWithListField.class)),
 			Collections.emptyList()
 		);
 
@@ -416,16 +442,16 @@ class JvmNodeCandidateTreeTest {
 			.build();
 
 		// then - ClassWithListField should be cached, and TestAddress within it should also be cached
-		then(treeContext.isCached(new JavaType(ClassWithListField.class))).isTrue();
-		then(treeContext.isCached(new JavaType(TestAddress.class))).isTrue();
+		then(treeContext.isCached(new ReflectiveJvmType(ClassWithListField.class))).isTrue();
+		then(treeContext.isCached(new ReflectiveJvmType(TestAddress.class))).isTrue();
 	}
 
 	@Test
 	void preBuildResolvedTypesWithoutTreeContextShouldNotFail() {
 		// given
-		JavaType listOfAddressType = new JavaType(
+		ReflectiveJvmType listOfAddressType = new ReflectiveJvmType(
 			List.class,
-			Collections.singletonList(new JavaType(TestAddress.class)),
+			Collections.singletonList(new ReflectiveJvmType(TestAddress.class)),
 			Collections.emptyList()
 		);
 

@@ -39,6 +39,7 @@ import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext.SubtreeSnapshot;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 /**
@@ -438,7 +439,7 @@ public final class JvmNodeCandidateTree {
 		}
 		// Fallback: use raw component type (loses generic info)
 		Class<?> rawComponentType = arrayType.getRawType().getComponentType();
-		return rawComponentType != null ? new com.navercorp.objectfarm.api.type.JavaType(rawComponentType) : null;
+		return rawComponentType != null ? new ReflectiveJvmType(rawComponentType) : null;
 	}
 
 	/**

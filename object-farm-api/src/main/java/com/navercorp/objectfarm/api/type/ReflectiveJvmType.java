@@ -31,7 +31,19 @@ import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
-public final class JavaType implements JvmType {
+/**
+ * Reflection-backed {@link JvmType} implementation.
+ * <p>
+ * Represents any JVM type whose identity is anchored on a real {@link Class} obtained
+ * via Java reflection — covering Java, Kotlin, Scala, and other JVM languages alike.
+ * Language-specific metadata that can be expressed through {@link JvmType}'s abstract
+ * channels (raw type, type variables, annotations, component type, nullability)
+ * is carried directly on this type; no language-specific subclass is required.
+ * <p>
+ * Contrast with {@link com.navercorp.objectfarm.api.input.SyntheticJvmType}, which
+ * represents schema-defined types that have no backing {@link Class}.
+ */
+public final class ReflectiveJvmType implements JvmType {
 	private final Class<?> rawType;
 	private final List<? extends JvmType> typeVariables;
 	private final List<Annotation> annotations;
@@ -41,15 +53,15 @@ public final class JavaType implements JvmType {
 	private final Boolean nullable;
 	private int cachedHashCode;
 
-	public JavaType(Class<?> rawType) {
+	public ReflectiveJvmType(Class<?> rawType) {
 		this(rawType, Collections.emptyList(), Collections.emptyList());
 	}
 
-	public JavaType(Class<?> rawType, List<? extends JvmType> typeVariables, List<Annotation> annotations) {
+	public ReflectiveJvmType(Class<?> rawType, List<? extends JvmType> typeVariables, List<Annotation> annotations) {
 		this(rawType, typeVariables, annotations, deriveComponentType(rawType, typeVariables), null);
 	}
 
-	public JavaType(
+	public ReflectiveJvmType(
 		Class<?> rawType,
 		List<? extends JvmType> typeVariables,
 		List<Annotation> annotations,
@@ -58,7 +70,7 @@ public final class JavaType implements JvmType {
 		this(rawType, typeVariables, annotations, deriveComponentType(rawType, typeVariables), nullable);
 	}
 
-	public JavaType(
+	public ReflectiveJvmType(
 		Class<?> rawType,
 		List<? extends JvmType> typeVariables,
 		List<Annotation> annotations,
@@ -72,13 +84,13 @@ public final class JavaType implements JvmType {
 		this.nullable = nullable;
 	}
 
-	public JavaType(ObjectTypeReference<?> typeReference) {
+	public ReflectiveJvmType(ObjectTypeReference<?> typeReference) {
 		AnnotatedType originalType = typeReference.getAnnotatedType();
 		// Resolve wildcard types to their upper bound
 		AnnotatedType resolvedType = Types.resolveWildcardType(originalType);
 		this.rawType = resolveRawType(resolvedType);
 		this.typeVariables = Types.getGenericsTypes(resolvedType).stream()
-			.map(annotatedType -> new JavaType(Types.toTypeReference(annotatedType)))
+			.map(annotatedType -> new ReflectiveJvmType(Types.toTypeReference(annotatedType)))
 			.collect(Collectors.toList());
 		this.componentType = resolveComponentType(resolvedType, this.rawType);
 		this.annotations = Arrays.stream(resolvedType.getAnnotations())
@@ -102,13 +114,13 @@ public final class JavaType implements JvmType {
 		Type type = annotatedType.getType();
 		if (type instanceof GenericArrayType) {
 			Type genericComponentType = ((GenericArrayType)type).getGenericComponentType();
-			return new JavaType(
+			return new ReflectiveJvmType(
 				Types.toTypeReference(Types.generateAnnotatedTypeWithoutAnnotation(genericComponentType)
 				)
 			);
 		}
 		if (rawType.isArray()) {
-			return new JavaType(rawType.getComponentType());
+			return new ReflectiveJvmType(rawType.getComponentType());
 		}
 		return null;
 	}
@@ -121,7 +133,7 @@ public final class JavaType implements JvmType {
 		Class<?> componentClass = rawType.getComponentType();
 		// Preserve the legacy convention: when constructing an array type with typeVariables,
 		// those typeVariables represent the component type's generics.
-		return new JavaType(componentClass, typeVariables, Collections.emptyList());
+		return new ReflectiveJvmType(componentClass, typeVariables, Collections.emptyList());
 	}
 
 	@Override
@@ -156,11 +168,11 @@ public final class JavaType implements JvmType {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		JavaType javaType = (JavaType)obj;
-		return Objects.equals(rawType, javaType.rawType)
-			&& Objects.equals(typeVariables, javaType.typeVariables)
-			&& Objects.equals(annotations, javaType.annotations)
-			&& Objects.equals(componentType, javaType.componentType);
+		ReflectiveJvmType other = (ReflectiveJvmType)obj;
+		return Objects.equals(rawType, other.rawType)
+			&& Objects.equals(typeVariables, other.typeVariables)
+			&& Objects.equals(annotations, other.annotations)
+			&& Objects.equals(componentType, other.componentType);
 	}
 
 	@Override

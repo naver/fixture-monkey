@@ -42,7 +42,7 @@ import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTreeTransformer;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Tests for ValueProjection and ValueProjectionBuilder.
@@ -65,7 +65,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void buildWithPut() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -81,7 +81,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void buildWithPutByPathExpression() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -99,7 +99,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void buildWithPutByPathString() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -117,7 +117,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void putByPathWithUnresolvablePathStoresIt() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 
 		// when
 		ValueProjection projection = ValueProjection.builder(tree).putByPath("$.nonexistent", "value").build();
@@ -131,7 +131,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void allowNullValues() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		// when
@@ -145,7 +145,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void getExistingNode() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		ValueProjection projection = ValueProjection.builder(tree).put(nameNode, "Test").build();
@@ -160,7 +160,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void getNonExistingNode() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -176,7 +176,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void getByPathExpression() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		ValueProjection projection = ValueProjection.builder(tree).put(nameNode, "PathTest").build();
@@ -191,7 +191,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void getByPathString() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		ValueProjection projection = ValueProjection.builder(tree).put(nameNode, "StringPathTest").build();
@@ -206,7 +206,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void getByInvalidPath() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		ValueProjection projection = ValueProjection.builder(tree).put(nameNode, "Test").build();
@@ -221,7 +221,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void forEachIteratesAll() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -239,7 +239,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void filterByPredicate() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -259,7 +259,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void filterNoMatch() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		ValueProjection projection = ValueProjection.builder(tree).put(nameNode, "Name").build();
@@ -274,7 +274,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void sizeReturnsCount() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -287,7 +287,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void isEmptyForEmpty() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 
 		ValueProjection projection = ValueProjection.builder(tree).build();
 
@@ -298,7 +298,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void isEmptyForNonEmpty() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		ValueProjection projection = ValueProjection.builder(tree).put(nameNode, "test").build();
@@ -310,7 +310,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void containsNodeForExisting() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		ValueProjection projection = ValueProjection.builder(tree).put(nameNode, "test").build();
@@ -322,7 +322,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void containsNodeForNonExisting() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -335,7 +335,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void fromStringPathMap() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
@@ -354,7 +354,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void fromStringPathMapKeepsUnresolvablePaths() {
 		// given
-		JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
 		Map<String, Object> valuesByPath = new HashMap<>();
@@ -374,7 +374,7 @@ class ValueProjectionUnitTest {
 	@Test
 	void listElementPaths() {
 		// given
-		JvmNodeTree listTree = createTree(new JavaType(ListContainer.class));
+		JvmNodeTree listTree = createTree(new ReflectiveJvmType(ListContainer.class));
 		JvmNode firstItem = listTree.resolve("$.items[0]");
 		JvmNode secondItem = listTree.resolve("$.items[1]");
 
@@ -389,7 +389,7 @@ class ValueProjectionUnitTest {
 		then(projection.getByPath("$.items[1]")).isEqualTo("Second");
 	}
 
-	private static JvmNodeTree createTree(JavaType rootType) {
+	private static JvmNodeTree createTree(ReflectiveJvmType rootType) {
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(rootType, CONTEXT).build();
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
 		return transformer.transform(candidateTree);

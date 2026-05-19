@@ -69,8 +69,8 @@ import com.navercorp.objectfarm.api.tree.JvmNodeTreeTransformer;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.tree.ResolutionListener;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Default assembly planner. Also exposes {@link RuntimeTreeFactory} and {@link LeafTypeRegistry}.
@@ -475,7 +475,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 			return true;
 		}
 
-		JvmType jvmType = new JavaType(type);
+		JvmType jvmType = new ReflectiveJvmType(type);
 		for (LeafTypeResolver resolver : additionalLeafTypeResolvers) {
 			if (resolver.isLeafType(jvmType)) {
 				return true;

@@ -27,12 +27,12 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapEntryElementProperty implements Property {
-	private static final JvmType MAP_ENTRY_ELEMENT_JVM_TYPE = new JavaType(MapEntryElementType.class);
+	private static final JvmType MAP_ENTRY_ELEMENT_JVM_TYPE = new ReflectiveJvmType(MapEntryElementType.class);
 
 	private final Property mapEntryProperty;
 
