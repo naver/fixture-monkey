@@ -22,6 +22,7 @@ import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.
 import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
 import static com.navercorp.fixturemonkey.api.type.Types.isBoxedPrimitive;
 import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
+import static com.navercorp.fixturemonkey.api.type.Types.normalizeRawType;
 import static com.navercorp.fixturemonkey.api.type.Types.toJvmType;
 import static com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
 import static com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
@@ -694,7 +695,7 @@ public final class ManipulatorAnalyzer {
 						continue;
 					}
 					String childPath = basePath + "." + name;
-					Class<?> declaredType = childProperty.getJvmType().getRawType();
+					Class<?> declaredType = normalizeRawType(childProperty.getJvmType().getRawType());
 					Object fieldValue = readPropertyValue(childProperty, value);
 					result.put(childPath, new ExtractedField(fieldValue, declaredType));
 				}

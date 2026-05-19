@@ -31,6 +31,7 @@ import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 /**
@@ -87,7 +88,7 @@ final class RootArbitrary<T> implements CombinableArbitrary<T> {
 			String.format(
 				"Given type %s could not be generated."
 					+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
-				rootProperty.getJvmType().getRawType()
+				Types.normalizeRawType(rootProperty.getJvmType().getRawType())
 			),
 			lastException
 		);
@@ -114,7 +115,7 @@ final class RootArbitrary<T> implements CombinableArbitrary<T> {
 			String.format(
 				"Given type %s could not be generated."
 					+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
-				rootProperty.getJvmType().getRawType()
+				Types.normalizeRawType(rootProperty.getJvmType().getRawType())
 			),
 			lastException
 		);

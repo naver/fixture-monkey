@@ -40,6 +40,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 
@@ -237,7 +238,7 @@ public final class ArbitraryBuilderContext {
 		PropertyGenerator defaultPropertyGenerator
 	) {
 		PropertyGenerator resolvedPropertyGenerator = property -> {
-			Class<?> type = property.getJvmType().getRawType();
+			Class<?> type = Types.normalizeRawType(property.getJvmType().getRawType());
 			List<Property> propertyConfigurer = propertyConfigurers.get(type);
 			if (propertyConfigurer != null) {
 				return propertyConfigurer;
