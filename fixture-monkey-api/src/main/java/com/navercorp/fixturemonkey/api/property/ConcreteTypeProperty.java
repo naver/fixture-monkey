@@ -27,10 +27,7 @@ import java.util.Objects;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -41,8 +38,6 @@ import com.navercorp.objectfarm.api.type.JvmType;
  */
 @API(since = "1.1.7", status = Status.EXPERIMENTAL)
 public final class ConcreteTypeProperty implements Property {
-	private static final Logger log = LoggerFactory.getLogger(ConcreteTypeProperty.class);
-
 	private final JvmType jvmType;
 	private final Property abstractTypeProperty;
 
@@ -53,17 +48,7 @@ public final class ConcreteTypeProperty implements Property {
 
 	@Override
 	public JvmType getJvmType() {
-		List<Annotation> combinedAnnotations = getAnnotations();
-		if (jvmType.getAnnotations().equals(combinedAnnotations)) {
-			return jvmType;
-		}
-		return new JavaType(
-			jvmType.getRawType(),
-			jvmType.getTypeVariables(),
-			combinedAnnotations,
-			jvmType.getComponentType(),
-			jvmType.getNullable()
-		);
+		return jvmType;
 	}
 
 	@Nullable

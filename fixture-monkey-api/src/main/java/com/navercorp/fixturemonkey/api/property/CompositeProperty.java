@@ -30,19 +30,16 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class CompositeProperty implements Property {
 	private final Property primaryProperty;
 	private final Property secondaryProperty;
-	private final JvmType jvmType;
 
 	public CompositeProperty(Property primaryProperty, Property secondaryProperty) {
 		this.primaryProperty = primaryProperty;
 		this.secondaryProperty = secondaryProperty;
-		this.jvmType = computeJvmType();
 	}
 
 	public Property getPrimaryProperty() {
@@ -55,22 +52,7 @@ public final class CompositeProperty implements Property {
 
 	@Override
 	public JvmType getJvmType() {
-		return jvmType;
-	}
-
-	private JvmType computeJvmType() {
-		JvmType base = getPriorityProperty().getJvmType();
-		List<Annotation> mergedAnnotations = getAnnotations();
-		if (base.getAnnotations().equals(mergedAnnotations)) {
-			return base;
-		}
-		return new JavaType(
-			base.getRawType(),
-			base.getTypeVariables(),
-			mergedAnnotations,
-			base.getComponentType(),
-			base.getNullable()
-		);
+		return getPriorityProperty().getJvmType();
 	}
 
 	@Override

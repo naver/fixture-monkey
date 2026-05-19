@@ -32,7 +32,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.2", status = Status.MAINTAINED)
@@ -66,21 +65,7 @@ public final class ConstructorProperty implements Property {
 
 	@Override
 	public JvmType getJvmType() {
-		JvmType base = this.parameterProperty.getJvmType();
-		Boolean effectiveNullable = isNullable();
-		Boolean targetNullable = effectiveNullable != null ? effectiveNullable : base.getNullable();
-		boolean annotationsAligned = base.getAnnotations().equals(this.annotations);
-		boolean nullableAligned = Objects.equals(base.getNullable(), targetNullable);
-		if (annotationsAligned && nullableAligned) {
-			return base;
-		}
-		return new JavaType(
-			base.getRawType(),
-			base.getTypeVariables(),
-			this.annotations,
-			base.getComponentType(),
-			targetNullable
-		);
+		return this.parameterProperty.getJvmType();
 	}
 
 	public Constructor<?> getConstructor() {
