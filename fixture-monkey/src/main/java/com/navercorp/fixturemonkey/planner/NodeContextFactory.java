@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.planner;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,13 +75,25 @@ import com.navercorp.objectfarm.api.type.WildcardRawType;
  */
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class NodeContextFactory {
+	/**
+	 * Marker types used by dedicated introspectors in DEFAULT_ARBITRARY_INTROSPECTORS.
+	 * In the non-adapter path, these are handled by short-circuit introspectors
+	 * that produce values directly without child property generation.
+	 */
+	private static final LeafTypeResolver MARKER_TYPE_LEAF_RESOLVER = jvmType -> {
+		Class<?> rt = jvmType.getRawType();
+		return rt == Types.GeneratingWildcardType.class
+			|| rt == Types.UnidentifiableType.class
+			|| rt == WildcardRawType.class;
+	};
+
 	private final SeedState seedState;
 	private final ContainerSizeResolverFactory containerSizeResolverFactory;
 	private final List<JvmNodePromoter> additionalPromoters;
 	private final List<LeafTypeResolver> additionalLeafTypeResolvers;
 	private final @Nullable UnaryOperator<JvmNodeCandidateGenerator> candidateGeneratorWrapper;
 
-	public NodeContextFactory(
+	NodeContextFactory(
 		SeedState seedState,
 		ContainerSizeResolverFactory containerSizeResolverFactory,
 		List<JvmNodePromoter> additionalPromoters,
@@ -104,146 +117,167 @@ public final class NodeContextFactory {
 		Map<Class<?>, ArbitraryIntrospector> introspectorsByType
 	) {
 		ContainerSizeResolver containerSizeResolver = containerSizeResolverFactory.createContainerSizeResolver(options);
-		List<JvmNodePromoter> allPromoters = createNodePromoters();
 
 		JavaNodeContext.Builder builder = JavaNodeContext.builder()
 			.seedState(seedState)
-			.nodePromoters(Collections.singletonList(new JavaDefaultNodePromoter(allPromoters)))
+			.nodePromoters(Collections.singletonList(new JavaDefaultNodePromoter(createNodePromoters())))
 			.containerSizeResolver(containerSizeResolver);
 
 		if (options != null) {
-			ArbitraryGenerator defaultGenerator = options.getDefaultArbitraryGenerator();
-			Property rootProperty = JvmNodePropertyFactory.fromType(rootType);
-			PropertyGenerator rootPropertyGenerator = defaultGenerator.getRequiredPropertyGenerator(rootProperty);
-
-			// Build the name resolver from options (e.g., @JsonProperty support via JacksonPropertyNameResolver).
-			// Always non-null: type-specific resolvers may exist even when the default is IDENTITY.
-			NameResolvingNodeCandidateGenerator.ChildNameResolver nameResolver = createNodeNameResolver(options);
-
-			if (rootPropertyGenerator != null) {
-				// Create a per-type delegating PropertyGenerator instead of binding to the root type.
-				// This ensures each type gets the correct PropertyGenerator from the introspector chain
-				// (e.g., PriorityConstructorArbitraryIntrospector creates per-type ConstructorArbitraryIntrospectors).
-				PropertyGenerator fallbackPropertyGenerator = options.getDefaultPropertyGenerator();
-
-				PropertyGenerator basePropertyGenerator = property -> {
-					PropertyGenerator gen = defaultGenerator.getRequiredPropertyGenerator(property);
-					if (gen != null) {
-						List<Property> children = gen.generateChildProperties(property);
-						if (children != null) {
-							return children;
-						}
-					}
-					return fallbackPropertyGenerator.generateChildProperties(property);
-				};
-				List<MatcherOperator<PropertyGenerator>> propertyGenerators = options.getPropertyGenerators();
-
-				PropertyGenerator compositeGenerator = createCompositePropertyGenerator(
-					basePropertyGenerator,
-					propertyConfigurers,
-					introspectorsByType,
-					propertyGenerators
-				);
-				JvmNodeCandidateGenerator candidateGenerator = new PropertyGeneratorNodeCandidateGenerator(
-					compositeGenerator
-				);
-				candidateGenerator = new NameResolvingNodeCandidateGenerator(candidateGenerator, nameResolver);
-				if (candidateGeneratorWrapper != null) {
-					// Wrap with platform-specific isSupported check
-					// (e.g., KotlinNodeCandidateGenerator that only supports Kotlin types).
-					// With first-match-wins in buildTree, the wrapped generator handles supported types.
-					builder.addCustomGenerator(candidateGeneratorWrapper.apply(candidateGenerator));
-					// Also set as objectPropertyGenerator for non-Kotlin types (e.g., Java's File class)
-					// that need the introspector's requiredPropertyGenerator.
-					builder.objectPropertyGenerator(candidateGenerator);
-				} else {
-					builder.objectPropertyGenerator(candidateGenerator);
-				}
-
-				// Exclude types from leaf treatment if any extra generator recognizes them.
-				// This allows Java standard types (e.g., java.io.File, java.sql.Timestamp) to be expanded
-				// when using constructor-based introspectors with a requiredPropertyGenerator.
-				builder.leafTypeExclusion(jvmType -> {
-					Class<?> rawType = com.navercorp.fixturemonkey.api.type.Types.normalizeRawType(
-						jvmType.getRawType()
-					);
-					if (rawType.isPrimitive() || rawType.isArray() || rawType.isEnum()) {
-						return false;
-					}
-
-					if (propertyConfigurers.containsKey(rawType) || introspectorsByType.containsKey(rawType)) {
-						return true;
-					}
-
-					if (!propertyGenerators.isEmpty()) {
-						Property property = JvmNodePropertyFactory.fromType(jvmType);
-						for (MatcherOperator<PropertyGenerator> op : propertyGenerators) {
-							if (op.match(property)) {
-								return true;
-							}
-						}
-					}
-
-					// Check if the global objectIntrospector (via basePropertyGenerator)
-					// produces children for this type. This handles cases like
-					// PriorityConstructorArbitraryIntrospector expanding java.sql.Timestamp
-					// via its Timestamp(long) constructor.
-					try {
-						Property property = JvmNodePropertyFactory.fromType(jvmType);
-						List<Property> children = basePropertyGenerator.generateChildProperties(property);
-						if (children != null && !children.isEmpty()) {
-							return true;
-						}
-					} catch (Exception e) {
-						// Keep as leaf if generator fails (e.g., inaccessible constructor)
-					}
-
-					return false;
-				});
-			} else {
-				JvmNodeCandidateGenerator candidateGenerator = new NameResolvingNodeCandidateGenerator(
-					new JavaFieldNodeCandidateGenerator(),
-					nameResolver
-				);
-				if (candidateGeneratorWrapper != null) {
-					builder.addCustomGenerator(candidateGeneratorWrapper.apply(candidateGenerator));
-					builder.objectPropertyGenerator(candidateGenerator);
-				} else {
-					builder.objectPropertyGenerator(candidateGenerator);
-				}
-			}
-
-			builder.interfaceResolver(createGlobalInterfaceResolver(options));
-
-			builder.maxDepth(options.getMaxRecursionDepth());
-
-			// Convert ContainerPropertyGenerators to a single fallback JvmContainerNodeGenerator.
-			// This generator is added as a custom generator but only matches types
-			// not already handled by the default generators (Array, Collection, Map, etc.).
-			List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators =
-				options.getContainerPropertyGenerators();
-			if (!containerPropertyGenerators.isEmpty()) {
-				builder.addContainerNodeGenerator(
-					new ContainerPropertyGeneratorNodeGenerator(containerPropertyGenerators)
-				);
-			}
-
-			// Marker types used by dedicated introspectors in DEFAULT_ARBITRARY_INTROSPECTORS.
-			// In the non-adapter path, these are handled by short-circuit introspectors
-			// that produce values directly without child property generation.
-			builder.addLeafTypeResolver(jvmType -> {
-				Class<?> rt = jvmType.getRawType();
-				return (rt == Types.GeneratingWildcardType.class
-					|| rt == Types.UnidentifiableType.class
-					|| rt == WildcardRawType.class);
-			});
-
-			for (LeafTypeResolver leafTypeResolver : additionalLeafTypeResolvers) {
-				builder.addLeafTypeResolver(leafTypeResolver);
-			}
+			configureOptions(builder, rootType, options, propertyConfigurers, introspectorsByType);
 		}
 
 		return builder.build();
+	}
+
+	private void configureOptions(
+		JavaNodeContext.Builder builder,
+		JvmType rootType,
+		FixtureMonkeyOptions options,
+		Map<Class<?>, List<Property>> propertyConfigurers,
+		Map<Class<?>, ArbitraryIntrospector> introspectorsByType
+	) {
+		NameResolvingNodeCandidateGenerator.ChildNameResolver nameResolver = createNodeNameResolver(options);
+		configureCandidateGenerator(
+			builder, rootType, options, propertyConfigurers, introspectorsByType, nameResolver
+		);
+
+		builder.interfaceResolver(new GlobalInterfaceResolver(seedState, options));
+		builder.maxDepth(options.getMaxRecursionDepth());
+
+		configureContainerGenerators(builder, options);
+		configureLeafResolvers(builder);
+	}
+
+	private void configureCandidateGenerator(
+		JavaNodeContext.Builder builder,
+		JvmType rootType,
+		FixtureMonkeyOptions options,
+		Map<Class<?>, List<Property>> propertyConfigurers,
+		Map<Class<?>, ArbitraryIntrospector> introspectorsByType,
+		NameResolvingNodeCandidateGenerator.ChildNameResolver nameResolver
+	) {
+		ArbitraryGenerator defaultGenerator = options.getDefaultArbitraryGenerator();
+		Property rootProperty = JvmNodePropertyFactory.fromType(rootType);
+
+		if (defaultGenerator.getRequiredPropertyGenerator(rootProperty) == null) {
+			JvmNodeCandidateGenerator candidateGenerator = new NameResolvingNodeCandidateGenerator(
+				new JavaFieldNodeCandidateGenerator(),
+				nameResolver
+			);
+			applyCandidateGenerator(builder, candidateGenerator);
+			return;
+		}
+
+		// Create a per-type delegating PropertyGenerator instead of binding to the root type.
+		// This ensures each type gets the correct PropertyGenerator from the introspector chain
+		// (e.g., PriorityConstructorArbitraryIntrospector creates per-type ConstructorArbitraryIntrospectors).
+		PropertyGenerator fallbackPropertyGenerator = options.getDefaultPropertyGenerator();
+
+		PropertyGenerator basePropertyGenerator = property -> {
+			PropertyGenerator gen = defaultGenerator.getRequiredPropertyGenerator(property);
+			if (gen != null) {
+				List<Property> children = gen.generateChildProperties(property);
+				if (children != null) {
+					return children;
+				}
+			}
+			return fallbackPropertyGenerator.generateChildProperties(property);
+		};
+		List<MatcherOperator<PropertyGenerator>> propertyGenerators = options.getPropertyGenerators();
+
+		PropertyGenerator compositeGenerator = createCompositePropertyGenerator(
+			basePropertyGenerator,
+			propertyConfigurers,
+			introspectorsByType,
+			propertyGenerators
+		);
+		JvmNodeCandidateGenerator candidateGenerator = new NameResolvingNodeCandidateGenerator(
+			new PropertyGeneratorNodeCandidateGenerator(compositeGenerator),
+			nameResolver
+		);
+		applyCandidateGenerator(builder, candidateGenerator);
+
+		builder.leafTypeExclusion(
+			jvmType -> shouldExcludeFromLeaf(
+				jvmType, propertyConfigurers, introspectorsByType, propertyGenerators, basePropertyGenerator
+			)
+		);
+	}
+
+	private void applyCandidateGenerator(JavaNodeContext.Builder builder, JvmNodeCandidateGenerator candidateGenerator) {
+		if (candidateGeneratorWrapper != null) {
+			// Wrap with platform-specific isSupported check
+			// (e.g., KotlinNodeCandidateGenerator that only supports Kotlin types).
+			// With first-match-wins in buildTree, the wrapped generator handles supported types.
+			builder.addCustomGenerator(candidateGeneratorWrapper.apply(candidateGenerator));
+		}
+		// Also set as objectPropertyGenerator for non-Kotlin types (e.g., Java's File class)
+		// that need the introspector's requiredPropertyGenerator.
+		builder.objectPropertyGenerator(candidateGenerator);
+	}
+
+	/**
+	 * Determines whether a type should be excluded from leaf treatment.
+	 * <p>
+	 * Excluded types are expanded into child properties — e.g., Java standard types
+	 * ({@code java.io.File}, {@code java.sql.Timestamp}) when constructor-based introspectors
+	 * have a requiredPropertyGenerator that knows how to expand them.
+	 */
+	private static boolean shouldExcludeFromLeaf(
+		JvmType jvmType,
+		Map<Class<?>, List<Property>> propertyConfigurers,
+		Map<Class<?>, ArbitraryIntrospector> introspectorsByType,
+		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
+		PropertyGenerator basePropertyGenerator
+	) {
+		Class<?> rawType = Types.normalizeRawType(jvmType.getRawType());
+		if (rawType.isPrimitive() || rawType.isArray() || rawType.isEnum()) {
+			return false;
+		}
+
+		if (propertyConfigurers.containsKey(rawType) || introspectorsByType.containsKey(rawType)) {
+			return true;
+		}
+
+		Property property = JvmNodePropertyFactory.fromType(jvmType);
+		for (MatcherOperator<PropertyGenerator> op : propertyGenerators) {
+			if (op.match(property)) {
+				return true;
+			}
+		}
+
+		// Check if the global objectIntrospector (via basePropertyGenerator)
+		// produces children for this type. This handles cases like
+		// PriorityConstructorArbitraryIntrospector expanding java.sql.Timestamp
+		// via its Timestamp(long) constructor.
+		try {
+			List<Property> children = basePropertyGenerator.generateChildProperties(property);
+			return children != null && !children.isEmpty();
+		} catch (RuntimeException e) {
+			// Keep as leaf if generator fails (e.g., inaccessible constructor)
+			return false;
+		}
+	}
+
+	private static void configureContainerGenerators(JavaNodeContext.Builder builder, FixtureMonkeyOptions options) {
+		// Convert ContainerPropertyGenerators to a single fallback JvmContainerNodeGenerator.
+		// This generator is added as a custom generator but only matches types
+		// not already handled by the default generators (Array, Collection, Map, etc.).
+		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators =
+			options.getContainerPropertyGenerators();
+		if (!containerPropertyGenerators.isEmpty()) {
+			builder.addContainerNodeGenerator(
+				new ContainerPropertyGeneratorNodeGenerator(containerPropertyGenerators)
+			);
+		}
+	}
+
+	private void configureLeafResolvers(JavaNodeContext.Builder builder) {
+		builder.addLeafTypeResolver(MARKER_TYPE_LEAF_RESOLVER);
+		for (LeafTypeResolver leafTypeResolver : additionalLeafTypeResolvers) {
+			builder.addLeafTypeResolver(leafTypeResolver);
+		}
 	}
 
 	/**
@@ -265,7 +299,7 @@ public final class NodeContextFactory {
 
 			Property childProperty = null;
 			if (candidateName != null) {
-				java.lang.reflect.Field field = TypeCache.getFieldsByName(parentType.getRawType()).get(candidateName);
+				Field field = TypeCache.getFieldsByName(parentType.getRawType()).get(candidateName);
 				if (field != null) {
 					childProperty = new FieldProperty(field);
 				}
@@ -317,9 +351,7 @@ public final class NodeContextFactory {
 		}
 
 		return property -> {
-			Class<?> actualType = com.navercorp.fixturemonkey.api.type.Types.normalizeRawType(
-				property.getJvmType().getRawType()
-			);
+			Class<?> actualType = Types.normalizeRawType(property.getJvmType().getRawType());
 
 			List<Property> configuredProperties = propertyConfigurers.get(actualType);
 			if (configuredProperties != null) {
@@ -354,43 +386,49 @@ public final class NodeContextFactory {
 		};
 	}
 
-	private InterfaceResolver createGlobalInterfaceResolver(FixtureMonkeyOptions options) {
-		return new InterfaceResolver() {
-			@Override
-			public @Nullable JvmType resolve(JvmType type) {
-				List<JvmType> candidates = resolveAll(type);
-				if (candidates.isEmpty()) {
-					return null;
-				}
-				Random typeRandom = seedState.snapshot().randomFor(type.hashCode());
-				return candidates.get(typeRandom.nextInt(candidates.size()));
+	private static final class GlobalInterfaceResolver implements InterfaceResolver {
+		private final SeedState seedState;
+		private final FixtureMonkeyOptions options;
+
+		GlobalInterfaceResolver(SeedState seedState, FixtureMonkeyOptions options) {
+			this.seedState = seedState;
+			this.options = options;
+		}
+
+		@Override
+		public @Nullable JvmType resolve(JvmType type) {
+			List<JvmType> candidates = resolveAll(type);
+			if (candidates.isEmpty()) {
+				return null;
+			}
+			Random typeRandom = seedState.snapshot().randomFor(type.hashCode());
+			return candidates.get(typeRandom.nextInt(candidates.size()));
+		}
+
+		@Override
+		public List<JvmType> resolveAll(JvmType type) {
+			Class<?> rawType = type.getRawType();
+			if (!Modifier.isInterface(rawType.getModifiers()) && !Modifier.isAbstract(rawType.getModifiers())) {
+				return Collections.emptyList();
 			}
 
-			@Override
-			public List<JvmType> resolveAll(JvmType type) {
-				Class<?> rawType = type.getRawType();
-				if (!Modifier.isInterface(rawType.getModifiers()) && !Modifier.isAbstract(rawType.getModifiers())) {
-					return Collections.emptyList();
-				}
+			Property property = JvmNodePropertyFactory.fromType(type);
+			@SuppressWarnings("deprecation")
+			CandidateConcretePropertyResolver resolver = options.getCandidateConcretePropertyResolver(property);
 
-				Property property = JvmNodePropertyFactory.fromType(type);
-				@SuppressWarnings("deprecation")
-				CandidateConcretePropertyResolver resolver = options.getCandidateConcretePropertyResolver(property);
-
-				if (resolver == null) {
-					return Collections.emptyList();
-				}
-
-				List<Property> candidates = resolver.resolve(property);
-				if (candidates == null || candidates.isEmpty()) {
-					return Collections.emptyList();
-				}
-
-				return candidates
-					.stream()
-					.map(Property::getJvmType)
-					.collect(Collectors.toList());
+			if (resolver == null) {
+				return Collections.emptyList();
 			}
-		};
+
+			List<Property> candidates = resolver.resolve(property);
+			if (candidates == null || candidates.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			return candidates
+				.stream()
+				.map(Property::getJvmType)
+				.collect(Collectors.toList());
+		}
 	}
 }

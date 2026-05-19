@@ -100,6 +100,14 @@ public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCan
 		return JavaNodeCandidateFactory.INSTANCE.create(jvmType, name, creationMethod);
 	}
 
+	/**
+	 * Overlays property-level annotations and nullability onto the given {@link JvmType}.
+	 * <p>
+	 * Limitation: when the overlay does not match the base, a new {@link JavaType} is constructed,
+	 * which means any concrete {@link JvmType} implementation other than {@link JavaType}
+	 * (e.g., language-specific subtypes such as a Kotlin {@code JvmType}) is lost — only the
+	 * raw type, type variables, and component type are carried over.
+	 */
 	private static JvmType withPropertyMetadata(JvmType base, Property property) {
 		List<Annotation> propertyAnnotations = property.getAnnotations();
 		Boolean propertyNullable = property.isNullable();
