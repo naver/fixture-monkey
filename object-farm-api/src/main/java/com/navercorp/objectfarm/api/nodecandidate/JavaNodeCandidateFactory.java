@@ -23,8 +23,8 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Default {@link JvmNodeCandidateFactory} implementation for Java types.
@@ -58,8 +58,8 @@ public final class JavaNodeCandidateFactory implements JvmNodeCandidateFactory {
 			keyType = typeVars.get(0);
 			valueType = typeVars.get(1);
 		} else {
-			keyType = new JavaType(Object.class);
-			valueType = new JavaType(Object.class);
+			keyType = new ReflectiveJvmType(Object.class);
+			valueType = new ReflectiveJvmType(Object.class);
 		}
 
 		JvmNodeCandidate keyCandidate = new JavaNodeCandidate(keyType, "key");

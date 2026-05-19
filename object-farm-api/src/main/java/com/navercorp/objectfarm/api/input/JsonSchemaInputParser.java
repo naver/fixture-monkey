@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Parser for JSON Schema format strings.
@@ -83,15 +83,15 @@ public final class JsonSchemaInputParser implements TypeInputParser {
 
 		switch (type) {
 			case "string":
-				return new JavaType(String.class);
+				return new ReflectiveJvmType(String.class);
 			case "integer":
-				return new JavaType(Integer.class);
+				return new ReflectiveJvmType(Integer.class);
 			case "number":
-				return new JavaType(Double.class);
+				return new ReflectiveJvmType(Double.class);
 			case "boolean":
-				return new JavaType(Boolean.class);
+				return new ReflectiveJvmType(Boolean.class);
 			case "null":
-				return new JavaType(Void.class);
+				return new ReflectiveJvmType(Void.class);
 			case "array":
 				return parseArrayType(schema, typeName, context);
 			case "object":
@@ -106,8 +106,8 @@ public final class JsonSchemaInputParser implements TypeInputParser {
 		Object items = schema.get("items");
 		if (items == null) {
 			// Array without items definition - use Object
-			return new JavaType(List.class,
-				java.util.Collections.singletonList(new JavaType(Object.class)),
+			return new ReflectiveJvmType(List.class,
+				java.util.Collections.singletonList(new ReflectiveJvmType(Object.class)),
 				java.util.Collections.emptyList());
 		}
 
@@ -115,10 +115,10 @@ public final class JsonSchemaInputParser implements TypeInputParser {
 		if (items instanceof Map) {
 			itemType = convertToJvmType((Map<String, Object>)items, typeName + "Item", context);
 		} else {
-			itemType = new JavaType(Object.class);
+			itemType = new ReflectiveJvmType(Object.class);
 		}
 
-		return new JavaType(List.class,
+		return new ReflectiveJvmType(List.class,
 			java.util.Collections.singletonList(itemType),
 			java.util.Collections.emptyList());
 	}
@@ -129,7 +129,7 @@ public final class JsonSchemaInputParser implements TypeInputParser {
 
 		if (properties == null || !(properties instanceof Map)) {
 			// Object without properties - return as generic Object
-			return new JavaType(Object.class);
+			return new ReflectiveJvmType(Object.class);
 		}
 
 		Map<String, Object> propsMap = (Map<String, Object>)properties;

@@ -25,8 +25,8 @@ import java.util.Set;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "1.0.21", status = Status.EXPERIMENTAL)
 public final class SealedTypeCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
@@ -41,7 +41,7 @@ public final class SealedTypeCandidateConcretePropertyResolver implements Candid
 		if (!typeVariables.isEmpty()) {
 			return permittedSubclasses
 				.stream()
-				.map(subclass -> new JavaType(subclass, typeVariables, property.getAnnotations()))
+				.map(subclass -> new ReflectiveJvmType(subclass, typeVariables, property.getAnnotations()))
 				.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
 				.toList();
 		}

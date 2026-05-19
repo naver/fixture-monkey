@@ -34,7 +34,7 @@ import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class PathResolverIntegrationTest {
 
@@ -66,8 +66,8 @@ class PathResolverIntegrationTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(List.class,
-				Collections.singletonList(new JavaType(String.class)),
+			new ReflectiveJvmType(List.class,
+				Collections.singletonList(new ReflectiveJvmType(String.class)),
 				Collections.emptyList()),
 			CONTEXT
 		).build();
@@ -93,8 +93,8 @@ class PathResolverIntegrationTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(List.class,
-				Collections.singletonList(new JavaType(String.class)),
+			new ReflectiveJvmType(List.class,
+				Collections.singletonList(new ReflectiveJvmType(String.class)),
 				Collections.emptyList()),
 			CONTEXT
 		).build();
@@ -127,7 +127,7 @@ class PathResolverIntegrationTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SimpleListHolder.class), CONTEXT
+			new ReflectiveJvmType(SimpleListHolder.class), CONTEXT
 		).build();
 
 		// when
@@ -169,7 +169,7 @@ class PathResolverIntegrationTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(ListOfObjectsHolder.class), CONTEXT
+			new ReflectiveJvmType(ListOfObjectsHolder.class), CONTEXT
 		).build();
 
 		// when
@@ -214,7 +214,7 @@ class PathResolverIntegrationTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(NestedListHolder.class), CONTEXT
+			new ReflectiveJvmType(NestedListHolder.class), CONTEXT
 		).build();
 
 		// when
@@ -254,10 +254,10 @@ class PathResolverIntegrationTest {
 		);
 
 		// List<List<String>>
-		JavaType innerListType = new JavaType(List.class,
-			Collections.singletonList(new JavaType(String.class)),
+		ReflectiveJvmType innerListType = new ReflectiveJvmType(List.class,
+			Collections.singletonList(new ReflectiveJvmType(String.class)),
 			Collections.emptyList());
-		JavaType outerListType = new JavaType(List.class,
+		ReflectiveJvmType outerListType = new ReflectiveJvmType(List.class,
 			Collections.singletonList(innerListType),
 			Collections.emptyList());
 

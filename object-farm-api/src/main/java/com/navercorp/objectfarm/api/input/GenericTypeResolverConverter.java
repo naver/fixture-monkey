@@ -34,8 +34,8 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.tree.PathGenericTypeResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 /**
@@ -47,7 +47,7 @@ import com.navercorp.objectfarm.api.type.Types;
  * Example:
  * <pre>
  * // Container&lt;String&gt; at $.data resolves T to String
- * List&lt;JvmType&gt; typeArgs = List.of(new JavaType(String.class));
+ * List&lt;JvmType&gt; typeArgs = List.of(new ReflectiveJvmType(String.class));
  * TransformPathResolver&lt;GenericTypeResolver&gt; resolver =
  *     GenericTypeResolverConverter.createResolver("$.data", typeArgs);
  * </pre>
@@ -69,7 +69,7 @@ public final class GenericTypeResolverConverter {
 	) {
 		PathExpression pattern = PathExpression.of(pathExpression);
 
-		GenericTypeResolver genericTypeResolver = jvmType -> new JavaType(
+		GenericTypeResolver genericTypeResolver = jvmType -> new ReflectiveJvmType(
 			jvmType.getRawType(),
 			typeVariables,
 			jvmType.getAnnotations()
@@ -158,8 +158,8 @@ public final class GenericTypeResolverConverter {
 
 		List<JvmType> elementTypeArgs = extractTypeArgumentsFromValue(firstElement);
 		JvmType elementType = elementTypeArgs.isEmpty()
-			? new JavaType(firstElement.getClass())
-			: new JavaType(firstElement.getClass(), elementTypeArgs, Collections.emptyList());
+			? new ReflectiveJvmType(firstElement.getClass())
+			: new ReflectiveJvmType(firstElement.getClass(), elementTypeArgs, Collections.emptyList());
 		return Collections.singletonList(elementType);
 	}
 
@@ -185,12 +185,12 @@ public final class GenericTypeResolverConverter {
 		List<JvmType> typeArguments = new ArrayList<>();
 		List<JvmType> keyTypeArgs = extractTypeArgumentsFromValue(key);
 		typeArguments.add(keyTypeArgs.isEmpty()
-			? new JavaType(key.getClass())
-			: new JavaType(key.getClass(), keyTypeArgs, Collections.emptyList()));
+			? new ReflectiveJvmType(key.getClass())
+			: new ReflectiveJvmType(key.getClass(), keyTypeArgs, Collections.emptyList()));
 		List<JvmType> valueTypeArgs = extractTypeArgumentsFromValue(entryValue);
 		typeArguments.add(valueTypeArgs.isEmpty()
-			? new JavaType(entryValue.getClass())
-			: new JavaType(entryValue.getClass(), valueTypeArgs, Collections.emptyList()));
+			? new ReflectiveJvmType(entryValue.getClass())
+			: new ReflectiveJvmType(entryValue.getClass(), valueTypeArgs, Collections.emptyList()));
 		return typeArguments;
 	}
 
@@ -235,9 +235,9 @@ public final class GenericTypeResolverConverter {
 				Class<?> rawType = Types.getActualType(typeArg);
 				if (typeArg instanceof ParameterizedType) {
 					List<JvmType> nestedArgs = extractFromParameterizedType((ParameterizedType)typeArg);
-					result.add(new JavaType(rawType, nestedArgs, Collections.emptyList()));
+					result.add(new ReflectiveJvmType(rawType, nestedArgs, Collections.emptyList()));
 				} else {
-					result.add(new JavaType(rawType));
+					result.add(new ReflectiveJvmType(rawType));
 				}
 			} catch (UnsupportedOperationException e) {
 				continue;

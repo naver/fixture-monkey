@@ -24,8 +24,8 @@ import java.util.List;
 
 import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * A {@link JvmContainerNodeGenerator} implementation for generating element nodes
@@ -63,7 +63,7 @@ public final class JavaArrayElementNodeGenerator implements JvmContainerNodeGene
 
 		// Preserve generic type variables from the container type
 		// For GenericImplementation<String>[], the type variables [String] should be preserved
-		JvmType elementType = new JavaType(
+		JvmType elementType = new ReflectiveJvmType(
 			componentType,
 			containerType.getTypeVariables(),
 			containerType.getAnnotations()

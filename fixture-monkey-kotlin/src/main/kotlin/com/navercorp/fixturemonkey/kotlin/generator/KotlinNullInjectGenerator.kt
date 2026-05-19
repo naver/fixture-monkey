@@ -24,17 +24,17 @@ import com.navercorp.fixturemonkey.api.property.ConstructorProperty
 import com.navercorp.fixturemonkey.api.property.FieldProperty
 import com.navercorp.fixturemonkey.api.type.KotlinTypeDetector
 import com.navercorp.fixturemonkey.kotlin.type.KotlinNullabilityUtils
-import com.navercorp.fixturemonkey.kotlin.type.KotlinType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 
 /**
  * A [NullInjectGenerator] that respects Kotlin's nullability information.
  *
- * This generator checks if the property's type is a [KotlinType] and if it's non-nullable,
- * it returns 0.0 (no null injection). Otherwise, it delegates to the provided delegate generator.
+ * For properties declared in Kotlin classes, this generator inspects the underlying
+ * constructor parameter or field to detect non-nullable types and returns 0.0
+ * (no null injection) in that case. Otherwise it delegates to the provided generator.
  *
- * @property delegate the delegate generator to use when the type is not a non-nullable KotlinType
+ * @property delegate the delegate generator to use when the type is not a non-nullable Kotlin type
  * @since 1.1.0
  */
 @API(since = "1.1.0", status = EXPERIMENTAL)
@@ -79,7 +79,7 @@ class KotlinNullInjectGenerator(
 
         // Fallback: use owner (parent) type to determine nullability for properties
         // where nullable info is not directly available (e.g., TypeNameProperty with nullable=null
-        // in the Instantiator path where PropertyGeneratorNodeCandidateGenerator loses KotlinType info)
+        // in the Instantiator path where PropertyGeneratorNodeCandidateGenerator loses Kotlin nullability info)
         if (nullable == null) {
             val ownerProperty = context.ownerProperty
             if (ownerProperty != null) {

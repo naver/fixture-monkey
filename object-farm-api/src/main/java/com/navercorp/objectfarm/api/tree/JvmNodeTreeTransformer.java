@@ -49,8 +49,8 @@ import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Transforms a JvmNodeCandidateTree into a JvmNodeTree.
@@ -550,7 +550,7 @@ public final class JvmNodeTreeTransformer {
 				merged.add(ann);
 			}
 		}
-		return new JavaType(resolvedType.getRawType(), resolvedType.getTypeVariables(), merged);
+		return new ReflectiveJvmType(resolvedType.getRawType(), resolvedType.getTypeVariables(), merged);
 	}
 
 	/**

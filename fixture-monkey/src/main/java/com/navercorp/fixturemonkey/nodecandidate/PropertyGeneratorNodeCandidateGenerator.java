@@ -44,8 +44,8 @@ import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.MethodInvocationCreationMethod;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Bridges {@link PropertyGenerator} to {@link JvmNodeCandidateGenerator}.
@@ -103,8 +103,8 @@ public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCan
 	/**
 	 * Overlays property-level annotations and nullability onto the given {@link JvmType}.
 	 * <p>
-	 * Limitation: when the overlay does not match the base, a new {@link JavaType} is constructed,
-	 * which means any concrete {@link JvmType} implementation other than {@link JavaType}
+	 * Limitation: when the overlay does not match the base, a new {@link ReflectiveJvmType} is constructed,
+	 * which means any concrete {@link JvmType} implementation other than {@link ReflectiveJvmType}
 	 * (e.g., language-specific subtypes such as a Kotlin {@code JvmType}) is lost — only the
 	 * raw type, type variables, and component type are carried over.
 	 */
@@ -117,7 +117,7 @@ public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCan
 		if (annotationsAligned && nullableAligned) {
 			return base;
 		}
-		return new JavaType(
+		return new ReflectiveJvmType(
 			base.getRawType(),
 			base.getTypeVariables(),
 			propertyAnnotations,

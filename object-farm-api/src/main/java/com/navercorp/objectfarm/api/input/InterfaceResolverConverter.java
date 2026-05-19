@@ -30,8 +30,8 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathInterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Converts value information to TransformPathResolver for interface resolution.
@@ -79,7 +79,11 @@ public final class InterfaceResolverConverter {
 
 			// Preserve type variables from the original interface type
 			// e.g., List<String> → ArrayList<String> (not raw ArrayList)
-			return new JavaType(concreteType, interfaceType.getTypeVariables(), interfaceType.getAnnotations());
+			return new ReflectiveJvmType(
+				concreteType,
+				interfaceType.getTypeVariables(),
+				interfaceType.getAnnotations()
+			);
 		};
 
 		return new PathInterfaceResolver(pattern, interfaceResolver);
@@ -145,7 +149,7 @@ public final class InterfaceResolverConverter {
 			return null;
 		}
 
-		JvmType resolvedType = new JavaType(
+		JvmType resolvedType = new ReflectiveJvmType(
 			value.getClass(),
 			typeVariables,
 			Collections.emptyList()

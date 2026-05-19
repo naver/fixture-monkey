@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * This class is used to resolve more concrete types for a given interface.
@@ -58,7 +58,7 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 
 		if (!typeVariables.isEmpty()) {
 			return concreteTypes.stream()
-				.map(it -> new JavaType(it, typeVariables, property.getAnnotations()))
+				.map(it -> new ReflectiveJvmType(it, typeVariables, property.getAnnotations()))
 				.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
 				.collect(Collectors.toList());
 		}

@@ -41,9 +41,9 @@ import com.navercorp.objectfarm.api.node.specs.ImmutableObject.StringObject;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTreeTransformer;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ObjectTypeReference;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class JavaNodeTest {
 	public static final FixedContainerSizeResolver CONTAINER_SIZE_RESOLVER =
@@ -69,7 +69,7 @@ class JavaNodeTest {
 	@Test
 	void fieldNames() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(SimpleObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(SimpleObject.class));
 
 		// when
 		List<JvmNode> children = tree.getChildren(tree.getRootNode());
@@ -84,7 +84,7 @@ class JavaNodeTest {
 	@Test
 	void list() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(ListObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(ListObject.class));
 
 		// when
 		JvmNode listField = tree.getChildren(tree.getRootNode()).get(0);
@@ -98,7 +98,7 @@ class JavaNodeTest {
 	@Test
 	void listSelf() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<List<String>>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<List<String>>() {
 		}));
 
 		// when
@@ -112,7 +112,7 @@ class JavaNodeTest {
 	@Test
 	void nestedListSelf() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<List<List<String>>>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<List<List<String>>>() {
 		}));
 		JvmNode root = tree.getRootNode();
 
@@ -136,7 +136,7 @@ class JavaNodeTest {
 	@Test
 	void array() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(ArrayObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(ArrayObject.class));
 
 		// when
 		JvmNode arrayField = tree.getChildren(tree.getRootNode()).get(0);
@@ -150,7 +150,7 @@ class JavaNodeTest {
 	@Test
 	void arraySelf() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<String[]>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<String[]>() {
 		}));
 
 		// when
@@ -164,7 +164,7 @@ class JavaNodeTest {
 	@Test
 	void listWithWildcard() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(ListWildcardObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(ListWildcardObject.class));
 
 		// when
 		JvmNode listField = tree.getChildren(tree.getRootNode()).get(0);
@@ -178,7 +178,7 @@ class JavaNodeTest {
 	@Test
 	void listWithWildcardSelf() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<List<? extends String>>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<List<? extends String>>() {
 		}));
 
 		// when
@@ -192,7 +192,7 @@ class JavaNodeTest {
 	@Test
 	void set() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(SetObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(SetObject.class));
 
 		// when
 		JvmNode setField = tree.getChildren(tree.getRootNode()).get(0);
@@ -206,7 +206,7 @@ class JavaNodeTest {
 	@Test
 	void map() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(MapObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(MapObject.class));
 
 		// when
 		JvmNode mapField = tree.getChildren(tree.getRootNode()).get(0);
@@ -224,7 +224,7 @@ class JavaNodeTest {
 	@Test
 	void mapSelf() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<Map<String, Integer>>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<Map<String, Integer>>() {
 		}));
 
 		// when
@@ -242,7 +242,7 @@ class JavaNodeTest {
 	@Test
 	void listMapSelf() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<List<Map<String, Integer>>>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<List<Map<String, Integer>>>() {
 		}));
 
 		// when
@@ -261,7 +261,7 @@ class JavaNodeTest {
 	@Test
 	void objectList() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(ObjectListObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(ObjectListObject.class));
 
 		// when
 		JvmNode listNode = tree.getChildren(tree.getRootNode()).get(0);
@@ -279,7 +279,7 @@ class JavaNodeTest {
 	@Test
 	void objectListSelf() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<List<StringObject>>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<List<StringObject>>() {
 		}));
 
 		// when
@@ -296,7 +296,7 @@ class JavaNodeTest {
 	@Test
 	void genericArray() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(GenericStringArrayObject.class));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(GenericStringArrayObject.class));
 
 		// when
 		JvmType actual = tree.getChildren(tree.getRootNode()).get(0).getConcreteType();
@@ -309,8 +309,10 @@ class JavaNodeTest {
 	@Test
 	void genericImplementation() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<GenericImplementation<String>>() {
-		}));
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(
+			new ObjectTypeReference<GenericImplementation<String>>() {
+			}
+		));
 
 		// when
 		JvmType actual = tree.getChildren(tree.getRootNode()).get(0).getConcreteType();
@@ -322,7 +324,7 @@ class JavaNodeTest {
 	@Test
 	void genericArrayTypeReference() {
 		// given
-		JvmNodeTree tree = createNodeTree(new JavaType(new ObjectTypeReference<GenericArrayObject<String>>() {
+		JvmNodeTree tree = createNodeTree(new ReflectiveJvmType(new ObjectTypeReference<GenericArrayObject<String>>() {
 		}));
 
 		// when

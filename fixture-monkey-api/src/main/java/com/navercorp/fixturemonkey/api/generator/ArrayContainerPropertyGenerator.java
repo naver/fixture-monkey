@@ -27,8 +27,8 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArrayContainerPropertyGenerator implements ContainerPropertyGenerator {
@@ -68,7 +68,7 @@ public final class ArrayContainerPropertyGenerator implements ContainerPropertyG
 		}
 		Class<?> rawType = arrayType.getRawType();
 		if (rawType.isArray()) {
-			return new JavaType(rawType.getComponentType());
+			return new ReflectiveJvmType(rawType.getComponentType());
 		}
 		throw new IllegalArgumentException("given type is not an array type: " + arrayType);
 	}

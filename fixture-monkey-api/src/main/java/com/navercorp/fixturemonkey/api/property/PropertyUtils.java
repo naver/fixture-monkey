@@ -29,13 +29,13 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.6.12", status = Status.MAINTAINED)
 public abstract class PropertyUtils {
 	public static Property toProperty(Class<?> type) {
-		return toProperty(new JavaType(type));
+		return toProperty(new ReflectiveJvmType(type));
 	}
 
 	public static Property toProperty(TypeReference<?> typeReference) {

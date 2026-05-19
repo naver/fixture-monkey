@@ -205,7 +205,10 @@ public final class NodeContextFactory {
 		);
 	}
 
-	private void applyCandidateGenerator(JavaNodeContext.Builder builder, JvmNodeCandidateGenerator candidateGenerator) {
+	private void applyCandidateGenerator(
+		JavaNodeContext.Builder builder,
+		JvmNodeCandidateGenerator candidateGenerator
+	) {
 		if (candidateGeneratorWrapper != null) {
 			// Wrap with platform-specific isSupported check
 			// (e.g., KotlinNodeCandidateGenerator that only supports Kotlin types).

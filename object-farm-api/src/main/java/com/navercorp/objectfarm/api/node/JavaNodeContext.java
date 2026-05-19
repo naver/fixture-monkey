@@ -41,8 +41,8 @@ import com.navercorp.objectfarm.api.nodecandidate.DefaultInterfaceNodeCandidateG
 import com.navercorp.objectfarm.api.nodecandidate.JavaFieldNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.ObjectFarmJdkVariantOptions;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Context for Java node creation that provides necessary components for consistent node generation.
@@ -513,7 +513,7 @@ public final class JavaNodeContext implements JvmNodeContext {
 			}
 
 			// Return new type with concrete implementation
-			return new JavaType(implementation, jvmType.getTypeVariables(), jvmType.getAnnotations());
+			return new ReflectiveJvmType(implementation, jvmType.getTypeVariables(), jvmType.getAnnotations());
 		};
 	}
 

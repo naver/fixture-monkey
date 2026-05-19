@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.objectfarm.api.node.specs.InterfaceSpecs.Interface;
 import com.navercorp.objectfarm.api.node.specs.InterfaceSpecs.InterfaceImplementation;
 import com.navercorp.objectfarm.api.node.specs.InterfaceSpecs.InterfaceObject;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 class JavaNodePromoterTest {
@@ -61,14 +61,14 @@ class JavaNodePromoterTest {
 			.containerSizeResolver(CONTAINER_SIZE_RESOLVER)
 			.interfaceResolver(type -> {
 				if (Types.isAssignable(Interface.class, type.getRawType())) {
-					return new JavaType(InterfaceImplementation.class);
+					return new ReflectiveJvmType(InterfaceImplementation.class);
 				}
 				return null;
 			})
 			.build();
 
 		JavaNode node = new JavaNode(
-			new JavaType(InterfaceObject.class),
+			new ReflectiveJvmType(InterfaceObject.class),
 			"$"
 		);
 

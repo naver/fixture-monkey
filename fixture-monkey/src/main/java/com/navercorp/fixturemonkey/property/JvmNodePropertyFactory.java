@@ -44,8 +44,8 @@ import com.navercorp.objectfarm.api.nodecandidate.ConstructorParamCreationMethod
 import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.FieldAccessCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.MethodInvocationCreationMethod;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Factory for creating appropriate {@link Property} implementations from {@link JvmNode} and {@link JvmType}.
@@ -121,7 +121,7 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 				Class<?> actualParamType = findConstructorParamType(ctor, node.getNodeName());
 				JvmType paramJvmType = jvmType;
 				if (actualParamType != null && actualParamType.isPrimitive()) {
-					paramJvmType = new JavaType(
+					paramJvmType = new ReflectiveJvmType(
 						actualParamType,
 						Collections.emptyList(),
 						Collections.emptyList(),

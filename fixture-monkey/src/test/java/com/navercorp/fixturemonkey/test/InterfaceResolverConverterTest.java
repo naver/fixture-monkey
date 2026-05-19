@@ -29,8 +29,8 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.InterfaceResolverConverter;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class InterfaceResolverConverterTest {
 
@@ -66,7 +66,7 @@ class InterfaceResolverConverterTest {
 		assertThat(resolver.matches(path)).isTrue();
 
 		InterfaceResolver interfaceResolver = resolver.getCustomizer();
-		JvmType animalType = new JavaType(Animal.class);
+		JvmType animalType = new ReflectiveJvmType(Animal.class);
 		JvmType resolvedType = interfaceResolver.resolve(animalType);
 
 		assertThat(resolvedType).isNotNull();
@@ -80,7 +80,7 @@ class InterfaceResolverConverterTest {
 		assertThat(resolver).isNotNull();
 
 		InterfaceResolver interfaceResolver = resolver.getCustomizer();
-		JvmType animalType = new JavaType(Animal.class);
+		JvmType animalType = new ReflectiveJvmType(Animal.class);
 		JvmType resolvedType = interfaceResolver.resolve(animalType);
 
 		assertThat(resolvedType).isNotNull();
@@ -93,7 +93,7 @@ class InterfaceResolverConverterTest {
 
 		InterfaceResolver interfaceResolver = resolver.getCustomizer();
 
-		JvmType stringType = new JavaType(String.class);
+		JvmType stringType = new ReflectiveJvmType(String.class);
 		JvmType resolvedType = interfaceResolver.resolve(stringType);
 
 		assertThat(resolvedType).isNull();
@@ -109,7 +109,7 @@ class InterfaceResolverConverterTest {
 	@Test
 	void createsResolverWithTypeVariables() {
 		List<String> stringList = Collections.singletonList("test");
-		JvmType stringType = new JavaType(String.class);
+		JvmType stringType = new ReflectiveJvmType(String.class);
 
 		PathResolver<InterfaceResolver> resolver = InterfaceResolverConverter.fromValueWithGenerics(
 			"$.items",
@@ -120,7 +120,7 @@ class InterfaceResolverConverterTest {
 		assertThat(resolver).isNotNull();
 
 		InterfaceResolver interfaceResolver = resolver.getCustomizer();
-		JvmType listType = new JavaType(List.class);
+		JvmType listType = new ReflectiveJvmType(List.class);
 		JvmType resolvedType = interfaceResolver.resolve(listType);
 
 		assertThat(resolvedType).isNotNull();

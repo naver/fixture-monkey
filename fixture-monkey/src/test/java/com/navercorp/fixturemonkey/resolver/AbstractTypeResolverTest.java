@@ -31,8 +31,8 @@ import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolve
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.node.SeedState;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class AbstractTypeResolverTest {
 
@@ -60,7 +60,7 @@ class AbstractTypeResolverTest {
 	@Test
 	void concreteInputReturnsUnchanged() {
 		// given
-		JvmType input = new JavaType(Dog.class);
+		JvmType input = new ReflectiveJvmType(Dog.class);
 
 		// when
 		JvmType result = resolver.resolve(input, NO_LOOKUP, 10);
@@ -72,7 +72,7 @@ class AbstractTypeResolverTest {
 	@Test
 	void abstractInputWithoutLookupReturnsUnchanged() {
 		// given
-		JvmType input = new JavaType(Animal.class);
+		JvmType input = new ReflectiveJvmType(Animal.class);
 
 		// when
 		JvmType result = resolver.resolve(input, NO_LOOKUP, 10);
@@ -88,7 +88,7 @@ class AbstractTypeResolverTest {
 			property.getJvmType().getRawType() == Animal.class ? candidates(Dog.class) : null;
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Animal.class), lookup, 10);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Animal.class), lookup, 10);
 
 		// then
 		assertThat(result.getRawType()).isEqualTo(Dog.class);
@@ -101,7 +101,7 @@ class AbstractTypeResolverTest {
 			property.getJvmType().getRawType() == Bird.class ? candidates(Sparrow.class) : null;
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Bird.class), lookup, 10);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Bird.class), lookup, 10);
 
 		// then
 		assertThat(result.getRawType()).isEqualTo(Sparrow.class);
@@ -122,7 +122,7 @@ class AbstractTypeResolverTest {
 		};
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Animal.class), lookup, 10);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Animal.class), lookup, 10);
 
 		// then
 		assertThat(result.getRawType()).isEqualTo(Dog.class);
@@ -135,7 +135,7 @@ class AbstractTypeResolverTest {
 			property.getJvmType().getRawType() == Animal.class ? candidates(Animal.class) : null;
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Animal.class), lookup, 10);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Animal.class), lookup, 10);
 
 		// then
 		assertThat(result.getRawType()).isEqualTo(Animal.class);
@@ -156,7 +156,7 @@ class AbstractTypeResolverTest {
 		};
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Animal.class), lookup, 1);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Animal.class), lookup, 1);
 
 		// then
 		assertThat(result.getRawType()).isEqualTo(Mammal.class);
@@ -168,7 +168,7 @@ class AbstractTypeResolverTest {
 		Function<Property, CandidateConcretePropertyResolver> lookup = property -> candidates(Dog.class);
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Animal.class), lookup, 0);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Animal.class), lookup, 0);
 
 		// then
 		assertThat(result.getRawType()).isEqualTo(Animal.class);
@@ -180,7 +180,7 @@ class AbstractTypeResolverTest {
 		Function<Property, CandidateConcretePropertyResolver> lookup = property -> p -> Collections.emptyList();
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Animal.class), lookup, 10);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Animal.class), lookup, 10);
 
 		// then
 		assertThat(result.getRawType()).isEqualTo(Animal.class);
@@ -193,7 +193,7 @@ class AbstractTypeResolverTest {
 			property.getJvmType().getRawType() == Animal.class ? candidates(Dog.class, Cat.class) : null;
 
 		// when
-		JvmType result = resolver.resolve(new JavaType(Animal.class), lookup, 10);
+		JvmType result = resolver.resolve(new ReflectiveJvmType(Animal.class), lookup, 10);
 
 		// then
 		assertThat(result.getRawType()).isIn(Dog.class, Cat.class);
@@ -201,7 +201,7 @@ class AbstractTypeResolverTest {
 
 	private static CandidateConcretePropertyResolver candidates(Class<?>... classes) {
 		return property -> Arrays.stream(classes)
-			.map(c -> JvmNodePropertyFactory.fromType(new JavaType(c)))
+			.map(c -> JvmNodePropertyFactory.fromType(new ReflectiveJvmType(c)))
 			.collect(Collectors.toList());
 	}
 }

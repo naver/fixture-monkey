@@ -21,13 +21,13 @@ package com.navercorp.fixturemonkey.api.generator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ContainerPropertyGenerator {
-	JvmType DEFAULT_ELEMENT_JVM_TYPE = new JavaType(String.class);
+	JvmType DEFAULT_ELEMENT_JVM_TYPE = new ReflectiveJvmType(String.class);
 
 	ContainerProperty generate(ContainerPropertyGeneratorContext context);
 }

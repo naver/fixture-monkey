@@ -65,8 +65,8 @@ import com.navercorp.fixturemonkey.tracing.AssemblyTraceBuilder;
 import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.expression.PathExpression;
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -654,16 +654,16 @@ public final class ArbitraryResolver {
 	 */
 	private JvmType resolveJvmTypeForMatcher(Class<?> targetType, Matcher matcher, Set<Class<?>> relevantTypes) {
 		if (relevantTypes.contains(targetType)) {
-			return new JavaType(targetType);
+			return new ReflectiveJvmType(targetType);
 		}
 		if (matcher instanceof AssignableTypeMatcher) {
 			for (Class<?> relevantType : relevantTypes) {
 				if (targetType.isAssignableFrom(relevantType)) {
-					return new JavaType(relevantType);
+					return new ReflectiveJvmType(relevantType);
 				}
 			}
 		}
-		return new JavaType(targetType);
+		return new ReflectiveJvmType(targetType);
 	}
 
 	private static final class CycleDetector {
