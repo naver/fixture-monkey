@@ -116,7 +116,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.monkeyContext = monkeyContext;
 		this.standbyContexts = standbyContexts;
 		this.instantiatorProcessor = instantiatorProcessor;
-		this.rootClass = rootProperty.getJvmType().getRawType();
+		this.rootClass = Types.normalizeRawType(rootProperty.getJvmType().getRawType());
 	}
 
 	@Override
@@ -332,7 +332,11 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArbitraryBuilder<T> setPostCondition(Predicate<T> predicate) {
-		return this.setPostCondition(HEAD_NAME, (Class<T>)rootProperty.getJvmType().getRawType(), predicate);
+		return this.setPostCondition(
+			HEAD_NAME,
+			(Class<T>)Types.normalizeRawType(rootProperty.getJvmType().getRawType()),
+			predicate
+		);
 	}
 
 	@Override
@@ -439,7 +443,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			new TypeReference<T>() {
 				@Override
 				public Type getType() {
-					return rootProperty.getJvmType().getRawType();
+					return Types.normalizeRawType(rootProperty.getJvmType().getRawType());
 				}
 
 				@Override

@@ -540,7 +540,9 @@ public final class ArbitraryResolver {
 	}
 
 	private Set<Property> inferPossibleProperties(Property property, CycleDetector cycleDetector) {
-		Class<?> actualType = property.getJvmType().getRawType();
+		Class<?> actualType = com.navercorp.fixturemonkey.api.type.Types.normalizeRawType(
+			property.getJvmType().getRawType()
+		);
 
 		// Check cache for root-level calls (cache key is the actual type)
 		Set<Property> cached = inferredPropertiesCache.get(actualType);
@@ -556,7 +558,9 @@ public final class ArbitraryResolver {
 	private Set<Property> doInferPossibleProperties(Property property, CycleDetector cycleDetector) {
 		Set<Property> collectedProperties = new HashSet<>();
 
-		Class<?> actualType = property.getJvmType().getRawType();
+		Class<?> actualType = com.navercorp.fixturemonkey.api.type.Types.normalizeRawType(
+			property.getJvmType().getRawType()
+		);
 		if (Types.isJavaType(actualType)) {
 			collectedProperties.add(property);
 			return collectedProperties;

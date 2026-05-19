@@ -835,7 +835,7 @@ final class ValueProjectionAssembler {
 			if (!addedToVisited) {
 				List<Property> filteredChildren = new ArrayList<>();
 				for (Property childProp : childProperties) {
-					Class<?> childRawType = childProp.getJvmType().getRawType();
+					Class<?> childRawType = Types.normalizeRawType(childProp.getJvmType().getRawType());
 					boolean isRecursiveChild =
 						visitedTypes.contains(childRawType) || childRawType.isAssignableFrom(actualType);
 					if (!isRecursiveChild) {
@@ -942,7 +942,7 @@ final class ValueProjectionAssembler {
 				result = options.getDefaultArbitraryGenerator().generate(context);
 			}
 
-			Class<?> concreteRawType = concreteProperty.getJvmType().getRawType();
+			Class<?> concreteRawType = Types.normalizeRawType(concreteProperty.getJvmType().getRawType());
 			if (!concreteRawType.isPrimitive()) {
 				result = result.injectNull(nullInject);
 			}

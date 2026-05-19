@@ -298,7 +298,8 @@ public final class FixtureMonkeyBuilder {
 	public FixtureMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
 		return pushExceptGenerateType(
 			property -> {
-				Package pkg = Types.primitiveToWrapper(property.getJvmType().getRawType()).getPackage();
+				Package pkg = Types.primitiveToWrapper(Types.normalizeRawType(property.getJvmType().getRawType()))
+					.getPackage();
 				return pkg != null && pkg.getName().startsWith(exceptGeneratePackage);
 			}
 		);
