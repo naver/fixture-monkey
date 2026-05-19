@@ -18,11 +18,13 @@
 
 package com.navercorp.fixturemonkey.nodecandidate;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -42,6 +44,7 @@ import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.MethodInvocationCreationMethod;
+import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -87,7 +90,7 @@ public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCan
 	}
 
 	private JvmNodeCandidate toNodeCandidate(Property property, int index) {
-		JvmType jvmType = property.getJvmType();
+		JvmType jvmType = withPropertyMetadata(property.getJvmType(), property);
 		String name = property.getName();
 		if (name == null) {
 			name = "";
@@ -95,6 +98,24 @@ public final class PropertyGeneratorNodeCandidateGenerator implements JvmNodeCan
 		CreationMethod creationMethod = toCreationMethod(property, index);
 
 		return JavaNodeCandidateFactory.INSTANCE.create(jvmType, name, creationMethod);
+	}
+
+	private static JvmType withPropertyMetadata(JvmType base, Property property) {
+		List<Annotation> propertyAnnotations = property.getAnnotations();
+		Boolean propertyNullable = property.isNullable();
+		Boolean targetNullable = propertyNullable != null ? propertyNullable : base.getNullable();
+		boolean annotationsAligned = base.getAnnotations().equals(propertyAnnotations);
+		boolean nullableAligned = Objects.equals(base.getNullable(), targetNullable);
+		if (annotationsAligned && nullableAligned) {
+			return base;
+		}
+		return new JavaType(
+			base.getRawType(),
+			base.getTypeVariables(),
+			propertyAnnotations,
+			base.getComponentType(),
+			targetNullable
+		);
 	}
 
 	private @Nullable CreationMethod toCreationMethod(Property property, int index) {
