@@ -21,8 +21,8 @@ package com.navercorp.fixturemonkey.kotlin.test
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
-import com.navercorp.fixturemonkey.kotlin.set
 import net.jqwik.api.Example
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
@@ -71,6 +71,26 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     }
 
     @Example
+    fun sampleDefaultValueWhenOptionalParameterIsSkipped() {
+        // when
+        val actual = sut.giveMeKotlinBuilder<DefaultValue>()
+            .set(DefaultValue::stringValue, null)
+            .sample()
+
+        then(actual.stringValue).isEqualTo("default_value")
+    }
+
+    @Example
+    fun sampleNullableDefaultValue() {
+        // when
+        val actual = sut.giveMeKotlinBuilder<NullableDefaultValue>()
+            .set(NullableDefaultValue::stringValue, null)
+            .sample()
+
+        then(actual.stringValue).isNull()
+    }
+
+    @Example
     fun sampleDuration() {
         // when
         val duration = sut.giveMeOne<Duration>()
@@ -92,7 +112,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         val duration = Random().nextLong().toDuration(DurationUnit.values().random())
 
         // when
-        val one = sut.giveMeBuilder<DurationValue>()
+        val one = sut.giveMeKotlinBuilder<DurationValue>()
             .set(DurationValue::duration, duration)
             .sample()
 

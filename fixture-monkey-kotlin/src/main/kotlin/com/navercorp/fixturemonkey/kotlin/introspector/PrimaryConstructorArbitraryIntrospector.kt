@@ -36,15 +36,23 @@ import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Modifier
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
-    override fun match(property: Property): Boolean =
-        property.type.actualType().isKotlinType() &&
-            !property.type.actualType().cachedKotlin().isKotlinLambda() &&
-            property.type.actualType().cachedKotlin() != Unit::class &&
-            property.type.actualType().cachedKotlin().objectInstance == null
+    override fun match(property: Property): Boolean {
+        val actualType = property.type.actualType()
+        if (!actualType.isKotlinType()) {
+            return false
+        }
+
+        val kotlinClass = actualType.cachedKotlin()
+
+        return !kotlinClass.isKotlinLambda() &&
+            kotlinClass != Unit::class &&
+            kotlinClass.objectInstance == null
+    }
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
@@ -63,20 +71,46 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
-                    val arbitrariesByPropertyName: Map<String?, Any?> =
-                        it.mapKeys { map -> map.key.objectProperty.property.name }
-                    val generatedByParameters = mutableMapOf<KParameter, Any?>()
-
-                    for (parameter in constructor.parameters) {
-                        val resolvedArbitrary = arbitrariesByPropertyName[parameter.name]
-                        if (resolvedArbitrary != null || !parameter.isOptional || parameter.type.isMarkedNullable) {
-                            generatedByParameters[parameter] = resolvedArbitrary
-                        }
+                    val arbitrariesByPropertyName = HashMap<String?, Any?>(it.size)
+                    it.forEach { (arbitraryProperty, value) ->
+                        arbitrariesByPropertyName[arbitraryProperty.objectProperty.property.name] = value
                     }
 
-                    constructor.callBy(generatedByParameters)
+                    callConstructor(constructor, arbitrariesByPropertyName)
                 },
         )
+    }
+
+    private fun callConstructor(
+        constructor: KFunction<*>,
+        arbitrariesByPropertyName: Map<String?, Any?>
+    ): Any? {
+        val parameters = constructor.parameters
+        val arguments = arrayOfNulls<Any>(parameters.size)
+        val includedParameters = BooleanArray(parameters.size)
+        var hasSkippedOptionalParameter = false
+
+        for ((index, parameter) in parameters.withIndex()) {
+            val resolvedArbitrary = arbitrariesByPropertyName[parameter.name]
+            if (resolvedArbitrary != null || !parameter.isOptional || parameter.type.isMarkedNullable) {
+                arguments[index] = resolvedArbitrary
+                includedParameters[index] = true
+            } else {
+                hasSkippedOptionalParameter = true
+            }
+        }
+
+        if (!hasSkippedOptionalParameter) {
+            return constructor.call(*arguments)
+        }
+
+        val generatedByParameters = LinkedHashMap<KParameter, Any?>(parameters.size)
+        for ((index, parameter) in parameters.withIndex()) {
+            if (includedParameters[index]) {
+                generatedByParameters[parameter] = arguments[index]
+            }
+        }
+        return constructor.callBy(generatedByParameters)
     }
 
     override fun getRequiredPropertyGenerator(p: Property): PropertyGenerator = PROPERTY_GENERATOR
