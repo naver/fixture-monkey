@@ -245,6 +245,7 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 				false,
 				false,
 				false,
+				false,
 				null,
 				false
 			);

@@ -62,6 +62,8 @@ import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.customizer.ApplyNodeCountManipulator;
@@ -150,6 +152,9 @@ public final class ArbitraryResolver {
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts
 	) {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
+		ArbitraryValidator arbitraryValidator = fixtureMonkeyOptions.getDefaultArbitraryValidator();
+		ValidationFailureRecorder validationFailureRecorder = activeContext.getValidationFailureRecorder();
+		validationFailureRecorder.clear();
 
 		// Early check for adapter path - skip ObjectTree creation entirely
 		if (nodeTreeAdapter != null) {
@@ -671,7 +676,8 @@ public final class ArbitraryResolver {
 				return (CombinableArbitrary<Object>)objectTree.generate();
 			},
 			fixtureMonkeyOptions.getGenerateMaxTries(),
-			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
+			arbitraryValidator,
+			validationFailureRecorder,
 			activeContext::isValidOnly
 		);
 	}

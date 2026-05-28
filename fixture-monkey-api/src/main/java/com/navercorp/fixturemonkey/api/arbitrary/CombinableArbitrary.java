@@ -29,6 +29,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 
 /**
  * An arbitrary instance for combining arbitraries in order to generate an instance of specific class.
@@ -157,6 +158,27 @@ public interface CombinableArbitrary<T> {
 			tries,
 			this,
 			predicate
+		);
+	}
+
+	default CombinableArbitrary<T> filter(
+		int tries,
+		Predicate<T> predicate,
+		ValidationFailureRecorder validationFailureRecorder
+	) {
+		if (this instanceof FilteredCombinableArbitrary) {
+			return new FilteredCombinableArbitrary<>(
+				tries,
+				(FilteredCombinableArbitrary<T>)this,
+				predicate,
+				validationFailureRecorder
+			);
+		}
+		return new FilteredCombinableArbitrary<>(
+			tries,
+			this,
+			predicate,
+			validationFailureRecorder
 		);
 	}
 
