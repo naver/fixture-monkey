@@ -42,7 +42,7 @@ internal class KotlinConstructorParameterPropertyGenerator(
 
     override fun generateChildProperties(property: Property): List<Property> =
         parameterPropertiesCache.computeIfAbsent(property) { _ ->
-            val constructorParameterNames = constructorResolver.invoke(property).parameters.map { it.name }
+            val constructorParameterNames = constructorResolver.invoke(property).parameters.mapTo(HashSet()) { it.name }
 
             val kotlinProperties = getMemberProperties(property) {
                 parameterFilter.invoke(it).and(constructorParameterNames.contains(it.name))

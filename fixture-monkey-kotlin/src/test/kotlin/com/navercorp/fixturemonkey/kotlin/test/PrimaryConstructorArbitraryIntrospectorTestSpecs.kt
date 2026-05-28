@@ -53,6 +53,11 @@ class DefaultValue(
     val stringValue: String = "default_value",
 )
 
+class NullableDefaultValue(
+    val intValue: Int,
+    val stringValue: String? = "default_value",
+)
+
 class SecondaryConstructor(
     val intValue: Int,
     val stringValue: String,
