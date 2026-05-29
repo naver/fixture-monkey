@@ -46,8 +46,9 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -191,8 +192,10 @@ public class FixtureMonkeyOptionsAdditionalTestSpecs {
 			com.navercorp.objectfarm.api.type.JvmType firstElementType = elementTypes.get(0);
 			com.navercorp.objectfarm.api.type.JvmType secondElementType = elementTypes.get(1);
 			List<com.navercorp.fixturemonkey.api.property.Property> elementProperties = new ArrayList<>();
-			elementProperties.add(new ElementProperty(property, firstElementType, 0, 0));
-			elementProperties.add(new ElementProperty(property, secondElementType, 1, 1));
+			elementProperties.add(
+				new DefaultContainerElementProperty(property, new TypeParameterProperty(firstElementType), 0, 0));
+			elementProperties.add(
+				new DefaultContainerElementProperty(property, new TypeParameterProperty(secondElementType), 1, 1));
 
 			return new ContainerProperty(elementProperties, new ArbitraryContainerInfo(1, 1));
 		}

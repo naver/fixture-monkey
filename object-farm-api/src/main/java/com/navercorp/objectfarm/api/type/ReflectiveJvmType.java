@@ -20,7 +20,6 @@ package com.navercorp.objectfarm.api.type;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -53,14 +52,29 @@ public final class ReflectiveJvmType implements JvmType {
 	private final Boolean nullable;
 	private int cachedHashCode;
 
+	/**
+	 * Use for a bare raw class with no generics, annotations, or nullability information.
+	 * This is the common case for constants and simple value types (e.g. {@code String.class}).
+	 */
 	public ReflectiveJvmType(Class<?> rawType) {
 		this(rawType, Collections.emptyList(), Collections.emptyList());
 	}
 
+	/**
+	 * Use when the raw class plus its generics and annotations are known but nullability is not
+	 * (nullability defaults to {@code null}, meaning "unknown").
+	 * The component type is derived automatically: for an array raw type, {@code typeVariables}
+	 * are treated as the component type's generics.
+	 */
 	public ReflectiveJvmType(Class<?> rawType, List<? extends JvmType> typeVariables, List<Annotation> annotations) {
 		this(rawType, typeVariables, annotations, deriveComponentType(rawType, typeVariables), null);
 	}
 
+	/**
+	 * Use when the raw class, generics, annotations, and an explicit nullability are all known.
+	 * The component type is derived automatically, as in
+	 * {@link #ReflectiveJvmType(Class, List, List)}.
+	 */
 	public ReflectiveJvmType(
 		Class<?> rawType,
 		List<? extends JvmType> typeVariables,
@@ -70,6 +84,12 @@ public final class ReflectiveJvmType implements JvmType {
 		this(rawType, typeVariables, annotations, deriveComponentType(rawType, typeVariables), nullable);
 	}
 
+	/**
+	 * Canonical constructor that all other {@code Class}-based constructors delegate to.
+	 * Use when the component type must be supplied explicitly rather than derived &mdash; for
+	 * example, to preserve a container or array element type taken from an existing
+	 * {@link JvmType} (see {@code SingleElementProperty}).
+	 */
 	public ReflectiveJvmType(
 		Class<?> rawType,
 		List<? extends JvmType> typeVariables,
@@ -84,11 +104,16 @@ public final class ReflectiveJvmType implements JvmType {
 		this.nullable = nullable;
 	}
 
+	/**
+	 * Use when building from a reflection-backed type reference. Resolves wildcards to their
+	 * upper bound and derives the raw type, generics, annotations, and component type from the
+	 * JDK {@link AnnotatedType}.
+	 */
 	public ReflectiveJvmType(ObjectTypeReference<?> typeReference) {
 		AnnotatedType originalType = typeReference.getAnnotatedType();
 		// Resolve wildcard types to their upper bound
 		AnnotatedType resolvedType = Types.resolveWildcardType(originalType);
-		this.rawType = resolveRawType(resolvedType);
+		this.rawType = Types.getActualType(resolvedType);
 		this.typeVariables = Types.getGenericsTypes(resolvedType).stream()
 			.map(annotatedType -> new ReflectiveJvmType(Types.toTypeReference(annotatedType)))
 			.collect(Collectors.toList());
@@ -96,17 +121,6 @@ public final class ReflectiveJvmType implements JvmType {
 		this.annotations = Arrays.stream(resolvedType.getAnnotations())
 			.collect(Collectors.toList());
 		this.nullable = null;
-	}
-
-	private static Class<?> resolveRawType(AnnotatedType annotatedType) {
-		Type type = annotatedType.getType();
-		if (type instanceof GenericArrayType) {
-			// For GenericArrayType, we need the array class, not the component class
-			GenericArrayType genericArrayType = (GenericArrayType)type;
-			Class<?> componentClass = Types.getActualType(genericArrayType.getGenericComponentType());
-			return Array.newInstance(componentClass, 0).getClass();
-		}
-		return Types.getActualType(annotatedType);
 	}
 
 	@Nullable
