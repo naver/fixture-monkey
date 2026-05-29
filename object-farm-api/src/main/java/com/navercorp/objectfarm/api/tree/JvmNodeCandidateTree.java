@@ -377,11 +377,11 @@ public final class JvmNodeCandidateTree {
 		if (isCollectionOrMap) {
 			return Types.isJavaType(rawType);
 		}
-		// For non-Collection/Map types, defer to registered JvmContainerNodeGenerators
-		// (e.g., Pair, Triple). Without this, custom container types' children would be
-		// generated via PropertyGenerator in the candidate tree, which may produce an
-		// unordered result for Kotlin reflection. Collection/Map user classes are
-		// intentionally excluded above so their declared fields are processed normally.
+		// For non-Collection/Map types, defer to the container types registered with
+		// jvmNodeContext (e.g., Pair, Triple). Without this, such custom container types would be
+		// expanded as regular objects in the candidate tree, which may produce an unordered
+		// result for Kotlin reflection. Collection/Map user classes are intentionally excluded
+		// above so their declared fields are processed normally.
 		return jvmNodeContext.isContainerType(jvmType);
 	}
 
