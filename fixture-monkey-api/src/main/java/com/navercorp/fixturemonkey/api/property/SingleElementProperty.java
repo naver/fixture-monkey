@@ -21,15 +21,10 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 
 import org.apiguardian.api.API;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
@@ -46,7 +41,7 @@ import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
  * it can be referenced by {@code list[0]}, {@code list[1]}.
  */
 @API(since = "1.0.17", status = API.Status.EXPERIMENTAL)
-public final class SingleElementProperty extends ElementProperty implements ContainerElementProperty {
+public final class SingleElementProperty implements ContainerElementProperty {
 	private final Property containerProperty;
 
 	private final Property elementProperty;
@@ -57,13 +52,11 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	 */
 	@Deprecated
 	public SingleElementProperty(Property containerProperty) {
-		super(containerProperty, containerProperty.getJvmType(), null, 0);
 		this.containerProperty = containerProperty;
 		this.elementProperty = new TypeParameterProperty(containerProperty.getJvmType());
 	}
 
 	public SingleElementProperty(Property containerProperty, Property elementProperty) {
-		super(containerProperty, containerProperty.getJvmType(), null, 0);
 		this.containerProperty = containerProperty;
 		this.elementProperty = elementProperty;
 	}
@@ -132,34 +125,5 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	@Override
 	public int hashCode() {
 		return Objects.hash(containerProperty, elementProperty);
-	}
-
-	private boolean isOptional(Class<?> type) {
-		return Optional.class.isAssignableFrom(type)
-			|| OptionalInt.class.isAssignableFrom(type)
-			|| OptionalLong.class.isAssignableFrom(type)
-			|| OptionalDouble.class.isAssignableFrom(type);
-	}
-
-	@SuppressWarnings("argument")
-	private @Nullable Object getOptionalValue(Object obj) {
-		Class<?> actualType = Types.getActualType(obj.getClass());
-		if (Optional.class.isAssignableFrom(actualType)) {
-			return ((Optional<?>)obj).orElse(null);
-		}
-
-		if (OptionalInt.class.isAssignableFrom(actualType)) {
-			return ((OptionalInt)obj).orElse(0);
-		}
-
-		if (OptionalLong.class.isAssignableFrom(actualType)) {
-			return ((OptionalLong)obj).orElse(0L);
-		}
-
-		if (OptionalDouble.class.isAssignableFrom(actualType)) {
-			return ((OptionalDouble)obj).orElse(Double.NaN);
-		}
-
-		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
 	}
 }
