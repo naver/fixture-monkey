@@ -54,7 +54,6 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 	}
 
 	@Override
-	@SuppressWarnings("argument")
 	public List<Property> generateChildProperties(Property property) {
 		JvmType parentJvmType = property.getJvmType();
 		Class<?> parentRawType = parentJvmType.getRawType();

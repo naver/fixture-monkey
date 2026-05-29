@@ -52,7 +52,6 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 	 * @return a list of properties of concrete types that implement the interface
 	 */
 	@Override
-	@SuppressWarnings("type.argument.inference.crashed")
 	public List<Property> resolve(Property property) {
 		List<? extends JvmType> typeVariables = property.getJvmType().getTypeVariables();
 
