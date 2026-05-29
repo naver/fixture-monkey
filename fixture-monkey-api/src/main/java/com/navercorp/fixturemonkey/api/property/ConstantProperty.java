@@ -19,15 +19,12 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "1.0.17", status = Status.MAINTAINED)
@@ -39,24 +36,18 @@ public final class ConstantProperty implements Property {
 	private final Object constantValue;
 
 	public ConstantProperty(
-		AnnotatedType annotatedType,
+		JvmType jvmType,
 		@Nullable String propertyName,
-		@Nullable Object constantValue,
-		List<Annotation> annotations
+		@Nullable Object constantValue
 	) {
-		this.jvmType = Types.toJvmType(annotatedType, annotations);
+		this.jvmType = jvmType;
 		this.propertyName = propertyName;
 		this.constantValue = constantValue;
 	}
 
 	@Override
-	public Type getType() {
-		return this.jvmType.getRawType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.jvmType.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.jvmType;
 	}
 
 	@Nullable
@@ -71,8 +62,7 @@ public final class ConstantProperty implements Property {
 	}
 
 	@Nullable
-	@Override
-	public Object getValue(Object instance) {
+	public Object getConstantValue() {
 		return constantValue;
 	}
 }

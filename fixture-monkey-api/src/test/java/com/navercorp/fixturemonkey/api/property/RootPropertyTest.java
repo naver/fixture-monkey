@@ -20,23 +20,23 @@ package com.navercorp.fixturemonkey.api.property;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.lang.reflect.AnnotatedType;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 class RootPropertyTest {
 	@Test
 	void construct() {
 		TypeReference<PropertyValue> typeReference = new TypeReference<PropertyValue>() {
 		};
-		RootProperty sut = new RootProperty(typeReference.getAnnotatedType());
+		RootProperty sut = new RootProperty(
+			new TypeParameterProperty(Types.toJvmType(typeReference.getAnnotatedType(), Collections.emptyList()))
+		);
 
-		then(sut.getType()).isEqualTo(typeReference.getType());
-
-		AnnotatedType annotatedType = sut.getAnnotatedType();
-		then(annotatedType.getType()).isEqualTo(typeReference.getType());
+		then(sut.getJvmType().getRawType()).isEqualTo(typeReference.getType());
 
 		then(sut.getAnnotations()).isEmpty();
 		then(sut.getName()).isEqualTo("$");

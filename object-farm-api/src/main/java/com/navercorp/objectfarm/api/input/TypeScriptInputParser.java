@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Parser for TypeScript-like type syntax strings.
@@ -132,7 +132,7 @@ public final class TypeScriptInputParser implements TypeInputParser {
 				pos++; // skip [
 				expect(']');
 				JvmType elementType = resolvePrimitiveType(baseType, context);
-				return new JavaType(List.class,
+				return new ReflectiveJvmType(List.class,
 					Collections.singletonList(elementType),
 					Collections.emptyList());
 			}
@@ -146,7 +146,7 @@ public final class TypeScriptInputParser implements TypeInputParser {
 
 			if (pos < input.length() && input.charAt(pos) == '}') {
 				pos++;
-				return new JavaType(Object.class);
+				return new ReflectiveJvmType(Object.class);
 			}
 
 			SyntheticJvmType.Builder builder = SyntheticJvmType.builder(typeName);
@@ -177,7 +177,7 @@ public final class TypeScriptInputParser implements TypeInputParser {
 				if (pos < input.length() && input.charAt(pos) == '[') {
 					pos++; // skip [
 					expect(']');
-					propType = new JavaType(List.class,
+					propType = new ReflectiveJvmType(List.class,
 						Collections.singletonList(propType),
 						Collections.emptyList());
 				}
@@ -210,7 +210,7 @@ public final class TypeScriptInputParser implements TypeInputParser {
 			skipWhitespace();
 			expect('>');
 
-			return new JavaType(List.class,
+			return new ReflectiveJvmType(List.class,
 				Collections.singletonList(elementType),
 				Collections.emptyList());
 		}
@@ -225,13 +225,13 @@ public final class TypeScriptInputParser implements TypeInputParser {
 			// Check built-in types
 			Class<?> primitiveClass = TYPE_MAPPING.get(typeName.toLowerCase());
 			if (primitiveClass != null) {
-				return new JavaType(primitiveClass);
+				return new ReflectiveJvmType(primitiveClass);
 			}
 
 			// Try to load as class name
 			try {
 				Class<?> clazz = context.getClassLoader().loadClass(typeName);
-				return new JavaType(clazz);
+				return new ReflectiveJvmType(clazz);
 			} catch (ClassNotFoundException e) {
 				// Unknown type - return as synthetic with no members
 				return SyntheticJvmType.builder(typeName).build();

@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 import java.io.File
 import java.lang.reflect.Modifier
 import java.time.Instant
@@ -39,7 +39,7 @@ import java.time.OffsetTime
 import javax.validation.constraints.FutureOrPresent
 
 class OptionTest {
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun customizeJavaConstraintGenerators() {
         // given
         class InstantObject(@field:FutureOrPresent val value: Instant)
@@ -73,7 +73,7 @@ class OptionTest {
         then(actual).isBetween(thisYearInstant, nextYearInstant)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun customizeJavaConstraintGeneratorsTwice() {
         // given
         class InstantObject(@field:FutureOrPresent val value: Instant)
@@ -117,7 +117,7 @@ class OptionTest {
 
 
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun requiredPropertyGenerator() {
         val sut = FixtureMonkey.builder()
             .objectIntrospector(

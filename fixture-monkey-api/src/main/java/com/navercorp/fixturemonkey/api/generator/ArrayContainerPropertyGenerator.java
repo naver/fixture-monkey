@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,8 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArrayContainerPropertyGenerator implements ContainerPropertyGenerator {
@@ -42,7 +42,7 @@ public final class ArrayContainerPropertyGenerator implements ContainerPropertyG
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 
 		int size = containerInfo.getRandomSize();
-		AnnotatedType elementType = Types.getArrayComponentAnnotatedType(property.getAnnotatedType());
+		JvmType elementType = resolveArrayElementType(property.getJvmType());
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			childProperties.add(
@@ -59,5 +59,17 @@ public final class ArrayContainerPropertyGenerator implements ContainerPropertyG
 			childProperties,
 			containerInfo
 		);
+	}
+
+	private static JvmType resolveArrayElementType(JvmType arrayType) {
+		JvmType componentType = arrayType.getComponentType();
+		if (componentType != null) {
+			return componentType;
+		}
+		Class<?> rawType = arrayType.getRawType();
+		if (rawType.isArray()) {
+			return new ReflectiveJvmType(rawType.getComponentType());
+		}
+		throw new IllegalArgumentException("given type is not an array type: " + arrayType);
 	}
 }

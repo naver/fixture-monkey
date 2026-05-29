@@ -38,7 +38,7 @@ import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Tests for JvmNodeTree.resolve() and JvmNodeTree.getPath() methods.
@@ -65,7 +65,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return root node for root path")
 		void resolveRoot() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(String.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(String.class));
 
 			// when
 			JvmNode resolved = tree.resolve(PathExpression.root());
@@ -78,7 +78,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should resolve field by name")
 		void resolveFieldByName() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 
 			// when
 			JvmNode nameNode = tree.resolve(PathExpression.of("$.name"));
@@ -98,7 +98,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should resolve list element by index")
 		void resolveListElementByIndex() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(ListContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(ListContainer.class));
 
 			// when
 			JvmNode firstItem = tree.resolve(PathExpression.of("$.items[0]"));
@@ -117,7 +117,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should resolve nested path")
 		void resolveNestedPath() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(NestedContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(NestedContainer.class));
 
 			// when
 			JvmNode nestedName = tree.resolve(PathExpression.of("$.nested.name"));
@@ -131,8 +131,8 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should resolve map key and value")
 		void resolveMapKeyValue() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(Map.class,
-				Arrays.asList(new JavaType(String.class), new JavaType(Integer.class)),
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(Map.class,
+				Arrays.asList(new ReflectiveJvmType(String.class), new ReflectiveJvmType(Integer.class)),
 				Collections.emptyList()));
 
 			// when
@@ -151,7 +151,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return null for non-existent path")
 		void resolveNonExistentPath() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 
 			// when
 			JvmNode result = tree.resolve(PathExpression.of("$.nonexistent"));
@@ -164,7 +164,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return null for out of range index")
 		void resolveOutOfRangeIndex() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(ListContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(ListContainer.class));
 
 			// when
 			JvmNode result = tree.resolve(PathExpression.of("$.items[999]"));
@@ -177,7 +177,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should resolve using string path")
 		void resolveWithStringPath() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 
 			// when
 			JvmNode nameNode = tree.resolve("$.name");
@@ -196,7 +196,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return root path for root node")
 		void getPathForRoot() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(String.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(String.class));
 
 			// when
 			PathExpression path = tree.getPath(tree.getRootNode());
@@ -211,7 +211,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return correct path for field node")
 		void getPathForField() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 			JvmNode nameNode = tree.resolve("$.name");
 
 			// when
@@ -226,7 +226,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return correct path for list element")
 		void getPathForListElement() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(ListContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(ListContainer.class));
 			JvmNode firstItem = tree.resolve("$.items[0]");
 			JvmNode secondItem = tree.resolve("$.items[1]");
 
@@ -246,7 +246,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return correct path for nested node")
 		void getPathForNestedNode() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(NestedContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(NestedContainer.class));
 			JvmNode nestedName = tree.resolve("$.nested.name");
 
 			// when
@@ -261,8 +261,8 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return correct path for map key and value")
 		void getPathForMapKeyValue() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(Map.class,
-				Arrays.asList(new JavaType(String.class), new JavaType(Integer.class)),
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(Map.class,
+				Arrays.asList(new ReflectiveJvmType(String.class), new ReflectiveJvmType(Integer.class)),
 				Collections.emptyList()));
 			JvmNode keyNode = tree.resolve("$[0][key]");
 			JvmNode valueNode = tree.resolve("$[0][value]");
@@ -283,8 +283,8 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return null for node not in tree")
 		void getPathForExternalNode() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(String.class));
-			JvmNodeTree otherTree = createTree(new JavaType(Integer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(String.class));
+			JvmNodeTree otherTree = createTree(new ReflectiveJvmType(Integer.class));
 
 			// when
 			PathExpression path = tree.getPath(otherTree.getRootNode());
@@ -302,7 +302,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return null for root node")
 		void getParentForRoot() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 
 			// when
 			JvmNode parent = tree.getParent(tree.getRootNode());
@@ -315,7 +315,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return correct parent for field node")
 		void getParentForField() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(SimpleObject.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 			JvmNode nameNode = tree.resolve("$.name");
 
 			// when
@@ -329,7 +329,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("should return correct parent for nested node")
 		void getParentForNestedNode() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(NestedContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(NestedContainer.class));
 			JvmNode nestedNode = tree.resolve("$.nested");
 			JvmNode nestedName = tree.resolve("$.nested.name");
 
@@ -349,7 +349,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("resolve(getPath(node)) should return same node")
 		void roundTripFromNode() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(NestedContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(NestedContainer.class));
 			JvmNode nestedName = tree.resolve("$.nested.name");
 
 			// when
@@ -364,7 +364,7 @@ class JvmNodeTreeResolveTest {
 		@DisplayName("getPath(resolve(path)) should return equivalent path")
 		void roundTripFromPath() {
 			// given
-			JvmNodeTree tree = createTree(new JavaType(NestedContainer.class));
+			JvmNodeTree tree = createTree(new ReflectiveJvmType(NestedContainer.class));
 			PathExpression originalPath = PathExpression.of("$.nested.name");
 
 			// when
@@ -378,7 +378,7 @@ class JvmNodeTreeResolveTest {
 
 	// Helper methods
 
-	private JvmNodeTree createTree(JavaType rootType) {
+	private JvmNodeTree createTree(ReflectiveJvmType rootType) {
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(rootType, CONTEXT).build();
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
 		return transformer.transform(candidateTree);

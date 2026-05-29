@@ -34,7 +34,6 @@ import jakarta.validation.constraints.Null;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationNullInjectGenerator implements NullInjectGenerator {
@@ -67,7 +66,7 @@ public final class JakartaValidationNullInjectGenerator implements NullInjectGen
 			return 0.0d;
 		}
 
-		if (Types.getActualType(context.getProperty().getType()) == String.class) {
+		if (context.getProperty().getJvmType().getRawType() == String.class) {
 			if (annotations.contains(NotBlank.class) || annotations.contains(NotEmpty.class)) {
 				return 0.0d;
 			}

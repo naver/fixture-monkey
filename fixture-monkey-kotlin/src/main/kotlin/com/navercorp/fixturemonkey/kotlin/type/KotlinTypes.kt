@@ -81,7 +81,7 @@ fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): Annotat
     for (i in propertyGenericsTypes.indices) {
         val generics = propertyGenericsTypes[i]
         if (generics is ParameterizedType || generics::class.java == Class::class.java) {
-            resolvedGenericsTypes.add(i, KotlinAnnotatedType(type, arrayOf()))
+            resolvedGenericsTypes.add(i, KotlinAnnotatedType(generics, arrayOf()))
             resolvedTypes.add(i, generics)
             continue
         }

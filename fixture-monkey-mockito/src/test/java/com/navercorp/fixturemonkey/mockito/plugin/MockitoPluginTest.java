@@ -23,8 +23,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
+import org.junit.jupiter.api.Test;
+
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
@@ -35,7 +36,7 @@ import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.Interfa
 import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.Sample;
 
 class MockitoPluginTest {
-	@Example
+	@Test
 	void mockitoAbstractInterface() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -59,7 +60,7 @@ class MockitoPluginTest {
 		then(actual.getInterfaceSample().getValue()).isEqualTo(mockIntValue);
 	}
 
-	@Example
+	@Test
 	void interfaceImplementsAndMockitoInterface() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(new MockitoPlugin())
@@ -75,7 +76,7 @@ class MockitoPluginTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void interfaceImplementsAndMockitoAbstract() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(new MockitoPlugin())

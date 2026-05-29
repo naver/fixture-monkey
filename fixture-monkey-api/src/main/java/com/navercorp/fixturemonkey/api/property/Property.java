@@ -19,8 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +29,8 @@ import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import com.navercorp.objectfarm.api.type.JvmType;
+
 /**
  * Specifies actual property comprise an instance.
  * It should have a unique name.
@@ -40,18 +40,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public interface Property {
 	/**
-	 * Returns the type of property.
+	 * Returns the {@link JvmType} representation of this property.
 	 *
-	 * @return the type of property
+	 * @return the JvmType of property
 	 */
-	Type getType();
-
-	/**
-	 * Returns the annotatedType of property.
-	 *
-	 * @return the annotatedType of property
-	 */
-	AnnotatedType getAnnotatedType();
+	JvmType getJvmType();
 
 	/**
 	 * Returns the property name.
@@ -83,15 +76,6 @@ public interface Property {
 			.<@NonNull T>map(annotationClass::cast)
 			.findFirst();
 	}
-
-	/**
-	 * Returns a value of the property in {@code instance}.
-	 *
-	 * @param instance an instance which has the property
-	 * @return a value of the property in {@code instance}
-	 */
-	@Nullable
-	Object getValue(Object instance);
 
 	/**
 	 * Returns whether this property is nullable or not.

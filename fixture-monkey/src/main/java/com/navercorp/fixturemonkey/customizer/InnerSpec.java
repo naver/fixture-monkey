@@ -667,7 +667,7 @@ public final class InnerSpec {
 		for (InnerSpec spec : innerSpec.innerSpecs) {
 			ManipulatorHolderSet traversed = traverse(spec);
 			nodeSetManipulatorSnapshots.addAll(traversed.getNodeResolverObjectHolders());
-			containerInfoManipulators.addAll(traversed.getContainerInfoManipulators());
+			containerInfoManipulators.addAll(traversed.getSizeDirectives());
 			postConditionManipulators.addAll(traversed.getPostConditionManipulators());
 		}
 

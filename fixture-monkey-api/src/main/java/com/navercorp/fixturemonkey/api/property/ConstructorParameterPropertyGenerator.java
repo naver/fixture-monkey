@@ -18,21 +18,17 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolveParameterTypes;
 import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolvedParameterNames;
 
 import java.beans.ConstructorProperties;
-import java.lang.reflect.AnnotatedArrayType;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +44,8 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.JvmTypes;
 
 /**
  * Generates properties representing constructor parameters.
@@ -63,7 +61,7 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 		Predicate<Constructor<?>> constructorPredicate,
 		Matcher matcher
 	) {
-		this.constructorsSupplier = p -> TypeCache.getDeclaredConstructors(Types.getActualType(p.getType()));
+		this.constructorsSupplier = p -> TypeCache.getDeclaredConstructors(p.getJvmType().getRawType());
 		this.constructorPredicate = constructorPredicate;
 		this.matcher = matcher;
 	}
@@ -117,36 +115,43 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 	public List<Property> generateParameterProperties(ConstructorPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		Class<?> type = Types.getActualType(property.getType());
+		JvmType parentJvmType = property.getJvmType();
+		Class<?> type = parentJvmType.getRawType();
 		Constructor<?> constructor = context.getConstructor();
-
-		Map<String, AnnotatedType> actualGenericTypesByTypeVariable =
-			getGenericAnnotatedTypesByGenericTypeName(property);
 
 		List<String> parameterNamesByConstructor = Arrays.asList(getParameterNames(constructor));
 		List<@Nullable String> inputParameterNames = context.getInputParameterNames();
-		List<TypeReference<?>> typeReferencesByConstructor = Arrays.stream(constructor.getAnnotatedParameterTypes())
-			.map(it -> actualGenericTypesByTypeVariable.getOrDefault(it.getType().getTypeName(), it))
-			.map(ConstructorParameterPropertyGenerator::toTypeReference)
+		Parameter[] parameters = constructor.getParameters();
+		List<JvmType> resolvedParameterJvmTypes = Arrays.stream(parameters)
+			.map(p -> JvmTypes.resolveJvmType(
+				parentJvmType,
+				p.getParameterizedType(),
+				Arrays.asList(p.getAnnotations())
+			))
 			.collect(Collectors.toList());
 
 		List<String> resolvedParameterNames = resolvedParameterNames(parameterNamesByConstructor, inputParameterNames);
-		List<TypeReference<?>> resolvedTypeReferences =
-			resolveParameterTypes(typeReferencesByConstructor, context.getInputParameterTypes());
+		List<JvmType> resolvedTypes =
+			resolveParameterJvmTypes(resolvedParameterJvmTypes, context.getInputParameterTypes());
 
 		Map<String, Field> fieldsByName = TypeCache.getFieldsByName(type);
-		boolean anyReceiverParameter = Arrays.stream(constructor.getAnnotatedParameterTypes())
-			.anyMatch(it -> constructor.getAnnotatedReceiverType() != null
-				&& it.getType().equals(constructor.getAnnotatedReceiverType().getType()));
-		int parameterSize = typeReferencesByConstructor.size();
+		boolean anyReceiverParameter = constructor.getAnnotatedReceiverType() != null
+			&& Arrays.stream(constructor.getAnnotatedParameterTypes())
+				.anyMatch(it -> it.getType().equals(constructor.getAnnotatedReceiverType().getType()));
+		int parameterSize = parameters.length;
 
 		Map<String, Property> constructorPropertiesByName = new LinkedHashMap<>();
 		if (anyReceiverParameter) {
-			Parameter receiverParameter = constructor.getParameters()[0];
+			Parameter receiverParameter = parameters[0];
+			JvmType receiverJvmType = JvmTypes.resolveJvmType(
+				parentJvmType,
+				receiverParameter.getParameterizedType(),
+				Arrays.asList(receiverParameter.getAnnotations())
+			);
 			constructorPropertiesByName.put(
 				receiverParameter.getName(),
 				new ConstructorProperty(
-					new TypeNameProperty(receiverParameter.getAnnotatedType(), receiverParameter.getName(), null),
+					new TypeNameProperty(receiverJvmType, receiverParameter.getName(), null),
 					constructor,
 					null,
 					null
@@ -160,13 +165,18 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			Field field = fieldsByName.get(parameterName);
 			Property fieldProperty = field != null
 				? new FieldProperty(
-				Types.resolveWithTypeReferenceGenerics(property.getAnnotatedType(), field.getAnnotatedType()),
-				field
+				JvmTypes.resolveJvmType(
+					parentJvmType,
+					field.getGenericType(),
+					Arrays.asList(field.getAnnotations())
+				),
+				field,
+				null
 			)
 				: null;
 
-			AnnotatedType parameterAnnotatedType = resolvedTypeReferences.get(i).getAnnotatedType();
-			if (isGenericAnnotatedType(parameterAnnotatedType) && fieldProperty != null) {
+			JvmType parameterJvmType = resolvedTypes.get(i);
+			if (isUnresolvedGenericType(parameters[i].getParameterizedType()) && fieldProperty != null) {
 				constructorPropertiesByName.put(
 					parameterName,
 					new ConstructorProperty(
@@ -180,7 +190,7 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 				constructorPropertiesByName.put(
 					parameterName,
 					new ConstructorProperty(
-						new TypeNameProperty(parameterAnnotatedType, parameterName, null),
+						new TypeNameProperty(parameterJvmType, parameterName, null),
 						constructor,
 						fieldProperty,
 						null
@@ -193,41 +203,25 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			.collect(Collectors.toList());
 	}
 
-	private static TypeReference<Object> toTypeReference(AnnotatedType annotatedType) {
-		return new TypeReference<Object>() {
-			@Override
-			public Type getType() {
-				return annotatedType.getType();
+	private static List<JvmType> resolveParameterJvmTypes(
+		List<JvmType> defaults,
+		List<TypeReference<?>> inputParameterTypes
+	) {
+		List<JvmType> resolved = new java.util.ArrayList<>();
+		for (int i = 0; i < defaults.size(); i++) {
+			if (inputParameterTypes.size() > i) {
+				resolved.add(Types.toJvmType(
+					inputParameterTypes.get(i).getAnnotatedType(),
+					Collections.emptyList()
+				));
+			} else {
+				resolved.add(defaults.get(i));
 			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return annotatedType;
-			}
-		};
+		}
+		return resolved;
 	}
 
-	private static boolean isGenericAnnotatedType(AnnotatedType annotatedType) {
-		return annotatedType instanceof AnnotatedTypeVariable || annotatedType instanceof AnnotatedArrayType;
-	}
-
-	private static Map<String, AnnotatedType> getGenericAnnotatedTypesByGenericTypeName(Property property) {
-		Class<?> type = Types.getActualType(property.getType());
-
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		List<TypeVariable<? extends Class<?>>> erasedTypeVariables = Arrays.asList(type.getTypeParameters());
-
-		if (genericsTypes.size() != erasedTypeVariables.size()) {
-			return Collections.emptyMap();
-		}
-
-		Map<String, AnnotatedType> actualGenericTypesByTypeName = new HashMap<>();
-		for (int i = 0; i < genericsTypes.size(); i++) {
-			AnnotatedType genericType = genericsTypes.get(i);
-			TypeVariable<? extends Class<?>> erasedTypeVariable = erasedTypeVariables.get(i);
-			actualGenericTypesByTypeName.put(erasedTypeVariable.getName(), genericType);
-		}
-
-		return actualGenericTypesByTypeName;
+	private static boolean isUnresolvedGenericType(Type type) {
+		return type instanceof TypeVariable || type instanceof GenericArrayType;
 	}
 }

@@ -19,16 +19,13 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * It is the property of the root node within the object tree.
@@ -44,13 +41,8 @@ public interface TreeRootProperty extends Property {
 	Property getDelgatedProperty();
 
 	@Override
-	default Type getType() {
-		return getAnnotatedType().getType();
-	}
-
-	@Override
-	default AnnotatedType getAnnotatedType() {
-		return getDelgatedProperty().getAnnotatedType();
+	default JvmType getJvmType() {
+		return getDelgatedProperty().getJvmType();
 	}
 
 	@Override
@@ -63,16 +55,4 @@ public interface TreeRootProperty extends Property {
 		return Collections.emptyList();
 	}
 
-	@Nullable
-	@Override
-	default Object getValue(Object instance) {
-		if (Types.getActualType(this.getType()) == instance.getClass()) {
-			return instance;
-		}
-
-		throw new IllegalArgumentException(
-			"RootProperty obj is not a root type. annotatedType: " + this.getAnnotatedType()
-				+ ", objType: " + instance.getClass()
-		);
-	}
 }

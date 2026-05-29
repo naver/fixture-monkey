@@ -19,9 +19,7 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -43,28 +41,26 @@ public final class FieldProperty implements Property {
 	private final JvmType jvmType;
 	private final Field field;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
+	@Nullable
+	private final Boolean nullable;
 
 	public FieldProperty(Field field) {
-		this(TypeCache.getAnnotatedType(field), field);
+		this(
+			Types.toJvmType(
+				TypeCache.getAnnotatedType(field),
+				Arrays.stream(field.getAnnotations()).collect(Collectors.toList())
+			),
+			field,
+			null
+		);
 	}
 
-	/**
-	 * In general, annotatedType uses the AnnotatedType of Field.
-	 * When the Type of Field is defined as generics, the refied type is not known.
-	 * Use this constructor when specifying a Type that provides a refied Generics type.
-	 *
-	 * @param annotatedType annotatedType of the property
-	 * @param field         field of the property
-	 * @see com.navercorp.fixturemonkey.api.type.Types
-	 */
-	public FieldProperty(AnnotatedType annotatedType, Field field) {
-		this.jvmType = Types.toJvmType(
-			annotatedType,
-			Arrays.stream(field.getAnnotations()).collect(Collectors.toList())
-		);
+	public FieldProperty(JvmType jvmType, Field field, @Nullable Boolean nullable) {
+		this.jvmType = jvmType;
 		this.field = field;
-		this.annotationsMap = this.getAnnotations().stream()
+		this.annotationsMap = jvmType.getAnnotations().stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
+		this.nullable = nullable;
 	}
 
 	public Field getField() {
@@ -72,13 +68,8 @@ public final class FieldProperty implements Property {
 	}
 
 	@Override
-	public Type getType() {
-		return this.jvmType.getRawType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.jvmType.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.jvmType;
 	}
 
 	@Override
@@ -89,6 +80,12 @@ public final class FieldProperty implements Property {
 	@Override
 	public List<Annotation> getAnnotations() {
 		return jvmType.getAnnotations();
+	}
+
+	@Override
+	@Nullable
+	public Boolean isNullable() {
+		return nullable;
 	}
 
 	@Override
@@ -116,24 +113,10 @@ public final class FieldProperty implements Property {
 		return Objects.hash(jvmType);
 	}
 
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		try {
-			this.field.setAccessible(true);
-			return this.field.get(instance);
-		} catch (IllegalAccessException ex) {
-			throw new IllegalArgumentException(
-				"Can not extract value. obj: " + instance.toString() + ", fieldName: " + this.field.getName(),
-				ex
-			);
-		}
-	}
-
 	@Override
 	public String toString() {
 		return "FieldProperty{"
-			+ "annotatedType=" + getAnnotatedType()
+			+ "jvmType=" + jvmType
 			+ ", field=" + field + '}';
 	}
 }

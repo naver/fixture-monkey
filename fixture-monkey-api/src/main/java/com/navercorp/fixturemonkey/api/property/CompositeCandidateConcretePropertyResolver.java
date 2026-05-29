@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "1.0.16", status = Status.EXPERIMENTAL)
+@API(since = "1.0.16", status = Status.MAINTAINED)
 public final class CompositeCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
 	private final List<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 

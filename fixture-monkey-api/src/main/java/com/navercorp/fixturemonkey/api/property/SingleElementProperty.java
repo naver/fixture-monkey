@@ -19,19 +19,14 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 
 import org.apiguardian.api.API;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * It is a property for a fixed single element of a container. ex, Optional, Function, Supplier
@@ -46,7 +41,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
  * it can be referenced by {@code list[0]}, {@code list[1]}.
  */
 @API(since = "1.0.17", status = API.Status.EXPERIMENTAL)
-public final class SingleElementProperty extends ElementProperty implements ContainerElementProperty {
+public final class SingleElementProperty implements ContainerElementProperty {
 	private final Property containerProperty;
 
 	private final Property elementProperty;
@@ -57,25 +52,29 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	 */
 	@Deprecated
 	public SingleElementProperty(Property containerProperty) {
-		super(containerProperty, containerProperty.getAnnotatedType(), null, 0);
 		this.containerProperty = containerProperty;
-		this.elementProperty = new TypeParameterProperty(containerProperty.getAnnotatedType());
+		this.elementProperty = new TypeParameterProperty(containerProperty.getJvmType());
 	}
 
 	public SingleElementProperty(Property containerProperty, Property elementProperty) {
-		super(containerProperty, containerProperty.getAnnotatedType(), null, 0);
 		this.containerProperty = containerProperty;
 		this.elementProperty = elementProperty;
 	}
 
 	@Override
-	public Type getType() {
-		return this.getAnnotatedType().getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.elementProperty.getAnnotatedType();
+	public JvmType getJvmType() {
+		JvmType base = this.elementProperty.getJvmType();
+		List<Annotation> annotations = getAnnotations();
+		if (base.getAnnotations().equals(annotations)) {
+			return base;
+		}
+		return new ReflectiveJvmType(
+			base.getRawType(),
+			base.getTypeVariables(),
+			annotations,
+			base.getComponentType(),
+			base.getNullable()
+		);
 	}
 
 	@Nullable
@@ -87,18 +86,6 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	@Override
 	public List<Annotation> getAnnotations() {
 		return this.containerProperty.getAnnotations();
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		Class<?> actualType = Types.getActualType(instance.getClass());
-
-		if (isOptional(actualType)) {
-			return getOptionalValue(instance);
-		}
-
-		return instance;
 	}
 
 	@Override
@@ -138,34 +125,5 @@ public final class SingleElementProperty extends ElementProperty implements Cont
 	@Override
 	public int hashCode() {
 		return Objects.hash(containerProperty, elementProperty);
-	}
-
-	private boolean isOptional(Class<?> type) {
-		return Optional.class.isAssignableFrom(type)
-			|| OptionalInt.class.isAssignableFrom(type)
-			|| OptionalLong.class.isAssignableFrom(type)
-			|| OptionalDouble.class.isAssignableFrom(type);
-	}
-
-	@SuppressWarnings("argument")
-	private @Nullable Object getOptionalValue(Object obj) {
-		Class<?> actualType = Types.getActualType(obj.getClass());
-		if (Optional.class.isAssignableFrom(actualType)) {
-			return ((Optional<?>)obj).orElse(null);
-		}
-
-		if (OptionalInt.class.isAssignableFrom(actualType)) {
-			return ((OptionalInt)obj).orElse(0);
-		}
-
-		if (OptionalLong.class.isAssignableFrom(actualType)) {
-			return ((OptionalLong)obj).orElse(0L);
-		}
-
-		if (OptionalDouble.class.isAssignableFrom(actualType)) {
-			return ((OptionalDouble)obj).orElse(Double.NaN);
-		}
-
-		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
 	}
 }

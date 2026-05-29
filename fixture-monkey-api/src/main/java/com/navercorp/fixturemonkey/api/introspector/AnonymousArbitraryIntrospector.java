@@ -34,7 +34,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * It generates the anonymous object of interface which has no-argument methods.
@@ -53,7 +52,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 
 	@Override
 	public boolean match(Property property) {
-		return Modifier.isInterface(Types.getActualType(property.getType()).getModifiers());
+		return Modifier.isInterface(property.getJvmType().getRawType().getModifiers());
 	}
 
 	/**
@@ -66,7 +65,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 
 		if (!match(property)) {
 			LOGGER.warn("Given type {} is not an interface. You must use another ArbitraryIntrospector", type);

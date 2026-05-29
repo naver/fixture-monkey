@@ -39,9 +39,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIf;
-
-import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
@@ -80,7 +79,7 @@ class JakartaValidationFixtureMonkeyTest {
 		return MonthDay.now().equals(FIRST_DAY_OF_YEAR);
 	}
 
-	@Example
+	@Test
 	void sampleBigDecimal() {
 		BigDecimalIntrospectorSpec actual = SUT.giveMeOne(BigDecimalIntrospectorSpec.class);
 
@@ -95,7 +94,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(BigDecimal.ZERO);
 	}
 
-	@Example
+	@Test
 	void sampleBigInteger() {
 		BigIntegerIntrospectorSpec actual = SUT.giveMeOne(BigIntegerIntrospectorSpec.class);
 
@@ -110,7 +109,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(BigInteger.ZERO);
 	}
 
-	@Example
+	@Test
 	void sampleBoolean() {
 		BooleanIntrospectorSpec actual = SUT.giveMeOne(BooleanIntrospectorSpec.class);
 
@@ -119,7 +118,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.isAssertTrue()).isTrue();
 	}
 
-	@Example
+	@Test
 	void sampleByte() {
 		ByteIntrospectorSpec actual = SUT.giveMeOne(ByteIntrospectorSpec.class);
 
@@ -135,14 +134,14 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo((byte)0);
 	}
 
-	@Example
+	@Test
 	void sampleCharacter() {
 		CharacterIntrospectorSpec actual = SUT.giveMeOne(CharacterIntrospectorSpec.class);
 
 		then(actual.getCharacter()).isBetween(Character.MIN_VALUE, Character.MAX_VALUE);
 	}
 
-	@Example
+	@Test
 	void sampleDouble() {
 		DoubleIntrospectorSpec actual = SUT.giveMeOne(DoubleIntrospectorSpec.class);
 
@@ -158,7 +157,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Example
+	@Test
 	void sampleFloat() {
 		FloatIntrospectorSpec actual = SUT.giveMeOne(FloatIntrospectorSpec.class);
 
@@ -174,7 +173,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Example
+	@Test
 	void sampleInt() {
 		IntIntrospectorSpec actual = SUT.giveMeOne(IntIntrospectorSpec.class);
 
@@ -190,7 +189,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Example
+	@Test
 	void sampleLong() {
 		LongIntrospectorSpec actual = SUT.giveMeOne(LongIntrospectorSpec.class);
 
@@ -206,7 +205,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Example
+	@Test
 	void sampleShort() {
 		ShortIntrospectorSpec actual = SUT.giveMeOne(ShortIntrospectorSpec.class);
 
@@ -222,7 +221,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo((short)0);
 	}
 
-	@Example
+	@Test
 	void sampleString() {
 		StringIntrospectorSpec actual = SUT.giveMeOne(StringIntrospectorSpec.class);
 
@@ -242,7 +241,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getStr()).doesNotMatch(controlCharacters);
 	}
 
-	@Example
+	@Test
 	void samplePastCalendar() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -252,7 +251,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureCalendar() {
 		Calendar now = Calendar.getInstance();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -262,7 +261,7 @@ class JakartaValidationFixtureMonkeyTest {
 			.isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
-	@Example
+	@Test
 	void samplePastDate() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -272,7 +271,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureDate() {
 		Date now = new Date();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -281,7 +280,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getDateFutureOrPresent().getTime()).isGreaterThanOrEqualTo(now.getTime());
 	}
 
-	@Example
+	@Test
 	void samplePastInstant() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -291,7 +290,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureInstant() {
 		Instant now = Instant.now();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -300,7 +299,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getInstantFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastLocalDate() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -310,7 +309,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureLocalDate() {
 		LocalDate now = LocalDate.now();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -319,7 +318,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getLocalDateFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastLocalDateTime() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -329,7 +328,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureLocalDateTime() {
 		LocalDateTime now = LocalDateTime.now();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -338,7 +337,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getLocalDateTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastLocalTime() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -348,7 +347,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureLocalTime() {
 		LocalTime now = LocalTime.now();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -357,7 +356,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getLocalTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastZonedDateTime() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -367,7 +366,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureZonedDateTime() {
 		ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(ZONED_ID);
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -377,7 +376,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isFirstDayOfYear")
-	@Example
+	@Test
 	void samplePastMonthDay() {
 		MonthDay now = MonthDay.now();
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
@@ -387,7 +386,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureMonthDay() {
 		MonthDay now = MonthDay.now();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -396,7 +395,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getMonthDayFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastOffsetDateTime() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -406,7 +405,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureOffsetDateTime() {
 		OffsetDateTime now = OffsetDateTime.now();
 
@@ -416,7 +415,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getOffsetDateTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastOffsetTime() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -426,7 +425,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureOffsetTime() {
 		OffsetTime now = OffsetTime.now();
 
@@ -436,7 +435,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getOffsetTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastYear() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -446,7 +445,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureYear() {
 		Year now = Year.now();
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
@@ -455,7 +454,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getYearFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void samplePastYearMonth() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
@@ -465,7 +464,7 @@ class JakartaValidationFixtureMonkeyTest {
 	}
 
 	@DisabledIf("isLastDayOfYear")
-	@Example
+	@Test
 	void sampleFutureYearMonth() {
 		YearMonth now = YearMonth.now();
 
@@ -475,7 +474,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getYearMonthFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
-	@Example
+	@Test
 	void sampleNullAnnotations() {
 		NullAnnotationIntrospectorSpec actual = SUT.giveMeOne(NullAnnotationIntrospectorSpec.class);
 
@@ -486,7 +485,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getNotEmptyContainer()).isNotEmpty();
 	}
 
-	@Example
+	@Test
 	void sampleContainerAnnotations() {
 		ContainerAnnotationIntrospectorSpec actual = SUT.giveMeOne(ContainerAnnotationIntrospectorSpec.class);
 
@@ -498,7 +497,7 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getNotEmptyAndMaxSizeContainer()).hasSizeBetween(1, 5);
 	}
 
-	@Example
+	@Test
 	void logFailedProperties() {
 		thenThrownBy(
 			() -> SUT.giveMeBuilder(NullAnnotationIntrospectorSpec.class)

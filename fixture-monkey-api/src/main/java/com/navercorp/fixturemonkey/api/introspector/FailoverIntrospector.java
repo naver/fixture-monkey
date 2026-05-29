@@ -64,7 +64,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 						String.format(
 							"\"%s\" is failed to introspect \"%s\" type.",
 							introspector.getClass().getSimpleName(),
-							((Class<?>)context.getResolvedProperty().getType()).getName()
+							context.getResolvedProperty().getJvmType().getRawType().getName()
 						),
 						ex
 					);
@@ -94,7 +94,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 									String.format(
 										"\"%s\" is failed to introspect \"%s\" type.",
 										Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
-										((Class<?>)context.getResolvedProperty().getType()).getName()
+										context.getResolvedProperty().getJvmType().getRawType().getName()
 									),
 									ex
 								);
@@ -105,7 +105,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					throw new IllegalArgumentException(
 						String.format(
 							"Failed to generate type \"%s\"",
-							((Class<?>)context.getResolvedProperty().getType()).getSimpleName()
+							context.getResolvedProperty().getJvmType().getRawType().getSimpleName()
 						)
 					);
 				}
@@ -126,7 +126,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 									String.format(
 										"\"%s\" is failed to introspect type \"%s\"",
 										Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
-										((Class<?>)context.getResolvedProperty().getType()).getName()
+										context.getResolvedProperty().getJvmType().getRawType().getName()
 									),
 									ex
 								);
@@ -137,7 +137,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					throw new IllegalArgumentException(
 						String.format(
 							"Failed to generate type \"%s\"",
-							((Class<?>)context.getResolvedProperty().getType()).getSimpleName()
+							context.getResolvedProperty().getJvmType().getRawType().getSimpleName()
 						)
 					);
 				}

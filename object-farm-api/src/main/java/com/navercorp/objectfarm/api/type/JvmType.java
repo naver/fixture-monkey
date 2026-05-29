@@ -19,7 +19,6 @@
 package com.navercorp.objectfarm.api.type;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.util.Collections;
 import java.util.List;
 
@@ -103,16 +102,4 @@ public interface JvmType {
 		return null;
 	}
 
-	/**
-	 * Returns the AnnotatedType representation of this JvmType.
-	 *
-	 * @deprecated This method is deprecated and will be removed in future versions.
-	 *             Use {@link #getRawType()} and {@link #getAnnotations()} instead.
-	 * @return the AnnotatedType representation
-	 * @throws UnsupportedOperationException as this method is not supported
-	 */
-	@Deprecated
-	default AnnotatedType getAnnotatedType() {
-		throw new UnsupportedOperationException("This method is not supported for JvmType");
-	}
 }

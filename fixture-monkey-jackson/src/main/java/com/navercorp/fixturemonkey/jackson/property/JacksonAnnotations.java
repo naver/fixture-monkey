@@ -29,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.2", status = Status.INTERNAL)
 public abstract class JacksonAnnotations {
@@ -39,7 +38,7 @@ public abstract class JacksonAnnotations {
 			return propertyAnnotation;
 		}
 
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 		return type.getAnnotation(annotationClass);
 	}
 

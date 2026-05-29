@@ -26,7 +26,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 /**
  * A matcher that checks if a given property is of a specific type.
  */
-@API(since = "1.0.13", status = Status.EXPERIMENTAL)
+@API(since = "1.0.13", status = Status.MAINTAINED)
 public final class ExactPropertyMatcher implements Matcher {
 	private final Class<? extends Property> propertyType;
 

@@ -23,17 +23,17 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.customizer.PathDirective;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class OptimizedManipulatorResult {
-	private final List<ArbitraryManipulator> manipulators;
+	private final List<PathDirective> directives;
 
-	public OptimizedManipulatorResult(List<ArbitraryManipulator> manipulators) {
-		this.manipulators = manipulators;
+	public OptimizedManipulatorResult(List<PathDirective> directives) {
+		this.directives = directives;
 	}
 
-	public List<ArbitraryManipulator> getManipulators() {
-		return manipulators;
+	public List<PathDirective> getDirectives() {
+		return directives;
 	}
 }

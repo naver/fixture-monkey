@@ -38,6 +38,6 @@ public final class ExactTypeMatcher implements Matcher {
 
 	@Override
 	public boolean match(Property property) {
-		return this.type == Types.getActualType(property.getType());
+		return this.type == Types.normalizeRawType(property.getJvmType().getRawType());
 	}
 }

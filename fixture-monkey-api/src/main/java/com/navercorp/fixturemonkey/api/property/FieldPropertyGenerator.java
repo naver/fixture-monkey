@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.JvmTypes;
 
 /**
  * Generates field properties including not only declared fields but also super class fields and interface fields.
@@ -53,20 +54,22 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 	}
 
 	@Override
-	@SuppressWarnings("argument")
 	public List<Property> generateChildProperties(Property property) {
-		Stream<FieldProperty> arbitraryfieldStream = TypeCache.getFieldsByName(Types.getActualType(property.getType()))
+		JvmType parentJvmType = property.getJvmType();
+		Class<?> parentRawType = parentJvmType.getRawType();
+
+		Stream<FieldProperty> arbitraryfieldStream = TypeCache.getFieldsByName(parentRawType)
 			.values()
 			.stream()
 			.filter(fieldPredicate.and(CONSTANT_FIELD_PREDICATE.negate()))
 			.map(field -> new FieldProperty(
-				Types.resolveWithTypeReferenceGenerics(property.getAnnotatedType(), field.getAnnotatedType()),
-				field
+				JvmTypes.resolveJvmType(parentJvmType, field.getGenericType(), Arrays.asList(field.getAnnotations())),
+				field,
+				null
 			))
 			.filter(matcher::match);
 
-		Stream<Property> constantPropertyStream = TypeCache.getFieldsByName(
-				Types.getActualType(property.getType())).values().stream()
+		Stream<Property> constantPropertyStream = TypeCache.getFieldsByName(parentRawType).values().stream()
 			.filter(CONSTANT_FIELD_PREDICATE)
 			.map(field -> {
 				Object constantValue = null;
@@ -76,12 +79,12 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 					LOGGER.warn("Field {} is inaccessible.", field.getName(), ex);
 				}
 
-				return new ConstantProperty(
-					Types.resolveWithTypeReferenceGenerics(property.getAnnotatedType(), field.getAnnotatedType()),
-					field.getName(),
-					constantValue,
+				JvmType resolvedJvmType = JvmTypes.resolveJvmType(
+					parentJvmType,
+					field.getGenericType(),
 					Arrays.asList(field.getAnnotations())
 				);
+				return new ConstantProperty(resolvedJvmType, field.getName(), constantValue);
 			});
 
 		return Stream.concat(arbitraryfieldStream, constantPropertyStream)

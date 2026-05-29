@@ -53,6 +53,7 @@ public final class MatchPropertyGenerator implements PropertyGenerator {
 			}
 		}
 
-		throw new IllegalArgumentException("Type " + property.getType() + " has no matching PropertyGenerator.");
+		throw new IllegalArgumentException(
+			"Type " + property.getJvmType().getRawType() + " has no matching PropertyGenerator.");
 	}
 }

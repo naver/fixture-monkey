@@ -39,7 +39,7 @@ import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.nodecandidate.JvmMapNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 class JvmNodeTreeTest {
@@ -60,7 +60,7 @@ class JvmNodeTreeTest {
 	void transformSimpleTypeShouldCreateSingleNode() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), CONTEXT
+			new ReflectiveJvmType(String.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -78,7 +78,7 @@ class JvmNodeTreeTest {
 	void transformShouldMaintainNodeToCandidateMapping() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(TestClass.class), CONTEXT
+			new ReflectiveJvmType(TestClass.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -106,8 +106,8 @@ class JvmNodeTreeTest {
 	void transformMapTypeShouldReturn1toNMapping() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(Map.class,
-				Arrays.asList(new JavaType(String.class), new JavaType(Integer.class)),
+			new ReflectiveJvmType(Map.class,
+				Arrays.asList(new ReflectiveJvmType(String.class), new ReflectiveJvmType(Integer.class)),
 				Collections.emptyList()),
 			CONTEXT
 		).build();
@@ -136,7 +136,7 @@ class JvmNodeTreeTest {
 	void getChildrenShouldReturnEmptyListForLeafNode() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), CONTEXT
+			new ReflectiveJvmType(String.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -153,7 +153,7 @@ class JvmNodeTreeTest {
 	void getSourceCandidateShouldReturnCorrectCandidate() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), CONTEXT
+			new ReflectiveJvmType(String.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -170,8 +170,8 @@ class JvmNodeTreeTest {
 	void getPromotedNodesShouldReturnAllNodesFor1toNMapping() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(Map.class,
-				Arrays.asList(new JavaType(String.class), new JavaType(Integer.class)),
+			new ReflectiveJvmType(Map.class,
+				Arrays.asList(new ReflectiveJvmType(String.class), new ReflectiveJvmType(Integer.class)),
 				Collections.emptyList()),
 			CONTEXT
 		).build();
@@ -193,7 +193,7 @@ class JvmNodeTreeTest {
 	void getPromotedNodeShouldReturnFirstNodeForConvenience() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), CONTEXT
+			new ReflectiveJvmType(String.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -210,7 +210,7 @@ class JvmNodeTreeTest {
 	void containsShouldReturnTrueForExistingNode() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), CONTEXT
+			new ReflectiveJvmType(String.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -224,8 +224,8 @@ class JvmNodeTreeTest {
 	void transformListTypeShouldWork() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(List.class,
-				Collections.singletonList(new JavaType(String.class)),
+			new ReflectiveJvmType(List.class,
+				Collections.singletonList(new ReflectiveJvmType(String.class)),
 				Collections.emptyList()),
 			CONTEXT
 		).build();
@@ -247,7 +247,7 @@ class JvmNodeTreeTest {
 	void transformCircularReferenceShouldNotCauseInfiniteLoop() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SelfReferenceClass.class), CONTEXT
+			new ReflectiveJvmType(SelfReferenceClass.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -270,7 +270,7 @@ class JvmNodeTreeTest {
 			.build();
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), emptyPromoterContext
+			new ReflectiveJvmType(String.class), emptyPromoterContext
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(emptyPromoterContext);
@@ -285,7 +285,7 @@ class JvmNodeTreeTest {
 	void getAllNodesShouldReturnUnmodifiableList() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), CONTEXT
+			new ReflectiveJvmType(String.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -301,7 +301,7 @@ class JvmNodeTreeTest {
 	void getPromotedNodesForUnknownCandidateShouldReturnEmptyList() {
 		// given
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(String.class), CONTEXT
+			new ReflectiveJvmType(String.class), CONTEXT
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
@@ -309,7 +309,7 @@ class JvmNodeTreeTest {
 
 		// Create a different candidate tree
 		JvmNodeCandidateTree otherTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(Integer.class), CONTEXT
+			new ReflectiveJvmType(Integer.class), CONTEXT
 		).build();
 
 		// when
@@ -327,7 +327,7 @@ class JvmNodeTreeTest {
 			PathResolverContext.empty());
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(ObjectContainerClass.class), CONTEXT
+			new ReflectiveJvmType(ObjectContainerClass.class), CONTEXT
 		).build();
 
 		// when
@@ -359,7 +359,7 @@ class JvmNodeTreeTest {
 
 		// Transform with nested container elements
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(NestedObjectContainerClass.class), CONTEXT
+			new ReflectiveJvmType(NestedObjectContainerClass.class), CONTEXT
 		).build();
 
 		// when
@@ -401,14 +401,14 @@ class JvmNodeTreeTest {
 			.containerSizeResolver(FIXED_SIZE_RESOLVER)
 			.interfaceResolver(type -> {
 				if (Types.isAssignable(TestInterface.class, type.getRawType())) {
-					return new JavaType(TestInterfaceImpl.class);
+					return new ReflectiveJvmType(TestInterfaceImpl.class);
 				}
 				return null;
 			})
 			.build();
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(ClassWithInterfaceField.class), contextWithInterfaceResolver
+			new ReflectiveJvmType(ClassWithInterfaceField.class), contextWithInterfaceResolver
 		).build();
 
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(contextWithInterfaceResolver);
@@ -503,7 +503,7 @@ class JvmNodeTreeTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SimpleListClass.class), CONTEXT
+			new ReflectiveJvmType(SimpleListClass.class), CONTEXT
 		).build();
 
 		// when
@@ -535,7 +535,7 @@ class JvmNodeTreeTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SimpleListClass.class), CONTEXT
+			new ReflectiveJvmType(SimpleListClass.class), CONTEXT
 		).build();
 
 		// when
@@ -561,7 +561,7 @@ class JvmNodeTreeTest {
 		);
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SimpleListClass.class), CONTEXT
+			new ReflectiveJvmType(SimpleListClass.class), CONTEXT
 		).build();
 
 		// when

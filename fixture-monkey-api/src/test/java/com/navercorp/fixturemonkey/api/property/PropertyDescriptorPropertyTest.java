@@ -23,8 +23,9 @@ import static org.assertj.core.api.BDDAssertions.then;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.Test;
 
 class PropertyDescriptorPropertyTest {
@@ -40,14 +41,14 @@ class PropertyDescriptorPropertyTest {
 		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
 		PropertyDescriptorProperty sut = new PropertyDescriptorProperty(propertyDescriptor);
 		then(sut.getAnnotations()).hasSize(1);
-		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(NonNull.class);
+		then(sut.getAnnotations().get(0).annotationType()).isEqualTo(Nonnull.class);
 	}
 
 	@Test
 	void getAnnotation() {
 		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
 		PropertyDescriptorProperty sut = new PropertyDescriptorProperty(propertyDescriptor);
-		then(sut.getAnnotation(NonNull.class)).isPresent();
+		then(sut.getAnnotation(Nonnull.class)).isPresent();
 	}
 
 	@Test
@@ -65,18 +66,10 @@ class PropertyDescriptorPropertyTest {
 	}
 
 	@Test
-	void getAnnotatedType() {
+	void getJvmType() {
 		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
 		PropertyDescriptorProperty sut = new PropertyDescriptorProperty(propertyDescriptor);
-		then(sut.getAnnotatedType().getType()).isEqualTo(String.class);
-	}
-
-	@Test
-	void getValue() {
-		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
-		PropertyDescriptorProperty sut = new PropertyDescriptorProperty(propertyDescriptor);
-		PropertyValue propertyValue = new PropertyValue("hello world");
-		then(sut.getValue(propertyValue)).isEqualTo("hello world");
+		then(sut.getJvmType().getRawType()).isEqualTo(String.class);
 	}
 
 	private PropertyDescriptor getNamePropertyDescriptor() {

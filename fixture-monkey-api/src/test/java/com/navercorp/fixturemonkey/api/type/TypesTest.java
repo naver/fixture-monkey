@@ -88,7 +88,7 @@ class TypesTest {
 		// when
 		Class<?> actual = Types.getActualType(generics.getType());
 
-		then(actual).isEqualTo(Object.class);
+		then(actual).isEqualTo(Types.GeneratingWildcardType.class);
 	}
 
 	@Test
@@ -191,7 +191,7 @@ class TypesTest {
 		AnnotatedType secondType = actual.get(1);
 		then(secondType).isInstanceOf(AnnotatedWildcardType.class);
 		then(secondType.getType()).isInstanceOf(WildcardType.class);
-		then(Types.getActualType(secondType.getType())).isEqualTo(Object.class);
+		then(Types.getActualType(secondType.getType())).isEqualTo(Types.GeneratingWildcardType.class);
 	}
 
 	@Test

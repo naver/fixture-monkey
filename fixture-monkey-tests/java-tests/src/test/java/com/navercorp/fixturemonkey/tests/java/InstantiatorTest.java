@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.factoryMethod;
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.lang.reflect.Modifier;
@@ -31,7 +30,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -46,7 +45,7 @@ class InstantiatorTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateParametersInOrder() {
 		String actual = SUT.giveMeBuilder(ConstructorSpecs.JavaTypeObject.class)
 			.instantiate(
@@ -67,7 +66,7 @@ class InstantiatorTest {
 		then(actual).isEqualTo("first");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateNoArgsConstructor() {
 		String actual = SUT.giveMeBuilder(ConstructorSpecs.JavaTypeObject.class)
 			.instantiate(
@@ -80,7 +79,7 @@ class InstantiatorTest {
 		then(actual).isEqualTo("second");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateParameterNameHint() {
 		String actual = SUT.giveMeBuilder(ConstructorSpecs.JavaTypeObject.class)
 			.instantiate(
@@ -95,7 +94,7 @@ class InstantiatorTest {
 		then(actual).isEqualTo("third");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateConstructorContainer() {
 		List<ConstructorSpecs.JavaTypeObject> actual = SUT.giveMeBuilder(SimpleContainerObject.class)
 			.instantiate(
@@ -123,7 +122,7 @@ class InstantiatorTest {
 		then(actual).hasSize(1);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateConstructorGenericContainer() {
 		String actual = SUT.giveMeBuilder(ConstructorSpecs.ContainerObject.class)
 			.instantiate(
@@ -172,7 +171,7 @@ class InstantiatorTest {
 		then(actual).isEqualTo("test");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateGenericObjectByConstructor() {
 		ConstructorSpecs.GenericObject<String> actual = SUT.giveMeBuilder(
 				new TypeReference<ConstructorSpecs.GenericObject<String>>() {
@@ -189,7 +188,7 @@ class InstantiatorTest {
 		then(actual.getValue()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateTwoGenericObjectByConstructor() {
 		ConstructorSpecs.TwoGenericObject<String, Integer> actual = SUT.giveMeBuilder(
 				new TypeReference<ConstructorSpecs.TwoGenericObject<String, Integer>>() {
@@ -208,7 +207,7 @@ class InstantiatorTest {
 		then(actual.getUValue()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateGenericObjectWithHintByConstructor() {
 		ConstructorSpecs.GenericObject<String> actual = SUT.giveMeBuilder(
 				new TypeReference<ConstructorSpecs.GenericObject<String>>() {
@@ -225,7 +224,7 @@ class InstantiatorTest {
 		then(actual.getValue()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateByFactoryMethod() {
 		String actual = SUT.giveMeBuilder(ConstructorSpecs.JavaTypeObject.class)
 			.instantiate(
@@ -237,7 +236,7 @@ class InstantiatorTest {
 		then(actual).isEqualTo("factory");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateByFactoryMethodWithParameter() {
 		String actual = SUT.giveMeBuilder(ConstructorSpecs.JavaTypeObject.class)
 			.instantiate(
@@ -250,7 +249,7 @@ class InstantiatorTest {
 		then(actual).isEqualTo("factory");
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateFactoryMethodAndField() {
 		Integer actual = SUT.giveMeBuilder(ConstructorSpecs.JavaTypeObject.class)
 			.instantiate(
@@ -264,7 +263,7 @@ class InstantiatorTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateConstructorField() {
 		String actual = SUT.giveMeBuilder(MutableSpecs.JavaTypeObject.class)
 			.instantiate(constructor().field())
@@ -274,7 +273,7 @@ class InstantiatorTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateConstructorJavaBeansProperty() {
 		String actual = SUT.giveMeBuilder(MutableSpecs.JavaTypeObject.class)
 			.instantiate(constructor().javaBeansProperty())
@@ -284,7 +283,7 @@ class InstantiatorTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateConstructorFieldFilter() {
 		MutableSpecs.JavaTypeObject actual =
 			SUT.giveMeBuilder(MutableSpecs.JavaTypeObject.class)
@@ -298,7 +297,7 @@ class InstantiatorTest {
 		then(actual.getWrapperBoolean()).isNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void instantiateConstructorJavaBeansPropertyFilter() {
 		MutableSpecs.JavaTypeObject actual =
 			SUT.giveMeBuilder(MutableSpecs.JavaTypeObject.class)

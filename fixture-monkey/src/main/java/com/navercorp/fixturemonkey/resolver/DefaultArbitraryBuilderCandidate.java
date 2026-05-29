@@ -55,9 +55,7 @@ class DefaultArbitraryBuilderCandidate<T> implements ArbitraryBuilderCandidate<T
 
 	@Override
 	public Class<?> getClassType() {
-		return Types.getActualType(
-			requireNonNull(this.typeReference).getAnnotatedType()
-		);
+		return Types.normalizeRawType(requireNonNull(this.typeReference).getJvmType().getRawType());
 	}
 
 	@Override

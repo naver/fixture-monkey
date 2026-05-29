@@ -20,8 +20,7 @@ package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -30,27 +29,32 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "0.6.12", status = Status.MAINTAINED)
 public abstract class PropertyUtils {
 	public static Property toProperty(Class<?> type) {
-		return PropertyUtils.toProperty(Types.generateAnnotatedTypeWithoutAnnotation(type));
+		return toProperty(new ReflectiveJvmType(type));
 	}
 
 	public static Property toProperty(TypeReference<?> typeReference) {
-		return toProperty(typeReference.getAnnotatedType());
+		return toProperty(typeReference.getJvmType());
 	}
 
+	/**
+	 * @deprecated Prefer {@link #toProperty(JvmType)}.
+	 */
+	@Deprecated
 	public static Property toProperty(AnnotatedType annotatedType) {
+		return toProperty(Types.toJvmType(annotatedType, Collections.emptyList()));
+	}
+
+	public static Property toProperty(JvmType jvmType) {
 		return new Property() {
 			@Override
-			public Type getType() {
-				return annotatedType.getType();
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return annotatedType;
+			public JvmType getJvmType() {
+				return jvmType;
 			}
 
 			@Nullable
@@ -61,18 +65,12 @@ public abstract class PropertyUtils {
 
 			@Override
 			public List<Annotation> getAnnotations() {
-				return Arrays.asList(annotatedType.getAnnotations());
-			}
-
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				throw new UnsupportedOperationException();
+				return jvmType.getAnnotations();
 			}
 
 			@Override
 			public int hashCode() {
-				return getType().hashCode();
+				return jvmType.getRawType().hashCode();
 			}
 
 			@Override
@@ -85,13 +83,12 @@ public abstract class PropertyUtils {
 				}
 
 				Property that = (Property)obj;
-				return getType().equals(that.getType());
+				return jvmType.getRawType().equals(that.getJvmType().getRawType());
 			}
 		};
 	}
 
 	public static boolean isErasedProperty(Property property) {
-		return Types.getActualType(property.getType()) == Object.class
-			|| Types.getActualType(property.getAnnotatedType()) == Object.class;
+		return property.getJvmType().getRawType() == Object.class;
 	}
 }

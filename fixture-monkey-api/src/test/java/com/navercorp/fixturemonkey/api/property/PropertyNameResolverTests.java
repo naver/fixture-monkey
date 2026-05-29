@@ -20,32 +20,25 @@ package com.navercorp.fixturemonkey.api.property;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.Test;
 
-import net.jqwik.api.ForAll;
-import net.jqwik.api.Property;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 class PropertyNameResolverTests {
-	@Property(tries = 1)
-	void identityPropertyNameResolver(@ForAll String name) {
+	@Test
+	void identityPropertyNameResolver() {
 		PropertyNameResolver sut = PropertyNameResolver.IDENTITY;
-		com.navercorp.fixturemonkey.api.property.Property property = getNameProperty(name);
+		com.navercorp.fixturemonkey.api.property.Property property = getNameProperty("testName");
 		String actual = sut.resolve(property);
-		then(actual).isEqualTo(property.getName());
+		then(actual).isEqualTo("testName");
 	}
 
 	private com.navercorp.fixturemonkey.api.property.Property getNameProperty(String name) {
 		return new com.navercorp.fixturemonkey.api.property.Property() {
 			@Override
-			public Class<?> getType() {
-				return null;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
+			public JvmType getJvmType() {
 				return null;
 			}
 
@@ -59,11 +52,6 @@ class PropertyNameResolverTests {
 				return null;
 			}
 
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				return null;
-			}
 		};
 	}
 }

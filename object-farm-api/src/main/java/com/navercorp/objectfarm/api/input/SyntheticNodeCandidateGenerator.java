@@ -39,7 +39,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * <pre>{@code
  * SyntheticNodeCandidateGenerator generator = new SyntheticNodeCandidateGenerator();
  * SyntheticJvmType type = SyntheticJvmType.builder("User")
- *     .member("name", new JavaType(String.class))
+ *     .member("name", new ReflectiveJvmType(String.class))
  *     .build();
  *
  * List<JvmNodeCandidate> candidates = generator.generateNextNodeCandidates(type);

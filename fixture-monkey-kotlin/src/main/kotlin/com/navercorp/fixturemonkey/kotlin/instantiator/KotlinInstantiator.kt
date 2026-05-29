@@ -219,7 +219,11 @@ class KotlinInstantiatorProcessor :
         .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
         .mapIndexed { index, kParameter ->
             TypeNameProperty(
-                resolvedParameterTypes[index].annotatedType,
+                Types.toJvmType(
+                    resolvedParameterTypes[index].annotatedType,
+                    emptyList(),
+                    kParameter.type.isMarkedNullable,
+                ),
                 resolvedParameterNames[index],
                 kParameter.type.isMarkedNullable,
             )

@@ -47,7 +47,7 @@ import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "1.0.17", status = Status.EXPERIMENTAL)
+@API(since = "1.0.17", status = Status.MAINTAINED)
 public final class SimpleValueJqwikPlugin implements Plugin {
 	private static final Set<Character> ALLOWED_SPECIAL_UNRESERVED_CHARACTERS =
 		new HashSet<>(Arrays.asList('.', '_', '-', '~'));

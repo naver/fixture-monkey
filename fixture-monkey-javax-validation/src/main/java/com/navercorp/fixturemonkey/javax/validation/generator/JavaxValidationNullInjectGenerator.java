@@ -34,7 +34,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationNullInjectGenerator implements NullInjectGenerator {
@@ -67,7 +66,7 @@ public final class JavaxValidationNullInjectGenerator implements NullInjectGener
 			return 0.0d;
 		}
 
-		if (Types.getActualType(context.getProperty().getType()) == String.class) {
+		if (context.getProperty().getJvmType().getRawType() == String.class) {
 			if (annotations.contains(NotBlank.class) || annotations.contains(NotEmpty.class)) {
 				return 0.0d;
 			}

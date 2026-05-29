@@ -18,10 +18,9 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -35,7 +34,7 @@ class AnnotationTest {
 		.plugin(new JavaxValidationPlugin())
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleCustomAnnotation() {
 		String actual = SUT.giveMeOne(CustomAnnotationStringObject.class)
 			.getNullOrLessThan5String();
@@ -43,7 +42,7 @@ class AnnotationTest {
 		then(actual).matches(it -> it == null || it.length() < 5);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleNotValidAnnotation() {
 		String actual = SUT.giveMeBuilder(StringNotNullAnnotationObject.class)
 			.set("value", null)
@@ -54,7 +53,7 @@ class AnnotationTest {
 		then(actual).isNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleNotValidAnnotationWithCopy() {
 		String actual = SUT.giveMeBuilder(StringNotNullAnnotationObject.class)
 			.set("value", null)

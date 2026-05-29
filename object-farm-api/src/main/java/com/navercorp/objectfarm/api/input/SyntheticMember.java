@@ -37,7 +37,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * <p>
  * Example usage:
  * <pre>{@code
- * SyntheticMember member = new SyntheticMember("name", new JavaType(String.class));
+ * SyntheticMember member = new SyntheticMember("name", new ReflectiveJvmType(String.class));
  * }</pre>
  */
 public final class SyntheticMember {

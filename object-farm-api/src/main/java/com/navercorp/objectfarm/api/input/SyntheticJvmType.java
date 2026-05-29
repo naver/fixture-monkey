@@ -40,8 +40,8 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * Example usage:
  * <pre>{@code
  * SyntheticJvmType userType = SyntheticJvmType.builder("User")
- *     .member("name", new JavaType(String.class))
- *     .member("age", new JavaType(Integer.class))
+ *     .member("name", new ReflectiveJvmType(String.class))
+ *     .member("age", new ReflectiveJvmType(Integer.class))
  *     .build();
  * }</pre>
  */

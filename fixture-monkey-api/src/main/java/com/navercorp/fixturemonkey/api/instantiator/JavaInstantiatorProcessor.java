@@ -241,7 +241,7 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			TypeReference<?> resolvedTypeReference = resolvedParameterTypes.get(i);
 			properties.add(
 				new TypeNameProperty(
-					resolvedTypeReference.getAnnotatedType(),
+					resolvedTypeReference.getJvmType(),
 					resolvedParameterName,
 					null
 				)

@@ -41,7 +41,6 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 import com.navercorp.fixturemonkey.jackson.generator.JsonNodeContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.jackson.introspector.JacksonArrayArbitraryIntrospector;
@@ -108,7 +107,7 @@ public final class JacksonPlugin implements Plugin {
 					new MatcherOperator<>(
 						property -> getJacksonAnnotation(property, JsonSubTypes.class) != null
 							&& isNotJavaContainerType(property)
-							&& Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
+							&& Modifier.isAbstract(property.getJvmType().getRawType().getModifiers()),
 						PropertyJsonSubTypesConcreteTypeResolver.INSTANCE
 					)
 				)
@@ -118,7 +117,7 @@ public final class JacksonPlugin implements Plugin {
 							&& getJacksonAnnotation(((ContainerElementProperty)property).getContainerProperty(),
 							JsonSubTypes.class
 						) != null
-							&& Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
+							&& Modifier.isAbstract(property.getJvmType().getRawType().getModifiers()),
 						ElementJsonSubTypesConcreteTypeResolver.INSTANCE
 					)
 				);
@@ -136,7 +135,7 @@ public final class JacksonPlugin implements Plugin {
 	}
 
 	private static boolean isNotJavaContainerType(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 		return !Collection.class.isAssignableFrom(actualType);
 	}
 }

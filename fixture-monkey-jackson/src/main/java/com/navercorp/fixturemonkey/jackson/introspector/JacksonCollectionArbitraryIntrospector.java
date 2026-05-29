@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,20 +55,21 @@ public final class JacksonCollectionArbitraryIntrospector implements ArbitraryIn
 
 	@Override
 	public boolean match(Property property) {
-		return Collection.class.isAssignableFrom(Types.getActualType(property.getType()));
+		return Collection.class.isAssignableFrom(property.getJvmType().getRawType());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
-		Class<?> containerType = Types.getActualType(property.getType());
+		Class<?> containerType = property.getJvmType().getRawType();
 		TypeFactory typeFactory = TypeFactory.defaultInstance();
-		AnnotatedType elementAnnotatedType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
+		Type elementReflectionType =
+			Types.toAnnotatedType(property.getJvmType().getTypeVariables().get(0)).getType();
 		JavaType elementType = typeFactory.constructType(new JacksonTypeReference<Object>() {
 			@Override
 			public Type getType() {
-				return elementAnnotatedType.getType();
+				return elementReflectionType;
 			}
 		});
 

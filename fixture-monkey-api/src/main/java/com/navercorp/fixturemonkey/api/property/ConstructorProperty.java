@@ -19,9 +19,7 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +32,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.objectfarm.api.type.JvmType;
+
 @API(since = "0.4.2", status = Status.MAINTAINED)
 public final class ConstructorProperty implements Property {
 	private final Property parameterProperty;
@@ -44,21 +44,6 @@ public final class ConstructorProperty implements Property {
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 	@Nullable
 	private final Boolean nullable;
-
-	/**
-	 * It is deprecated.
-	 * Use {@link #ConstructorProperty(Property, Constructor, Property, Boolean)} instead.
-	 */
-	@Deprecated
-	public ConstructorProperty(
-		AnnotatedType annotatedType,
-		Constructor<?> constructor,
-		String parameterName,
-		@Nullable Property fieldProperty,
-		@Nullable Boolean nullable
-	) {
-		this(new TypeNameProperty(annotatedType, parameterName, nullable), constructor, fieldProperty, nullable);
-	}
 
 	public ConstructorProperty(
 		Property parameterProperty,
@@ -79,13 +64,8 @@ public final class ConstructorProperty implements Property {
 	}
 
 	@Override
-	public Type getType() {
-		return this.getAnnotatedType().getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.parameterProperty.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.parameterProperty.getJvmType();
 	}
 
 	public Constructor<?> getConstructor() {
@@ -133,7 +113,7 @@ public final class ConstructorProperty implements Property {
 			return false;
 		}
 		ConstructorProperty that = (ConstructorProperty)obj;
-		return parameterProperty.equals(that.parameterProperty.getType())
+		return parameterProperty.equals(that.parameterProperty)
 			&& constructor.equals(that.constructor)
 			&& Objects.equals(fieldProperty, that.fieldProperty)
 			&& annotations.equals(that.annotations);
@@ -142,16 +122,6 @@ public final class ConstructorProperty implements Property {
 	@Override
 	public int hashCode() {
 		return Objects.hash(parameterProperty, constructor, fieldProperty, annotations);
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		if (fieldProperty != null) {
-			return fieldProperty.getValue(instance);
-		} else {
-			return null;
-		}
 	}
 
 	@Override

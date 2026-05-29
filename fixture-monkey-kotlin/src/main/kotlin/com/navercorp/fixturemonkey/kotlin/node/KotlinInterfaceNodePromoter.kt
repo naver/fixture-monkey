@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.kotlin.node
 
 import com.navercorp.fixturemonkey.api.type.KotlinTypeDetector
-import com.navercorp.fixturemonkey.kotlin.type.KotlinType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.objectfarm.api.node.InterfaceResolver
 import com.navercorp.objectfarm.api.node.JavaNode
@@ -27,8 +26,8 @@ import com.navercorp.objectfarm.api.node.JvmNode
 import com.navercorp.objectfarm.api.node.JvmNodeContext
 import com.navercorp.objectfarm.api.node.JvmNodePromoter
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate
-import com.navercorp.objectfarm.api.type.JavaType
 import com.navercorp.objectfarm.api.type.JvmType
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import java.lang.reflect.Modifier
@@ -81,14 +80,13 @@ class KotlinInterfaceNodePromoter : JvmNodePromoter {
                 // Create JvmType for the selected subclass
                 val resolvedType = createResolvedType(selectedType, node.type)
 
-                // Check if the selected type is also a Kotlin type
                 if (KotlinTypeDetector.isKotlinType(selectedType)) {
-                    val kotlinType = KotlinType(
-                        rawType = selectedType,
-                        typeVariables = resolvedType.typeVariables.toList(),
-                        annotations = node.type.annotations,
-                        isNullable = false,
-                        isValueClass = selectedSubclass.isValue
+                    val kotlinType = ReflectiveJvmType(
+                        selectedType,
+                        resolvedType.typeVariables.toList(),
+                        node.type.annotations,
+                        resolvedType.componentType,
+                        false
                     )
 
                     return listOf(
@@ -108,9 +106,14 @@ class KotlinInterfaceNodePromoter : JvmNodePromoter {
             // Recursively resolve type until we get a concrete type
             val resolvedType = resolveRecursively(node.type, interfaceResolver, context.maxRecursionDepth)
             if (resolvedType != null && resolvedType.rawType != rawType) {
-                // Check if resolved type is a Kotlin type
                 if (KotlinTypeDetector.isKotlinType(resolvedType.rawType)) {
-                    val kotlinType = KotlinType.fromJvmType(resolvedType, false)
+                    val kotlinType = ReflectiveJvmType(
+                        resolvedType.rawType,
+                        resolvedType.typeVariables.toList(),
+                        resolvedType.annotations,
+                        resolvedType.componentType,
+                        false
+                    )
                     return listOf(
                         JavaNode(kotlinType, node.name, null, node.creationMethod)
                     )
@@ -141,9 +144,9 @@ class KotlinInterfaceNodePromoter : JvmNodePromoter {
         // For now, create a simple type. Type variable mapping could be enhanced.
         val typeVariables = originalType.typeVariables
         return if (typeVariables.isEmpty()) {
-            JavaType(concreteClass, emptyList(), originalType.annotations)
+            ReflectiveJvmType(concreteClass, emptyList(), originalType.annotations)
         } else {
-            JavaType(concreteClass, typeVariables.toList(), originalType.annotations)
+            ReflectiveJvmType(concreteClass, typeVariables.toList(), originalType.annotations)
         }
     }
 

@@ -39,7 +39,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * Example usage:
  * <pre>{@code
  * TypeParseContext context = TypeParseContext.builder()
- *     .typeAlias("UserId", new JavaType(Long.class))
+ *     .typeAlias("UserId", new ReflectiveJvmType(Long.class))
  *     .classLoader(myClassLoader)
  *     .strictMode(true)
  *     .build();

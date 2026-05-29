@@ -35,6 +35,7 @@ architecture/
 plans/
 .serena/
 .zed/
+.claude/
 .java-version
 object-farm-api/docs/
 article/

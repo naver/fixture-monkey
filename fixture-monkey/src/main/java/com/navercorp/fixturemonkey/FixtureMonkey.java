@@ -34,8 +34,6 @@ import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.adapter.NodeTreeAdapter;
-import com.navercorp.fixturemonkey.adapter.tracing.AdapterTracer;
 import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
@@ -47,16 +45,19 @@ import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
-import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
+import com.navercorp.objectfarm.api.expression.PathExpression;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FixtureMonkey {
@@ -65,11 +66,10 @@ public final class FixtureMonkey {
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
-	private final MonkeyExpressionFactory monkeyExpressionFactory;
 
-	private final @Nullable NodeTreeAdapter nodeTreeAdapter;
+	private final AssemblyPlanner assemblyPlanner;
 
-	private final AdapterTracer adapterTracer;
+	private final AssemblyTracer tracer;
 	private final Map<Class<?>, Set<Property>> inferredPropertiesCache = new ConcurrentHashMap<>();
 
 	public FixtureMonkey(
@@ -77,7 +77,6 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		MonkeyExpressionFactory monkeyExpressionFactory,
 		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers
 	) {
 		this(
@@ -85,10 +84,9 @@ public final class FixtureMonkey {
 			manipulatorOptimizer,
 			registeredBuilders,
 			monkeyManipulatorFactory,
-			monkeyExpressionFactory,
 			namedMatchers,
 			null,
-			AdapterTracer.noOp()
+			AssemblyTracer.noOp()
 		);
 	}
 
@@ -97,19 +95,17 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		MonkeyExpressionFactory monkeyExpressionFactory,
 		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers,
-		@Nullable NodeTreeAdapter nodeTreeAdapter
+		@Nullable AssemblyPlanner assemblyPlanner
 	) {
 		this(
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
 			registeredBuilders,
 			monkeyManipulatorFactory,
-			monkeyExpressionFactory,
 			namedMatchers,
-			nodeTreeAdapter,
-			AdapterTracer.noOp()
+			assemblyPlanner,
+			AssemblyTracer.noOp()
 		);
 	}
 
@@ -118,18 +114,18 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		MonkeyExpressionFactory monkeyExpressionFactory,
 		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers,
-		@Nullable NodeTreeAdapter nodeTreeAdapter,
-		AdapterTracer adapterTracer
+		@Nullable AssemblyPlanner assemblyPlanner,
+		AssemblyTracer tracer
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = MonkeyContext.builder(fixtureMonkeyOptions).build();
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
-		this.monkeyExpressionFactory = monkeyExpressionFactory;
-		this.nodeTreeAdapter = nodeTreeAdapter;
-		this.adapterTracer = adapterTracer;
+		this.assemblyPlanner = assemblyPlanner != null
+			? assemblyPlanner
+			: new AssemblyPlanner(System.nanoTime());
+		this.tracer = tracer;
 		initializeRegisteredArbitraryBuilders(registeredBuilders);
 		initializeNamedArbitraryBuilderMap(namedMatchers);
 	}
@@ -149,7 +145,9 @@ public final class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
-		TreeRootProperty rootProperty = new RootProperty(new TypeParameterProperty(type.getAnnotatedType()));
+		TreeRootProperty rootProperty = new RootProperty(
+			new TypeParameterProperty(type.getJvmType())
+		);
 
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standByContexts = monkeyContext
 			.getRegisteredArbitraryBuilders()
@@ -169,15 +167,12 @@ public final class FixtureMonkey {
 		return new DefaultArbitraryBuilder<>(
 			rootProperty,
 			new ArbitraryResolver(
-				manipulatorOptimizer,
-				monkeyManipulatorFactory,
 				monkeyContext,
-				nodeTreeAdapter,
-				adapterTracer,
+				assemblyPlanner,
+				tracer,
 				inferredPropertiesCache
 			),
 			monkeyManipulatorFactory,
-			monkeyExpressionFactory,
 			newActiveBuilderContext,
 			standByContexts,
 			monkeyContext,
@@ -188,24 +183,23 @@ public final class FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
 		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
-		ArbitraryManipulator arbitraryManipulator = monkeyManipulatorFactory.newArbitraryManipulator(
-			monkeyExpressionFactory.from("$").toNodeResolver(),
+		PathDirective directive = monkeyManipulatorFactory.newDirective(
+			PathExpression.root(),
 			value
 		);
-		newActiveBuilderContext.addManipulator(arbitraryManipulator);
+		newActiveBuilderContext.addDirective(directive);
 
 		return new DefaultArbitraryBuilder<>(
-			new RootProperty(new TypeParameterProperty(new LazyAnnotatedType<>(() -> value))),
+			new RootProperty(new TypeParameterProperty(
+				Types.toJvmType(new LazyAnnotatedType<>(() -> value), Collections.emptyList())
+			)),
 			new ArbitraryResolver(
-				manipulatorOptimizer,
-				monkeyManipulatorFactory,
 				monkeyContext,
-				nodeTreeAdapter,
-				adapterTracer,
+				assemblyPlanner,
+				tracer,
 				inferredPropertiesCache
 			),
 			monkeyManipulatorFactory,
-			monkeyExpressionFactory,
 			newActiveBuilderContext,
 			Collections.emptyList(),
 			monkeyContext,

@@ -18,14 +18,10 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import java.lang.reflect.AnnotatedType;
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.5.7", status = Status.MAINTAINED)
 public final class SingleGenericTypeMatcher implements Matcher {
@@ -33,7 +29,6 @@ public final class SingleGenericTypeMatcher implements Matcher {
 
 	@Override
 	public boolean match(Property property) {
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		return genericsTypes.size() == 1;
+		return property.getJvmType().getTypeVariables().size() == 1;
 	}
 }

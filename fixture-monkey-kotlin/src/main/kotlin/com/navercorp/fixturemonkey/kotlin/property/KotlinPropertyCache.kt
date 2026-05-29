@@ -34,11 +34,12 @@ fun getMemberProperties(
     property: Property,
     propertyFilter: (KProperty<*>) -> Boolean = { true },
 ): List<Property> {
-    val actualType = Types.getActualType(property.type)
+    val actualType = property.jvmType.rawType
+    val parentAnnotatedType = Types.toAnnotatedType(property.jvmType)
     return getKotlinMemberProperties(actualType)
         .filter(propertyFilter)
         .map {
-            val propertyAnnotatedType = getAnnotatedType(property.annotatedType, it)
+            val propertyAnnotatedType = getAnnotatedType(parentAnnotatedType, it)
             KPropertyProperty(propertyAnnotatedType, it)
         }
 }

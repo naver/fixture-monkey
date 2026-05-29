@@ -28,7 +28,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * Generates JavaBeans properties which have getter method.
@@ -48,7 +47,7 @@ public final class JavaBeansPropertyGenerator implements PropertyGenerator {
 
 	@Override
 	public List<Property> generateChildProperties(Property property) {
-		return TypeCache.getPropertyDescriptorsByPropertyName(Types.getActualType(property.getType())).values()
+		return TypeCache.getPropertyDescriptorsByPropertyName(property.getJvmType().getRawType()).values()
 			.stream()
 			.filter(it -> it.getReadMethod() != null)
 			.filter(propertyDescriptorPredicate)
