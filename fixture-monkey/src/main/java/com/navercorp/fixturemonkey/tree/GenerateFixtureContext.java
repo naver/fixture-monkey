@@ -52,6 +52,7 @@ import com.navercorp.fixturemonkey.api.tree.TraverseNode;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeContext;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeMetadata;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.validator.ValidationFailureRecorder;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 /**
@@ -71,16 +72,20 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
 	private final List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
 		new ArrayList<>();
+
+	private final ValidationFailureRecorder validationFailureRecorder;
 	private @Nullable CombinableArbitrary<?> arbitrary;
 
 	public GenerateFixtureContext(
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer,
 		Supplier<Boolean> validOnly,
-		MonkeyContext monkeyContext
+		MonkeyContext monkeyContext,
+		ValidationFailureRecorder validationFailureRecorder
 	) {
 		this.arbitraryIntrospectorConfigurer = arbitraryIntrospectorConfigurer;
 		this.validOnly = validOnly;
 		this.monkeyContext = monkeyContext;
+		this.validationFailureRecorder = validationFailureRecorder;
 	}
 
 	private static boolean initializeChildNotCacheable(ObjectNode objectNode) {
@@ -222,7 +227,8 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 					arbitraryGenerator,
 					new ValidateArbitraryGenerator(
 						fixtureMonkeyOptions.getJavaConstraintGenerator(),
-						fixtureMonkeyOptions.getDecomposedContainerValueFactory()
+						fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
+						validationFailureRecorder
 					)
 				)
 			);
@@ -304,7 +310,8 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		return new GenerateFixtureContext(
 			this.arbitraryIntrospectorConfigurer,
 			this.validOnly,
-			this.monkeyContext
+			this.monkeyContext,
+			this.validationFailureRecorder
 		);
 	}
 }
