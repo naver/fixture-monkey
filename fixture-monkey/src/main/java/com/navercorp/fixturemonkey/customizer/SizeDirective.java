@@ -30,7 +30,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * <p>
  * Replaces the legacy {@code SizeDirective}.
  */
-@API(since = "1.1.18", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class SizeDirective implements PathDirective {
 	private final PathExpression path;
 	private final int sequence;
@@ -58,16 +58,11 @@ public final class SizeDirective implements PathDirective {
 
 	@Override
 	public int limit() {
-		return -1;
+		return UNLIMITED;
 	}
 
 	@Override
 	public boolean strict() {
-		return false;
-	}
-
-	@Override
-	public boolean registered() {
 		return false;
 	}
 

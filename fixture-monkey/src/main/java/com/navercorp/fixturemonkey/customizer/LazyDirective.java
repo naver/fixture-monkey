@@ -18,50 +18,36 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
-import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 
 /**
  * Sets a lazily evaluated value at a path. The {@link LazyArbitrary} is invoked at assembly time
  * and its result is then decomposed.
  */
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class LazyDirective implements PathDirective {
 	private final PathExpression path;
 	private final int sequence;
 	private final int limit;
 	private final boolean strict;
-	private final boolean registered;
 	private final LazyArbitrary<?> lazyArbitrary;
-	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
-	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 
 	public LazyDirective(
 		PathExpression path,
 		int sequence,
 		int limit,
 		boolean strict,
-		boolean registered,
-		LazyArbitrary<?> lazyArbitrary,
-		DecomposedContainerValueFactory decomposedContainerValueFactory,
-		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators
+		LazyArbitrary<?> lazyArbitrary
 	) {
 		this.path = path;
 		this.sequence = sequence;
 		this.limit = limit;
 		this.strict = strict;
-		this.registered = registered;
 		this.lazyArbitrary = lazyArbitrary;
-		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
-		this.containerPropertyGenerators = containerPropertyGenerators;
 	}
 
 	@Override
@@ -84,20 +70,7 @@ public final class LazyDirective implements PathDirective {
 		return strict;
 	}
 
-	@Override
-	public boolean registered() {
-		return registered;
-	}
-
 	public LazyArbitrary<?> lazyArbitrary() {
 		return lazyArbitrary;
-	}
-
-	public DecomposedContainerValueFactory decomposedContainerValueFactory() {
-		return decomposedContainerValueFactory;
-	}
-
-	public List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators() {
-		return containerPropertyGenerators;
 	}
 }

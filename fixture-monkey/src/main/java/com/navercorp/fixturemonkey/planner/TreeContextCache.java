@@ -47,7 +47,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * and {@link JvmNodeSubtreeContext} (promoted POJO subtree snapshots for tree transformation).
  * Both are exposed for use during {@code JvmNodeTreeTransformer} setup.
  */
-@API(since = "1.1.17", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class TreeContextCache {
 	private final JvmNodeCandidateTreeContext treeContext;
 	private final JvmNodeSubtreeContext subtreeContext;

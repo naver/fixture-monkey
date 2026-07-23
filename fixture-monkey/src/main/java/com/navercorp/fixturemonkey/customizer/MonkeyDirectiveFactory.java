@@ -40,15 +40,7 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
-import com.navercorp.fixturemonkey.customizer.CustomizerDirective;
-import com.navercorp.fixturemonkey.customizer.FilterDirective;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
-import com.navercorp.fixturemonkey.customizer.JustDirective;
-import com.navercorp.fixturemonkey.customizer.LazyDirective;
-import com.navercorp.fixturemonkey.customizer.NullityDirective;
-import com.navercorp.fixturemonkey.customizer.PathDirective;
-import com.navercorp.fixturemonkey.customizer.SetDirective;
-import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.customizer.Values.Unique;
 import com.navercorp.objectfarm.api.expression.PathExpression;
@@ -57,22 +49,14 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * It is for internal use only.
  */
 @API(since = "0.4.10", status = Status.INTERNAL)
-public final class MonkeyManipulatorFactory {
+public final class MonkeyDirectiveFactory {
 
 	private final AtomicInteger sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 	private final boolean expressionStrictMode;
 
-	public MonkeyManipulatorFactory(
-		AtomicInteger sequence,
-		DecomposedContainerValueFactory decomposedContainerValueFactory,
-		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators
-	) {
-		this(sequence, decomposedContainerValueFactory, containerPropertyGenerators, false);
-	}
-
-	public MonkeyManipulatorFactory(
+	public MonkeyDirectiveFactory(
 		AtomicInteger sequence,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
@@ -89,11 +73,11 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public PathDirective newDirective(PathExpression path, @Nullable Object value, int limit) {
-		return convertToDirective(path, sequence.getAndIncrement(), value, limit, false);
+		return convertToDirective(path, sequence.getAndIncrement(), value, limit);
 	}
 
 	public PathDirective newDirective(PathExpression path, @Nullable Object value) {
-		return convertToDirective(path, sequence.getAndIncrement(), value, -1, false);
+		return convertToDirective(path, sequence.getAndIncrement(), value, PathDirective.UNLIMITED);
 	}
 
 	public <T> PathDirective newDirective(
@@ -107,7 +91,6 @@ public final class MonkeyManipulatorFactory {
 			sequence.getAndIncrement(),
 			limit,
 			expressionStrictMode,
-			false,
 			type,
 			filter
 		);
@@ -124,9 +107,8 @@ public final class MonkeyManipulatorFactory {
 		return new CustomizerDirective<>(
 			path,
 			sequence.getAndIncrement(),
-			-1,
+			PathDirective.UNLIMITED,
 			expressionStrictMode,
-			false,
 			arbitraryCustomizer
 		);
 	}
@@ -135,7 +117,7 @@ public final class MonkeyManipulatorFactory {
 		return new SizeDirective(path, sequence.getAndIncrement(), min, max);
 	}
 
-	public ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
+	public DirectiveSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
 		int baseSequence = sequence.getAndIncrement();
 
 		List<PathDirective> directives = new ArrayList<>();
@@ -147,8 +129,7 @@ public final class MonkeyManipulatorFactory {
 				it.getPath(),
 				baseSequence + it.getSequence(),
 				it.getValue(),
-				-1,
-				false
+				PathDirective.UNLIMITED
 			))
 			.collect(toList());
 
@@ -158,8 +139,7 @@ public final class MonkeyManipulatorFactory {
 			.map(it -> (PathDirective)new FilterDirective(
 				it.getPath(),
 				sequence.getAndIncrement(),
-				-1,
-				false,
+				PathDirective.UNLIMITED,
 				false,
 				it.getType(),
 				it.getPredicate()
@@ -180,11 +160,11 @@ public final class MonkeyManipulatorFactory {
 		directives.addAll(sizeDirectives);
 
 		sequence.set(sequence.get() + directives.size());
-		return new ManipulatorSet(directives);
+		return new DirectiveSet(directives);
 	}
 
-	public MonkeyManipulatorFactory copy() {
-		return new MonkeyManipulatorFactory(
+	public MonkeyDirectiveFactory copy() {
+		return new MonkeyDirectiveFactory(
 			new AtomicInteger(sequence.get()),
 			decomposedContainerValueFactory,
 			containerPropertyGenerators,
@@ -196,54 +176,44 @@ public final class MonkeyManipulatorFactory {
 		PathExpression path,
 		int seq,
 		@Nullable Object value,
-		int limit,
-		boolean registered
+		int limit
 	) {
 		if (value == null) {
-			return new NullityDirective(path, seq, limit, expressionStrictMode, registered, true);
+			return new NullityDirective(path, seq, limit, expressionStrictMode, true);
 		} else if (value == Values.NOT_NULL) {
-			return new NullityDirective(path, seq, limit, expressionStrictMode, registered, false);
+			return new NullityDirective(path, seq, limit, expressionStrictMode, false);
 		} else if (value instanceof Just) {
-			return new JustDirective(path, seq, limit, expressionStrictMode, registered, (Just)value);
+			return new JustDirective(path, seq, limit, expressionStrictMode, (Just)value);
 		} else if (value instanceof Arbitrary) {
 			return new LazyDirective(
-				path, seq, limit, expressionStrictMode, registered,
-				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
-				decomposedContainerValueFactory,
-				containerPropertyGenerators
+				path, seq, limit, expressionStrictMode,
+				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample())
 			);
 		} else if (value instanceof DefaultArbitraryBuilder) {
 			return new LazyDirective(
-				path, seq, limit, expressionStrictMode, registered,
-				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample()),
-				decomposedContainerValueFactory,
-				containerPropertyGenerators
+				path, seq, limit, expressionStrictMode,
+				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample())
 			);
 		} else if (value instanceof Supplier) {
 			return new LazyDirective(
-				path, seq, limit, expressionStrictMode, registered,
-				LazyArbitrary.lazy((Supplier<?>)value),
-				decomposedContainerValueFactory,
-				containerPropertyGenerators
+				path, seq, limit, expressionStrictMode,
+				LazyArbitrary.lazy((Supplier<?>)value)
 			);
 		} else if (value instanceof LazyArbitrary) {
 			return new LazyDirective(
-				path, seq, limit, expressionStrictMode, registered,
-				(LazyArbitrary<?>)value,
-				decomposedContainerValueFactory,
-				containerPropertyGenerators
+				path, seq, limit, expressionStrictMode,
+				(LazyArbitrary<?>)value
 			);
 		} else if (value instanceof Unique) {
 			return new JustDirective(
-				path, seq, limit, expressionStrictMode, registered,
+				path, seq, limit, expressionStrictMode,
 				Values.just(CombinableArbitrary.from(((Unique)value).getValueSupplier()).unique())
 			);
 		} else {
 			return new SetDirective(
-				path, seq, limit, expressionStrictMode, registered,
+				path, seq, limit, expressionStrictMode,
 				value,
-				decomposedContainerValueFactory,
-				containerPropertyGenerators
+				decomposedContainerValueFactory
 			);
 		}
 	}

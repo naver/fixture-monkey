@@ -47,6 +47,9 @@ import com.navercorp.objectfarm.api.type.JvmType;
  */
 @API(since = "1.1.20", status = Status.EXPERIMENTAL)
 public final class AssemblyTraceBuilder {
+	private static final String SOURCE_DIRECT = "DIRECT";
+	private static final String SOURCE_REGISTER = "REGISTER";
+
 	private AssemblyTraceBuilder() {
 	}
 
@@ -99,7 +102,7 @@ public final class AssemblyTraceBuilder {
 					} else {
 						type = "SetDecomposedValue";
 					}
-					traceContext.recordManipulator(path, type, sequence++, value, null, "REGISTER");
+					traceContext.recordManipulator(path, type, sequence++, value, null, SOURCE_REGISTER);
 				}
 			}
 		}
@@ -115,15 +118,14 @@ public final class AssemblyTraceBuilder {
 					String path = typeName + "." + sizeEntry.getKey();
 					ArbitraryContainerInfo info = sizeEntry.getValue();
 					String sizeInfo = "size=" + info.getElementMinSize() + "-" + info.getElementMaxSize();
-					traceContext.recordManipulator(path, "ContainerInfo", sequence++, sizeInfo, null, "REGISTER");
+					traceContext.recordManipulator(path, "ContainerInfo", sequence++, sizeInfo, null, SOURCE_REGISTER);
 				}
 			}
 		}
 
 		for (PathDirective directive : manipulators) {
 			String path = directive.path().toExpression();
-			boolean isRegistered = directive.registered();
-			String source = isRegistered ? "REGISTERED_BUILDER" : "DIRECT";
+			String source = SOURCE_DIRECT;
 
 			String type = directive.getClass().getSimpleName().replace("Directive", "");
 
@@ -177,7 +179,7 @@ public final class AssemblyTraceBuilder {
 			String path = directive.path().toExpression();
 			ArbitraryContainerInfo info = directive.containerInfo();
 			String sizeInfo = "size=" + info.getElementMinSize() + "-" + info.getElementMaxSize();
-			traceContext.recordManipulator(path, "ContainerInfo", sequence++, sizeInfo, null, "DIRECT");
+			traceContext.recordManipulator(path, "ContainerInfo", sequence++, sizeInfo, null, SOURCE_DIRECT);
 		}
 
 		Map<PathExpression, @Nullable Object> valuesByPath = analysisResult.getValuesByPath();

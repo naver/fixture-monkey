@@ -30,12 +30,10 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.customizer.PathDirective;
-import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-@API(since = "0.5.0", status = Status.MAINTAINED)
-public final class ManipulatorSet {
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+public final class DirectiveSet {
 	/**
 	 * All user-issued path directives — set / null / lazy / filter / customizer / size — in
 	 * the order they were declared. Size directives ({@link SizeDirective}) are mixed in
@@ -73,7 +71,7 @@ public final class ManipulatorSet {
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 	private final boolean fixed;
 
-	public ManipulatorSet(List<PathDirective> directives) {
+	public DirectiveSet(List<PathDirective> directives) {
 		this(
 			directives,
 			Collections.emptyMap(),
@@ -84,7 +82,7 @@ public final class ManipulatorSet {
 		);
 	}
 
-	public ManipulatorSet(
+	public DirectiveSet(
 		List<PathDirective> directives,
 		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes,
 		Map<JvmType, Map<String, @Nullable Object>> typedValues,

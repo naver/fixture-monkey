@@ -29,13 +29,12 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 /**
  * Applies a {@link CombinableArbitrary} transformer to the value generated at a path.
  */
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class CustomizerDirective<T> implements PathDirective {
 	private final PathExpression path;
 	private final int sequence;
 	private final int limit;
 	private final boolean strict;
-	private final boolean registered;
 	private final Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> customizer;
 
 	public CustomizerDirective(
@@ -43,14 +42,12 @@ public final class CustomizerDirective<T> implements PathDirective {
 		int sequence,
 		int limit,
 		boolean strict,
-		boolean registered,
 		Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> customizer
 	) {
 		this.path = path;
 		this.sequence = sequence;
 		this.limit = limit;
 		this.strict = strict;
-		this.registered = registered;
 		this.customizer = customizer;
 	}
 
@@ -72,11 +69,6 @@ public final class CustomizerDirective<T> implements PathDirective {
 	@Override
 	public boolean strict() {
 		return strict;
-	}
-
-	@Override
-	public boolean registered() {
-		return registered;
 	}
 
 	public Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> customizer() {

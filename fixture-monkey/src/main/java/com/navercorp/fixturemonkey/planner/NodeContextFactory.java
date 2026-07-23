@@ -73,7 +73,7 @@ import com.navercorp.objectfarm.api.type.WildcardRawType;
  * Construction follows {@link FixtureMonkeyOptions} together with per-call
  * {@code propertyConfigurers} and {@code introspectorsByType} overrides.
  */
-@API(since = "1.1.17", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class NodeContextFactory {
 	/**
 	 * Marker types used by dedicated introspectors in DEFAULT_ARBITRARY_INTROSPECTORS.
@@ -142,7 +142,7 @@ public final class NodeContextFactory {
 			builder, rootType, options, propertyConfigurers, introspectorsByType, nameResolver
 		);
 
-		builder.interfaceResolver(new GlobalInterfaceResolver(seedState, options));
+		builder.interfaceResolver(new OptionsInterfaceResolver(seedState, options));
 		builder.maxDepth(options.getMaxRecursionDepth());
 
 		configureContainerGenerators(builder, options);
@@ -389,11 +389,11 @@ public final class NodeContextFactory {
 		};
 	}
 
-	private static final class GlobalInterfaceResolver implements InterfaceResolver {
+	private static final class OptionsInterfaceResolver implements InterfaceResolver {
 		private final SeedState seedState;
 		private final FixtureMonkeyOptions options;
 
-		GlobalInterfaceResolver(SeedState seedState, FixtureMonkeyOptions options) {
+		OptionsInterfaceResolver(SeedState seedState, FixtureMonkeyOptions options) {
 			this.seedState = seedState;
 			this.options = options;
 		}

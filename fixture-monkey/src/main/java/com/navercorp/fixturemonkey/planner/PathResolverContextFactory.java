@@ -49,8 +49,8 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * type-scoped container size resolvers, interface resolvers, and generic type resolvers. Optionally
  * infers additional type-scoped container sizes from typed values that are themselves containers.
  */
-@API(since = "1.1.17", status = Status.EXPERIMENTAL)
-public final class PathResolverContextFactory {
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+final class PathResolverContextFactory {
 	private final ContainerSizeResolverFactory containerSizeResolverFactory;
 	private final ContainerDetector containerDetector;
 

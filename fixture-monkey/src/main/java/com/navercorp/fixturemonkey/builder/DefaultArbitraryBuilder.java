@@ -67,9 +67,9 @@ import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.customizer.DirectiveSet;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
-import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
-import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.MonkeyDirectiveFactory;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
@@ -82,7 +82,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	ObjectBuilder<T>, ArbitraryBuilderContextProvider {
 	private final TreeRootProperty rootProperty;
 	private final ArbitraryResolver resolver;
-	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
+	private final MonkeyDirectiveFactory directiveFactory;
 	/**
 	 * It is actual active context for the builder.
 	 * It has the actual applied manipulators.
@@ -98,12 +98,11 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
-	private final Class<?> rootClass;
 
 	public DefaultArbitraryBuilder(
 		TreeRootProperty rootProperty,
 		ArbitraryResolver resolver,
-		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		MonkeyDirectiveFactory directiveFactory,
 		ArbitraryBuilderContext context,
 		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		MonkeyContext monkeyContext,
@@ -112,11 +111,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
 		this.activeContext = context;
-		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
+		this.directiveFactory = directiveFactory;
 		this.monkeyContext = monkeyContext;
 		this.standbyContexts = standbyContexts;
 		this.instantiatorProcessor = instantiatorProcessor;
-		this.rootClass = Types.normalizeRawType(rootProperty.getJvmType().getRawType());
 	}
 
 	@Override
@@ -149,12 +147,12 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> set(PropertySelector propertySelector, @Nullable Object value, int limit) {
-		PathExpression nodeResolver = toPathExpression(propertySelector);
+		PathExpression pathExpression = toPathExpression(propertySelector);
 		if (value instanceof InnerSpec) {
 			this.setInner((InnerSpec)value);
 		} else {
 			PathDirective directive =
-				monkeyManipulatorFactory.newDirective(nodeResolver, value, limit);
+				directiveFactory.newDirective(pathExpression, value, limit);
 			this.activeContext.addDirective(directive);
 		}
 		return this;
@@ -177,9 +175,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, @Nullable Supplier<?> supplier, int limit) {
-		PathExpression nodeResolver = toPathExpression(propertySelector);
+		PathExpression pathExpression = toPathExpression(propertySelector);
 		PathDirective directive =
-			monkeyManipulatorFactory.newDirective(nodeResolver, supplier, limit);
+			directiveFactory.newDirective(pathExpression, supplier, limit);
 		this.activeContext.addDirective(directive);
 		return this;
 	}
@@ -191,7 +189,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
-		ManipulatorSet manipulatorSet = innerSpec.getManipulatorSet(monkeyManipulatorFactory);
+		DirectiveSet manipulatorSet = innerSpec.getManipulatorSet(directiveFactory);
 		this.activeContext.addDirectives(manipulatorSet.getDirectives());
 		return this;
 	}
@@ -240,14 +238,14 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 		PathExpression sizePath = toPathExpression(propertySelector);
 		validateStrictModeSizePath(sizePath);
-		SizeDirective sizeDirective = monkeyManipulatorFactory.newSizeDirective(sizePath, minSize, maxSize);
+		SizeDirective sizeDirective = directiveFactory.newSizeDirective(sizePath, minSize, maxSize);
 		this.activeContext.addDirective(sizeDirective);
 
 		return this;
 	}
 
 	private void validateStrictModeSizePath(PathExpression path) {
-		if (!monkeyManipulatorFactory.isExpressionStrictMode()) {
+		if (!directiveFactory.isExpressionStrictMode()) {
 			return;
 		}
 		if (!StrictModeSizeValidator.validate(rootProperty.getJvmType(), path)) {
@@ -280,9 +278,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			}
 		);
 
-		PathExpression nodeResolver = PathExpression.root();
+		PathExpression rootPathExpression = PathExpression.root();
 		PathDirective directive =
-			monkeyManipulatorFactory.newDirective(nodeResolver, lazyArbitrary);
+			directiveFactory.newDirective(rootPathExpression, lazyArbitrary);
 		this.activeContext.addDirective(directive);
 		return this;
 	}
@@ -306,9 +304,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> setNull(PropertySelector propertySelector) {
-		PathExpression nodeResolver = toPathExpression(propertySelector);
+		PathExpression pathExpression = toPathExpression(propertySelector);
 		PathDirective directive =
-			monkeyManipulatorFactory.newDirective(nodeResolver, null);
+			directiveFactory.newDirective(pathExpression, null);
 		this.activeContext.addDirective(directive);
 		return this;
 	}
@@ -320,10 +318,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> setNotNull(PropertySelector propertySelector) {
-		PathExpression nodeResolver = toPathExpression(propertySelector);
+		PathExpression pathExpression = toPathExpression(propertySelector);
 
 		PathDirective directive =
-			monkeyManipulatorFactory.newDirective(nodeResolver, NOT_NULL);
+			directiveFactory.newDirective(pathExpression, NOT_NULL);
 
 		this.activeContext.addDirective(directive);
 		return this;
@@ -365,9 +363,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		Predicate<U> predicate,
 		int limit
 	) {
-		PathExpression nodeResolver = toPathExpression(propertySelector);
+		PathExpression pathExpression = toPathExpression(propertySelector);
 		PathDirective directive =
-			monkeyManipulatorFactory.newDirective(nodeResolver, type, predicate, limit);
+			directiveFactory.newDirective(pathExpression, type, predicate, limit);
 		this.activeContext.addDirective(directive);
 		return this;
 	}
@@ -483,9 +481,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		TypedPropertySelector<U> propertySelector,
 		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
 	) {
-		PathExpression nodeResolver = toPathExpression(propertySelector);
+		PathExpression pathExpression = toPathExpression(propertySelector);
 		activeContext.addDirective(
-			monkeyManipulatorFactory.newDirective(nodeResolver, combinableArbitraryCustomizer)
+			directiveFactory.newDirective(pathExpression, combinableArbitraryCustomizer)
 		);
 		return this;
 	}
@@ -519,7 +517,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		return new DefaultArbitraryBuilder<>(
 			rootProperty,
 			resolver,
-			monkeyManipulatorFactory,
+			directiveFactory,
 			activeContext.copy(),
 			standbyContexts,
 			monkeyContext,
@@ -542,8 +540,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 					)
 					.combined();
 
-				PathExpression nodeResolver = PathExpression.root();
-				activeContext.addDirective(monkeyManipulatorFactory.newDirective(nodeResolver, fixed));
+				PathExpression rootPathExpression = PathExpression.root();
+				activeContext.addDirective(directiveFactory.newDirective(rootPathExpression, fixed));
 				activeContext.renewFixed(CombinableArbitrary.from(fixed));
 			}
 			CombinableArbitrary<?> fixedArbitrary = activeContext.getFixedCombinableArbitrary();
@@ -563,9 +561,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {
 		ArbitraryBuilderContext context = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
-		PathExpression nodeResolver = PathExpression.root();
+		PathExpression rootPathExpression = PathExpression.root();
 		PathDirective directive =
-			monkeyManipulatorFactory.newDirective(nodeResolver, lazyArbitrary);
+			directiveFactory.newDirective(rootPathExpression, lazyArbitrary);
 		context.addDirective(directive);
 
 		return new DefaultArbitraryBuilder<>(
@@ -573,7 +571,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				Types.toJvmType(new LazyAnnotatedType<>(lazyArbitrary::getValue), Collections.emptyList())
 			)),
 			resolver,
-			monkeyManipulatorFactory,
+			directiveFactory,
 			context,
 			standbyContexts,
 			monkeyContext,

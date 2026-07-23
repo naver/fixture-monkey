@@ -571,6 +571,20 @@ class FixtureMonkeyTest {
 	}
 
 	@Test
+	void setWithLimitZeroIsNotApplied() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 3)
+			.set("strList[*]", "test", 0)
+			.sample()
+			.getStrList();
+
+		// then
+		then(actual).hasSize(3);
+		then(actual).noneMatch("test"::equals);
+	}
+
+	@Test
 	void setWithLimitMatchedWildcardSiblingsAreNotNullInjected() {
 		// All paths default to null injection. The wildcard pattern $.values[*]
 		// is set with limit 1, so element [0] resolves to "test". Elements [1] and [2]

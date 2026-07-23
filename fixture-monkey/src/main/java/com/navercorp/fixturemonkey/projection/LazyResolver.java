@@ -92,6 +92,8 @@ final class LazyResolver {
 			}
 
 			List<Segment> pathSegments = currentPath.getSegments();
+			// Walk ancestors nearest-first (deepest path prefix down to the root) so the closest
+			// enclosing type-matched ancestor wins when several ancestors match the same selector.
 			for (int pos = pathSegments.size() - 1; pos >= 0; pos--) {
 				PathExpression ancestorPath = PathMatcher.buildPathUpTo(currentPath, pos - 1);
 				JvmNode ancestorNode = PathMatcher.findNodeForPath(ancestorPath, state);

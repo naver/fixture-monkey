@@ -139,7 +139,7 @@ public final class JqwikShortCombinableArbitrary implements ShortCombinableArbit
 	}
 
 	private static short toMultipleOf(short candidate, short divisor) {
-		int remainder = Math.floorMod(candidate, divisor);
+		int remainder = candidate % divisor;
 		return (short)(candidate - remainder);
 	}
 }

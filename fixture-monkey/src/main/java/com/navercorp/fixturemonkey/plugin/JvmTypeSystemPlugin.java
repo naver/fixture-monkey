@@ -35,7 +35,7 @@ import org.apiguardian.api.API.Status;
  * {@code FixtureMonkeyBuilder.plugin(...)} call invokes both SPIs.
  */
 @FunctionalInterface
-@API(since = "1.1.21", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public interface JvmTypeSystemPlugin {
 	void configure(JvmTypeSystem typeSystem);
 }

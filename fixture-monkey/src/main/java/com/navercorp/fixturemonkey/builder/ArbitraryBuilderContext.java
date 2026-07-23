@@ -34,19 +34,14 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 
 /**
- * {@link FixtureMonkey} → {@link ArbitraryBuilder} → adapter pipeline → {@link CombinableArbitrary}
- * 1:N							1:N					1:1
+ * {@link FixtureMonkey} → {@link ArbitraryBuilder} → {@link CombinableArbitrary}
+ * 1:N							1:1
  * <p>
  * It is a context within {@link ArbitraryBuilder}. It represents a status of the {@link ArbitraryBuilder}.
  * The {@link ArbitraryBuilder} should be the same if the {@link ArbitraryBuilderContext} is the same.
@@ -193,7 +188,7 @@ public final class ArbitraryBuilderContext {
 	public void markFixed() {
 		FixedState fixedStateLocal = fixedState;
 		if (fixedStateLocal != null
-			&& fixedStateLocal.getFixedManipulateSize() == this.directives.size()) {
+			&& fixedStateLocal.getFixedDirectiveSize() == this.directives.size()) {
 			return;
 		}
 
@@ -205,9 +200,9 @@ public final class ArbitraryBuilderContext {
 		return fixedState != null;
 	}
 
-	@SuppressWarnings({"dereference.of.nullable", "argument"})
+	@SuppressWarnings("argument")
 	public boolean fixedExpired() {
-		return directives.size() > Objects.requireNonNull(fixedState).getFixedManipulateSize();
+		return directives.size() > Objects.requireNonNull(fixedState).getFixedDirectiveSize();
 	}
 
 	public void renewFixed(CombinableArbitrary<?> fixedCombinableArbitrary) {
@@ -220,50 +215,14 @@ public final class ArbitraryBuilderContext {
 	}
 
 	private static class FixedState {
-		private final int fixedManipulateSize;
+		private final int fixedDirectiveSize;
 
-		public FixedState(int fixedManipulateSize) {
-			this.fixedManipulateSize = fixedManipulateSize;
+		public FixedState(int fixedDirectiveSize) {
+			this.fixedDirectiveSize = fixedDirectiveSize;
 		}
 
-		public int getFixedManipulateSize() {
-			return fixedManipulateSize;
+		public int getFixedDirectiveSize() {
+			return fixedDirectiveSize;
 		}
-	}
-
-	private static LazyPropertyGenerator initializeResolvedPropertyGenerator(
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		List<MatcherOperator<PropertyGenerator>> optionalPropertyGenerators,
-		ArbitraryGenerator defaultArbitraryGenerator,
-		PropertyGenerator defaultPropertyGenerator
-	) {
-		PropertyGenerator resolvedPropertyGenerator = property -> {
-			Class<?> type = Types.normalizeRawType(property.getJvmType().getRawType());
-			List<Property> propertyConfigurer = propertyConfigurers.get(type);
-			if (propertyConfigurer != null) {
-				return propertyConfigurer;
-			}
-
-			PropertyGenerator propertyGenerator = optionalPropertyGenerators.stream()
-				.filter(it -> it.match(property))
-				.map(MatcherOperator::getOperator)
-				.findFirst()
-				.orElse(null);
-
-			if (propertyGenerator != null) {
-				return propertyGenerator.generateChildProperties(property);
-			}
-
-			PropertyGenerator defaultArbitraryGeneratorPropertyGenerator =
-				defaultArbitraryGenerator.getRequiredPropertyGenerator(property);
-
-			if (defaultArbitraryGeneratorPropertyGenerator != null) {
-				return defaultArbitraryGeneratorPropertyGenerator.generateChildProperties(property);
-			}
-
-			return defaultPropertyGenerator.generateChildProperties(property);
-		};
-
-		return new LazyPropertyGenerator(resolvedPropertyGenerator);
 	}
 }

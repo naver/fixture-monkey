@@ -50,7 +50,7 @@ import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
-import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.MonkeyDirectiveFactory;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
@@ -65,7 +65,7 @@ public final class FixtureMonkey {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
-	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
+	private final MonkeyDirectiveFactory monkeyManipulatorFactory;
 
 	private final AssemblyPlanner assemblyPlanner;
 
@@ -76,7 +76,7 @@ public final class FixtureMonkey {
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
-		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		MonkeyDirectiveFactory monkeyManipulatorFactory,
 		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers
 	) {
 		this(
@@ -94,7 +94,7 @@ public final class FixtureMonkey {
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
-		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		MonkeyDirectiveFactory monkeyManipulatorFactory,
 		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers,
 		@Nullable AssemblyPlanner assemblyPlanner
 	) {
@@ -113,7 +113,7 @@ public final class FixtureMonkey {
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
-		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		MonkeyDirectiveFactory monkeyManipulatorFactory,
 		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers,
 		@Nullable AssemblyPlanner assemblyPlanner,
 		AssemblyTracer tracer

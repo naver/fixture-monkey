@@ -52,7 +52,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
-import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
+import com.navercorp.fixturemonkey.customizer.DirectiveSet;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
@@ -181,7 +181,7 @@ public final class ArbitraryResolver {
 
 		Map<Class<?>, ArbitraryIntrospector> introspectorsByType = activeContext.getArbitraryIntrospectorsByType();
 
-		ManipulatorSet manipulatorSet = new ManipulatorSet(
+		DirectiveSet manipulatorSet = new DirectiveSet(
 			new ArrayList<>(activeDirectives),
 			Collections.emptyMap(),
 			Collections.emptyMap(),
@@ -406,7 +406,7 @@ public final class ArbitraryResolver {
 
 		List<PathDirective> joinedDirectives = new ArrayList<>(activeDirectives);
 		joinedDirectives.addAll(mergedSizeDirectives);
-		ManipulatorSet manipulatorSet = new ManipulatorSet(
+		DirectiveSet manipulatorSet = new DirectiveSet(
 			joinedDirectives,
 			typedContainerSizes,
 			typedValues,
@@ -444,7 +444,7 @@ public final class ArbitraryResolver {
 		ArbitraryBuilderContext activeContext,
 		List<PathDirective> directives,
 		FixtureMonkeyOptions options,
-		ManipulatorSet manipulatorSet,
+		DirectiveSet manipulatorSet,
 		JvmType rootJvmType,
 		List<SizeDirective> sizeDirectives,
 		Set<String> activePaths,

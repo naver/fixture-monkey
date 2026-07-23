@@ -60,7 +60,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
-import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.MonkeyDirectiveFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalFixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
 import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin;
@@ -606,7 +606,7 @@ public final class FixtureMonkeyBuilder {
 		}
 
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
-		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
+		MonkeyDirectiveFactory monkeyManipulatorFactory = new MonkeyDirectiveFactory(
 			new AtomicInteger(),
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
 			fixtureMonkeyOptions.getContainerPropertyGenerators(),

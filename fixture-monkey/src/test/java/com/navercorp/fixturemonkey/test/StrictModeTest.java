@@ -28,7 +28,9 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringArrayWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapperList;
 
 class StrictModeTest {
@@ -149,6 +151,34 @@ class StrictModeTest {
 		thenNoException().isThrownBy(() ->
 			sut.giveMeBuilder(StringWrapperList.class).size("values.nonExistentField", 1).sample()
 		);
+	}
+
+	@Test
+	void strictModeSizeArrayElementNestedValidExpression() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		// when
+		ComplexObject[] actual = sut.giveMeBuilder(new TypeReference<ComplexObject[]>() {
+			})
+			.size("$", 1)
+			.size("$[0].strList", 3)
+			.sample();
+
+		// then
+		then(actual[0].getStrList()).hasSize(3);
+	}
+
+	@Test
+	void strictModeSizeArrayElementWrongExpressionThrows() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
+
+		// when
+		// then
+		thenThrownBy(() -> sut.giveMeBuilder(StringArrayWrapper.class).size("values[0].nonExistentField", 1).sample())
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given");
 	}
 
 	@Test

@@ -26,13 +26,12 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 /**
  * Forces a path to be {@code null} ({@code toNull = true}) or non-null ({@code toNull = false}).
  */
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class NullityDirective implements PathDirective {
 	private final PathExpression path;
 	private final int sequence;
 	private final int limit;
 	private final boolean strict;
-	private final boolean registered;
 	private final boolean toNull;
 
 	public NullityDirective(
@@ -40,14 +39,12 @@ public final class NullityDirective implements PathDirective {
 		int sequence,
 		int limit,
 		boolean strict,
-		boolean registered,
 		boolean toNull
 	) {
 		this.path = path;
 		this.sequence = sequence;
 		this.limit = limit;
 		this.strict = strict;
-		this.registered = registered;
 		this.toNull = toNull;
 	}
 
@@ -69,11 +66,6 @@ public final class NullityDirective implements PathDirective {
 	@Override
 	public boolean strict() {
 		return strict;
-	}
-
-	@Override
-	public boolean registered() {
-		return registered;
 	}
 
 	public boolean toNull() {

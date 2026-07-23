@@ -39,13 +39,10 @@ import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolve
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
+import com.navercorp.fixturemonkey.customizer.DirectiveSet;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.nodecandidate.InterfaceMethodNodeCandidateGenerator;
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
-import com.navercorp.fixturemonkey.planner.AssemblyPlan;
-import com.navercorp.fixturemonkey.planner.ManipulatorAnalyzer;
 import com.navercorp.fixturemonkey.plugin.LeafTypeRegistry;
 import com.navercorp.fixturemonkey.projection.ValueProjection;
 import com.navercorp.fixturemonkey.resolver.AbstractTypeResolver;
@@ -91,7 +88,7 @@ import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
  * Directive order is preserved end-to-end via {@link PathDirective#sequence()}, so later
  * directives override earlier ones at the same path.
  */
-@API(since = "1.1.17", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegistry {
 	private static final ContainerDetector CONTAINER_DETECTOR = ContainerDetector.standard();
 
@@ -169,7 +166,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 
 	public AssemblyPlan plan(
 		JvmType rootType,
-		ManipulatorSet manipulatorSet,
+		DirectiveSet manipulatorSet,
 		@Nullable FixtureMonkeyOptions options,
 		@Nullable TraceContext traceContext
 	) {
@@ -248,7 +245,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 
 	private AssemblyPlan buildAssemblyPlan(
 		JvmType rootType,
-		ManipulatorSet manipulatorSet,
+		DirectiveSet manipulatorSet,
 		@Nullable FixtureMonkeyOptions options,
 		ResolutionListener resolutionListener
 	) {

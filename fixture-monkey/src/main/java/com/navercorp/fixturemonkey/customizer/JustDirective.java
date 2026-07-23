@@ -28,13 +28,12 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 /**
  * Sets an immutable value at a path. Child values are intentionally ignored.
  */
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class JustDirective implements PathDirective {
 	private final PathExpression path;
 	private final int sequence;
 	private final int limit;
 	private final boolean strict;
-	private final boolean registered;
 	private final Just just;
 
 	public JustDirective(
@@ -42,14 +41,12 @@ public final class JustDirective implements PathDirective {
 		int sequence,
 		int limit,
 		boolean strict,
-		boolean registered,
 		Just just
 	) {
 		this.path = path;
 		this.sequence = sequence;
 		this.limit = limit;
 		this.strict = strict;
-		this.registered = registered;
 		this.just = just;
 	}
 
@@ -71,11 +68,6 @@ public final class JustDirective implements PathDirective {
 	@Override
 	public boolean strict() {
 		return strict;
-	}
-
-	@Override
-	public boolean registered() {
-		return registered;
 	}
 
 	public Just just() {

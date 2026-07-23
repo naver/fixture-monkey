@@ -29,13 +29,12 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * Applies a post-condition predicate to the value generated at a path.
  */
 @SuppressWarnings("rawtypes")
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class FilterDirective implements PathDirective {
 	private final PathExpression path;
 	private final int sequence;
 	private final int limit;
 	private final boolean strict;
-	private final boolean registered;
 	private final Class<?> type;
 	private final Predicate filter;
 
@@ -44,7 +43,6 @@ public final class FilterDirective implements PathDirective {
 		int sequence,
 		int limit,
 		boolean strict,
-		boolean registered,
 		Class<?> type,
 		Predicate filter
 	) {
@@ -52,7 +50,6 @@ public final class FilterDirective implements PathDirective {
 		this.sequence = sequence;
 		this.limit = limit;
 		this.strict = strict;
-		this.registered = registered;
 		this.type = type;
 		this.filter = filter;
 	}
@@ -75,11 +72,6 @@ public final class FilterDirective implements PathDirective {
 	@Override
 	public boolean strict() {
 		return strict;
-	}
-
-	@Override
-	public boolean registered() {
-		return registered;
 	}
 
 	public Class<?> type() {

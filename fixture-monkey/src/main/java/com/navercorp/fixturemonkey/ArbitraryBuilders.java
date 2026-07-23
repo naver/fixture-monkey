@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
-@API(since = "1.1.20", status = Status.MAINTAINED)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryBuilders {
 	public static <T, U, R> ArbitraryBuilder<R> zip(
 		ArbitraryBuilder<T> a1,

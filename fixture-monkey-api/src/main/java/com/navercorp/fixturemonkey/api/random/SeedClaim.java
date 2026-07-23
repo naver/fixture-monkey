@@ -40,7 +40,7 @@ import org.jspecify.annotations.Nullable;
  * }
  * }</pre>
  */
-@API(since = "1.1.18", status = Status.INTERNAL)
+@API(since = "1.2.0", status = Status.INTERNAL)
 public final class SeedClaim implements AutoCloseable {
 	@SuppressWarnings("type.argument")
 	private static final ThreadLocal<SeedClaim> ACTIVE = new ThreadLocal<>();

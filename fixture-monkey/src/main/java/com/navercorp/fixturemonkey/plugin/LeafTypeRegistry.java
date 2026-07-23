@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
  * Leaf types (e.g. Java standard library types, Kotlin standard types) are terminal nodes
  * in the object tree and their internal fields should not be traversed.
  */
-@API(since = "1.1.17", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public interface LeafTypeRegistry {
 	/**
 	 * Checks whether the given type is a leaf type.

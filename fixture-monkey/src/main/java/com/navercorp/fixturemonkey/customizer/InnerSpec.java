@@ -528,7 +528,7 @@ public final class InnerSpec {
 		return this;
 	}
 
-	public ManipulatorSet getManipulatorSet(MonkeyManipulatorFactory monkeyManipulatorFactory) {
+	public DirectiveSet getManipulatorSet(MonkeyDirectiveFactory monkeyManipulatorFactory) {
 		ManipulatorHolderSet manipulatorHolderSet = traverse(this);
 		return monkeyManipulatorFactory.newManipulatorSet(manipulatorHolderSet);
 	}

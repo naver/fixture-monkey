@@ -28,7 +28,7 @@ import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
  * registration points a JVM language/type-system plugin needs. Hides the rest of
  * {@code FixtureMonkeyBuilder} so end users never see these hooks on the builder type.
  */
-@API(since = "1.1.21", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public interface JvmTypeSystem {
 	/**
 	 * Installs the {@link AssemblyPlanner} that the resulting {@code FixtureMonkey} uses

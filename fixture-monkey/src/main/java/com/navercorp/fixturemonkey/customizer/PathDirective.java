@@ -33,8 +33,13 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  *
  * @since 0.4.0
  */
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public interface PathDirective {
+	/**
+	 * Sentinel {@link #limit()} value meaning the directive is applied an unlimited number of times.
+	 */
+	int UNLIMITED = -1;
+
 	/**
 	 * The fully resolved path this directive targets.
 	 */
@@ -46,7 +51,7 @@ public interface PathDirective {
 	int sequence();
 
 	/**
-	 * Optional application count limit; {@code -1} means unlimited.
+	 * Optional application count limit; {@link #UNLIMITED} means unlimited.
 	 */
 	int limit();
 
@@ -55,10 +60,4 @@ public interface PathDirective {
 	 * an exception instead of being silently ignored.
 	 */
 	boolean strict();
-
-	/**
-	 * Whether this directive originates from a registered builder. Registered directives are
-	 * skipped by direct path-based analysis and flow through the typed-value path instead.
-	 */
-	boolean registered();
 }

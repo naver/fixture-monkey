@@ -126,11 +126,6 @@ public final class ManipulatorAnalyzer {
 		for (int order = 0; order < directives.size(); order++) {
 			PathDirective directive = directives.get(order);
 
-			// Registered directives are handled via type-based resolution, not path-based resolution
-			if (directive.registered()) {
-				continue;
-			}
-
 			if (!strictMode && directive.strict()) {
 				strictMode = true;
 			}
@@ -220,7 +215,10 @@ public final class ManipulatorAnalyzer {
 	) {
 		PathExpression pathExpression = directive.path();
 		int limit = directive.limit();
-		if (limit > 0) {
+		// Only PathDirective.UNLIMITED means "apply to every matching path", so any other value is
+		// recorded and enforced as a cap. A limit of 0 is recorded too, which stops the directive
+		// from being applied at all (see ValueProjectionAssembler: remainingLimit <= 0).
+		if (limit != PathDirective.UNLIMITED) {
 			limitsByPath.put(pathExpression, limit);
 		}
 

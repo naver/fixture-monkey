@@ -61,25 +61,25 @@ final class StrictModeSizeValidator {
 
 			if (selector instanceof NameSelector) {
 				String name = ((NameSelector)selector).getName();
-				JvmType resolved = childByName(current, name);
+				JvmType resolved = resolveChildByName(current, name);
 				if (resolved == null) {
 					return false;
 				}
 				current = resolved;
 			} else if (selector instanceof IndexSelector || selector instanceof WildcardSelector) {
-				JvmType element = elementType(current);
+				JvmType element = resolveElementType(current);
 				if (element == null) {
 					return false;
 				}
 				current = element;
 			} else if (selector instanceof KeySelector) {
-				JvmType element = mapTypeArg(current, 0);
+				JvmType element = resolveMapTypeArg(current, 0);
 				if (element == null) {
 					return false;
 				}
 				current = element;
 			} else if (selector instanceof ValueSelector) {
-				JvmType element = mapTypeArg(current, 1);
+				JvmType element = resolveMapTypeArg(current, 1);
 				if (element == null) {
 					return false;
 				}
@@ -91,7 +91,7 @@ final class StrictModeSizeValidator {
 		return true;
 	}
 
-	private static @Nullable JvmType childByName(JvmType type, String name) {
+	private static @Nullable JvmType resolveChildByName(JvmType type, String name) {
 		Class<?> raw = type.getRawType();
 		Field field = TypeCache.getFieldsByName(raw).get(name);
 		if (field == null) {
@@ -101,7 +101,7 @@ final class StrictModeSizeValidator {
 		return JvmTypes.resolveJvmType(type, annotatedType.getType(), Arrays.asList(field.getAnnotations()));
 	}
 
-	private static @Nullable JvmType elementType(JvmType type) {
+	private static @Nullable JvmType resolveElementType(JvmType type) {
 		Class<?> raw = type.getRawType();
 		if (raw.isArray()) {
 			return type.getComponentType();
@@ -113,7 +113,7 @@ final class StrictModeSizeValidator {
 		return null;
 	}
 
-	private static @Nullable JvmType mapTypeArg(JvmType type, int index) {
+	private static @Nullable JvmType resolveMapTypeArg(JvmType type, int index) {
 		Class<?> raw = type.getRawType();
 		if (Map.class.isAssignableFrom(raw)) {
 			List<? extends JvmType> args = type.getTypeVariables();
