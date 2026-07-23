@@ -101,17 +101,6 @@ class InstantiatorTest {
         then(actual).isEqualTo("bar")
     }
 
-    /**
-     * Reproduces the doc-examples scenario `InstantiateMethodsKotlinTest.specifyingParameterValues`:
-     * an aliased constructor parameter (`parameter<String>("productName")` against a parameter
-     * actually named `name`) plus a `set("productName", ...)` should land on the aliased
-     * parameter. The introspector ends up walking the value map by position because the alias
-     * hides the original parameter name from name-based matching, so it relies on the iteration
-     * order of the map ObjectCombinableArbitrary feeds to its combinator. Before the fix that
-     * map was a HashMap, and on JVMs / hashCode distributions where the bucket order disagrees
-     * with insertion order, the value lands on the wrong constructor parameter and Kotlin throws
-     * "argument type mismatch".
-     */
     @RepeatedTest(TEST_COUNT)
     fun instantiateByAliasedParameterPreservesValueAssignment() {
         val actual = SUT.giveMeKotlinBuilder<MultiConstructorProduct>()
