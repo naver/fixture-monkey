@@ -19,25 +19,17 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
-import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "1.1.6", status = Status.EXPERIMENTAL)
-public final class DefaultContainerElementProperty extends ElementProperty implements ContainerElementProperty {
+public final class DefaultContainerElementProperty implements ContainerElementProperty {
 	private final Property containerProperty;
 	private final Property elementProperty;
 	private final int sequence;
@@ -50,7 +42,6 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 		@Nullable Integer index,
 		int sequence
 	) {
-		super(containerProperty, elementProperty.getAnnotatedType(), index, sequence);
 		this.containerProperty = containerProperty;
 		this.elementProperty = elementProperty;
 		this.index = index;
@@ -79,13 +70,8 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 	}
 
 	@Override
-	public Type getType() {
-		return this.elementProperty.getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.elementProperty.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.elementProperty.getJvmType();
 	}
 
 	@Nullable
@@ -97,68 +83,6 @@ public final class DefaultContainerElementProperty extends ElementProperty imple
 	@Override
 	public List<Annotation> getAnnotations() {
 		return this.elementProperty.getAnnotations();
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		// TODO: should split as a implementation of ContainerElementProperty
-		Class<?> actualType = Types.getActualType(instance.getClass());
-		if (isOptional(actualType)) {
-			return getOptionalValue(instance);
-		}
-
-		if (actualType.isArray()) {
-			if (Array.getLength(instance) == 0) {
-				return null;
-			}
-
-			return Array.get(instance, sequence);
-		}
-
-		if (List.class.isAssignableFrom(actualType)) {
-			List<?> list = (List<?>)instance;
-			if (list.isEmpty()) {
-				return null;
-			}
-			return list.get(sequence);
-		}
-
-		if (Supplier.class.isAssignableFrom(actualType)) {
-			return instance;
-		}
-
-		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
-	}
-
-	private boolean isOptional(Class<?> type) {
-		return Optional.class.isAssignableFrom(type)
-			|| OptionalInt.class.isAssignableFrom(type)
-			|| OptionalLong.class.isAssignableFrom(type)
-			|| OptionalDouble.class.isAssignableFrom(type);
-	}
-
-	@Nullable
-	@SuppressWarnings("argument")
-	private Object getOptionalValue(Object obj) {
-		Class<?> actualType = Types.getActualType(obj.getClass());
-		if (Optional.class.isAssignableFrom(actualType)) {
-			return ((Optional<?>)obj).orElse(null);
-		}
-
-		if (OptionalInt.class.isAssignableFrom(actualType)) {
-			return ((OptionalInt)obj).orElse(0);
-		}
-
-		if (OptionalLong.class.isAssignableFrom(actualType)) {
-			return ((OptionalLong)obj).orElse(0L);
-		}
-
-		if (OptionalDouble.class.isAssignableFrom(actualType)) {
-			return ((OptionalDouble)obj).orElse(Double.NaN);
-		}
-
-		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
 	}
 
 	@Override

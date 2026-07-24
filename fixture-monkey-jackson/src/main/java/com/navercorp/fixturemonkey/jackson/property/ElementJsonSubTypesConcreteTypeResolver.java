@@ -50,7 +50,8 @@ public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateC
 
 		JsonSubTypes jsonSubTypes = getJacksonAnnotation(containerProperty, JsonSubTypes.class);
 		if (jsonSubTypes == null) {
-			throw new IllegalArgumentException("@JsonSubTypes is not found " + property.getType().getTypeName());
+			throw new IllegalArgumentException(
+				"@JsonSubTypes is not found " + property.getJvmType().getRawType().getTypeName());
 		}
 
 		Class<?> type = getRandomJsonSubType(jsonSubTypes);
@@ -60,7 +61,7 @@ public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateC
 		List<Annotation> annotations = new ArrayList<>(property.getAnnotations());
 		annotations.add(jsonTypeInfo);
 
-		Property actualProperty = new ConcreteTypeProperty(annotatedType, property, annotations);
+		Property actualProperty = new ConcreteTypeProperty(Types.toJvmType(annotatedType, annotations), property);
 		return Collections.singletonList(actualProperty);
 	}
 }

@@ -71,10 +71,11 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
 		TypeFactory typeFactory = TypeFactory.defaultInstance();
+		Type propertyType = Types.toAnnotatedType(property.getJvmType()).getType();
 		JavaType type = typeFactory.constructType(new JacksonTypeReference<Object>() {
 			@Override
 			public Type getType() {
-				return property.getType();
+				return propertyType;
 			}
 		});
 
@@ -161,7 +162,7 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 		Property property
 	) {
 		JsonTypeName jsonTypeName = getJacksonAnnotation(property, JsonTypeName.class);
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 
 		Id id = jsonTypeInfo.use();
 		String jsonTypeInfoValue;

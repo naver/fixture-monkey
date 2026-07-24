@@ -56,12 +56,16 @@ public final class Jackson3JsonNodeContainerPropertyGenerator implements Contain
 					property,
 					new MapKeyElementProperty(
 						property,
-						new TypeParameterProperty(KEY_VALUE_TYPE.getAnnotatedType()),
+						new TypeParameterProperty(
+							KEY_VALUE_TYPE.getJvmType()
+						),
 						sequence
 					),
 					new MapValueElementProperty(
 						property,
-						new TypeParameterProperty(KEY_VALUE_TYPE.getAnnotatedType()),
+						new TypeParameterProperty(
+							KEY_VALUE_TYPE.getJvmType()
+						),
 						sequence
 					)
 				)

@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.kotlin.node
 
 import com.navercorp.fixturemonkey.api.type.KotlinTypeDetector
 import com.navercorp.fixturemonkey.kotlin.type.KotlinNullabilityUtils
-import com.navercorp.fixturemonkey.kotlin.type.KotlinType
-import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.objectfarm.api.node.JavaNode
 import com.navercorp.objectfarm.api.node.JvmNode
 import com.navercorp.objectfarm.api.node.JvmNodeContext
@@ -30,6 +28,7 @@ import com.navercorp.objectfarm.api.nodecandidate.ConstructorParamCreationMethod
 import com.navercorp.objectfarm.api.nodecandidate.FieldAccessCreationMethod
 import com.navercorp.objectfarm.api.nodecandidate.JavaMapNodeCandidate
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import java.lang.reflect.Modifier
@@ -75,29 +74,18 @@ class KotlinNodePromoter : JvmNodePromoter {
 
     override fun promote(node: JvmNodeCandidate, context: JvmNodeContext): List<JvmNode> {
         val rawType = node.type.rawType
-
-        // Determine nullability from constructor parameter if available
         val isNullable = findNullability(node)
 
-        // Determine if it's a value class (only for Kotlin types)
-        val isValueClass = if (KotlinTypeDetector.isKotlinType(rawType)) {
-            rawType.cachedKotlin().isValue
-        } else {
-            false
-        }
-
-        // Create KotlinType with Kotlin metadata
-        val kotlinType = KotlinType(
-            rawType = rawType,
-            typeVariables = node.type.typeVariables.toList(),
-            annotations = node.type.annotations,
-            isNullable = isNullable,
-            isValueClass = isValueClass,
-            componentType = node.type.componentType
+        val type = ReflectiveJvmType(
+            rawType,
+            node.type.typeVariables.toList(),
+            node.type.annotations,
+            node.type.componentType,
+            isNullable
         )
 
         return listOf(
-            JavaNode(kotlinType, node.name, null, node.creationMethod)
+            JavaNode(type, node.name, null, node.creationMethod)
         )
     }
 

@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -43,6 +42,8 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.Traceable;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryGeneratorContext implements Traceable {
@@ -95,12 +96,24 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		return this.resolvedProperty;
 	}
 
-	public AnnotatedType getResolvedAnnotatedType() {
-		return this.getResolvedProperty().getAnnotatedType();
+	public JvmType getResolvedJvmType() {
+		return this.getResolvedProperty().getJvmType();
 	}
 
-	public Type getResolvedType() {
-		return this.getResolvedProperty().getType();
+	/**
+	 * @deprecated Use {@link #getResolvedJvmType()} instead.
+	 */
+	@Deprecated
+	public AnnotatedType getResolvedAnnotatedType() {
+		return Types.toAnnotatedType(this.getResolvedProperty().getJvmType());
+	}
+
+	/**
+	 * @deprecated Use {@link #getResolvedJvmType()} instead.
+	 */
+	@Deprecated
+	public Class<?> getResolvedType() {
+		return this.getResolvedProperty().getJvmType().getRawType();
 	}
 
 	public <T extends Annotation> Optional<T> findAnnotation(Class<T> annotationClass) {
@@ -116,19 +129,33 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	}
 
 	public Map<ArbitraryProperty, CombinableArbitrary<?>> getCombinableArbitrariesByArbitraryProperty() {
-		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
-			.collect(toMap(Entry::getKey, Entry::getValue));
+		// Preserve declaration order so downstream introspectors (e.g. KotlinConstructorArbitraryIntrospector
+		// fallback that walks values by position, BeanArbitraryIntrospector relaying into
+		// ObjectCombineArbitraryBuilder)
+		// see children in the same order they were registered. Collectors.toMap defaults to HashMap, which would
+		// surface entries in hash-bucket order and shift the random stream.
+		return new LinkedHashMap<>(arbitraryListByArbitraryProperty.getValue());
 	}
 
 	public Map<String, CombinableArbitrary<?>> getCombinableArbitrariesByResolvedName() {
 		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
-			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
+			.collect(toMap(
+				it -> it.getKey().getObjectProperty().getResolvedPropertyName(),
+				Entry::getValue,
+				(existing, replacement) -> existing,
+				LinkedHashMap::new
+			));
 	}
 
 	@SuppressWarnings("return")
 	public Map<String, CombinableArbitrary<?>> getCombinableArbitrariesByPropertyName() {
 		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
-			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
+			.collect(toMap(
+				it -> it.getKey().getObjectProperty().getProperty().getName(),
+				Entry::getValue,
+				(existing, replacement) -> existing,
+				LinkedHashMap::new
+			));
 	}
 
 	public List<CombinableArbitrary<?>> getElementCombinableArbitraryList() {

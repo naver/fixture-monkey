@@ -21,9 +21,9 @@ package com.navercorp.objectfarm.api.input;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ObjectTypeReference;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 /**
@@ -32,10 +32,10 @@ import com.navercorp.objectfarm.api.type.Types;
  * This parser handles the following input types:
  * <ul>
  *   <li>{@link JvmType} - returned as-is</li>
- *   <li>{@link Class} - converted to JavaType</li>
- *   <li>{@link Type} - converted to JavaType (supports ParameterizedType, GenericArrayType, etc.)</li>
- *   <li>{@link AnnotatedType} - converted to JavaType preserving annotations</li>
- *   <li>{@link ObjectTypeReference} - converted to JavaType with generic type information</li>
+ *   <li>{@link Class} - converted to ReflectiveJvmType</li>
+ *   <li>{@link Type} - converted to ReflectiveJvmType (supports ParameterizedType, GenericArrayType, etc.)</li>
+ *   <li>{@link AnnotatedType} - converted to ReflectiveJvmType preserving annotations</li>
+ *   <li>{@link ObjectTypeReference} - converted to ReflectiveJvmType with generic type information</li>
  * </ul>
  * <p>
  * Example usage:
@@ -69,21 +69,21 @@ public final class JavaTypeInputParser implements TypeInputParser {
 		}
 
 		if (input instanceof Class<?>) {
-			return new JavaType((Class<?>)input);
+			return new ReflectiveJvmType((Class<?>)input);
 		}
 
 		if (input instanceof ObjectTypeReference<?>) {
-			return new JavaType((ObjectTypeReference<?>)input);
+			return new ReflectiveJvmType((ObjectTypeReference<?>)input);
 		}
 
 		if (input instanceof AnnotatedType) {
 			AnnotatedType annotatedType = (AnnotatedType)input;
-			return new JavaType(Types.toTypeReference(annotatedType));
+			return new ReflectiveJvmType(Types.toTypeReference(annotatedType));
 		}
 
 		if (input instanceof Type) {
 			Type type = (Type)input;
-			return new JavaType(Types.getActualType(type));
+			return new ReflectiveJvmType(Types.getActualType(type));
 		}
 
 		throw new TypeParseException("Unsupported Java type input: " + input.getClass().getName());

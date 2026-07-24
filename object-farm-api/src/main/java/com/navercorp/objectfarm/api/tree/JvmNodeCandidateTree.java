@@ -39,6 +39,7 @@ import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext.SubtreeSnapshot;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 /**
@@ -373,7 +374,15 @@ public final class JvmNodeCandidateTree {
 		// Only treat standard Java library collections as container types
 		// Custom classes that implement Collection/Map should be treated as regular objects
 		boolean isCollectionOrMap = Collection.class.isAssignableFrom(rawType) || Map.class.isAssignableFrom(rawType);
-		return isCollectionOrMap && Types.isJavaType(rawType);
+		if (isCollectionOrMap) {
+			return Types.isJavaType(rawType);
+		}
+		// For non-Collection/Map types, defer to the container types registered with
+		// jvmNodeContext (e.g., Pair, Triple). Without this, such custom container types would be
+		// expanded as regular objects in the candidate tree, which may produce an unordered
+		// result for Kotlin reflection. Collection/Map user classes are intentionally excluded
+		// above so their declared fields are processed normally.
+		return jvmNodeContext.isContainerType(jvmType);
 	}
 
 	/**
@@ -430,7 +439,7 @@ public final class JvmNodeCandidateTree {
 		}
 		// Fallback: use raw component type (loses generic info)
 		Class<?> rawComponentType = arrayType.getRawType().getComponentType();
-		return rawComponentType != null ? new com.navercorp.objectfarm.api.type.JavaType(rawComponentType) : null;
+		return rawComponentType != null ? new ReflectiveJvmType(rawComponentType) : null;
 	}
 
 	/**

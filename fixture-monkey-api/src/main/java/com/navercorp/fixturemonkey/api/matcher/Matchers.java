@@ -23,13 +23,13 @@ import java.util.UUID;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.type.Types;
-
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class Matchers {
 
-	public static final Matcher ENUM_TYPE_MATCHER = property -> Types.getActualType(property.getType()).isEnum();
-	public static final Matcher BOOLEAN_TYPE_MATCHER = property ->
-		property.getType() == boolean.class || property.getType() == Boolean.class;
+	public static final Matcher ENUM_TYPE_MATCHER = property -> property.getJvmType().getRawType().isEnum();
+	public static final Matcher BOOLEAN_TYPE_MATCHER = property -> {
+		Class<?> rawType = property.getJvmType().getRawType();
+		return rawType == boolean.class || rawType == Boolean.class;
+	};
 	public static final Matcher UUID_TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
 }

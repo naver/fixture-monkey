@@ -20,13 +20,9 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import net.jqwik.api.ForAll;
-import net.jqwik.api.Property;
 import net.jqwik.api.arbitraries.StringArbitrary;
-import net.jqwik.api.constraints.Size;
 
 class MonkeyStringArbitraryTest {
 	StringArbitrary koreanStringArbitrary = new MonkeyStringArbitrary().korean();
@@ -40,10 +36,8 @@ class MonkeyStringArbitraryTest {
 		then(sample.chars().allMatch(ch -> ch >= '가' && ch <= '힣')).isTrue();
 	}
 
-	@Property(tries = 1)
-	void koreanShouldAlwaysGenerateStringsWithinKoreanCharacterRange(
-		@ForAll @Size(min = 1, max = 50) String ignored
-	) {
+	@Test
+	void koreanShouldAlwaysGenerateStringsWithinKoreanCharacterRange() {
 		String sample = koreanStringArbitrary.sample();
 
 		then(sample.chars().allMatch(ch -> ch >= '가' && ch <= '힣')).isTrue();
@@ -67,7 +61,7 @@ class MonkeyStringArbitraryTest {
 		then(sample.chars().anyMatch(ch -> ch < '가' || ch > '힣')).isFalse();
 	}
 
-	@RepeatedTest(100)
+	@Test
 	void koreanShouldGenerateDifferentStrings() {
 		StringArbitrary arbitrary = koreanStringArbitrary.ofMinLength(5).ofMaxLength(10);
 

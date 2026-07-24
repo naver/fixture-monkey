@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PropertyValue {
 	@Nullable
@@ -29,7 +29,7 @@ public class PropertyValue {
 		this.name = name;
 	}
 
-	@NonNull
+	@Nonnull
 	public String getName() {
 		return this.name;
 	}

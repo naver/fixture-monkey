@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,7 @@ import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class EntryContainerPropertyGenerator implements ContainerPropertyGenerator {
@@ -42,17 +41,17 @@ public final class EntryContainerPropertyGenerator implements ContainerPropertyG
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		if (genericsTypes.size() != 2) {
+		List<? extends JvmType> typeVariables = property.getJvmType().getTypeVariables();
+		if (typeVariables.size() != 2) {
 			throw new IllegalArgumentException(
 				"Entry genericsTypes must be have 2 generics type for key and value. "
-					+ "propertyType: " + property.getType()
-					+ ", genericsTypes: " + genericsTypes
+					+ "propertyType: " + property.getJvmType().getRawType()
+					+ ", typeVariables: " + typeVariables
 			);
 		}
 
-		AnnotatedType keyType = genericsTypes.get(0);
-		AnnotatedType valueType = genericsTypes.get(1);
+		JvmType keyType = typeVariables.get(0);
+		JvmType valueType = typeVariables.get(1);
 
 		List<Property> childProperties = new ArrayList<>();
 		childProperties.add(

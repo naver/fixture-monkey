@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.jqwik.api.Example;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -52,12 +52,12 @@ class FixtureMonkeyJacksonTest {
 		.defaultNotNull(true)
 		.build();
 
-	@Example
+	@Test
 	void jsonFormat() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonFormatSpec.class));
 	}
 
-	@Example
+	@Test
 	void jsonNode() {
 		JsonNodeWrapperClass actual = SUT.giveMeOne(JsonNodeWrapperClass.class);
 
@@ -65,13 +65,13 @@ class FixtureMonkeyJacksonTest {
 		then(actual.value).isNotNull();
 	}
 
-	@Example
+	@Test
 	void sampleNested() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeOne(NestedStringValue.class));
 	}
 
-	@Example
+	@Test
 	void sampleGenericObject() {
 		StringValue actual = SUT.giveMeOne(new TypeReference<GenericObject<StringValue>>() {
 			})
@@ -81,7 +81,7 @@ class FixtureMonkeyJacksonTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void sampleListNestedElement() {
 		StringValue actual = SUT.giveMeBuilder(new TypeReference<List<List<StringValue>>>() {
 			})
@@ -95,7 +95,7 @@ class FixtureMonkeyJacksonTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void sampleMapNestedListValue() {
 		StringValue actual = SUT.giveMeBuilder(new TypeReference<Map<String, List<StringValue>>>() {
 			})
@@ -114,7 +114,7 @@ class FixtureMonkeyJacksonTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void sampleGenericArray() {
 		StringValue actual = SUT.giveMeBuilder(new TypeReference<StringValue[][]>() {
 			})

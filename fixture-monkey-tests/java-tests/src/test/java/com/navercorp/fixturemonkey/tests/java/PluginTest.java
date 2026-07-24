@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
@@ -27,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -48,7 +46,7 @@ import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceStri
 import com.navercorp.fixturemonkey.tests.java.specs.InterfaceSpecs.InterfaceWrapperObject;
 
 class PluginTest {
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setListRecursiveImplementations() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -77,7 +75,7 @@ class PluginTest {
 		then(actual.getValue()).isEqualTo(expected);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void constructorValidator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(new JavaxValidationPlugin())
@@ -90,7 +88,7 @@ class PluginTest {
 		then(actual.getValue()).isEqualTo(100);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void abstractClassExtends() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(
@@ -200,7 +198,7 @@ class PluginTest {
 		then(actual).isBetween(expectedMinDate, expectedMaxDate);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void dataFakerPluginGeneratesUserFields() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -217,7 +215,7 @@ class PluginTest {
 		then(actual.getPhoneNumber()).isNotBlank();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void dataFakerPluginGeneratesFinanceFields() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()

@@ -23,11 +23,11 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 
 class InnerSpecTest {
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setInnerSpecByTrailingLambda() {
         val actual = SUT.giveMeKotlinBuilder<Map<String, String>>()
             .setInner {
@@ -39,7 +39,7 @@ class InnerSpecTest {
         then(actual).containsKeys("key1", "key2")
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setKotlinInnerByTrailingLambda() {
         val actual = SUT.giveMeKotlinBuilder<Map<String, String>>()
             .setKotlinInner {

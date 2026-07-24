@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.test;
 
 import java.beans.ConstructorProperties;
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -47,10 +46,10 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
@@ -178,22 +177,25 @@ public class FixtureMonkeyOptionsAdditionalTestSpecs {
 		public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 			com.navercorp.fixturemonkey.api.property.Property property = context.getProperty();
 
-			List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
+			List<? extends com.navercorp.objectfarm.api.type.JvmType> elementTypes =
+				property.getJvmType().getTypeVariables();
 			if (elementTypes.size() != 2) {
 				throw new IllegalArgumentException(
 					"Pair elementsTypes must be have 1 generics type for element. "
 						+ "propertyType: "
-						+ property.getType()
+						+ property.getJvmType().getRawType()
 						+ ", elementTypes: "
 						+ elementTypes
 				);
 			}
 
-			AnnotatedType firstElementType = elementTypes.get(0);
-			AnnotatedType secondElementType = elementTypes.get(1);
+			com.navercorp.objectfarm.api.type.JvmType firstElementType = elementTypes.get(0);
+			com.navercorp.objectfarm.api.type.JvmType secondElementType = elementTypes.get(1);
 			List<com.navercorp.fixturemonkey.api.property.Property> elementProperties = new ArrayList<>();
-			elementProperties.add(new ElementProperty(property, firstElementType, 0, 0));
-			elementProperties.add(new ElementProperty(property, secondElementType, 1, 1));
+			elementProperties.add(
+				new DefaultContainerElementProperty(property, new TypeParameterProperty(firstElementType), 0, 0));
+			elementProperties.add(
+				new DefaultContainerElementProperty(property, new TypeParameterProperty(secondElementType), 1, 1));
 
 			return new ContainerProperty(elementProperties, new ArbitraryContainerInfo(1, 1));
 		}

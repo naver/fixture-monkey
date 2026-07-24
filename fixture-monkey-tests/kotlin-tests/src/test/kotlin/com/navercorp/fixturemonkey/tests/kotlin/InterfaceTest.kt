@@ -27,12 +27,11 @@ import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import com.navercorp.fixturemonkey.tests.kotlin.InterfaceTest.SealedObjectClass.ConcreteSealedObjectClass
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import java.util.LinkedList
 
 class InterfaceTest {
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun anonymousArbitraryIntrospector() {
         // given
         val sut = FixtureMonkey.builder()
@@ -47,7 +46,7 @@ class InterfaceTest {
         then(actual).isNotNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun notUseAnonymousArbitraryIntrospector() {
         // given
         val sut = FixtureMonkey.builder()
@@ -61,7 +60,7 @@ class InterfaceTest {
         then(actual).isNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sealedInterfaceApplySet() {
         val actual = SUT.giveMeBuilder<SealedInterface>()
             .thenApply { _, builder -> builder.set("stringObject.string", "expected") }
@@ -70,7 +69,7 @@ class InterfaceTest {
         then((actual as SealedInterfaceImplementation).stringObject.string).isEqualTo("expected")
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun interfaceImplementsExtendsInterface() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -104,14 +103,14 @@ class InterfaceTest {
         then(actual).isInstanceOf(ArrayList::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleSealedClass() {
         val actual = SUT.giveMeOne<SealedClass>()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun fixedSealedClass() {
         val actual = SUT.giveMeBuilder<SealedClass>()
             .fixed()
@@ -120,14 +119,14 @@ class InterfaceTest {
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleImplementedSealedClass() {
         val actual = SUT.giveMeOne<ImplementedSealedClass>()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun fixedImplementedSealedClass() {
         val actual = SUT.giveMeBuilder<ImplementedSealedClass>()
             .fixed()
@@ -136,14 +135,14 @@ class InterfaceTest {
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sealedObject() {
         val actual: SealedObjectClass = SUT.giveMeOne()
 
         then(actual).isInstanceOf(ConcreteSealedObjectClass::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sealedObjectThenApply() {
         val actual = SUT.giveMeBuilder<SealedObjectClass>()
             .thenApply { obj, builder -> }

@@ -47,8 +47,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * @see SeedSnapshot
  */
 public final class SeedState {
-	private final long initialSeed;
+	private volatile long initialSeed;
 	private final AtomicLong counter;
+	private final AtomicLong containerSizeCounter;
 
 	/**
 	 * Creates a new SeedState with the specified initial seed.
@@ -58,6 +59,24 @@ public final class SeedState {
 	public SeedState(long initialSeed) {
 		this.initialSeed = initialSeed;
 		this.counter = new AtomicLong(0);
+		this.containerSizeCounter = new AtomicLong(0);
+	}
+
+	/**
+	 * Resets the seed and counters for a new generation cycle.
+	 *
+	 * <p>Sets {@code initialSeed} to the given value and resets all sequence
+	 * counters to {@code 0}. Used at the start of a top-level generation call
+	 * (e.g. {@code adapt()}) so that callers (such as a JUnit {@code @Seed}
+	 * extension) that change the global seed between runs see deterministic
+	 * snapshot sequences starting from {@code 0}.</p>
+	 *
+	 * @param newSeed the new seed value
+	 */
+	public void reset(long newSeed) {
+		this.initialSeed = newSeed;
+		this.counter.set(0);
+		this.containerSizeCounter.set(0);
 	}
 
 	/**
@@ -70,6 +89,20 @@ public final class SeedState {
 	 */
 	public SeedSnapshot snapshot() {
 		return new SeedSnapshot(initialSeed, counter.getAndIncrement());
+	}
+
+	/**
+	 * Creates an immutable snapshot from a counter dedicated to container size resolution.
+	 *
+	 * <p>This counter is independent from {@link #snapshot()}, so cache hit/miss patterns
+	 * elsewhere in the adapt pipeline do not perturb container sizes. Two FixtureMonkey
+	 * instances created with the same seed see the same sequence on this counter and
+	 * produce identical container sizes for identical call patterns.</p>
+	 *
+	 * @return a new immutable SeedSnapshot whose sequence is the next container-size value
+	 */
+	public SeedSnapshot containerSizeSnapshot() {
+		return new SeedSnapshot(initialSeed, containerSizeCounter.getAndIncrement());
 	}
 
 	/**

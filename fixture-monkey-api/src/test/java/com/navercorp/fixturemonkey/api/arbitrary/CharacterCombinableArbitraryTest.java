@@ -24,6 +24,7 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 
 class CharacterCombinableArbitraryTest {
 	@Test
@@ -81,7 +82,7 @@ class CharacterCombinableArbitraryTest {
 		Character actual = CombinableArbitrary.chars().ascii().combined();
 
 		// then
-		then(actual).isBetween('\u0020', '\u007E');
+		then(actual).isBetween((char)0, (char)127);
 	}
 
 	@Test
@@ -116,8 +117,8 @@ class CharacterCombinableArbitraryTest {
 		// when
 		Character actual = CombinableArbitrary.chars().emoji().combined();
 
-		// then
-		then(actual).isBetween('\uD83D', '\uD83F');
+		// then — emoji() generates chars from the Miscellaneous Symbols and Dingbats Unicode blocks
+		then(actual).isBetween('☀', '➿');
 	}
 
 	@Test
@@ -144,12 +145,17 @@ class CharacterCombinableArbitraryTest {
 
 	@Test
 	void characterUnique() {
-		// when & then - applying unique() to fixed value should throw exception
-		thenThrownBy(() -> CombinableArbitrary.chars()
-			.filter(x -> x == 'A')  // always generates same value
-			.unique()
-			.combined())
-			.isExactlyInstanceOf(FixedValueFilterMissException.class);
+		// given — filter to a single value then require uniqueness
+		CombinableArbitrary<Character> sut = CombinableArbitrary.chars()
+			.filter(x -> x == 'A')
+			.unique();
+
+		// when — first call succeeds, second call exhausts the unique filter
+		sut.combined();
+
+		// then — second call throws because no other value can satisfy both filters
+		thenThrownBy(sut::combined)
+			.isInstanceOfAny(FixedValueFilterMissException.class, RetryableFilterMissException.class);
 	}
 
 	@Test

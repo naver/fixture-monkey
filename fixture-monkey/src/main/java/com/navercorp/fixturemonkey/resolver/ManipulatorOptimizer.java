@@ -23,10 +23,10 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.customizer.PathDirective;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+	OptimizedManipulatorResult optimize(List<PathDirective> manipulators);
 }

@@ -14,10 +14,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
-import com.navercorp.fixturemonkey.adapter.JavaNodeTreeAdapterPlugin;
-import com.navercorp.fixturemonkey.adapter.tracing.AdapterTracer;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 
 @SuppressWarnings("unused")
 @BenchmarkMode(Mode.AverageTime)
@@ -37,11 +36,10 @@ public class AdapterBenchmark {
 		reusedWithoutAdapter = FixtureMonkey.builder().plugin(new JavaxValidationPlugin()).build();
 		reusedWithAdapter = FixtureMonkey.builder()
 			.plugin(new JavaxValidationPlugin())
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 		reusedWithNoOpTracer = FixtureMonkey.builder()
 			.plugin(new JavaxValidationPlugin())
-			.plugin(new JavaNodeTreeAdapterPlugin().tracer(AdapterTracer.noOp()))
+			.tracer(AssemblyTracer.noOp())
 			.build();
 	}
 
@@ -62,7 +60,6 @@ public class AdapterBenchmark {
 	public void coldWithAdapter(Blackhole blackhole) throws Exception {
 		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 			.plugin(new JavaxValidationPlugin())
-			.plugin(new JavaNodeTreeAdapterPlugin())
 			.build();
 		blackhole.consume(generateOrderSheet(fixtureMonkey));
 	}

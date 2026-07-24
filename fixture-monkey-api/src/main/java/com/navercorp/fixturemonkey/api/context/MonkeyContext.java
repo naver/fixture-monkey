@@ -34,7 +34,6 @@ import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * {@code FixtureMonkey} → {@code ArbitraryBuilder} → {@code ObjectTree} → {@link CombinableArbitrary}
@@ -79,7 +78,7 @@ public final class MonkeyContext {
 	}
 
 	public void putCachedArbitrary(Property property, CombinableArbitrary<?> combinableArbitrary) {
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 		if (isJavaType(type)) {
 			javaArbitrariesByProperty.putIfAbsent(property, combinableArbitrary);
 			return;

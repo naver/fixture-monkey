@@ -18,9 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,49 +25,24 @@ import java.util.Set;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.type.GenericType;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 @API(since = "1.0.21", status = Status.EXPERIMENTAL)
 public final class SealedTypeCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
 
 	@Override
 	public List<Property> resolve(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 		Set<Class<?>> permittedSubclasses = collectPermittedSubclasses(actualType);
 
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
+		List<? extends JvmType> typeVariables = property.getJvmType().getTypeVariables();
 
-		if (!genericsTypes.isEmpty()) {
-			Type[] typeArguments = genericsTypes.stream().map(AnnotatedType::getType).toArray(Type[]::new);
-
+		if (!typeVariables.isEmpty()) {
 			return permittedSubclasses
 				.stream()
-				.map(subclass -> {
-					Type concreteGenericType = new GenericType(subclass, typeArguments, null);
-					AnnotatedType genericAnnotatedType = new AnnotatedType() {
-						@Override
-						public Type getType() {
-							return concreteGenericType;
-						}
-
-						@Override
-						public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-							return property.getAnnotation(annotationClass).orElse(null);
-						}
-
-						@Override
-						public Annotation[] getAnnotations() {
-							return property.getAnnotations().toArray(new Annotation[0]);
-						}
-
-						@Override
-						public Annotation[] getDeclaredAnnotations() {
-							return property.getAnnotations().toArray(new Annotation[0]);
-						}
-					};
-					return (Property)new ConcreteTypeProperty(genericAnnotatedType, property);
-				})
+				.map(subclass -> new ReflectiveJvmType(subclass, typeVariables, property.getAnnotations()))
+				.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
 				.toList();
 		}
 

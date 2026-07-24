@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "1.0.9", status = Status.EXPERIMENTAL)
+@API(since = "1.0.9", status = Status.MAINTAINED)
 public final class NullArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final NullArbitraryIntrospector INSTANCE = new NullArbitraryIntrospector();
 

@@ -34,7 +34,9 @@ class TripleIntrospector : ArbitraryIntrospector, Matcher {
         return ArbitraryIntrospectorResult(
             CombinableArbitrary.containerBuilder()
                 .elements(elementCombinableArbitraryList)
-                .build { Triple(it[0], it[1], it[2]) },
+                .build {
+                    Triple(it[0], it[1], it[2])
+                },
         )
     }
 }

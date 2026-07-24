@@ -66,6 +66,21 @@ public abstract class Randoms {
 	}
 
 	/**
+	 * Applies a builder-configured seed unless an active {@link SeedClaim}
+	 * holds priority on the current thread (e.g. a {@code @Seed} annotation).
+	 * When a claim is active, the call is a no-op so the higher-priority
+	 * seed remains in effect.
+	 *
+	 * @param seed the seed value
+	 */
+	public static void applyBuilderSeed(long seed) {
+		if (SeedClaim.isActive()) {
+			return;
+		}
+		initializeGlobalSeed(seed);
+	}
+
+	/**
 	 * Creates a new random instance with the given seed.
 	 * It affects the global seed value across multiple FixtureMonkey instances.
 	 * It is not recommended to use this method directly unless you intend to.

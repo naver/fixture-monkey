@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
@@ -41,8 +39,7 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 
 	@Override
 	public boolean match(Property property) {
-		return Types.getActualType(property.getType()).isArray()
-			|| GenericArrayType.class.isAssignableFrom(property.getType().getClass());
+		return property.getJvmType().getRawType().isArray();
 	}
 
 	@Override
@@ -58,10 +55,9 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 				.elements(context.getElementCombinableArbitraryList())
 				.build(
 					elements -> {
+						Class<?> rawType = property.getObjectProperty().getProperty().getJvmType().getRawType();
 						ArrayBuilder arrayBuilder = new ArrayBuilder(
-							Types.getArrayComponentType(
-								property.getObjectProperty().getProperty().getAnnotatedType()
-							),
+							rawType.getComponentType(),
 							elements.size()
 						);
 						for (Object element : elements) {

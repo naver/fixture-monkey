@@ -59,7 +59,9 @@ public final class DefaultMatcherOperatorContainer<T>
 
 	@Override
 	public List<MatcherOperator<T>> getListByProperty(Property property) {
-		Class<?> propertyType = Types.getActualType(property.getType());
+		Class<?> propertyType = Types.normalizeRawType(
+			property.getJvmType().getRawType()
+		);
 		List<PriorityMatcherOperator<T>> acc = new ArrayList<>(typeUnknownIntrospectors);
 
 		if (propertyType == UnidentifiableType.class) {

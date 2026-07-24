@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -32,7 +32,11 @@ public final class ObjectCombineArbitraryBuilder {
 	private final Map<ArbitraryProperty, CombinableArbitrary<?>> arbitraryListByArbitraryProperty;
 
 	ObjectCombineArbitraryBuilder() {
-		this.arbitraryListByArbitraryProperty = new HashMap<>();
+		// Preserve insertion order so combinators that walk the value map by position (e.g.
+		// KotlinConstructorArbitraryIntrospector when a constructor parameter is aliased and
+		// name-based matching misses) see values in declaration order rather than HashMap's
+		// bucket-driven order — otherwise values land on the wrong constructor parameter.
+		this.arbitraryListByArbitraryProperty = new LinkedHashMap<>();
 	}
 
 	public ObjectCombineArbitraryBuilder property(ArbitraryProperty property, CombinableArbitrary<?> arbitrary) {

@@ -37,11 +37,11 @@ import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.J
 import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.JavaInterfaceWithParams
 import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.NestedInheritedJavaInterface
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 import javax.validation.constraints.NotEmpty
 
 class AnonymousInstanceTest {
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInterface() {
         val actual = SUT.giveMeOne<Interface>()
 
@@ -49,7 +49,7 @@ class AnonymousInstanceTest {
         then(actual.integer()).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun objectBaseMethods() {
         val actual = SUT.giveMeOne<Interface>()
 
@@ -58,7 +58,7 @@ class AnonymousInstanceTest {
         then(actual.toString()).isNotNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun equalsOnSimilarInterface() {
         val one = SUT.giveMeBuilder<Interface>()
             .setExpGetter(Interface::string, "test")
@@ -72,7 +72,7 @@ class AnonymousInstanceTest {
         then(one).isNotEqualTo(another)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setInterface() {
         val expected = "test"
 
@@ -84,14 +84,14 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInterfaceWithParam() {
         val actual = SUT.giveMeOne<InterfaceWithParams>()
 
         then(actual).isNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleContainerInterface() {
         val actual = SUT.giveMeOne<ContainerInterface>()
 
@@ -99,7 +99,7 @@ class AnonymousInstanceTest {
         then(actual.map()).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setContainerInterfaceList() {
         val actual: List<String> = SUT.giveMeBuilder<ContainerInterface>()
             .size("list", 3)
@@ -111,21 +111,21 @@ class AnonymousInstanceTest {
         then(actual[0]).isEqualTo("test")
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleAnnotatedInterface() {
         val actual = SUT.giveMeOne<AnnotatedInterface>().string()
 
         then(actual).isNotEmpty
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleGetterInterface() {
         val actual = SUT.giveMeOne<GetterInterface>().getString()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setGetterInterface() {
         val expected = "test"
 
@@ -137,7 +137,7 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun samplePropertyInterface() {
         val actual = SUT.giveMeOne<PropertyInterface>()
 
@@ -145,7 +145,7 @@ class AnonymousInstanceTest {
         then(actual.int).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setPropertyInterface() {
         val expected = "expected"
 
@@ -157,7 +157,7 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInheritedInterface() {
         val actual = SUT.giveMeOne<InheritedInterface>()
 
@@ -166,7 +166,7 @@ class AnonymousInstanceTest {
         then(actual.integer()).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setInheritedInterface() {
         val expected = "test"
 
@@ -178,14 +178,14 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInheritedInterfaceWithOverrideMethod() {
         val actual = SUT.giveMeOne<InheritedInterfaceWithOverrideMethod>().string()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setInheritedInterfaceWithOverrideMethod() {
         val expected = "test"
 
@@ -197,21 +197,21 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleExtendsTwoInterface() {
         val actual = SUT.giveMeOne<InheritedTwoInterface>().string()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleNestedInheritedInterface() {
         val actual = SUT.giveMeOne<NestedInheritedInterface>().string()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setNestedInheritedInterface() {
         val expected = "test"
 
@@ -223,14 +223,14 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInheritedPropertyInterface() {
         val actual = SUT.giveMeOne<InheritedPropertyInterface>().string
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setInheritedPropertyInterface() {
         val expected = "test"
 
@@ -242,14 +242,14 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleNestedInheritedPropertyInterface() {
         val actual = SUT.giveMeOne<NestedInheritedPropertyInterface>().string
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setNestedInheritedPropertyInterface() {
         val expected = "test"
 
@@ -261,7 +261,7 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleJavaInterface() {
         val actual = SUT.giveMeOne<JavaInterface>()
 
@@ -270,7 +270,7 @@ class AnonymousInstanceTest {
         then(actual.integer()).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setJavaInterface() {
         val expected = "test"
 
@@ -282,21 +282,21 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleJavaInterfaceWithParamReturnsNullProperties() {
         val actual = SUT.giveMeOne<JavaInterfaceWithParams>()
 
         then(actual).isNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleJavaInterfaceWithConstantIsNull() {
         val actual = SUT.giveMeOne<JavaInterfaceWithConstant>()
 
         then(actual).isNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleJavaContainerInterface() {
         val actual = SUT.giveMeOne<JavaContainerInterface>()
 
@@ -304,7 +304,7 @@ class AnonymousInstanceTest {
         then(actual.map()).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setJavaContainerInterfaceList() {
         val actual = SUT.giveMeBuilder<JavaContainerInterface>()
             .size("list", 3)
@@ -316,14 +316,14 @@ class AnonymousInstanceTest {
         then(actual[0]).isEqualTo("test")
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleJavaAnnotatedInterface() {
         val actual = SUT.giveMeOne<JavaAnnotatedInterface>().string()
 
         then(actual).isNotEmpty
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setJavaGetterInterfacePropertyName() {
         val expected = "test"
 
@@ -335,7 +335,7 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setJavaGetterInterfaceMethodNameNotWorks() {
         val notExpected = "test"
 
@@ -347,7 +347,7 @@ class AnonymousInstanceTest {
         then(actual).isNotEqualTo(notExpected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInheritedJavaInterface() {
         val actual = SUT.giveMeOne<InheritedJavaInterface>()
 
@@ -356,7 +356,7 @@ class AnonymousInstanceTest {
         then(actual.integer()).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setInheritedJavaInterface() {
         val expected = "test"
 
@@ -368,14 +368,14 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInheritedJavaInterfaceWithSameMethodName() {
         val actual = SUT.giveMeOne<InheritedJavaInterfaceWithSameNameMethod>().string()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setInheritedJavaInterfaceWithSameMethodName() {
         val expected = "test"
 
@@ -387,7 +387,7 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleInheritedTwoJavaInterface() {
         val actual = SUT.giveMeOne<InheritedTwoJavaInterface>()
 
@@ -397,14 +397,14 @@ class AnonymousInstanceTest {
         then(actual.map()).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleNestedInheritedJavaInterface() {
         val actual = SUT.giveMeOne<NestedInheritedJavaInterface>().string()
 
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setNestedInheritedJavaInterface() {
         val expected = "test"
 

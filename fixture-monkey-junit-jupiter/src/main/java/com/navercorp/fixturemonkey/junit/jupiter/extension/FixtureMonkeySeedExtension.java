@@ -22,10 +22,14 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.api.random.SeedClaim;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 
 /**
@@ -40,24 +44,25 @@ import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
  */
 public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
+	private static final Namespace NAMESPACE = Namespace.create(FixtureMonkeySeedExtension.class);
+	private static final String CLAIM_KEY = "seedClaim";
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) {
 		Seed seed = context.getRequiredTestMethod().getAnnotation(Seed.class);
 		if (seed != null) {
-			setSeed(seed.value());
+			establishClaim(context, seed.value());
 			return;
 		}
 
 		Method testMethod = context.getRequiredTestMethod();
-		int methodHashCode = testMethod.hashCode();
-		setSeed(methodHashCode);
+		establishClaim(context, testMethod.hashCode());
 	}
 
 	/**
-	 * Logs the seed used for the test if the test fails.
-	 * This method is called after a test method has executed.
-	 * If the test failed, it logs the seed used for the test.
+	 * Logs the seed used for the test if the test fails. The seed claim
+	 * established in {@code beforeTestExecution} is released automatically
+	 * by JUnit when this extension's {@link Store} is closed.
 	 **/
 	@Override
 	public void afterTestExecution(ExtensionContext context) {
@@ -67,10 +72,13 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	}
 
 	/**
-	 * Sets the seed for generating random numbers.
+	 * Applies the seed and stores the resulting claim in the JUnit
+	 * {@link Store} so it is released when the test scope ends, even
+	 * if the test or other extensions throw.
 	 **/
-	private void setSeed(long seed) {
-		Randoms.newGlobalSeed(seed);
+	private void establishClaim(ExtensionContext context, long seed) {
+		SeedClaim claim = SeedClaim.establish(seed);
+		context.getStore(NAMESPACE).put(CLAIM_KEY, (CloseableResource)claim::close);
 	}
 
 	/**

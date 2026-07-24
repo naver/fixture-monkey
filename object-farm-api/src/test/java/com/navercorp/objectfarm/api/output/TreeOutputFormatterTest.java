@@ -35,7 +35,7 @@ import com.navercorp.objectfarm.api.node.RandomContainerSizeResolver;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTreeTransformer;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class TreeOutputFormatterTest {
 
@@ -56,7 +56,7 @@ class TreeOutputFormatterTest {
 
 	@BeforeEach
 	void setUp() {
-		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(new JavaType(TestUser.class),
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(new ReflectiveJvmType(TestUser.class),
 			CONTEXT).build();
 		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
 		tree = transformer.transform(candidateTree);

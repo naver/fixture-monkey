@@ -19,8 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +30,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -46,26 +43,22 @@ public final class InterfaceJavaMethodProperty implements MethodProperty {
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public InterfaceJavaMethodProperty(
-		AnnotatedType returnAnnotatedType,
+		JvmType returnJvmType,
 		String name,
 		String methodName,
 		List<Annotation> annotations
 	) {
-		this.returnJvmType = Types.toJvmType(returnAnnotatedType, annotations);
+		this.returnJvmType = returnJvmType;
 		this.name = name;
 		this.methodName = methodName;
 		this.annotationsMap = annotations.stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 	}
 
-	@Override
-	public Type getType() {
-		return this.returnJvmType.getRawType();
-	}
 
 	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.returnJvmType.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.returnJvmType;
 	}
 
 	@Override
@@ -86,12 +79,6 @@ public final class InterfaceJavaMethodProperty implements MethodProperty {
 	public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
 		return Optional.ofNullable(this.annotationsMap.get(annotationClass))
 			.map(annotationClass::cast);
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object obj) {
-		throw new UnsupportedOperationException("Interface method should not be called.");
 	}
 
 	@Override

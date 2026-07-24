@@ -18,12 +18,11 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.time.Instant;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -43,7 +42,7 @@ class GenericTypeTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleGenericObjectWithoutGeneric() {
 		GenericObject actual = SUT.giveMeOne(GenericObject.class);
 
@@ -51,7 +50,7 @@ class GenericTypeTest {
 		then(actual.getValue()).isInstanceOf(Object.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedGenericObjectWithoutGeneric() {
 		GenericObject actual = SUT.giveMeBuilder(GenericObject.class)
 			.fixed()
@@ -61,7 +60,7 @@ class GenericTypeTest {
 		then(actual.getValue()).isInstanceOf(Object.class);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleGenericObject() {
 		String actual = SUT.giveMeOne(new TypeReference<GenericObject<String>>() {
 			})
@@ -70,7 +69,7 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedGenericObject() {
 		String actual = SUT.giveMeBuilder(new TypeReference<GenericObject<String>>() {
 			})
@@ -81,14 +80,14 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleGenericImplementationObjectWithoutGeneric() {
 		GenericImplementationObject actual = SUT.giveMeOne(GenericImplementationObject.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedGenericImplementationObjectWithoutGeneric() {
 		GenericImplementationObject actual = SUT.giveMeBuilder(GenericImplementationObject.class)
 			.fixed()
@@ -97,7 +96,7 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleGenericImplementationObject() {
 		String actual = SUT.giveMeOne(new TypeReference<GenericImplementationObject<String>>() {
 			})
@@ -106,7 +105,7 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedGenericImplementationObject() {
 		String actual = SUT.giveMeBuilder(new TypeReference<GenericImplementationObject<String>>() {
 			})
@@ -117,14 +116,14 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleTwoGenericImplementationObjectWithoutGeneric() {
 		TwoGenericImplementationObject actual = SUT.giveMeOne(TwoGenericImplementationObject.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedTwoGenericImplementationObjectWithoutGeneric() {
 		TwoGenericImplementationObject actual = SUT.giveMeBuilder(TwoGenericImplementationObject.class)
 			.fixed()
@@ -133,7 +132,7 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleTwoGenericImplementationObject() {
 		TwoGenericImplementationObject<String, Integer> actual = SUT.giveMeOne(
 			new TypeReference<TwoGenericImplementationObject<String, Integer>>() {
@@ -144,7 +143,7 @@ class GenericTypeTest {
 		then(actual.getTValue()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedTwoGenericImplementationObject() {
 		TwoGenericImplementationObject<String, Integer> actual = SUT.giveMeBuilder(
 				new TypeReference<TwoGenericImplementationObject<String, Integer>>() {
@@ -157,7 +156,7 @@ class GenericTypeTest {
 		then(actual.getTValue()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSetImplementationWithoutGeneric() {
 		String actual = SUT.giveMeOne(SetImplementationWithoutGeneric.class)
 			.getValue();
@@ -165,7 +164,7 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedSetImplementationWithoutGeneric() {
 		String actual = SUT.giveMeBuilder(SetImplementationWithoutGeneric.class)
 			.fixed()
@@ -175,7 +174,7 @@ class GenericTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleGenericArrayType() {
 		GenericImplementationObject<String>[] values = SUT.giveMeOne(new TypeReference<GenericArrayObject<String>>() {
 			})
@@ -184,7 +183,7 @@ class GenericTypeTest {
 		then(values).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedGenericArrayType() {
 		GenericImplementationObject<String>[] values = SUT.giveMeBuilder(
 				new TypeReference<GenericArrayObject<String>>() {
@@ -196,7 +195,7 @@ class GenericTypeTest {
 		then(values).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleTwoGenericObject() {
 		TwoGenericObject<String, Integer> actual = SUT.giveMeOne(
 			new TypeReference<TwoGenericObject<String, Integer>>() {
@@ -206,7 +205,7 @@ class GenericTypeTest {
 		then(actual.getValue2()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedTwoGenericObject() {
 		TwoGenericObject<String, Integer> actual = SUT.giveMeBuilder(
 				new TypeReference<TwoGenericObject<String, Integer>>() {
@@ -219,7 +218,7 @@ class GenericTypeTest {
 		then(actual.getValue2()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleTwoGenericObjectProperty() {
 		TwoGenericObject<String, Integer> actual = SUT.giveMeOne(
 				new TypeReference<GenericObject<TwoGenericObject<String, Integer>>>() {
@@ -230,7 +229,7 @@ class GenericTypeTest {
 		then(actual.getValue2()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedTwoGenericObjectProperty() {
 		TwoGenericObject<String, Integer> actual = SUT.giveMeOne(
 				new TypeReference<GenericObject<TwoGenericObject<String, Integer>>>() {
@@ -241,7 +240,7 @@ class GenericTypeTest {
 		then(actual.getValue2()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleThreeGenericObjectProperty() {
 		ThreeGenericObject<String, Integer, Instant> actual = SUT.giveMeOne(
 				new TypeReference<GenericObject<ThreeGenericObject<String, Integer, Instant>>>() {
@@ -253,7 +252,7 @@ class GenericTypeTest {
 		then(actual.getValue3()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedThreeGenericObjectProperty() {
 		ThreeGenericObject<String, Integer, Instant> actual = SUT.giveMeOne(
 				new TypeReference<GenericObject<ThreeGenericObject<String, Integer, Instant>>>() {

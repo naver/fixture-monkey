@@ -35,7 +35,7 @@ import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
-import com.navercorp.objectfarm.api.type.JavaType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class JvmNodeTreeTransformerTest {
 
@@ -65,7 +65,7 @@ class JvmNodeTreeTransformerTest {
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SelfRecursive.class),
+			new ReflectiveJvmType(SelfRecursive.class),
 			CONTEXT
 		)
 			.withTreeContext(treeContext)
@@ -106,7 +106,7 @@ class JvmNodeTreeTransformerTest {
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SelfRecursive.class),
+			new ReflectiveJvmType(SelfRecursive.class),
 			CONTEXT
 		)
 			.withTreeContext(treeContext)
@@ -150,7 +150,9 @@ class JvmNodeTreeTransformerTest {
 
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
 
-		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(new JavaType(Node.class), CONTEXT)
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(Node.class), CONTEXT
+		)
 			.withTreeContext(treeContext)
 			.build();
 
@@ -203,7 +205,7 @@ class JvmNodeTreeTransformerTest {
 		JvmNodeCandidateTreeContext treeContext = new JvmNodeCandidateTreeContext();
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new JavaType(SelfRecursive.class),
+			new ReflectiveJvmType(SelfRecursive.class),
 			CONTEXT
 		)
 			.withTreeContext(treeContext)

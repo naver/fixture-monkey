@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,9 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 class ArbitraryPropertyTest {
 	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
@@ -39,7 +42,9 @@ class ArbitraryPropertyTest {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
-		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
+		RootProperty rootProperty = new RootProperty(
+			new TypeParameterProperty(Types.toJvmType(typeReference.getAnnotatedType(), Collections.emptyList()))
+		);
 
 		// when
 		ObjectProperty actual = new ObjectProperty(
@@ -60,7 +65,9 @@ class ArbitraryPropertyTest {
 		};
 
 		Optional<Property> property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
-				new RootProperty(typeReference.getAnnotatedType())
+				new RootProperty(new TypeParameterProperty(
+					Types.toJvmType(typeReference.getAnnotatedType(), Collections.emptyList())
+				))
 			)
 			.stream()
 			.filter(it -> "name".equals(it.getName()))

@@ -23,11 +23,9 @@ import com.navercorp.fixturemonkey.api.property.Property
 class DataFakerStringProperty(private val originalProperty: Property) : Property {
     private val uniqueId = System.nanoTime().toString() + Math.random().toString()
 
-    override fun getType() = originalProperty.type
-    override fun getAnnotatedType() = originalProperty.annotatedType
+    override fun getJvmType() = originalProperty.jvmType
     override fun getName() = originalProperty.name
     override fun getAnnotations() = originalProperty.annotations
-    override fun getValue(instance: Any) = originalProperty.getValue(instance)
     override fun isNullable() = originalProperty.isNullable
 
     override fun hashCode(): Int = uniqueId.hashCode()

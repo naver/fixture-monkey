@@ -18,10 +18,10 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
+import org.junit.jupiter.api.Test
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.spec.JavaObject
-import net.jqwik.api.Example
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
 
@@ -31,7 +31,7 @@ class FixtureMonkeyJavaTest {
         .objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
         .build()
 
-    @Example
+    @Test
     fun sampleJavaObject() {
         // when
         val actual = sut.giveMeOne<JavaObject>()
@@ -39,7 +39,7 @@ class FixtureMonkeyJavaTest {
         then(actual).isNotNull
     }
 
-    @Example
+    @Test
     fun fixedJavaObject() {
         thenNoException()
             .isThrownBy {

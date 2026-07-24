@@ -22,7 +22,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class AssignableTypeMatcher implements Matcher {
@@ -34,8 +33,7 @@ public final class AssignableTypeMatcher implements Matcher {
 
 	@Override
 	public boolean match(Property property) {
-		Class<?> propertyType = Types.getActualType(property.getType());
-		return this.type.isAssignableFrom(propertyType);
+		return this.type.isAssignableFrom(property.getJvmType().getRawType());
 	}
 
 	public Class<?> getAnchorType() {

@@ -21,8 +21,6 @@ package com.navercorp.fixturemonkey.api.property;
 import static com.navercorp.fixturemonkey.api.property.PropertyUtils.isErasedProperty;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +29,8 @@ import java.util.Optional;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
+
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class CompositeProperty implements Property {
@@ -51,13 +51,8 @@ public final class CompositeProperty implements Property {
 	}
 
 	@Override
-	public Type getType() {
-		return getPriorityProperty().getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return getPriorityProperty().getAnnotatedType();
+	public JvmType getJvmType() {
+		return getPriorityProperty().getJvmType();
 	}
 
 	@Override
@@ -82,12 +77,6 @@ public final class CompositeProperty implements Property {
 		}
 
 		return annotation;
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		return this.getPriorityProperty().getValue(instance);
 	}
 
 	@Override

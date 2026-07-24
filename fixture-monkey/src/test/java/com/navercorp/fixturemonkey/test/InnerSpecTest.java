@@ -33,8 +33,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
+
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -55,7 +56,7 @@ import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SupplierStringObject;
 class InnerSpecTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.create();
 
-	@Example
+	@Test
 	void key() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -69,7 +70,7 @@ class InnerSpecTest {
 		then(actual.keySet()).contains("key");
 	}
 
-	@Example
+	@Test
 	void value() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -83,7 +84,7 @@ class InnerSpecTest {
 		then(actual.values()).contains("value");
 	}
 
-	@Example
+	@Test
 	void entry() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -97,7 +98,7 @@ class InnerSpecTest {
 		then(actual.get("key")).isEqualTo("value");
 	}
 
-	@Example
+	@Test
 	void keys() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -113,7 +114,7 @@ class InnerSpecTest {
 		);
 	}
 
-	@Example
+	@Test
 	void values() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -129,7 +130,7 @@ class InnerSpecTest {
 		);
 	}
 
-	@Example
+	@Test
 	void entries() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -144,7 +145,7 @@ class InnerSpecTest {
 		then(actual.get("key2")).isEqualTo("value2");
 	}
 
-	@Example
+	@Test
 	void entryTwice() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -162,7 +163,7 @@ class InnerSpecTest {
 		then(actual.getStrMap().get("key2")).isEqualTo("value2");
 	}
 
-	@Example
+	@Test
 	void valueNull() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -175,7 +176,7 @@ class InnerSpecTest {
 		then(actual.getStrMap().containsValue(null)).isTrue();
 	}
 
-	@Example
+	@Test
 	void keyNullThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
@@ -188,7 +189,7 @@ class InnerSpecTest {
 			.hasMessageContaining("Map key cannot be null.");
 	}
 
-	@Example
+	@Test
 	void keyInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(1, 3))
@@ -206,7 +207,7 @@ class InnerSpecTest {
 		then(keyList).contains("key");
 	}
 
-	@Example
+	@Test
 	void valueInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(1, 3))
@@ -223,7 +224,7 @@ class InnerSpecTest {
 		then(keyList).contains("value");
 	}
 
-	@Example
+	@Test
 	void keyInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -238,7 +239,7 @@ class InnerSpecTest {
 		then(valueList).contains("key");
 	}
 
-	@Example
+	@Test
 	void valueInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -253,7 +254,7 @@ class InnerSpecTest {
 		then(valueList).contains("value");
 	}
 
-	@Example
+	@Test
 	void sizeInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -269,7 +270,7 @@ class InnerSpecTest {
 		then(sizeList).contains(10);
 	}
 
-	@Example
+	@Test
 	void listElementInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -288,7 +289,7 @@ class InnerSpecTest {
 		then(elementList).contains("test");
 	}
 
-	@Example
+	@Test
 	void propertyInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -305,7 +306,7 @@ class InnerSpecTest {
 		then(fieldList).contains("test");
 	}
 
-	@Example
+	@Test
 	void entryInEntryValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -322,7 +323,7 @@ class InnerSpecTest {
 	}
 
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
-	@Example
+	@Test
 	void entryInEntryKey() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -349,7 +350,7 @@ class InnerSpecTest {
 		then(expected.get("key")).isEqualTo("value2");
 	}
 
-	@Example
+	@Test
 	void entryValueSetNull() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
@@ -364,7 +365,7 @@ class InnerSpecTest {
 		then(actual.getStrMap().get("key")).isNull();
 	}
 
-	@Example
+	@Test
 	void listElementInListElement() {
 		// when
 		NestedListStringObject actual = SUT.giveMeBuilder(NestedListStringObject.class)
@@ -384,7 +385,7 @@ class InnerSpecTest {
 		then(actual.getValues().get(0).get(0)).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void propertyInProperty() {
 		// when
 		ComplexObjectObject actual = SUT.giveMeBuilder(ComplexObjectObject.class)
@@ -399,7 +400,7 @@ class InnerSpecTest {
 		then(actual.getValue().getValue().getStr()).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void sizeAndEntry() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -419,7 +420,7 @@ class InnerSpecTest {
 		then(actual.get("key")).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void entryAndSize() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -439,7 +440,7 @@ class InnerSpecTest {
 		then(actual.get("key")).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void sizeTwiceReturnsLatterSize() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
@@ -459,7 +460,7 @@ class InnerSpecTest {
 		then(actual).hasSize(0);
 	}
 
-	@Example
+	@Test
 	void keyLazy() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
@@ -476,7 +477,7 @@ class InnerSpecTest {
 		then(actual.getStrMap().containsKey("key")).isTrue();
 	}
 
-	@Example
+	@Test
 	void valueLazy() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
@@ -493,7 +494,7 @@ class InnerSpecTest {
 		then(actual.getStrMap().containsValue("value")).isTrue();
 	}
 
-	@Example
+	@Test
 	void entryLazy() {
 		ArbitraryBuilder<String> keyVariable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<String> valueVariable = SUT.giveMeBuilder(String.class);
@@ -512,7 +513,7 @@ class InnerSpecTest {
 		then(actual.getStrMap().get("key")).isEqualTo("value");
 	}
 
-	@Example
+	@Test
 	void keyLazyNullThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
@@ -527,7 +528,7 @@ class InnerSpecTest {
 			.hasMessageContaining("Map key cannot be null.");
 	}
 
-	@Example
+	@Test
 	void allKeyLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner(
@@ -541,7 +542,7 @@ class InnerSpecTest {
 		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
 	}
 
-	@Example
+	@Test
 	void allValueLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner(
@@ -555,7 +556,7 @@ class InnerSpecTest {
 		then(actual.getIntegerMap().values()).allMatch(it -> it >= 0 && it <= 100);
 	}
 
-	@Example
+	@Test
 	void allEntry() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner(
@@ -573,7 +574,7 @@ class InnerSpecTest {
 		then(actual.getIntegerMap().values()).allMatch(it -> it == 100);
 	}
 
-	@Example
+	@Test
 	void allEntryLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner(
@@ -591,7 +592,7 @@ class InnerSpecTest {
 		then(actual.getIntegerMap().values()).allMatch(it -> it >= 0 && it <= 100);
 	}
 
-	@Example
+	@Test
 	void allKey() {
 		String expected = "test";
 
@@ -614,7 +615,7 @@ class InnerSpecTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void allValue() {
 		String expected = "test";
 
@@ -632,7 +633,7 @@ class InnerSpecTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void allValueInner() {
 		String expected = "test";
 
@@ -655,7 +656,7 @@ class InnerSpecTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void allListElement() {
 		String expected = "test";
 
@@ -671,7 +672,7 @@ class InnerSpecTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void allListElementInnerSpec() {
 		String expected = "test";
 
@@ -690,7 +691,7 @@ class InnerSpecTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void setPostCondition() {
 		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
 			.setInner(
@@ -705,7 +706,7 @@ class InnerSpecTest {
 		then(actual.getStr()).hasSizeGreaterThan(5);
 	}
 
-	@Example
+	@Test
 	void inner() {
 		InnerSpec innerSpec = new InnerSpec().property("str", "test");
 
@@ -716,7 +717,7 @@ class InnerSpecTest {
 		then(actual.getStr()).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void propertyInner() {
 		InnerSpec innerSpec = new InnerSpec().property("str", "test");
 
@@ -727,7 +728,7 @@ class InnerSpecTest {
 		then(actual.getValue().getStr()).isEqualTo("test");
 	}
 
-	@Example
+	@Test
 	void listElementInMaxSize() {
 		String expected = "expected";
 
@@ -744,7 +745,7 @@ class InnerSpecTest {
 		then(actual).allMatch(expected::equals);
 	}
 
-	@Example
+	@Test
 	void setAfterSizeReturnsSet() {
 		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
 			.setInner(
@@ -758,7 +759,7 @@ class InnerSpecTest {
 		then(actual).isEmpty();
 	}
 
-	@Example
+	@Test
 	void sizeAfterSetReturnsSize() {
 		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
 			.setInner(
@@ -772,7 +773,7 @@ class InnerSpecTest {
 		then(actual).hasSize(2);
 	}
 
-	@Example
+	@Test
 	void sizeAfterSetWithSeparateInnerSpecReturnsSize() {
 		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
 			.setInner(
@@ -789,7 +790,7 @@ class InnerSpecTest {
 		then(actual).hasSize(2);
 	}
 
-	@Example
+	@Test
 	void setAfterSetWithSeparateInnerSpecReturnsSet() {
 		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
 			.setInner(
@@ -806,7 +807,7 @@ class InnerSpecTest {
 		then(actual).isEmpty();
 	}
 
-	@Example
+	@Test
 	void innerSpecIncrementsSequence() {
 		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
 			.setInner(
@@ -822,7 +823,7 @@ class InnerSpecTest {
 		then(actual).hasSize(5);
 	}
 
-	@Example
+	@Test
 	void setNotNull() {
 		String actual = SUT.giveMeBuilder(SimpleObject.class)
 			.setInner(new InnerSpec().property("str", NOT_NULL))
@@ -832,7 +833,7 @@ class InnerSpecTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
+	@Test
 	void keysForCollection() {
 		List<String> keyList = Arrays.asList("key1", "key2", "key3");
 
@@ -847,7 +848,7 @@ class InnerSpecTest {
 		then(actual.keySet()).containsAll(keyList);
 	}
 
-	@Example
+	@Test
 	void valuesForCollection() {
 		List<String> valueList = Arrays.asList("value1", "value2", "value3");
 
@@ -862,7 +863,7 @@ class InnerSpecTest {
 		then(actual.values()).containsAll(valueList);
 	}
 
-	@Example
+	@Test
 	void entriesForCollection() {
 		List<String> entries = Arrays.asList("key1", "value1", "key2", "value2");
 
@@ -878,7 +879,7 @@ class InnerSpecTest {
 		then(actual.get("key2")).isEqualTo("value2");
 	}
 
-	@Example
+	@Test
 	void supportSupplierWrapping() {
 		String expected = "test";
 
@@ -896,7 +897,7 @@ class InnerSpecTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@Example
+	@Test
 	void supportSupplierObjectField() {
 		Supplier<String> expected = () -> "test";
 

@@ -25,9 +25,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
-import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.KotlinConstructorParameterPropertyGenerator
-import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
@@ -42,12 +40,12 @@ import kotlin.reflect.KParameter
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
     override fun match(property: Property): Boolean {
-        val actualType = property.type.actualType()
-        if (!actualType.isKotlinType()) {
+        val rawType = property.jvmType.rawType
+        if (!rawType.isKotlinType()) {
             return false
         }
 
-        val kotlinClass = actualType.cachedKotlin()
+        val kotlinClass = rawType.cachedKotlin()
 
         return !kotlinClass.isKotlinLambda() &&
             kotlinClass != Unit::class &&
@@ -55,7 +53,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
     }
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
-        val type = Types.getActualType(context.resolvedType)
+        val type = context.resolvedType
         if (Modifier.isAbstract(type.modifiers)) {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
@@ -119,7 +117,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
         private val LOGGER = LoggerFactory.getLogger(PrimaryConstructorArbitraryIntrospector::class.java)
         internal val PROPERTY_GENERATOR = KotlinConstructorParameterPropertyGenerator({ property ->
-            property.type.actualType().kotlinPrimaryConstructor()
+            property.jvmType.rawType.kotlinPrimaryConstructor()
         })
     }
 }

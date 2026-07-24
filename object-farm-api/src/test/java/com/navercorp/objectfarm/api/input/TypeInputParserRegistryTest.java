@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 class TypeInputParserRegistryTest {
 
@@ -52,7 +52,7 @@ class TypeInputParserRegistryTest {
 		JvmType result = registry.parse(String.class);
 
 		// then
-		then(result).isInstanceOf(JavaType.class);
+		then(result).isInstanceOf(ReflectiveJvmType.class);
 		then(result.getRawType()).isEqualTo(String.class);
 	}
 
@@ -60,7 +60,7 @@ class TypeInputParserRegistryTest {
 	void parseShouldSelectJavaTypeParserForJvmType() {
 		// given
 		TypeInputParserRegistry registry = TypeInputParserRegistry.defaults();
-		JvmType input = new JavaType(Integer.class);
+		JvmType input = new ReflectiveJvmType(Integer.class);
 
 		// when
 		JvmType result = registry.parse(input);

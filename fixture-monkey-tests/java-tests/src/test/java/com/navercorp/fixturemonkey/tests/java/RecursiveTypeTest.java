@@ -18,13 +18,12 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -39,7 +38,7 @@ class RecursiveTypeTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSelfRecursiveObject() {
 		SelfRecursiveObject actual = SUT.giveMeOne(SelfRecursiveObject.class);
 
@@ -47,7 +46,7 @@ class RecursiveTypeTest {
 		then(actual.getSelfRecursiveObject()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedSelfRecursiveObject() {
 		SelfRecursiveObject actual = SUT.giveMeBuilder(SelfRecursiveObject.class)
 			.fixed()
@@ -57,7 +56,7 @@ class RecursiveTypeTest {
 		then(actual.getSelfRecursiveObject()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSelfRecursiveListObject() {
 		SelfRecursiveListObject actual = SUT.giveMeOne(SelfRecursiveListObject.class);
 
@@ -65,7 +64,7 @@ class RecursiveTypeTest {
 		then(actual.getSelfRecursiveListObjects()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedSelfRecursiveListObject() {
 		SelfRecursiveListObject actual = SUT.giveMeBuilder(SelfRecursiveListObject.class)
 			.fixed()
@@ -75,7 +74,7 @@ class RecursiveTypeTest {
 		then(actual.getSelfRecursiveListObjects()).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleSelfRecursiveMapObject() {
 		Map<Integer, SelfRecursiveMapObject> actual = SUT.giveMeOne(
 			new TypeReference<Map<Integer, SelfRecursiveMapObject>>() {
@@ -84,7 +83,7 @@ class RecursiveTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void fixedSelfRecursiveMapObject() {
 		Map<Integer, SelfRecursiveMapObject> actual = SUT.giveMeBuilder(
 				new TypeReference<Map<Integer, SelfRecursiveMapObject>>() {
@@ -95,7 +94,7 @@ class RecursiveTypeTest {
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setSelfRecursiveObjectList() {
 		List<SelfRecursiveListObject> expected = SUT.giveMeOne(
 			new TypeReference<List<SelfRecursiveListObject>>() {
@@ -112,7 +111,7 @@ class RecursiveTypeTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setNestedSelfRecursiveObjectList() {
 		List<SelfRecursiveListObject> expected = SUT.giveMeBuilder(
 				new TypeReference<List<SelfRecursiveListObject>>() {
@@ -134,7 +133,7 @@ class RecursiveTypeTest {
 		then(actual).isEqualTo(expected);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setSelfRecursiveObject() {
 		SelfRecursiveObject actual = SUT.giveMeOne(SelfRecursiveObject.class);
 

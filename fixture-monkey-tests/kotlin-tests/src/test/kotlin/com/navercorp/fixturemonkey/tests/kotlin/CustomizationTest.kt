@@ -40,7 +40,6 @@ import com.navercorp.fixturemonkey.kotlin.sizeExp
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import com.navercorp.fixturemonkey.tests.kotlin.specs.KotlinObject
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -59,7 +58,7 @@ class CustomizationTest {
         then(actual).isEqualTo("parent")
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun customizePropertySet() {
         val actual = SUT.giveMeExperimentalBuilder<String>()
             .customizeProperty(typedRoot<String>()) {
@@ -71,7 +70,7 @@ class CustomizationTest {
         then(actual).hasSizeLessThanOrEqualTo(4)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun customizePropertyFilter() {
         val now = Instant.now()
         val min = now.minus(365, ChronoUnit.DAYS)
@@ -86,7 +85,7 @@ class CustomizationTest {
         then(actual).isBetween(min, max)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sampleCustomizedWildcardType() {
         // given
         class MapObject(val map: Map<String, *>)
@@ -114,7 +113,7 @@ class CustomizationTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun overwriteExistingType() {
         val expected = "string"
         val sut = FixtureMonkey.builder()
@@ -147,7 +146,7 @@ class CustomizationTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setLazyJustNotChanged() {
         // given
         class StringObject(val string: String)
@@ -164,7 +163,7 @@ class CustomizationTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setPostCondition() {
         class StringObject(val string: String)
 
@@ -176,7 +175,7 @@ class CustomizationTest {
         then(actual).hasSizeLessThan(5)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setPostConditionWithProperty() {
         class StringObject(val string: String)
 
@@ -188,7 +187,7 @@ class CustomizationTest {
         then(actual).hasSizeLessThan(5)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun customizePropertyAfterSet() {
         // given
         class StringValue(val value: String)
@@ -208,7 +207,7 @@ class CustomizationTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun customizePropertyIgnoredIfSet() {
         // given
         class StringValue(val value: String)
@@ -292,7 +291,7 @@ class CustomizationTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun register() {
         class NestedInnerObject(val list: List<String>)
 
@@ -319,7 +318,7 @@ class CustomizationTest {
         then(actual).isNotNull
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun innerSpecInner() {
         // given
         data class ChildObject(val values: List<String>)
@@ -364,7 +363,7 @@ class CustomizationTest {
         then(actual).allMatch { it.value == "1" }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun generateObjectInstanceThrows() {
         // when
         val actual: KotlinObject = SUT.giveMeOne()

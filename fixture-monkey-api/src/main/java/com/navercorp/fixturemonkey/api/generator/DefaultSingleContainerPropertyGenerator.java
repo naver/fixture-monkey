@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.3", status = Status.MAINTAINED)
 public final class DefaultSingleContainerPropertyGenerator implements ContainerPropertyGenerator {
@@ -39,12 +38,12 @@ public final class DefaultSingleContainerPropertyGenerator implements ContainerP
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
+		List<? extends JvmType> elementTypes = property.getJvmType().getTypeVariables();
 		if (elementTypes.size() > 1) {
 			throw new IllegalArgumentException(
 				"Container elementsTypes support 1 generics type. "
 					+ "You should be custom ContainerPropertyGenerator for N generics container type. "
-					+ "propertyType: " + property.getType()
+					+ "propertyType: " + property.getJvmType().getRawType()
 					+ ", elementTypes: " + elementTypes
 			);
 		}
@@ -55,8 +54,8 @@ public final class DefaultSingleContainerPropertyGenerator implements ContainerP
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			Integer elementIndex = sequence;
-			AnnotatedType elementType = elementTypes.isEmpty()
-				? DEFAULT_ELEMENT_RAW_TYPE.getAnnotatedType()
+			JvmType elementType = elementTypes.isEmpty()
+				? DEFAULT_ELEMENT_JVM_TYPE
 				: elementTypes.get(0);
 
 			childProperties.add(

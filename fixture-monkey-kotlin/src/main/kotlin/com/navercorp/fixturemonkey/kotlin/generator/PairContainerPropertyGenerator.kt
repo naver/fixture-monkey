@@ -24,7 +24,6 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty
-import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 
@@ -32,17 +31,18 @@ import org.apiguardian.api.API.Status
 class PairContainerPropertyGenerator : ContainerPropertyGenerator {
     override fun generate(context: ContainerPropertyGeneratorContext): ContainerProperty {
         val property = context.property
-        val genericsTypes = Types.getGenericsTypes(property.annotatedType)
-        if (genericsTypes.size != 2) {
+        val typeVariables = property.jvmType.typeVariables
+        if (typeVariables.size != 2) {
             throw IllegalArgumentException(
                 """
-                    Pair genericsTypes must have 2 generics types for the first and second values.
-                    "propertyType: ${property.type}, genericsTypes: $genericsTypes
+                    Pair typeVariables must have 2 generics types for the first and second values.
+                    "propertyType: ${property.jvmType.rawType}, typeVariables: $typeVariables
                 """.trimIndent()
             )
         }
 
-        val (firstElementType, secondElementType) = genericsTypes
+        val firstElementType = typeVariables[0]
+        val secondElementType = typeVariables[1]
 
         return ContainerProperty(
             listOf(

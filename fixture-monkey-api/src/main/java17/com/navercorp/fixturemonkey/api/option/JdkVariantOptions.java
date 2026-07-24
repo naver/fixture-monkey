@@ -32,7 +32,6 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.SealedTypeCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.type.Constructors;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.14", status = Status.INTERNAL)
 public final class JdkVariantOptions {
@@ -40,10 +39,13 @@ public final class JdkVariantOptions {
 		new SealedTypeCandidateConcretePropertyResolver();
 	private static final PropertyGenerator CANONICAL_CONSTRUCTOR_PARAMETER_PROPERTY_GENERATOR =
 		new ConstructorParameterPropertyGenerator(
-			p -> Constructors.findPrimaryConstructor(
-				Types.getActualType(p.getType()),
-				TypeCache.getDeclaredConstructors(Types.getActualType(p.getType())).toArray(Constructor[]::new)
-			).stream().toList(),
+			p -> {
+				Class<?> rawType = p.getJvmType().getRawType();
+				return Constructors.findPrimaryConstructor(
+					rawType,
+					TypeCache.getDeclaredConstructors(rawType).toArray(Constructor[]::new)
+				).stream().toList();
+			},
 			it -> true,
 			it -> true
 		);
@@ -51,13 +53,13 @@ public final class JdkVariantOptions {
 	public void apply(FixtureMonkeyOptionsBuilder optionsBuilder) {
 		optionsBuilder.insertFirstCandidateConcretePropertyResolvers(
 				new MatcherOperator<>(
-					p -> Types.getActualType(p.getType()).isSealed() && !Types.getActualType(p.getType()).isEnum(),
+					p -> p.getJvmType().getRawType().isSealed() && !p.getJvmType().getRawType().isEnum(),
 					SEALED_TYPE_CANDIDATE_CONCRETE_PROPERTY_RESOLVER
 				)
 			)
 			.insertFirstPropertyGenerator(ZoneId.class, property -> List.of())
 			.insertFirstPropertyGenerator(
-				p -> Types.getActualType(p.getType()).isRecord(),
+				p -> p.getJvmType().getRawType().isRecord(),
 				CANONICAL_CONSTRUCTOR_PARAMETER_PROPERTY_GENERATOR
 			);
 	}

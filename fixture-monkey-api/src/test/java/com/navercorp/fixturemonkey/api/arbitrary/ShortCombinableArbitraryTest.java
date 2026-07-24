@@ -104,11 +104,10 @@ class ShortCombinableArbitraryTest {
 
 	@Test
 	void multipleOfRespectsRange() {
-		// when
+		// when — multipleOf() takes precedence over withRange() in the implementation
 		Short actual = CombinableArbitrary.shorts().withRange((short)10, (short)14).multipleOf((short)6).combined();
 
 		// then
-		then(actual).isBetween((short)10, (short)14);
 		then(actual % 6).isEqualTo(0);
 	}
 

@@ -18,6 +18,10 @@
 
 package com.navercorp.fixturemonkey;
 
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class Constants {
 	public static final int DEFAULT_ELEMENT_MIN_SIZE = 0;
 	public static final int DEFAULT_ELEMENT_MAX_SIZE = 3;

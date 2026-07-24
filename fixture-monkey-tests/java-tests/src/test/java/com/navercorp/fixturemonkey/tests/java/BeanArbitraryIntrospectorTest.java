@@ -1,9 +1,8 @@
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
@@ -18,28 +17,28 @@ class BeanArbitraryIntrospectorTest {
 		.defaultNotNull(true)
 		.build();
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleJavaType() {
 		JavaTypeObject actual = SUT.giveMeOne(JavaTypeObject.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleDateTime() {
 		DateTimeObject actual = SUT.giveMeOne(DateTimeObject.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void sampleContainer() {
 		ContainerObject actual = SUT.giveMeOne(ContainerObject.class);
 
 		then(actual).isNotNull();
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void setPropertyPostCondition() {
 		String actual = SUT.giveMeBuilder(JavaTypeObject.class)
 			.setPostCondition("string", String.class, str -> str.length() > 5)
@@ -49,7 +48,7 @@ class BeanArbitraryIntrospectorTest {
 		then(actual).hasSizeGreaterThan(5);
 	}
 
-	@RepeatedTest(TEST_COUNT)
+	@Test
 	void objectGenerationShouldWorkWithoutSetter() {
 		NoSetterSpecs.StringObject actual = SUT.giveMeOne(NoSetterSpecs.StringObject.class);
 

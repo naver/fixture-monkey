@@ -19,11 +19,13 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.RootProperty
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty
 import com.navercorp.fixturemonkey.api.type.TypeReference
+import com.navercorp.fixturemonkey.api.type.Types
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
-import java.lang.reflect.ParameterizedType
 import java.time.Instant
+import java.util.Collections
 import javax.annotation.Nullable
 
 class KotlinPropertyCacheTest {
@@ -33,10 +35,14 @@ class KotlinPropertyCacheTest {
         val typeReference = object : TypeReference<SampleValue>() {}
 
         // when
-        val actual = getMemberProperties(RootProperty(typeReference.annotatedType))
+        val actual = getMemberProperties(
+            RootProperty(
+                TypeParameterProperty(Types.toJvmType(typeReference.annotatedType, Collections.emptyList()))
+            )
+        )
 
         then(actual).hasSize(1)
-        then(actual[0].type).isEqualTo(String::class.java)
+        then(actual[0].jvmType.rawType).isEqualTo(String::class.java)
         then(actual[0].name).isEqualTo("name")
         then(actual[0].annotations).hasSize(1)
         then(actual[0].annotations[0].annotationClass).isEqualTo(Nullable::class)
@@ -49,49 +55,41 @@ class KotlinPropertyCacheTest {
         val typeReference = object : TypeReference<GenericSample<String>>() {}
 
         // when
-        val actual = getMemberProperties(RootProperty(typeReference.annotatedType))
+        val actual = getMemberProperties(
+            RootProperty(
+                TypeParameterProperty(Types.toJvmType(typeReference.annotatedType, Collections.emptyList()))
+            )
+        )
 
         then(actual).hasSize(6)
         val sorted = actual.sortedBy { it.name }
 
         then(sorted[0].name).isEqualTo("list")
         then(sorted[0].isNullable).isFalse
-        then(sorted[0].type).isInstanceOf(ParameterizedType::class.java)
-        with(sorted[0].type as ParameterizedType) {
-            then(rawType).isEqualTo(List::class.java)
-            then(actualTypeArguments).hasSize(1)
-            then(actualTypeArguments[0]).isEqualTo(String::class.java)
-        }
+        then(sorted[0].jvmType.rawType).isEqualTo(List::class.java)
+        then(sorted[0].jvmType.typeVariables.map { it.rawType }).containsExactly(String::class.java)
 
         then(sorted[1].name).isEqualTo("name")
         then(sorted[1].isNullable).isFalse
-        then(sorted[1].type).isEqualTo(String::class.java)
+        then(sorted[1].jvmType.rawType).isEqualTo(String::class.java)
 
         then(sorted[2].name).isEqualTo("property")
         then(sorted[2].isNullable).isTrue
-        then(sorted[2].type).isEqualTo(Instant::class.java)
+        then(sorted[2].jvmType.rawType).isEqualTo(Instant::class.java)
 
         then(sorted[3].name).isEqualTo("sample2")
         then(sorted[3].isNullable).isTrue
-        then(sorted[3].type).isInstanceOf(ParameterizedType::class.java)
-        with(sorted[3].type as ParameterizedType) {
-            then(rawType).isEqualTo(GenericSample2::class.java)
-            then(actualTypeArguments).hasSize(1)
-            then(actualTypeArguments[0]).isEqualTo(String::class.java)
-        }
+        then(sorted[3].jvmType.rawType).isEqualTo(GenericSample2::class.java)
+        then(sorted[3].jvmType.typeVariables.map { it.rawType }).containsExactly(String::class.java)
 
         then(sorted[4].name).isEqualTo("samples")
         then(sorted[4].isNullable).isFalse
-        then(sorted[4].type).isInstanceOf(ParameterizedType::class.java)
-        with(sorted[4].type as ParameterizedType) {
-            then(rawType).isEqualTo(List::class.java)
-            then(actualTypeArguments).hasSize(1)
-            then(actualTypeArguments[0]).isEqualTo(SampleValue::class.java)
-        }
+        then(sorted[4].jvmType.rawType).isEqualTo(List::class.java)
+        then(sorted[4].jvmType.typeVariables.map { it.rawType }).containsExactly(SampleValue::class.java)
 
         then(sorted[5].name).isEqualTo("test")
         then(sorted[5].isNullable).isFalse
-        then(sorted[5].type).isEqualTo(SampleValue::class.java)
+        then(sorted[5].jvmType.rawType).isEqualTo(SampleValue::class.java)
     }
 }
 

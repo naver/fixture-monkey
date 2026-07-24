@@ -60,11 +60,11 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.objectfarm.api.type.JavaType;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ObjectTypeReference;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
-@API(since = "0.4.0", status = Status.INTERNAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public abstract class Types {
 	private static final Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<>();
 
@@ -415,6 +415,22 @@ public abstract class Types {
 		}
 	}
 
+	/**
+	 * Normalizes a raw type so that the lower-level {@code WildcardRawType} (produced by the
+	 * object-farm-api layer when traversing wildcard generics) is reported as
+	 * {@link GeneratingWildcardType} — the public marker type users register against (e.g. via
+	 * {@code pushExactTypeArbitraryIntrospector<GeneratingWildcardType>}).
+	 * <p>
+	 * Call this whenever a {@code Class<?>} obtained from {@code JvmType.getRawType()} is about
+	 * to be used as a key for type-based matching.
+	 */
+	public static Class<?> normalizeRawType(Class<?> rawType) {
+		if (rawType == com.navercorp.objectfarm.api.type.WildcardRawType.class) {
+			return GeneratingWildcardType.class;
+		}
+		return rawType;
+	}
+
 	@SuppressWarnings("nullness")
 	public static Class<?> primitiveToWrapper(final Class<?> cls) {
 		Class<?> convertedClass = cls;
@@ -592,25 +608,34 @@ public abstract class Types {
 	}
 
 	public static JvmType toJvmType(AnnotatedType annotatedType, List<Annotation> annotations) {
+		return toJvmType(annotatedType, annotations, null);
+	}
+
+	public static JvmType toJvmType(
+		AnnotatedType annotatedType,
+		List<Annotation> annotations,
+		@Nullable Boolean nullable
+	) {
 		List<Annotation> concatAnnotations =
 			Stream.concat(annotations.stream(), Arrays.stream(annotatedType.getAnnotations()))
 				.collect(Collectors.toList());
 
 		Class<?> rawType = resolveRawTypeForJvmType(annotatedType);
 
-		return new JavaType(
+		List<JvmType> generics = Types.getGenericsTypes(annotatedType).stream()
+			.map(
+				genericAnnotatedType -> (JvmType)new ReflectiveJvmType(new ObjectTypeReference<Object>() {
+					@Override
+					public AnnotatedType getAnnotatedType() {
+						return genericAnnotatedType;
+					}
+				}))
+			.collect(Collectors.toList());
+		return new ReflectiveJvmType(
 			rawType,
-			Types.getGenericsTypes(annotatedType).stream()
-				.map(
-					genericAnnotatedType -> new JavaType(new ObjectTypeReference<Object>() {
-						@Override
-						public AnnotatedType getAnnotatedType() {
-							return genericAnnotatedType;
-						}
-					}))
-				.collect(Collectors.toList()),
+			generics,
 			concatAnnotations,
-			annotatedType
+			nullable
 		);
 	}
 
@@ -623,6 +648,85 @@ public abstract class Types {
 			return java.lang.reflect.Array.newInstance(componentClass, 0).getClass();
 		}
 		return getActualType(annotatedType);
+	}
+
+	/**
+	 * Synthesizes an {@link AnnotatedType} from a {@link JvmType} structure
+	 * ({@link JvmType#getRawType()}, {@link JvmType#getTypeVariables()},
+	 * {@link JvmType#getComponentType()}, {@link JvmType#getAnnotations()}).
+	 * <p>
+	 * Produces proper {@link AnnotatedParameterizedType} / {@link AnnotatedArrayType} subtype
+	 * instances so downstream consumers that branch on these subtypes (e.g. generic resolution)
+	 * behave consistently with a JDK-supplied {@link AnnotatedType}.
+	 *
+	 * @param jvmType the JvmType to convert
+	 * @return an AnnotatedType representing the JvmType
+	 */
+	public static AnnotatedType toAnnotatedType(JvmType jvmType) {
+		Class<?> rawType = jvmType.getRawType();
+		List<Annotation> annotations = jvmType.getAnnotations();
+		List<? extends JvmType> typeVariables = jvmType.getTypeVariables();
+		Annotation[] annotationsArray = annotations.toArray(new Annotation[0]);
+
+		if (rawType.isArray() && typeVariables != null && !typeVariables.isEmpty()) {
+			JvmType componentJvmType = jvmType.getComponentType();
+			AnnotatedType componentAnnotatedType = componentJvmType != null
+				? toAnnotatedType(componentJvmType)
+				: generateAnnotatedTypeWithoutAnnotation(rawType.getComponentType());
+			Type componentType = componentAnnotatedType.getType();
+			Type genericArrayType = (GenericArrayType)() -> componentType;
+			return AnnotatedTypes.newAnnotatedArrayType(
+				componentAnnotatedType,
+				genericArrayType,
+				annotationsArray,
+				annotationsArray,
+				generateAnnotatedTypeWithoutAnnotation(rawType)
+			);
+		}
+
+		if (typeVariables != null && !typeVariables.isEmpty()) {
+			AnnotatedType[] annotatedTypeArgs = typeVariables.stream()
+				.map(Types::toAnnotatedType)
+				.toArray(AnnotatedType[]::new);
+			Type[] typeArgs = Arrays.stream(annotatedTypeArgs)
+				.map(AnnotatedType::getType)
+				.toArray(Type[]::new);
+			ParameterizedType parameterizedType = new GenericType(rawType, typeArgs, null);
+			return AnnotatedTypes.newAnnotatedParameterizedType(
+				annotatedTypeArgs,
+				parameterizedType,
+				annotationsArray,
+				annotationsArray,
+				generateAnnotatedTypeWithoutAnnotation(rawType)
+			);
+		}
+
+		final Type type = rawType;
+		return new AnnotatedType() {
+			@Override
+			public Type getType() {
+				return type;
+			}
+
+			@Override
+			@SuppressWarnings({"unchecked", "cast.unsafe"})
+			public <T extends Annotation> @Nullable T getAnnotation(Class<T> annotationClass) {
+				return (T)annotations.stream()
+					.filter(a -> a.annotationType().equals(annotationClass))
+					.findFirst()
+					.orElse(null);
+			}
+
+			@Override
+			public Annotation[] getAnnotations() {
+				return annotationsArray;
+			}
+
+			@Override
+			public Annotation[] getDeclaredAnnotations() {
+				return getAnnotations();
+			}
+		};
 	}
 
 	/**

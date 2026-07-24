@@ -29,7 +29,6 @@ import java.util.Set;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultNullInjectGenerator implements NullInjectGenerator {
@@ -120,7 +119,7 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			return NOT_NULL_INJECT;
 		}
 
-		if (Types.getActualType(context.getProperty().getType()).isPrimitive()) {
+		if (context.getProperty().getJvmType().getRawType().isPrimitive()) {
 			return NOT_NULL_INJECT;
 		}
 

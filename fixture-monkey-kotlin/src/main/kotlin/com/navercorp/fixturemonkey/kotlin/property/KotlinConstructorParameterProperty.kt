@@ -19,10 +19,9 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.Property
-import com.navercorp.fixturemonkey.kotlin.type.actualType
-import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
+import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.objectfarm.api.type.JvmType
 import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Type
 import java.util.Optional
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -33,19 +32,17 @@ internal data class KotlinConstructorParameterProperty(
     private val parameterName: String?,
     private val constructor: KFunction<*>,
 ) : Property {
-    override fun getType(): Type = annotatedType.type
+    private val cachedJvmType: JvmType = Types.toJvmType(
+        annotatedType,
+        kParameter.annotations,
+        kParameter.type.isMarkedNullable,
+    )
 
-    override fun getAnnotatedType(): AnnotatedType = annotatedType
+    override fun getJvmType(): JvmType = cachedJvmType
 
     override fun getName(): String? = parameterName
 
     override fun getAnnotations(): List<Annotation> = kParameter.annotations
-
-    override fun getValue(obj: Any?): Any? {
-        return getKotlinMemberProperties(constructor.returnType.toTypeReference().type.actualType())
-            .firstOrNull { it.name == parameterName }
-            ?.call(obj)
-    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Annotation> getAnnotation(annotationClass: Class<T>): Optional<T> = annotations

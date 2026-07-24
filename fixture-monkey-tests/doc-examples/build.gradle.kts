@@ -20,3 +20,7 @@ subprojects {
 		useJUnitPlatform()
 	}
 }
+
+tasks.named("test") {
+	dependsOn(subprojects.map { "${it.path}:test" })
+}

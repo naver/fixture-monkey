@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -46,7 +46,11 @@ final class ObjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@SuppressWarnings("argument")
 	@Override
 	public T combined() {
-		Map<ArbitraryProperty, Object> combinedPropertyValuesByArbitraryProperty = new HashMap<>();
+		// Preserve property order from the upstream LinkedHashMap so combinators that fall back
+		// to index-based parameter mapping (e.g. KotlinConstructorArbitraryIntrospector when a
+		// constructor parameter is aliased via instantiateBy) see values in declaration order
+		// rather than HashMap's arbitrary order.
+		Map<ArbitraryProperty, Object> combinedPropertyValuesByArbitraryProperty = new LinkedHashMap<>();
 
 		combinableArbitrariesByArbitraryProperty.forEach(
 			(key, value) -> combinedPropertyValuesByArbitraryProperty.put(key, value.combined())
@@ -58,7 +62,7 @@ final class ObjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@SuppressWarnings({"return", "argument"})
 	@Override
 	public Object rawValue() {
-		Map<ArbitraryProperty, Object> rawPropertyValuesByArbitraryProperty = new HashMap<>();
+		Map<ArbitraryProperty, Object> rawPropertyValuesByArbitraryProperty = new LinkedHashMap<>();
 
 		combinableArbitrariesByArbitraryProperty.forEach(
 			(key, value) -> rawPropertyValuesByArbitraryProperty.put(key, value.rawValue())

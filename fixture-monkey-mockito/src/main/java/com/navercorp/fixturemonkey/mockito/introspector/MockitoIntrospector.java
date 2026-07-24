@@ -32,7 +32,6 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MockitoIntrospector implements ArbitraryIntrospector, Matcher {
@@ -40,13 +39,13 @@ public final class MockitoIntrospector implements ArbitraryIntrospector, Matcher
 
 	@Override
 	public boolean match(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> actualType = property.getJvmType().getRawType();
 		return Modifier.isAbstract(actualType.getModifiers());
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> actualType = Types.getActualType(context.getResolvedType());
+		Class<?> actualType = context.getResolvedType();
 		return new ArbitraryIntrospectorResult(
 			ArbitraryUtils.toCombinableArbitrary(Arbitraries.of(Mockito.mock(actualType)))
 		);

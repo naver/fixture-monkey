@@ -43,7 +43,7 @@ import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
-@API(since = "1.1.0", status = Status.EXPERIMENTAL)
+@API(since = "1.1.0", status = Status.MAINTAINED)
 public interface JavaTypeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 	@Override
 	JavaTypeArbitraryBuilder<T> set(String expression, @Nullable Object value);

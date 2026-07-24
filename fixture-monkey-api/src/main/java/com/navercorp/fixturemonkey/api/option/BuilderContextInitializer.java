@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
  * <p>
  * It should contain the customizing options for the ObjectTree, not for the node.
  */
-@API(since = "1.1.4", status = Status.EXPERIMENTAL)
+@API(since = "1.1.4", status = Status.MAINTAINED)
 public final class BuilderContextInitializer {
 	private final boolean validOnly;
 

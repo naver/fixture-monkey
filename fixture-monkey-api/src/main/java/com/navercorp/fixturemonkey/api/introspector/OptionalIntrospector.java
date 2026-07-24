@@ -32,13 +32,12 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class OptionalIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public boolean match(Property property) {
-		Class<?> type = Types.getActualType(property.getType());
+		Class<?> type = property.getJvmType().getRawType();
 		return type == Optional.class
 			|| type == OptionalInt.class
 			|| type == OptionalLong.class
@@ -58,7 +57,7 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 				CombinableArbitrary.from(Optional.empty())
 			);
 		}
-		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
+		Class<?> type = property.getObjectProperty().getProperty().getJvmType().getRawType();
 		ArbitraryProperty valueProperty = children.get(0);
 		double presenceProbability = 1 - valueProperty.getNullInject();
 		if (children.size() == 1) {

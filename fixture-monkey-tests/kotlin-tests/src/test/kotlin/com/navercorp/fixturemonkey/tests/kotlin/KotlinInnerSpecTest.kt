@@ -18,6 +18,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
  * limitations under the License.
  */
 
+import org.junit.jupiter.api.Test
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo
 import com.navercorp.fixturemonkey.customizer.Values
@@ -37,7 +38,6 @@ import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.SimpleObject
 import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.SupplierStringObject
 
 import net.jqwik.api.Arbitraries
-import net.jqwik.api.Example
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
 import java.util.function.Supplier
@@ -46,7 +46,7 @@ import kotlin.jvm.java
 
 class KotlinInnerSpecTest {
 
-    @Example
+    @Test
     fun key() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -62,7 +62,7 @@ class KotlinInnerSpecTest {
         then(actual.keys).contains("key")
     }
 
-    @Example
+    @Test
     fun value() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -78,7 +78,7 @@ class KotlinInnerSpecTest {
         then(actual.values).contains("value")
     }
 
-    @Example
+    @Test
     fun entry() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -94,7 +94,7 @@ class KotlinInnerSpecTest {
         then(actual["key"]).isEqualTo("value")
     }
 
-    @Example
+    @Test
     fun keys() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -110,7 +110,7 @@ class KotlinInnerSpecTest {
         then(actual.keys).containsAll(setOf("key1", "key2", "key3"))
     }
 
-    @Example
+    @Test
     fun values() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -126,7 +126,7 @@ class KotlinInnerSpecTest {
         then(actual.values).containsAll(setOf("value1", "value2", "value3"))
     }
 
-    @Example
+    @Test
     fun entries() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -143,7 +143,7 @@ class KotlinInnerSpecTest {
         then(actual["key2"]).isEqualTo("value2")
     }
 
-    @Example
+    @Test
     fun entryTwice() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -160,7 +160,7 @@ class KotlinInnerSpecTest {
         then(actual.strMap["key2"]).isEqualTo("value2")
     }
 
-    @Example
+    @Test
     fun valueNull() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -175,7 +175,7 @@ class KotlinInnerSpecTest {
         then(actual.strMap.containsValue(null as String?)).isTrue()
     }
 
-    @Example
+    @Test
     fun keyNullThrows() {
         thenThrownBy {
             SUT.giveMeBuilder<MapObject>()
@@ -190,7 +190,7 @@ class KotlinInnerSpecTest {
             .hasMessageContaining("Map key cannot be null.")
     }
 
-    @Example
+    @Test
     fun keyInKey() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -212,7 +212,7 @@ class KotlinInnerSpecTest {
         then(keyList).contains("key")
     }
 
-    @Example
+    @Test
     fun valueInKey() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -234,7 +234,7 @@ class KotlinInnerSpecTest {
         then(keyList).contains("value")
     }
 
-    @Example
+    @Test
     fun keyInValue() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -255,7 +255,7 @@ class KotlinInnerSpecTest {
         then(valueList).contains("key")
     }
 
-    @Example
+    @Test
     fun valueInValue() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -276,7 +276,7 @@ class KotlinInnerSpecTest {
         then(valueList).contains("value")
     }
 
-    @Example
+    @Test
     fun sizeInValue() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -294,7 +294,7 @@ class KotlinInnerSpecTest {
         then(sizeList).contains(10)
     }
 
-    @Example
+    @Test
     fun listElementInValue() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -315,7 +315,7 @@ class KotlinInnerSpecTest {
         then(elementList).contains("test")
     }
 
-    @Example
+    @Test
     fun propertyInValue() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -334,7 +334,7 @@ class KotlinInnerSpecTest {
         then(fieldList).contains("test")
     }
 
-    @Example
+    @Test
     fun entryInEntryValue() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -353,7 +353,7 @@ class KotlinInnerSpecTest {
         then(value?.get("key2")).isEqualTo("value")
     }
 
-    @Example
+    @Test
     fun entryInEntryKey() {
         // given
         val sut = FixtureMonkey.builder()
@@ -381,7 +381,7 @@ class KotlinInnerSpecTest {
         then(expected["key"]).isEqualTo("value2")
     }
 
-    @Example
+    @Test
     fun entryValueSetNull() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -396,7 +396,7 @@ class KotlinInnerSpecTest {
         then(actual.strMap["key"]).isNull()
     }
 
-    @Example
+    @Test
     fun listElementInListElement() {
         // when
         val actual = SUT.giveMeBuilder<NestedListStringObject>()
@@ -414,7 +414,7 @@ class KotlinInnerSpecTest {
         then(actual.values[0][0]).isEqualTo("test")
     }
 
-    @Example
+    @Test
     fun propertyInProperty() {
         // when
         val actual = SUT.giveMeBuilder<ComplexObjectObject>()
@@ -430,7 +430,7 @@ class KotlinInnerSpecTest {
         then(actual.value.value.str).isEqualTo("test")
     }
 
-    @Example
+    @Test
     fun sizeAndEntry() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -447,7 +447,7 @@ class KotlinInnerSpecTest {
         then(actual["key"]).isEqualTo("test")
     }
 
-    @Example
+    @Test
     fun entryAndSize() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -464,7 +464,7 @@ class KotlinInnerSpecTest {
         then(actual["key"]).isEqualTo("test")
     }
 
-    @Example
+    @Test
     fun sizeTwiceReturnsLatterSize() {
         // when
         val actual = SUT.giveMeBuilder<MapObject>()
@@ -481,7 +481,7 @@ class KotlinInnerSpecTest {
         then(actual).hasSize(0)
     }
 
-    @Example
+    @Test
     fun keyLazy() {
         val variable = SUT.giveMeBuilder<String>()
         val builder = SUT.giveMeBuilder<MapObject>()
@@ -498,7 +498,7 @@ class KotlinInnerSpecTest {
         then(actual.strMap.containsKey("key")).isTrue()
     }
 
-    @Example
+    @Test
     fun valueLazy() {
         val variable = SUT.giveMeBuilder<String>()
         val builder = SUT.giveMeBuilder<MapObject>()
@@ -515,7 +515,7 @@ class KotlinInnerSpecTest {
         then(actual.strMap.containsValue("value")).isTrue()
     }
 
-    @Example
+    @Test
     fun entryLazy() {
         val keyVariable = SUT.giveMeBuilder<String>()
         val valueVariable = SUT.giveMeBuilder<String>()
@@ -534,7 +534,7 @@ class KotlinInnerSpecTest {
         then(actual.strMap["key"]).isEqualTo("value")
     }
 
-    @Example
+    @Test
     fun keyLazyNullThrows() {
         thenThrownBy {
             SUT.giveMeBuilder<MapObject>()
@@ -549,7 +549,7 @@ class KotlinInnerSpecTest {
             .hasMessageContaining("Map key cannot be null.")
     }
 
-    @Example
+    @Test
     fun allKeyLazy() {
         val actual = SUT.giveMeBuilder<IntegerMapObject>()
             .setKotlinInner {
@@ -562,7 +562,7 @@ class KotlinInnerSpecTest {
         then(actual.integerMap.keys).allMatch { it in 0..100 }
     }
 
-    @Example
+    @Test
     fun allValueLazy() {
         val actual = SUT.giveMeBuilder<IntegerMapObject>()
             .setKotlinInner {
@@ -575,7 +575,7 @@ class KotlinInnerSpecTest {
         then(actual.integerMap.values).allMatch { it in 0..100 }
     }
 
-    @Example
+    @Test
     fun allEntry() {
         val actual = SUT.giveMeBuilder<IntegerMapObject>()
             .setKotlinInner {
@@ -592,7 +592,7 @@ class KotlinInnerSpecTest {
         then(actual.integerMap.values).allMatch { it == 100 }
     }
 
-    @Example
+    @Test
     fun allEntryLazy() {
         val actual = SUT.giveMeBuilder<IntegerMapObject>()
             .setKotlinInner {
@@ -609,7 +609,7 @@ class KotlinInnerSpecTest {
         then(actual.integerMap.values).allMatch { it in 0..100 }
     }
 
-    @Example
+    @Test
     fun allKey() {
         val expected = "test"
 
@@ -627,7 +627,7 @@ class KotlinInnerSpecTest {
         then(actual).allMatch { it == expected }
     }
 
-    @Example
+    @Test
     fun allValue() {
         val expected = "test"
 
@@ -644,7 +644,7 @@ class KotlinInnerSpecTest {
         then(actual).allMatch { it == expected }
     }
 
-    @Example
+    @Test
     fun allValueInner() {
         val expected = "test"
 
@@ -662,7 +662,7 @@ class KotlinInnerSpecTest {
         then(actual).allMatch { it == expected }
     }
 
-    @Example
+    @Test
     fun allListElement() {
         val expected = "test"
 
@@ -676,7 +676,7 @@ class KotlinInnerSpecTest {
         then(actual).allMatch { it == expected }
     }
 
-    @Example
+    @Test
     fun allListElementInnerSpec() {
         val expected = "test"
 
@@ -691,7 +691,7 @@ class KotlinInnerSpecTest {
         then(actual).allMatch { it == expected }
     }
 
-    @Example
+    @Test
     fun setPostCondition() {
         val actual = SUT.giveMeBuilder<SimpleObject>()
             .setKotlinInner {
@@ -704,7 +704,7 @@ class KotlinInnerSpecTest {
         then(actual.str).hasSizeGreaterThan(5)
     }
 
-    @Example
+    @Test
     fun inner() {
         val innerSpec = kotlinInnerSpec { property("str", "test") }
 
@@ -717,7 +717,7 @@ class KotlinInnerSpecTest {
         then(actual.str).isEqualTo("test")
     }
 
-    @Example
+    @Test
     fun propertyInner() {
         val innerSpec = kotlinInnerSpec { property("str", "test") }
 
@@ -730,7 +730,7 @@ class KotlinInnerSpecTest {
         then(actual.value.str).isEqualTo("test")
     }
 
-    @Example
+    @Test
     fun listElementInMaxSize() {
         val expected = "expected"
 
@@ -745,7 +745,7 @@ class KotlinInnerSpecTest {
         then(actual).allMatch { it == expected }
     }
 
-    @Example
+    @Test
     fun setAfterSizeReturnsSet() {
         val actual = SUT.giveMeBuilder<ListStringObject>()
             .setKotlinInner {
@@ -758,7 +758,7 @@ class KotlinInnerSpecTest {
         then(actual).isEmpty()
     }
 
-    @Example
+    @Test
     fun sizeAfterSetReturnsSize() {
         val actual = SUT.giveMeBuilder<ListStringObject>()
             .setKotlinInner {
@@ -771,7 +771,7 @@ class KotlinInnerSpecTest {
         then(actual).hasSize(2)
     }
 
-    @Example
+    @Test
     fun sizeAfterSetWithSeparateInnerSpecReturnsSize() {
         val actual = SUT.giveMeBuilder<ListStringObject>()
             .setKotlinInner {
@@ -786,7 +786,7 @@ class KotlinInnerSpecTest {
         then(actual).hasSize(2)
     }
 
-    @Example
+    @Test
     fun setAfterSetWithSeparateInnerSpecReturnsSet() {
         val actual = SUT.giveMeBuilder<ListStringObject>()
             .setKotlinInner {
@@ -801,7 +801,7 @@ class KotlinInnerSpecTest {
         then(actual).isEmpty()
     }
 
-    @Example
+    @Test
     fun innerSpecIncrementsSequence() {
         val actual = SUT.giveMeBuilder<ListStringObject>()
             .setKotlinInner {
@@ -815,7 +815,7 @@ class KotlinInnerSpecTest {
         then(actual.values).hasSize(5)
     }
 
-    @Example
+    @Test
     fun setNotNull() {
         val actual = SUT.giveMeBuilder<SimpleObject>()
             .setKotlinInner {
@@ -827,7 +827,7 @@ class KotlinInnerSpecTest {
         then(actual).isNotNull()
     }
 
-    @Example
+    @Test
     fun keysForCollection() {
         val keyList = listOf("key1", "key2", "key3")
 
@@ -844,7 +844,7 @@ class KotlinInnerSpecTest {
         then(actual.keys).containsAll(keyList)
     }
 
-    @Example
+    @Test
     fun valuesForCollection() {
         val valueList = listOf("value1", "value2", "value3")
 
@@ -861,7 +861,7 @@ class KotlinInnerSpecTest {
         then(actual.values).containsAll(valueList)
     }
 
-    @Example
+    @Test
     fun entriesForCollection() {
         val entries = listOf("key1", "value1", "key2", "value2")
 
@@ -879,7 +879,7 @@ class KotlinInnerSpecTest {
         then(actual["key2"]).isEqualTo("value2")
     }
 
-    @Example
+    @Test
     fun supportSupplierWrapping() {
         val expected = "test"
 
@@ -895,7 +895,7 @@ class KotlinInnerSpecTest {
         then(actual).isEqualTo(expected)
     }
 
-    @Example
+    @Test
     fun supportSupplierObjectField() {
         val expected = Supplier { "test" }
 

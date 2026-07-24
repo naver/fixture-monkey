@@ -71,7 +71,12 @@ public final class GenericType implements ParameterizedType {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(containerType, ownerType, Arrays.hashCode(typeArguments));
+		// Matches the formula used by sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
+		// so that this class hashes equal to JDK-supplied ParameterizedTypes representing the
+		// same type. Required for cache lookups keyed by Type.
+		return Arrays.hashCode(typeArguments)
+			^ Objects.hashCode(ownerType)
+			^ Objects.hashCode(containerType);
 	}
 
 	@Override

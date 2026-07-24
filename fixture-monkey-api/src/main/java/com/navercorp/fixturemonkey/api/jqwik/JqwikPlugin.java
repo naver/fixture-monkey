@@ -18,9 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.jqwik;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 
+@API(since = "1.0.0", status = Status.MAINTAINED)
 public final class JqwikPlugin implements Plugin {
 	private JavaArbitraryResolver javaArbitraryResolver;
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {

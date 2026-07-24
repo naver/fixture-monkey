@@ -19,11 +19,12 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.MethodProperty
+import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
+import com.navercorp.objectfarm.api.type.JvmType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
-import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Type
 import java.util.Optional
 import kotlin.reflect.KType
 
@@ -37,28 +38,19 @@ data class InterfaceKFunctionProperty(
     private val methodName: String,
     private val annotations: List<Annotation>,
 ) : MethodProperty {
-    override fun getType(): Type = type.toTypeReference().type
+    private val cachedJvmType: JvmType = Types.toJvmType(
+        generateAnnotatedTypeWithoutAnnotation(type.toTypeReference().type),
+        annotations,
+        type.isMarkedNullable,
+    )
 
-    override fun getAnnotatedType(): AnnotatedType = object : AnnotatedType {
-        override fun getType(): Type = this@InterfaceKFunctionProperty.getType()
-
-        override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T =
-            this@InterfaceKFunctionProperty.getAnnotation(annotationClass).orElse(null)
-
-        override fun getAnnotations(): Array<Annotation> = this@InterfaceKFunctionProperty.annotations.toTypedArray()
-
-        override fun getDeclaredAnnotations(): Array<Annotation> = annotations
-    }
+    override fun getJvmType(): JvmType = cachedJvmType
 
     override fun getName(): String = propertyName
 
     override fun getMethodName(): String = methodName
 
     override fun getAnnotations(): List<Annotation> = annotations
-
-    override fun getValue(obj: Any?): Any? {
-        throw UnsupportedOperationException("Interface method should not be called.")
-    }
 
     override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>?): Optional<T> {
         return super.getAnnotation(annotationClass)

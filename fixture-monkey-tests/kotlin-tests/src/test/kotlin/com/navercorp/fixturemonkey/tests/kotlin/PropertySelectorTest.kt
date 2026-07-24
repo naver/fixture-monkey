@@ -24,8 +24,8 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.expression.root
 import com.navercorp.fixturemonkey.kotlin.get
-import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
 import com.navercorp.fixturemonkey.kotlin.intoGetter
@@ -36,16 +36,18 @@ import com.navercorp.fixturemonkey.kotlin.setNotNull
 import com.navercorp.fixturemonkey.kotlin.setNull
 import com.navercorp.fixturemonkey.kotlin.sizeExp
 import com.navercorp.fixturemonkey.kotlin.sizeExpGetter
-import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
+import com.navercorp.fixturemonkey.tests.TestEnvironment.ADAPTER_TEST_COUNT
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.ArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.JavaStringObject
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.NestedArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.RootJavaStringObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.ComplexObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.ComplexObjectObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.ListStringObject
+import com.navercorp.fixturemonkey.tests.kotlin.InnerSpecTestSpecs.SimpleObject
 import com.navercorp.fixturemonkey.tests.kotlin.JavaConstructorTestSpecs.JavaTypeObject
-import java.math.BigDecimal
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
-import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 
 class PropertySelectorTest {
@@ -196,7 +198,7 @@ class PropertySelectorTest {
         then(actual).isNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setNotNullRootExp() {
         val actual = SUT.giveMeKotlinBuilder<String?>()
             .setNotNull(String::root)
@@ -205,7 +207,7 @@ class PropertySelectorTest {
         then(actual).isNotNull()
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sizeRootExp() {
         val actual = SUT.giveMeKotlinBuilder<List<String>>()
             .size(List<String>::root, 1)
@@ -214,7 +216,7 @@ class PropertySelectorTest {
         then(actual).hasSize(1)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun sizeRangeRootExp() {
         val actual = SUT.giveMeKotlinBuilder<List<String>>()
             .size(List<String>::root, 1, 3)
@@ -223,7 +225,7 @@ class PropertySelectorTest {
         then(actual).hasSizeBetween(1, 3)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun minSizeRootExp() {
         val actual = SUT.giveMeKotlinBuilder<List<String>>()
             .minSize(List<String>::root, 1)
@@ -232,7 +234,7 @@ class PropertySelectorTest {
         then(actual).hasSizeGreaterThanOrEqualTo(1)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun maxSizeRootExp() {
         val actual = SUT.giveMeKotlinBuilder<List<String>>()
             .maxSize(List<String>::root, 1)
@@ -250,7 +252,7 @@ class PropertySelectorTest {
         then(actual).hasSizeLessThan(5)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootElementExp() {
         val expected = "test"
 
@@ -262,7 +264,7 @@ class PropertySelectorTest {
         then(actual[0]).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootArrayElementExp() {
         val expected = "test"
 
@@ -274,7 +276,7 @@ class PropertySelectorTest {
         then(actual[0]).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootAllElementExp() {
         val expected = "test"
 
@@ -286,7 +288,7 @@ class PropertySelectorTest {
         then(actual).allMatch { it == expected }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootArrayAllElementExp() {
         val expected = "test"
 
@@ -298,7 +300,7 @@ class PropertySelectorTest {
         then(actual).allMatch { it == expected }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootNestedListElementExp() {
         val expected = "test"
 
@@ -311,7 +313,7 @@ class PropertySelectorTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootNestedListAllElementExp() {
         val expected = "test"
 
@@ -324,7 +326,7 @@ class PropertySelectorTest {
         then(actual).allMatch { list -> list.all { it == expected } }
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootNestedArrayElementExp() {
         val expected = "test"
 
@@ -337,7 +339,7 @@ class PropertySelectorTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setRootNestedArrayAllElementExp() {
         val expected = "test"
 
@@ -515,6 +517,159 @@ class PropertySelectorTest {
 
         // then
         then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun threeLevelDeepSetShouldPreventAllAncestorNull() {
+        // given
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultNullInjectGenerator { 1.0 }
+            .build()
+
+        // when
+        val result = sut.giveMeKotlinBuilder<ComplexObjectObject>()
+            .setExp(ComplexObjectObject::value into ComplexObject::value into SimpleObject::str, expected)
+            .sample()
+
+        // then
+        then(result).isNotNull
+        then(result.value).isNotNull
+        then(result.value.value).isNotNull
+        then(result.value.value.str).isEqualTo(expected)
+    }
+
+    @Test
+    fun setContainerElementShouldPreventParentNull() {
+        // given
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultNullInjectGenerator { 1.0 }
+            .build()
+
+        // when
+        val result = sut.giveMeKotlinBuilder<ListStringObject>()
+            .sizeExp(ListStringObject::values, 1)
+            .setExp(ListStringObject::values[0], expected)
+            .sample()
+
+        // then
+        then(result).isNotNull
+        then(result.values).isNotNull
+        then(result.values[0]).isEqualTo(expected)
+    }
+
+    @Test
+    fun setMultipleSiblingPathsShouldPreventParentNull() {
+        // given
+        val expectedStr = "test"
+        val expectedInt = 42
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultNullInjectGenerator { 1.0 }
+            .build()
+
+        // when
+        val result = sut.giveMeKotlinBuilder<ComplexObjectObject>()
+            .setExp(ComplexObjectObject::value into ComplexObject::value into SimpleObject::str, expectedStr)
+            .setExp(ComplexObjectObject::value into ComplexObject::value into SimpleObject::integer, expectedInt)
+            .sample()
+
+        // then
+        then(result).isNotNull
+        then(result.value).isNotNull
+        then(result.value.value).isNotNull
+        then(result.value.value.str).isEqualTo(expectedStr)
+        then(result.value.value.integer).isEqualTo(expectedInt)
+    }
+
+    @Test
+    fun sizeOnlyContainerShouldPreventParentNull() {
+        // given
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultNullInjectGenerator { 1.0 }
+            .build()
+
+        // when
+        val result = sut.giveMeKotlinBuilder<ListStringObject>()
+            .sizeExp(ListStringObject::values, 2)
+            .sample()
+
+        // then
+        then(result).isNotNull
+        then(result.values).isNotNull
+        then(result.values).hasSize(2)
+    }
+
+    @Test
+    fun setNotNullNestedPathShouldPreventAncestorNull() {
+        // given
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultNullInjectGenerator { 1.0 }
+            .build()
+
+        // when
+        val result = sut.giveMeKotlinBuilder<ComplexObjectObject>()
+            .setNotNullExp(ComplexObjectObject::value into ComplexObject::value)
+            .sample()
+
+        // then
+        then(result).isNotNull
+        then(result.value).isNotNull
+        then(result.value.value).isNotNull
+    }
+
+    @Test
+    fun customizePropertyNestedPathShouldPreventParentNull() {
+        // given
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .plugin(KotlinPlugin())
+            .defaultNullInjectGenerator { 1.0 }
+            .build()
+
+        // when
+        val result = sut.giveMeKotlinBuilder<RootJavaStringObject>()
+            .customizeProperty(RootJavaStringObject::getObj intoGetter JavaStringObject::getString) {
+                it.map { _ -> expected }
+            }
+            .sample()
+
+        // then
+        then(result).isNotNull
+        then(result.obj).isNotNull
+        then(result.obj.string).isEqualTo(expected)
+    }
+
+    @Test
+    fun setExpChildPathShouldPreventParentNull() {
+        // given
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .plugin(KotlinPlugin())
+            .defaultNullInjectGenerator { 1.0 }
+            .build()
+
+        // when
+        val result = sut.giveMeKotlinBuilder<RootJavaStringObject>()
+            .setExp(RootJavaStringObject::getObj intoGetter JavaStringObject::getString, expected)
+            .sample()
+
+        // then
+        then(result).isNotNull
+        then(result.obj).isNotNull
+        then(result.obj.string).isEqualTo(expected)
     }
 
     companion object {

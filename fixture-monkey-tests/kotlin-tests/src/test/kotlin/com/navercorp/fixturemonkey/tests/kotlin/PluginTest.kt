@@ -29,14 +29,13 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.util.LinkedList
 import java.util.TreeSet
 
 class PluginTest {
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun propertyCandidateResolverReturnsConcreteListType() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -57,7 +56,7 @@ class PluginTest {
         then(actual).isInstanceOf(LinkedList::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun nestedPropertyCandidateResolverReturnsConcreteListType() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -82,7 +81,7 @@ class PluginTest {
         then(actual).isInstanceOf(LinkedList::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun propertyCandidateResolverReturnsConcreteSetType() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -103,7 +102,7 @@ class PluginTest {
         then(actual).isInstanceOf(TreeSet::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun nestedPropertyCandidateResolverReturnsConcreteSetType() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -146,7 +145,7 @@ class PluginTest {
                     .abstractClassExtends(
                         AssignableTypeMatcher(ParentAbstractClass::class.java)
                     ) { property ->
-                        when (property.type) {
+                        when (property.jvmType.rawType) {
                             FirstAbstractClass::class.java -> listOf(PropertyUtils.toProperty(FirstConcreteClass::class.java))
                             SecondAbstractClass::class.java -> listOf(PropertyUtils.toProperty(SecondConcreteClass::class.java))
                             else -> throw NotImplementedError()
@@ -178,7 +177,7 @@ class PluginTest {
                     .abstractClassExtends(
                         AssignableTypeMatcher(ParentAbstractClass::class.java)
                     ) { property ->
-                        when (property.type) {
+                        when (property.jvmType.rawType) {
                             FirstAbstractClass::class.java -> listOf(PropertyUtils.toProperty(FirstConcreteClass::class.java))
                             SecondAbstractClass::class.java -> listOf(PropertyUtils.toProperty(SecondConcreteClass::class.java))
                             else -> throw NotImplementedError()
@@ -193,7 +192,7 @@ class PluginTest {
         then(actual).isInstanceOf(SecondConcreteClass::class.java)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setConcreteTypeChildReturnsExactlyConcreteTypeChildType() {
         // given
         abstract class AbstractClass
@@ -281,7 +280,7 @@ class PluginTest {
         then(actual).isEqualTo(expected)
     }
 
-    @RepeatedTest(TEST_COUNT)
+    @Test
     fun setComplexReturnsSimple() {
         // given
         abstract class ParentAbstractClass

@@ -19,9 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,31 +26,23 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * It is a property for a type parameter.
  * It is used to represent a type parameter of a generic class or method.
- * It does not support {@link #getValue(Object)}
- * because there is no way to get the value of the property from the object.
  */
 @API(since = "1.1.6", status = Status.EXPERIMENTAL)
 public final class TypeParameterProperty implements Property {
 	private final JvmType type;
 
-	public TypeParameterProperty(AnnotatedType typeParameterAnnotatedType) {
-		this.type = Types.toJvmType(typeParameterAnnotatedType, Collections.emptyList());
+	public TypeParameterProperty(JvmType type) {
+		this.type = type;
 	}
 
 	@Override
-	public Type getType() {
-		return this.type.getRawType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.type.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.type;
 	}
 
 	/**
@@ -70,12 +59,6 @@ public final class TypeParameterProperty implements Property {
 	@Override
 	public List<Annotation> getAnnotations() {
 		return this.type.getAnnotations();
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		throw new UnsupportedOperationException("type parameter property does not support getValue");
 	}
 
 	@Override

@@ -102,6 +102,21 @@ class InstantiatorTest {
     }
 
     @RepeatedTest(TEST_COUNT)
+    fun instantiateByAliasedParameterPreservesValueAssignment() {
+        val actual = SUT.giveMeKotlinBuilder<MultiConstructorProduct>()
+            .instantiateBy {
+                constructor<MultiConstructorProduct> {
+                    parameter<String>("productName")
+                    parameter<Long>()
+                }
+            }
+            .set("productName", "specialProduct")
+            .sample()
+
+        then(actual.name).isEqualTo("specialProduct")
+    }
+
+    @RepeatedTest(TEST_COUNT)
     fun instantiateRootType() {
         val actual = SUT.giveMeKotlinBuilder<Foo>()
             .instantiateBy {
@@ -618,6 +633,34 @@ class InstantiatorTest {
     class Bar<T>(val bar: T)
 
     class Baz(val foo: Foo, val bar: Bar<String>)
+
+    class MultiConstructorProduct {
+        val id: Long
+        val name: String
+        val price: Long
+        val options: List<String>
+
+        constructor() {
+            this.id = 0L
+            this.name = "defaultProduct"
+            this.price = 0L
+            this.options = emptyList()
+        }
+
+        constructor(name: String, price: Long) {
+            this.id = 0L
+            this.name = name
+            this.price = price
+            this.options = emptyList()
+        }
+
+        constructor(name: String, price: Long, options: List<String>) {
+            this.id = 0L
+            this.name = name
+            this.price = price
+            this.options = options
+        }
+    }
 
     companion object {
         private val SUT = FixtureMonkey.builder()

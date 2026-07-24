@@ -18,16 +18,16 @@
 
 package com.navercorp.fixturemonkey.kotlin.test
 
+import org.junit.jupiter.api.Test
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.introspector.KotlinAndJavaCompositeArbitraryIntrospector
-import net.jqwik.api.Example
 import org.assertj.core.api.BDDAssertions.then
 
 class KotlinAndJavaCompositeArbitraryIntrospectorTest {
-    @Example
+    @Test
     fun kotlinClassWithJavaClass() {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
@@ -42,7 +42,7 @@ class KotlinAndJavaCompositeArbitraryIntrospectorTest {
         then(actual.javaObject).isNotNull
     }
 
-    @Example
+    @Test
     fun kotlinClassWithJavaClassUsingOtherIntrospector() {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
@@ -61,7 +61,7 @@ class KotlinAndJavaCompositeArbitraryIntrospectorTest {
         then(actual.javaObject).isNotNull
     }
 
-    @Example
+    @Test
     fun sampleMapValue() {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()

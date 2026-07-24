@@ -19,19 +19,14 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapKeyElementProperty implements Property {
@@ -41,18 +36,6 @@ public final class MapKeyElementProperty implements Property {
 
 	private final int sequence;
 
-	/**
-	 * Use {@link MapKeyElementProperty(Property, Property, int)} instead.
-	 */
-	@Deprecated
-	public MapKeyElementProperty(
-		Property mapProperty,
-		AnnotatedType keyType,
-		int sequence
-	) {
-		this(mapProperty, new TypeParameterProperty(keyType), sequence);
-	}
-
 	public MapKeyElementProperty(Property mapProperty, Property keyProperty, int sequence) {
 		this.mapProperty = mapProperty;
 		this.keyProperty = keyProperty;
@@ -60,21 +43,16 @@ public final class MapKeyElementProperty implements Property {
 	}
 
 	@Override
-	public Type getType() {
-		return this.getAnnotatedType().getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.keyProperty.getAnnotatedType();
+	public JvmType getJvmType() {
+		return this.keyProperty.getJvmType();
 	}
 
 	public Property getMapProperty() {
 		return mapProperty;
 	}
 
-	public AnnotatedType getKeyType() {
-		return this.keyProperty.getAnnotatedType();
+	public Property getKeyProperty() {
+		return this.keyProperty;
 	}
 
 	public int getSequence() {
@@ -95,32 +73,6 @@ public final class MapKeyElementProperty implements Property {
 	@Override
 	public Boolean isNullable() {
 		return false;
-	}
-
-	@Nullable
-	@Override
-	public Object getValue(Object instance) {
-		Class<?> actualType = Types.getActualType(instance.getClass());
-
-		if (Map.class.isAssignableFrom(actualType)) {
-			Map<?, ?> map = (Map<?, ?>)instance;
-			Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
-			int iteratorSequence = 0;
-			while (iterator.hasNext()) {
-				Entry<?, ?> value = iterator.next();
-				if (iteratorSequence == getSequence()) {
-					return value.getKey();
-				}
-				iteratorSequence++;
-			}
-		}
-
-		if (Map.Entry.class.isAssignableFrom(actualType)) {
-			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)instance;
-			return entry.getKey();
-		}
-
-		throw new IllegalArgumentException("given value is not Map Entry. " + instance.getClass());
 	}
 
 	@Override
