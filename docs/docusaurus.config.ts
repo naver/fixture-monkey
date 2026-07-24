@@ -69,7 +69,7 @@ const config: Config = {
           editUrl: 'https://github.com/naver/fixture-monkey/tree/main/docs-docusaurus/',
           versions: {
             current: {
-              label: 'v1.1.x',
+              label: 'v1.2.x',
             },
             '1.0.x': {
               label: 'v1.0.x',
