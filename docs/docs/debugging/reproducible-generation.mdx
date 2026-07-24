@@ -1,0 +1,51 @@
+---
+title: "Reproducible generation"
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+By default Fixture Monkey generates different values on every run. When a randomly generated fixture reveals a bug, you'll want to reproduce it deterministically. Set a fixed seed on the builder to make generation reproducible.
+
+## Fixing the seed on the builder
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .seed(12345L)
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .seed(12345L)
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+With a fixed seed, the same builder produces the same values — and, as of **v1.2.0**, the same container sizes — across runs.
+
+## Reproducing a single test with `@Seed`
+
+When using the JUnit 5 extension, annotate a test with `@Seed` to pin its seed. If the test fails, the extension logs the seed that produced the failure so you can reproduce it later.
+
+```java
+@Seed(12345L)
+@Test
+void reproducibleTest() {
+    // always generates the same values
+}
+```
+
+:::info
+As of **v1.2.0**, an active `@Seed` takes precedence over `FixtureMonkeyBuilder#seed(long)`: while a `@Seed` (or `FixtureMonkeySeedExtension`) is active, the builder's own seed is ignored. The seed is scoped to the test and released afterwards — even if the test or another extension throws — so it no longer leaks into later tests.
+:::

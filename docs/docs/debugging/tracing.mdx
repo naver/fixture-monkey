@@ -1,0 +1,206 @@
+---
+title: "Tracing"
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Since **v1.2.0**, the adapter engine is the default (and only) object generation engine, and it ships with a built-in tracer.
+A tracer shows exactly which value was set at which path and how each object was assembled during fixture generation — making it easy to debug why a field ended up with a particular value, or why a test fails.
+
+You attach a tracer directly on the builder with `FixtureMonkeyBuilder#tracer(AssemblyTracer)`. Tracing is off by default (`AssemblyTracer.noOp()`, zero overhead).
+
+## Enabling a tracer
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .tracer(AssemblyTracer.console())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .tracer(AssemblyTracer.console())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+## Available tracers
+
+| Tracer | Description |
+|--------|-------------|
+| `AssemblyTracer.noOp()` | No tracing (default, zero overhead) |
+| `AssemblyTracer.console()` | Print a tree-formatted trace to the console |
+| `AssemblyTracer.consoleJson()` | Print a JSON-formatted trace to the console |
+| `AssemblyTracer.timing()` | Print only the timing breakdown to the console |
+| `AssemblyTracer.file(Path path)` | Write the trace to a file (append mode) |
+| `AssemblyTracer.summary()` | Collect all traces and print a summary table / timing analysis |
+
+## Reading the trace
+
+`AssemblyTracer.console()` prints sections ordered to match the way you debug: *how did I build → what did I set → what was analyzed → any collisions/overrides → registered builders → final merged state → resolution → final result*. Sections are only printed when they have content.
+
+| Section | What it shows |
+|---------|---------------|
+| **Builder Context** | Builder state: `isFixed` (fixed/deterministic mode), `validOnly` (strict mode) |
+| **Analysis** | The applied directives (set / setLazy / container size, …) with `seq` (apply order, later wins), value, and `source` (`DIRECT`, `REGISTER`, `REGISTERED_BUILDER`, `LAZY_EVALUATED`). Decomposed sets show a `fields extracted / matched` summary |
+| **Values by Path** | The raw path→value mapping analyzed in the adapt phase — your intended settings |
+| **Node Collisions** | Paths where a later `set()` overwrote an earlier value (previous vs new `seq`/value) |
+| **Manipulator Overrides** | When multiple directives target the same path, which one won and which were overridden |
+| **Registered Builders Applied** | Applied registered builders (target type, directive count, container-size count) |
+| **Merged Candidates** | The final `USER_SET` + `REGISTER` values fed into assembly. Compare with *Values by Path* to check register merging |
+| **Interface Resolutions** | How an interface/abstract type was resolved to a concrete type (`declaredType → resolvedType`, reason: `PATH_BASED` / `DEFAULT`) |
+| **Container Size Resolutions** | How a container size was decided (`source`: `EXACT_PATH` / `TYPE_BASED` / `WILDCARD` / `DEFAULT`) |
+| **Just Paths** | Paths set via `Values.just()` whose child paths were ignored |
+| **Unresolved Paths** | In strict mode, paths that didn't match — with the failure reason and available fields |
+| **Assembly** | How each node was created (source, value, introspector, creation method, declared/actual type) |
+| **Timing Information** | Per-phase timings and node/manipulator/value counts |
+| **Cache Status** | Hit/miss per cache layer (`baseResult`, `candidateTree`, `nodeContext`, `tree`) |
+| **Subtree Cache** | `PromotedSubtreeCache` events (`STORE` / `HIT` / `MISS` / `SKIP`) for POJO subtrees expanded as container elements |
+| **Property Discovery** | Discovered fields per type and root-level targets that failed to match |
+
+## Example: `console()` output
+
+```
+=================================================================
+ Fixture Monkey Resolution Trace
+=================================================================
+
+▸ Builder Context
+  isFixed:    false
+  validOnly:  false
+
+▸ Analysis (5 manipulators)
+  ├─ OrderSheet.tags  ContainerInfo      [seq=0] = size=2-2   [REGISTER]
+  ├─ OrderSheet.$     SetLazy            [seq=1] = <lazy>      [REGISTER]
+  ├─ $.name           SetDecomposedValue [seq=2] = "John"      [DIRECT]
+  ├─ $.items          ContainerInfo      [seq=3] = size=2-2    [DIRECT]
+  └─ $.items[0].id    SetDecomposedValue [seq=4] = 123         [DIRECT]
+
+▸ Values by Path (with sequence order)
+  $.name              [seq=0] = "John"
+  $.items[0].id       [seq=2] = 123
+
+▸ Merged Candidates (5 paths, 3 USER_SET, 2 REGISTER)
+  PATH                    SOURCE      ORDER   VALUE
+  $                       USER_SET    2       SimpleObject{name=John, ...}
+  $.name                  USER_SET    2       "John"
+  $.items[0].id           USER_SET    4       123
+  $[type:OrderSheet].tags REGISTER    0       LazyValueHolder@...
+  $[type:OrderSheet].$    REGISTER    1       LazyValueHolder@...
+
+▸ Interface Resolutions (1)
+  $.payment       Payment → CreditCardPayment    [PATH_BASED]
+
+▸ Container Size Resolutions (2)
+  $.items         List<Item>     size=2          [EXACT_PATH]
+  $.tags          Set<String>    size=2          [REGISTERED_BUILDER]
+
+▸ Assembly (SimpleObject)
+  └─ $ ← GENERATED (SimpleObject) [via BeanArbitraryIntrospector] (CONSTRUCTOR)
+     ├─ name  ← USER_SET = "John" (String)
+     ├─ items ← GENERATED (ArrayList) [via ListIntrospector]
+     │  └─ [0] ← DECOMPOSED = {id=123, ...} (Item)
+     │     └─ id ← DECOMPOSED = 123 (int)
+     └─ status ← GENERATED (String) [null:20%]
+
+▸ Timing Information
+  Analyze:      0.12 ms
+  Tree Build:   1.45 ms
+  Assembly:     0.89 ms
+  Total:        2.46 ms
+=================================================================
+```
+
+## Timing breakdown
+
+`AssemblyTracer.timing()` reports how long each phase took, along with node/manipulator/value counts — useful when profiling generation of large object graphs:
+
+```
+=== Adapter Timing ===
+  Prep:         0.05 ms
+  Analyze:      0.12 ms
+  TreeBuild:    1.45 ms
+  Assembly:     0.89 ms
+  Total:        2.46 ms
+  Nodes:        15
+  CacheHit:     false
+  Manipulators: 3
+  Values:       2
+  PathMatches:  5
+```
+
+## Writing to a file
+
+Use `AssemblyTracer.file(Path)` to capture the trace without needing Gradle's `--info` flag:
+
+```java
+Path tracePath = Paths.get("build/trace-output.txt");
+Files.deleteIfExists(tracePath); // clear previous output
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .tracer(AssemblyTracer.file(tracePath))
+    .build();
+
+fixtureMonkey.giveMeOne(MyObject.class);
+// tree-formatted trace is written to build/trace-output.txt
+```
+
+- Append mode: multiple traces accumulate in order
+- On an IO error the message is written to `stderr` (it never fails your test)
+
+## Summary tracer
+
+`AssemblyTracer.summary()` collects every trace, then prints a summary table or a timing analysis across many generations:
+
+```java
+AssemblyTracer.SummaryTracer tracer = AssemblyTracer.summary();
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .tracer(tracer)
+    .build();
+
+fixtureMonkey.giveMeOne(OrderSheet.class);
+fixtureMonkey.giveMeOne(Product.class);
+
+tracer.printSummary();
+```
+
+```
+=== Fixture Monkey Summary (2 traces) ===
+#   | Type                     | Manipulators | Values | Merged | Unresolved | Time
+1   | OrderSheet               |            3 |      3 |      5 |          1 | 0.12ms
+2   | Product                  |            1 |      1 |      3 |          0 | 0.05ms
+Totals: 2 traces, 4 manipulators, 4 values, 8 merged, 1 unresolved paths, 0.17ms total
+```
+
+For performance analysis, `printTimingBreakdown(long wallClockTimeNanos)` splits the wall-clock time across phases, and `getTraces()` returns the collected `List<ResolutionTrace>` for programmatic inspection.
+
+## Debugging scenarios
+
+| Question | Section to check |
+|----------|------------------|
+| "Why was this interface resolved to this implementation?" | Interface Resolutions |
+| "Why is the list size 3?" | Container Size Resolutions |
+| "Why didn't the value I set take effect?" | Values by Path, Node Collisions, Merged Candidates |
+| "Was the register value merged correctly?" | Merged Candidates (compare Values vs Merged counts) |
+| "Was the registered builder applied?" | Registered Builders Applied |
+| "Why does it fail in strict mode?" | Unresolved Paths (reason + available fields) |
+| "Did `Values.just()` ignore my child values?" | Just Paths |
+| "Is `fixed()` mode active?" | Builder Context |
+| "Why wasn't my field matched?" | Property Discovery, Unresolved Paths |
+| "Why was there no cache hit?" | Cache Status, Subtree Cache |
+
+:::tip
+Pair a tracer with a fixed seed (see [Reproducible generation](./reproducible-generation)) so a failing test always resolves the same values while you inspect the trace.
+:::

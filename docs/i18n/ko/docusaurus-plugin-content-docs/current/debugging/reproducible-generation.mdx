@@ -1,0 +1,51 @@
+---
+title: "재현 가능한 생성"
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Fixture Monkey는 기본적으로 실행할 때마다 다른 값을 생성합니다. 무작위로 생성된 fixture가 버그를 드러냈다면 이를 결정적으로 재현하고 싶을 것입니다. 빌더에 고정 seed를 설정하면 생성이 재현 가능해집니다.
+
+## 빌더에 seed 고정하기
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .seed(12345L)
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .seed(12345L)
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+seed를 고정하면 동일한 빌더가 실행마다 동일한 값을 생성하며, **v1.2.0**부터는 컨테이너 크기까지 동일하게 재현됩니다.
+
+## `@Seed`로 단일 테스트 재현하기
+
+JUnit 5 extension을 사용할 때는 테스트에 `@Seed`를 붙여 seed를 고정할 수 있습니다. 테스트가 실패하면 extension이 실패를 유발한 seed를 로그로 남겨 나중에 재현할 수 있습니다.
+
+```java
+@Seed(12345L)
+@Test
+void reproducibleTest() {
+    // 항상 동일한 값을 생성합니다
+}
+```
+
+:::info
+**v1.2.0**부터 활성화된 `@Seed`가 `FixtureMonkeyBuilder#seed(long)`보다 우선합니다. `@Seed`(또는 `FixtureMonkeySeedExtension`)가 활성인 동안에는 빌더 자체의 seed가 무시됩니다. seed는 테스트 범위로 스코프되고 이후 해제됩니다. 테스트나 다른 extension이 예외를 던져도 해제되므로 이후 테스트로 누수되지 않습니다.
+:::

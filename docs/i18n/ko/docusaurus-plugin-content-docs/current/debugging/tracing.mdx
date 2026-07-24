@@ -1,0 +1,206 @@
+---
+title: "트레이싱"
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+**v1.2.0**부터 adapter 엔진이 기본(이자 유일한) 객체 생성 엔진이 되었으며, 내장 tracer를 함께 제공합니다.
+tracer는 fixture 생성 과정에서 어떤 경로에 어떤 값이 설정되었는지, 각 객체가 어떻게 조립되었는지를 그대로 보여주므로, 특정 필드가 왜 그런 값이 되었는지 혹은 테스트가 왜 실패하는지 디버깅할 때 유용합니다.
+
+tracer는 `FixtureMonkeyBuilder#tracer(AssemblyTracer)`로 빌더에 직접 연결합니다. 기본값은 트레이싱 비활성(`AssemblyTracer.noOp()`, 오버헤드 없음)입니다.
+
+## tracer 활성화
+
+<Tabs groupId="language">
+<TabItem value="java" label="Java">
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .tracer(AssemblyTracer.console())
+    .build();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val fixtureMonkey = FixtureMonkey.builder()
+    .plugin(KotlinPlugin())
+    .tracer(AssemblyTracer.console())
+    .build()
+```
+
+</TabItem>
+</Tabs>
+
+## 사용 가능한 tracer
+
+| Tracer | 설명 |
+|--------|------|
+| `AssemblyTracer.noOp()` | 트레이싱 없음 (기본값, 오버헤드 없음) |
+| `AssemblyTracer.console()` | tree 형식 trace를 콘솔에 출력 |
+| `AssemblyTracer.consoleJson()` | JSON 형식 trace를 콘솔에 출력 |
+| `AssemblyTracer.timing()` | timing 분석만 콘솔에 출력 |
+| `AssemblyTracer.file(Path path)` | trace를 파일에 기록 (append 모드) |
+| `AssemblyTracer.summary()` | 전체 trace 수집 후 요약 테이블 / timing 분석 출력 |
+
+## trace 읽기
+
+`AssemblyTracer.console()`은 디버깅 사고 흐름에 맞춰 섹션을 배치해 출력합니다: *어떤 모드로 빌드했지 → 내가 뭘 설정했지 → 분석 결과는 → 충돌/오버라이드 → register 빌더 → 최종 merge 상태 → 해결 → 최종 결과*. 내용이 있는 섹션만 출력됩니다.
+
+| 섹션 | 내용 |
+|------|------|
+| **Builder Context** | 빌더 상태: `isFixed`(fixed/결정적 생성 모드), `validOnly`(strict mode) |
+| **Analysis** | 적용된 directive 목록(set / setLazy / container size 등). `seq`(적용 순서, 나중이 우선), 값, `source`(`DIRECT`, `REGISTER`, `REGISTERED_BUILDER`, `LAZY_EVALUATED`). decompose set은 `추출/매칭 필드` 요약이 추가로 표시됨 |
+| **Values by Path** | adapt 단계에서 분석된 원본 경로→값 매핑 — 사용자가 의도한 설정 |
+| **Node Collisions** | 나중 `set()`이 이전 값을 덮어쓴 경로(이전 vs 새 `seq`/값) |
+| **Manipulator Overrides** | 같은 경로에 여러 directive가 충돌할 때 무엇이 우선했고 무엇이 덮어써졌는지 |
+| **Registered Builders Applied** | 적용된 registered builder(대상 타입, directive 수, container size 수) |
+| **Merged Candidates** | assemble에 투입되는 최종 `USER_SET` + `REGISTER` 값. *Values by Path*와 비교해 register 병합 확인 |
+| **Interface Resolutions** | 인터페이스/추상 타입이 구체 타입으로 해결된 정보(`declaredType → resolvedType`, 사유: `PATH_BASED` / `DEFAULT`) |
+| **Container Size Resolutions** | 컨테이너 크기 결정 정보(`source`: `EXACT_PATH` / `TYPE_BASED` / `WILDCARD` / `DEFAULT`) |
+| **Just Paths** | `Values.just()`로 설정되어 하위 경로가 무시된 경로 |
+| **Unresolved Paths** | strict mode에서 매칭되지 않은 경로 — 실패 사유와 사용 가능한 필드 목록 |
+| **Assembly** | 각 노드가 어떻게 생성되었는지(source, 값, introspector, 생성 방식, 선언/실제 타입) |
+| **Timing Information** | phase별 소요 시간과 node/manipulator/value 개수 |
+| **Cache Status** | 캐시 레이어별 히트/미스(`baseResult`, `candidateTree`, `nodeContext`, `tree`) |
+| **Subtree Cache** | 컨테이너 요소로 확장되는 POJO 서브트리에 대한 `PromotedSubtreeCache` 이벤트(`STORE` / `HIT` / `MISS` / `SKIP`) |
+| **Property Discovery** | 타입별 발견된 필드와 루트 레벨에서 매칭 실패한 타겟 |
+
+## 예시: `console()` 출력
+
+```
+=================================================================
+ Fixture Monkey Resolution Trace
+=================================================================
+
+▸ Builder Context
+  isFixed:    false
+  validOnly:  false
+
+▸ Analysis (5 manipulators)
+  ├─ OrderSheet.tags  ContainerInfo      [seq=0] = size=2-2   [REGISTER]
+  ├─ OrderSheet.$     SetLazy            [seq=1] = <lazy>      [REGISTER]
+  ├─ $.name           SetDecomposedValue [seq=2] = "John"      [DIRECT]
+  ├─ $.items          ContainerInfo      [seq=3] = size=2-2    [DIRECT]
+  └─ $.items[0].id    SetDecomposedValue [seq=4] = 123         [DIRECT]
+
+▸ Values by Path (with sequence order)
+  $.name              [seq=0] = "John"
+  $.items[0].id       [seq=2] = 123
+
+▸ Merged Candidates (5 paths, 3 USER_SET, 2 REGISTER)
+  PATH                    SOURCE      ORDER   VALUE
+  $                       USER_SET    2       SimpleObject{name=John, ...}
+  $.name                  USER_SET    2       "John"
+  $.items[0].id           USER_SET    4       123
+  $[type:OrderSheet].tags REGISTER    0       LazyValueHolder@...
+  $[type:OrderSheet].$    REGISTER    1       LazyValueHolder@...
+
+▸ Interface Resolutions (1)
+  $.payment       Payment → CreditCardPayment    [PATH_BASED]
+
+▸ Container Size Resolutions (2)
+  $.items         List<Item>     size=2          [EXACT_PATH]
+  $.tags          Set<String>    size=2          [REGISTERED_BUILDER]
+
+▸ Assembly (SimpleObject)
+  └─ $ ← GENERATED (SimpleObject) [via BeanArbitraryIntrospector] (CONSTRUCTOR)
+     ├─ name  ← USER_SET = "John" (String)
+     ├─ items ← GENERATED (ArrayList) [via ListIntrospector]
+     │  └─ [0] ← DECOMPOSED = {id=123, ...} (Item)
+     │     └─ id ← DECOMPOSED = 123 (int)
+     └─ status ← GENERATED (String) [null:20%]
+
+▸ Timing Information
+  Analyze:      0.12 ms
+  Tree Build:   1.45 ms
+  Assembly:     0.89 ms
+  Total:        2.46 ms
+=================================================================
+```
+
+## timing 분석
+
+`AssemblyTracer.timing()`은 각 phase의 소요 시간과 node/manipulator/value 개수를 함께 보고합니다. 큰 객체 그래프 생성을 프로파일링할 때 유용합니다:
+
+```
+=== Adapter Timing ===
+  Prep:         0.05 ms
+  Analyze:      0.12 ms
+  TreeBuild:    1.45 ms
+  Assembly:     0.89 ms
+  Total:        2.46 ms
+  Nodes:        15
+  CacheHit:     false
+  Manipulators: 3
+  Values:       2
+  PathMatches:  5
+```
+
+## 파일로 출력
+
+Gradle의 `--info` 없이 trace를 확인하려면 `AssemblyTracer.file(Path)`를 사용합니다:
+
+```java
+Path tracePath = Paths.get("build/trace-output.txt");
+Files.deleteIfExists(tracePath); // 이전 결과 삭제
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .tracer(AssemblyTracer.file(tracePath))
+    .build();
+
+fixtureMonkey.giveMeOne(MyObject.class);
+// build/trace-output.txt에 tree 형식 trace 저장
+```
+
+- Append 모드: 여러 trace가 순서대로 축적
+- IO 예외 시 `stderr`로 메시지 출력 (테스트를 실패시키지 않음)
+
+## summary tracer
+
+`AssemblyTracer.summary()`는 모든 trace를 수집한 뒤 요약 테이블이나 여러 생성에 대한 timing 분석을 출력합니다:
+
+```java
+AssemblyTracer.SummaryTracer tracer = AssemblyTracer.summary();
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .tracer(tracer)
+    .build();
+
+fixtureMonkey.giveMeOne(OrderSheet.class);
+fixtureMonkey.giveMeOne(Product.class);
+
+tracer.printSummary();
+```
+
+```
+=== Fixture Monkey Summary (2 traces) ===
+#   | Type                     | Manipulators | Values | Merged | Unresolved | Time
+1   | OrderSheet               |            3 |      3 |      5 |          1 | 0.12ms
+2   | Product                  |            1 |      1 |      3 |          0 | 0.05ms
+Totals: 2 traces, 4 manipulators, 4 values, 8 merged, 1 unresolved paths, 0.17ms total
+```
+
+성능 분석에는 `printTimingBreakdown(long wallClockTimeNanos)`으로 wall-clock 시간을 phase별로 나눠 볼 수 있고, `getTraces()`로 수집된 `List<ResolutionTrace>`에 프로그래밍 방식으로 접근할 수 있습니다.
+
+## 디버깅 시나리오별 활용
+
+| 질문 | 확인할 섹션 |
+|------|------------|
+| "왜 이 인터페이스가 이 구현체로 되었지?" | Interface Resolutions |
+| "왜 리스트 크기가 3개지?" | Container Size Resolutions |
+| "왜 내가 설정한 값이 안 먹혔지?" | Values by Path, Node Collisions, Merged Candidates |
+| "register 값이 제대로 병합됐나?" | Merged Candidates (Values vs Merged 숫자 비교) |
+| "registered builder가 적용됐나?" | Registered Builders Applied |
+| "strict mode에서 왜 실패하지?" | Unresolved Paths (사유 + 사용 가능 필드) |
+| "Values.just() 때문에 하위 값이 무시됐나?" | Just Paths |
+| "fixed() 모드가 적용됐나?" | Builder Context |
+| "내 필드가 왜 매칭 안됐지?" | Property Discovery, Unresolved Paths |
+| "왜 캐시 히트가 안됐지?" | Cache Status, Subtree Cache |
+
+:::tip
+tracer에 고정 seed([재현 가능한 생성](./reproducible-generation) 참고)를 결합하면, trace를 살펴보는 동안 실패하는 테스트가 항상 동일한 값으로 resolve됩니다.
+:::
