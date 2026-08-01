@@ -24,8 +24,11 @@ import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
 import java.util.Optional
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaMethod
 
 internal data class KotlinConstructorParameterProperty(
     private val annotatedType: AnnotatedType,
@@ -33,6 +36,8 @@ internal data class KotlinConstructorParameterProperty(
     private val parameterName: String?,
     private val constructor: KFunction<*>,
 ) : Property {
+    private val valueClassParameter: Boolean = (kParameter.type.classifier as? KClass<*>)?.isValue == true
+
     override fun getType(): Type = annotatedType.type
 
     override fun getAnnotatedType(): AnnotatedType = annotatedType
@@ -42,9 +47,20 @@ internal data class KotlinConstructorParameterProperty(
     override fun getAnnotations(): List<Annotation> = kParameter.annotations
 
     override fun getValue(obj: Any?): Any? {
-        return getKotlinMemberProperties(constructor.returnType.toTypeReference().type.actualType())
+        val property = getKotlinMemberProperties(constructor.returnType.toTypeReference().type.actualType())
             .firstOrNull { it.name == parameterName }
-            ?.call(obj)
+            ?: return null
+
+        if (!valueClassParameter) {
+            return property.call(obj)
+        }
+
+        // kotlin-reflect boxes a value class unconditionally, so a null underlying value comes back
+        // as a value class wrapping null, which is not constructible. Read the raw value first and
+        // only let kotlin-reflect box it when there is something to box.
+        val getter = property.getter.javaMethod ?: return property.call(obj)
+        getter.isAccessible = true
+        return if (getter.invoke(obj) == null) null else property.call(obj)
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -128,10 +128,70 @@ class ValueClassTest {
         then(actual.fooObject.foo).isNull()
     }
 
+    @Test
+    fun setValueClassObject() {
+        data class ValueClassObject(val foo: Foo)
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = SUT.giveMeKotlinBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setNestedValueClassObject() {
+        data class ValueClassObject(val foo: Foo)
+
+        data class NestedValueClassObject(val fooObject: ValueClassObject)
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = SUT.giveMeKotlinBuilder<NestedValueClassObject>()
+            .set(NestedValueClassObject::fooObject, expected)
+            .sample()
+
+        then(actual.fooObject).isEqualTo(expected)
+    }
+
+    @Test
+    fun setValueClassObjectWithRenamedProperty() {
+        data class ValueClassObject(val foo: Foo)
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultPropertyNameResolver { property -> "renamed_" + property.name }
+            .build()
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = sut.giveMeKotlinBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setNullableValueClassObjectByConstructorInstantiator() {
+        val expected = NullableValueClassObject(null, "hello")
+
+        val actual = SUT.giveMeKotlinBuilder<NullableValueClassObject>()
+            .instantiateBy<NullableValueClassObject> { constructor<NullableValueClassObject>() }
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
     @JvmInline
     value class Foo(
         val bar: String,
     )
+
+    data class NullableValueClassObject(val foo: Foo?, val name: String)
 
     @JvmInline
     value class FooWithPrivateConstructor private constructor(

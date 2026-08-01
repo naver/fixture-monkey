@@ -23,6 +23,7 @@ import org.apiguardian.api.API
 import org.slf4j.LoggerFactory
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
@@ -33,6 +34,8 @@ data class KPropertyProperty(
     private val annotatedType: AnnotatedType,
     val kProperty: KProperty<*>,
 ) : Property {
+    private val valueClassReturnType: Boolean = (kProperty.returnType.classifier as? KClass<*>)?.isValue == true
+
     override fun getType(): Type = this.annotatedType.type
 
     override fun getAnnotatedType(): AnnotatedType = this.annotatedType
@@ -42,6 +45,20 @@ data class KPropertyProperty(
     override fun getAnnotations(): List<Annotation> = this.annotatedType.annotations.toList()
 
     override fun getValue(instance: Any): Any? {
+        val rawValue = readRawValue(instance)
+
+        // A value class is inlined into its owner, so the read above yields the underlying value
+        // rather than the value class the property declares. kotlin-reflect re-boxes it, but only
+        // ask it to once the value is known to be non-null: given a null it hands back a value
+        // class wrapping null, which is not constructible.
+        if (valueClassReturnType && rawValue != null) {
+            return this.kProperty.getter.call(instance)
+        }
+
+        return rawValue
+    }
+
+    private fun readRawValue(instance: Any): Any? {
         val javaMethod = this.kProperty.getter.javaMethod
 
         if (javaMethod != null) {
