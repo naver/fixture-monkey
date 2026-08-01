@@ -128,9 +128,86 @@ class ValueClassTest {
         then(actual.fooObject.foo).isNull()
     }
 
+    @Test
+    fun setValueClassObject() {
+        data class ValueClassObject(val foo: Foo)
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = SUT.giveMeKotlinBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setNestedValueClassObject() {
+        data class ValueClassObject(val foo: Foo)
+
+        data class NestedValueClassObject(val fooObject: ValueClassObject)
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = SUT.giveMeKotlinBuilder<NestedValueClassObject>()
+            .set(NestedValueClassObject::fooObject, expected)
+            .sample()
+
+        then(actual.fooObject).isEqualTo(expected)
+    }
+
+    @Test
+    fun setValueClassObjectWithRenamedProperty() {
+        data class ValueClassObject(val foo: Foo)
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultPropertyNameResolver { property -> "renamed_" + property.name }
+            .build()
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = sut.giveMeKotlinBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setValueClassOverValueClassObject() {
+        data class ValueClassObject(val fooWrapper: FooWrapper)
+
+        val expected = ValueClassObject(FooWrapper(Foo("hello")))
+
+        val actual = SUT.giveMeKotlinBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setPrivateConstructorValueClassObject() {
+        data class ValueClassObject(val foo: FooWithPrivateConstructor)
+
+        val expected: ValueClassObject = SUT.giveMeOne()
+
+        val actual = SUT.giveMeKotlinBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
     @JvmInline
     value class Foo(
         val bar: String,
+    )
+
+    @JvmInline
+    value class FooWrapper(
+        val foo: Foo
     )
 
     @JvmInline

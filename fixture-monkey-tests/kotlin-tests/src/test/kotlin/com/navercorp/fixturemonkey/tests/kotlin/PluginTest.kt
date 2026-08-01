@@ -21,18 +21,28 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
+import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.PropertyUtils
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.plugin.JvmTypeSystem
+import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
+import com.navercorp.objectfarm.api.node.JvmNodeContext
+import com.navercorp.objectfarm.api.node.LeafTypeResolver
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator
+import com.navercorp.objectfarm.api.type.JvmType
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.util.LinkedList
 import java.util.TreeSet
+import java.util.concurrent.atomic.AtomicBoolean
 
 class PluginTest {
     @Test
@@ -312,4 +322,94 @@ class PluginTest {
 
         then(actual).isEqualTo(expected)
     }
+
+    @Test
+    fun inlinedValueResolverOfLaterPluginKeepsKotlinResolver() {
+        val laterResolverApplied = AtomicBoolean(false)
+
+        class LaterJvmTypeSystemPlugin : Plugin, JvmTypeSystemPlugin {
+            override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) = Unit
+
+            override fun configure(typeSystem: JvmTypeSystem) {
+                typeSystem.inlinedValueResolver { _, _, extracted ->
+                    laterResolverApplied.set(true)
+                    extracted
+                }
+            }
+        }
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(LaterJvmTypeSystemPlugin())
+            .build()
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = sut.giveMeBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+
+        then(laterResolverApplied).isTrue
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun jvmTypeSystemPartsOfLaterPluginMergeWithKotlinPlugin() {
+        val leafTypeResolverConsulted = AtomicBoolean(false)
+        val candidateGeneratorWrapped = AtomicBoolean(false)
+
+        class LaterJvmTypeSystemPlugin : Plugin, JvmTypeSystemPlugin {
+            override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) = Unit
+
+            override fun configure(typeSystem: JvmTypeSystem) {
+                typeSystem.leafTypeResolvers(
+                    listOf(
+                        LeafTypeResolver {
+                            leafTypeResolverConsulted.set(true)
+                            false
+                        }
+                    )
+                )
+                typeSystem.candidateGeneratorWrapper { delegate ->
+                    object : JvmNodeCandidateGenerator {
+                        override fun generateNextNodeCandidates(jvmType: JvmType): List<JvmNodeCandidate> {
+                            candidateGeneratorWrapped.set(true)
+                            return delegate.generateNextNodeCandidates(jvmType)
+                        }
+
+                        override fun isSupported(jvmType: JvmType): Boolean = delegate.isSupported(jvmType)
+
+                        override fun isSupported(jvmType: JvmType, context: JvmNodeContext): Boolean =
+                            delegate.isSupported(jvmType, context)
+                    }
+                }
+            }
+        }
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(LaterJvmTypeSystemPlugin())
+            .build()
+
+        val expected = ValueClassObject(Foo("hello"))
+
+        val actual = sut.giveMeBuilder<ValueClassObject>()
+            .set(expected)
+            .sample()
+        val leafHolder = sut.giveMeOne<NoPropertyObject>()
+
+        then(candidateGeneratorWrapped).isTrue
+        then(leafTypeResolverConsulted).isTrue
+        then(actual).isEqualTo(expected)
+        then(leafHolder.noProperty).isNotNull
+    }
+
+    @JvmInline
+    value class Foo(val bar: String)
+
+    data class ValueClassObject(val foo: Foo)
+
+    class NoProperty
+
+    data class NoPropertyObject(val noProperty: NoProperty)
 } 

@@ -508,6 +508,7 @@ public final class ArbitraryResolver {
 			.runtimeTreeFactory(this.assemblyPlanner)
 			.pathResolverContext(assemblyPlan.getResolverContext())
 			.nodeMetadataCache(this.assemblyPlanner.nodeMetadataCache())
+			.inlinedValueResolver(this.assemblyPlanner.inlinedValueResolver())
 			.userContainerSizePaths(userContainerSizePaths)
 			.build();
 

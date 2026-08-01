@@ -46,6 +46,9 @@ import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.expression.TypeSelector;
+import com.navercorp.objectfarm.api.input.ContainerDetector;
+import com.navercorp.objectfarm.api.input.FieldExtractor;
+import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.input.ObjectValueExtractor;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
@@ -129,7 +132,8 @@ final class AssemblyState {
 		@Nullable RuntimeTreeFactory runtimeTreeFactory,
 		@Nullable PathResolverContext pathResolverContext,
 		@Nullable ConcurrentHashMap<?, ?> nodeMetadataCache,
-		Set<PathExpression> userContainerSizePaths
+		Set<PathExpression> userContainerSizePaths,
+		InlinedValueResolver inlinedValueResolver
 	) {
 		this.nodeTree = nodeTree;
 		this.candidatesByPath = candidatesByPath;
@@ -160,7 +164,7 @@ final class AssemblyState {
 			candidatesByPath,
 			limitsByPath,
 			nodeTree,
-			new ObjectValueExtractor()
+			new ObjectValueExtractor(FieldExtractor.reflection(inlinedValueResolver), ContainerDetector.standard())
 		);
 		this.userContainerSizePaths = userContainerSizePaths;
 		this.pathIndex = new PathIndex(

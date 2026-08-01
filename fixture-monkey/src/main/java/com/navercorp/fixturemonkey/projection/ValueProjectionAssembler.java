@@ -131,7 +131,8 @@ final class ValueProjectionAssembler {
 			context.getRuntimeTreeFactory(),
 			context.getPathResolverContext(),
 			context.getNodeMetadataCache(),
-			context.getUserContainerSizePaths()
+			context.getUserContainerSizePaths(),
+			context.getInlinedValueResolver()
 		);
 
 		if (state.traceContext.isEnabled()) {
