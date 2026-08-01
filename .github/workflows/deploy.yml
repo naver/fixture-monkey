@@ -48,7 +48,10 @@ jobs:
         if: github.event_name == 'release'
         run: |
           CURRENT_TAG=${GITHUB_REF_NAME}
-          PREV_TAG=$(git tag --sort=-v:refname | grep -v "^${CURRENT_TAG}$" | head -1)
+          # Walk the tag's own ancestry. Sorting every tag by version picks the highest tag in the
+          # repository, which for a maintenance release is a tag from a newer line (e.g. releasing
+          # 1.1.22 would compare against 1.2.0) and reports changes this release does not contain.
+          PREV_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || true)
           if [ -n "$PREV_TAG" ]; then
             CHANGES=$(git diff --name-only "$PREV_TAG".."$CURRENT_TAG" -- object-farm-api/)
             if [ -n "$CHANGES" ]; then
