@@ -52,13 +52,37 @@ jobs:
           else
             echo "publish=true" >> $GITHUB_OUTPUT
           fi
+      - name: Check already published versions
+        id: check-published
+        run: |
+          # Re-uploading a version that is already on Maven Central makes the Sonatype close
+          # transition fail with "Component ... already exists". That is what breaks a deploy
+          # re-run for an existing release, so skip publishing versions already published.
+          BASE=https://repo1.maven.org/maven2/com/navercorp/fixturemonkey
+          FM_VERSION=$(grep -m1 '^fixtureMonkeyVersion=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          OF_VERSION=$(grep -m1 '^objectFarmVersion=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          FM_CODE=$(curl -s -o /dev/null -w '%{http_code}' "${BASE}/fixture-monkey/${FM_VERSION}/")
+          OF_CODE=$(curl -s -o /dev/null -w '%{http_code}' "${BASE}/object-farm-api/${OF_VERSION}/")
+          echo "fixture-monkey ${FM_VERSION} -> HTTP ${FM_CODE}"
+          echo "object-farm-api ${OF_VERSION} -> HTTP ${OF_CODE}"
+          if [ "$FM_CODE" = "200" ]; then
+            echo "fixtureMonkeyPublished=true" >> $GITHUB_OUTPUT
+          else
+            echo "fixtureMonkeyPublished=false" >> $GITHUB_OUTPUT
+          fi
+          if [ "$OF_CODE" = "200" ]; then
+            echo "objectFarmApiPublished=true" >> $GITHUB_OUTPUT
+          else
+            echo "objectFarmApiPublished=false" >> $GITHUB_OUTPUT
+          fi
       - name: Publish fixture-monkey modules
+        if: steps.check-published.outputs.fixtureMonkeyPublished != 'true'
         env:
           OSSRH_USERNAME_TOKEN: ${{ secrets.OSSRHUSERNAME }}
           OSSRH_PASSWORD_TOKEN: ${{ secrets.OSSRHPASSWORD }}
         run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -x :object-farm-api:publishObjectFarmApiPublicationToSonatypeRepository
       - name: Publish object-farm-api
-        if: steps.check-object-farm.outputs.publish == 'true'
+        if: steps.check-object-farm.outputs.publish == 'true' && steps.check-published.outputs.objectFarmApiPublished != 'true'
         env:
           OSSRH_USERNAME_TOKEN: ${{ secrets.OSSRHUSERNAME }}
           OSSRH_PASSWORD_TOKEN: ${{ secrets.OSSRHPASSWORD }}
