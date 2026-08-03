@@ -97,6 +97,7 @@ const config: Config = {
 
   plugins: [
     './plugins/source-code-loader',
+    './plugins/preserve-license-comments',
     [
       '@docusaurus/plugin-client-redirects',
       {

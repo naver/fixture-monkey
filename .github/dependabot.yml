@@ -1,0 +1,59 @@
+version: 2
+updates:
+  # Docs site (Docusaurus). Every one of the initial 69 Dependabot alerts came
+  # from docs/package-lock.json, so this is the entry that matters most.
+  - package-ecosystem: "npm"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      # @docusaurus/* must move in lockstep: core, preset-classic, types,
+      # tsconfig and module-type-aliases are pinned to the exact same version
+      # and a mismatch fails the build. Never let these split across PRs.
+      docusaurus:
+        patterns:
+          - "@docusaurus/*"
+      npm-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Gradle. Almost every module resolves versions through
+  # gradle/libs.versions.toml (covered by "/"), but buildSrc and
+  # object-farm-api declare coordinates inline, so they need their own entries.
+  - package-ecosystem: "gradle"
+    directories:
+      - "/"
+      - "/buildSrc"
+      - "/object-farm-api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      gradle-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions. Several workflows still pin actions/checkout@v2,
+  # actions/setup-java@v3 and the deprecated gradle/gradle-build-action.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      actions-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

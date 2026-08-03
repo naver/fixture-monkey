@@ -15,10 +15,11 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "3.9.2",
-    "@docusaurus/plugin-client-redirects": "^3.9.2",
-    "@docusaurus/preset-classic": "3.9.2",
-    "@docusaurus/theme-mermaid": "^3.9.2",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/faster": "3.10.2",
+    "@docusaurus/plugin-client-redirects": "^3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-mermaid": "^3.10.2",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.3.0",
@@ -26,10 +27,31 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.9.2",
-    "@docusaurus/tsconfig": "3.9.2",
-    "@docusaurus/types": "3.9.2",
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
     "typescript": "~5.6.2"
+  },
+  "overrides": {
+    "body-parser": "^1.20.6",
+    "dompurify": "^3.4.12",
+    "fast-uri": "^3.1.5",
+    "follow-redirects": "^1.16.0",
+    "http-proxy-middleware": "^2.0.10",
+    "launch-editor": "^2.14.1",
+    "lodash": "^4.18.1",
+    "lodash-es": "^4.18.1",
+    "mermaid": "^11.16.0",
+    "path-to-regexp@0.1": "^0.1.13",
+    "picomatch@2": "^2.3.2",
+    "qs": "^6.15.3",
+    "serialize-javascript": "^7.0.7",
+    "shell-quote": "^1.10.0",
+    "uuid": "^11.1.1",
+    "webpack-dev-server": "^5.2.6",
+    "websocket-driver": "^0.7.5",
+    "ws@7": "^7.5.13",
+    "ws@8": "^8.21.1"
   },
   "browserslist": {
     "production": [
