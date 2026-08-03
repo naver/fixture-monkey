@@ -70,6 +70,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.ExtractedField;
 import com.navercorp.objectfarm.api.input.FieldExtractor;
+import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.input.ValueAnalysisResult;
 import com.navercorp.objectfarm.api.input.ValueAnalyzer;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
@@ -101,12 +102,15 @@ public final class ManipulatorAnalyzer {
 	 * plugin-specific naming (e.g., Jackson {@code @JsonProperty}) is preserved on the produced
 	 * child paths. Pass {@code null} to fall back to {@link Property#getName()}.
 	 *
-	 * @param directives   the list of directives to analyze
-	 * @param nameResolver per-property name resolver applied to decomposed child paths
+	 * @param directives              the list of directives to analyze
+	 * @param nameResolver            per-property name resolver applied to decomposed child paths
+	 * @param inlinedValueResolver    reconstructs value types a JVM language inlined into the
+	 *                                decomposed object's fields
 	 */
 	public static AnalysisResult analyze(
 		List<PathDirective> directives,
-		@Nullable Function<Property, String> nameResolver
+		@Nullable Function<Property, String> nameResolver,
+		InlinedValueResolver inlinedValueResolver
 	) {
 		List<PathResolver<InterfaceResolver>> interfaceResolvers = new ArrayList<>();
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers = new ArrayList<>();
@@ -146,7 +150,8 @@ public final class ManipulatorAnalyzer {
 				valueOrderByPath,
 				customizersByPath,
 				nodeCollisions,
-				nameResolver
+				nameResolver,
+				inlinedValueResolver
 			);
 		}
 
@@ -211,7 +216,8 @@ public final class ManipulatorAnalyzer {
 		Map<PathExpression, Integer> valueOrderByPath,
 		Map<PathExpression, List<PropertyCustomizer>> customizersByPath,
 		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		@Nullable Function<Property, String> nameResolver
+		@Nullable Function<Property, String> nameResolver,
+		InlinedValueResolver inlinedValueResolver
 	) {
 		PathExpression pathExpression = directive.path();
 		int limit = directive.limit();
@@ -252,7 +258,8 @@ public final class ManipulatorAnalyzer {
 				valuesByPath,
 				valueOrderByPath,
 				nodeCollisions,
-				nameResolver
+				nameResolver,
+				inlinedValueResolver
 			);
 			return;
 		}
@@ -305,7 +312,8 @@ public final class ManipulatorAnalyzer {
 				valuesByPath,
 				valueOrderByPath,
 				nodeCollisions,
-				nameResolver
+				nameResolver,
+				inlinedValueResolver
 			);
 			return;
 		}
@@ -384,7 +392,8 @@ public final class ManipulatorAnalyzer {
 		Map<PathExpression, @Nullable Object> valuesByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
 		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		@Nullable Function<Property, String> nameResolver
+		@Nullable Function<Property, String> nameResolver,
+		InlinedValueResolver inlinedValueResolver
 	) {
 		PathExpression pathExpression = directive.path();
 		Object value = directive.value();
@@ -413,7 +422,7 @@ public final class ManipulatorAnalyzer {
 
 		DecomposedContainerValueFactory factory = directive.decomposedContainerValueFactory();
 		ContainerDetector containerDetector = createContainerDetector(factory);
-		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver);
+		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver, inlinedValueResolver);
 
 		ValueAnalyzer analyzer = new ValueAnalyzer(containerDetector, fieldExtractor);
 		ValueAnalysisResult result = analyzer.analyzeDecomposed(value, pathExpression.toExpression());
@@ -491,7 +500,8 @@ public final class ManipulatorAnalyzer {
 		Map<PathExpression, @Nullable Object> valuesByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
 		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		@Nullable Function<Property, String> nameResolver
+		@Nullable Function<Property, String> nameResolver,
+		InlinedValueResolver inlinedValueResolver
 	) {
 		PathExpression pathExpression = directive.path();
 		LazyArbitrary<?> lazyArbitrary = directive.lazyArbitrary();
@@ -568,7 +578,7 @@ public final class ManipulatorAnalyzer {
 
 		// Use standard container detector and property-aware field extractor for lazy values
 		ContainerDetector containerDetector = ContainerDetector.standard();
-		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver);
+		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver, inlinedValueResolver);
 
 		ValueAnalyzer analyzer = new ValueAnalyzer(containerDetector, fieldExtractor);
 		ValueAnalysisResult result = analyzer.analyzeDecomposed(value, pathExpression.toExpression());
@@ -676,7 +686,10 @@ public final class ManipulatorAnalyzer {
 	 * — never through {@code Property.getValue}.
 	 */
 	@SuppressWarnings({"argument", "type.argument", "methodref.return", "return"})
-	private static FieldExtractor createFieldExtractor(@Nullable Function<Property, String> nameResolver) {
+	private static FieldExtractor createFieldExtractor(
+		@Nullable Function<Property, String> nameResolver,
+		InlinedValueResolver inlinedValueResolver
+	) {
 		Function<Property, String> resolver = nameResolver != null ? nameResolver : Property::getName;
 		return new FieldExtractor() {
 			@Override
@@ -695,7 +708,11 @@ public final class ManipulatorAnalyzer {
 					String childPath = basePath + "." + name;
 					Class<?> declaredType = normalizeRawType(childProperty.getJvmType().getRawType());
 					Object fieldValue = readPropertyValue(childProperty, value);
-					result.put(childPath, new ExtractedField(fieldValue, declaredType));
+					ExtractedField extracted = new ExtractedField(fieldValue, declaredType);
+					result.put(
+						childPath,
+						inlinedValueResolver.resolve(value, childProperty.getName(), extracted)
+					);
 				}
 				return result;
 			}

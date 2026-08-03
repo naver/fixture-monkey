@@ -41,6 +41,7 @@ import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.RuntimeTreeFactory;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 
 /**
@@ -155,6 +156,12 @@ public final class AssembleContext {
 	 */
 	private final Set<PathExpression> userContainerSizePaths;
 
+	/**
+	 * Resolves what each field of a value passed to {@code set(...)} holds while it is decomposed
+	 * into child paths.
+	 */
+	private final InlinedValueResolver inlinedValueResolver;
+
 	private AssembleContext(Builder builder) {
 		this.monkeyContext = builder.monkeyContext;
 		this.rootProperty = builder.rootProperty;
@@ -173,6 +180,7 @@ public final class AssembleContext {
 		this.runtimeTreeFactory = builder.runtimeTreeFactory;
 		this.pathResolverContext = builder.pathResolverContext;
 		this.nodeMetadataCache = builder.nodeMetadataCache;
+		this.inlinedValueResolver = builder.inlinedValueResolver;
 		this.userContainerSizePaths = Collections.unmodifiableSet(new HashSet<>(builder.userContainerSizePaths));
 		this.typedPathValues = Collections.unmodifiableMap(new HashMap<>(builder.typedPathValues));
 		this.typedPathOrders = Collections.unmodifiableMap(new HashMap<>(builder.typedPathOrders));
@@ -368,6 +376,16 @@ public final class AssembleContext {
 	}
 
 	/**
+	 * Returns the {@link InlinedValueResolver} applied while decomposing a set value into child
+	 * field values.
+	 *
+	 * @return the declared field resolver
+	 */
+	public InlinedValueResolver getInlinedValueResolver() {
+		return inlinedValueResolver;
+	}
+
+	/**
 	 * Returns the set of paths where the user has explicitly set container sizes.
 	 *
 	 * @return the user container size paths
@@ -406,6 +424,7 @@ public final class AssembleContext {
 		private @Nullable RuntimeTreeFactory runtimeTreeFactory;
 		private @Nullable PathResolverContext pathResolverContext;
 		private @Nullable ConcurrentHashMap<?, ?> nodeMetadataCache;
+		private InlinedValueResolver inlinedValueResolver = InlinedValueResolver.noOp();
 		private Set<PathExpression> userContainerSizePaths = Collections.emptySet();
 		private Map<PathExpression, @Nullable Object> typedPathValues = Collections.emptyMap();
 		private Map<PathExpression, Integer> typedPathOrders = Collections.emptyMap();
@@ -564,6 +583,18 @@ public final class AssembleContext {
 		 */
 		public Builder nodeMetadataCache(@Nullable ConcurrentHashMap<?, ?> nodeMetadataCache) {
 			this.nodeMetadataCache = nodeMetadataCache;
+			return this;
+		}
+
+		/**
+		 * Sets the {@link InlinedValueResolver} applied while decomposing a set value into child
+		 * field values.
+		 *
+		 * @param inlinedValueResolver the declared field resolver
+		 * @return this builder
+		 */
+		public Builder inlinedValueResolver(InlinedValueResolver inlinedValueResolver) {
+			this.inlinedValueResolver = inlinedValueResolver;
 			return this;
 		}
 

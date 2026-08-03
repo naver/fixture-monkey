@@ -57,6 +57,17 @@ public interface FieldExtractor {
 	}
 
 	/**
+	 * Returns a field extractor that uses reflection to enumerate and key fields, passing each
+	 * field through {@code inlinedValueResolver} after reading it.
+	 *
+	 * @param inlinedValueResolver reconstructs value types the language inlined into fields
+	 * @return the reflection-based field extractor
+	 */
+	static FieldExtractor reflection(InlinedValueResolver inlinedValueResolver) {
+		return new ReflectionFieldExtractor(inlinedValueResolver);
+	}
+
+	/**
 	 * Returns a no-op extractor that doesn't extract any fields.
 	 *
 	 * @return a no-op field extractor
@@ -70,7 +81,8 @@ public interface FieldExtractor {
 	 */
 	final class ReflectionFieldExtractor implements FieldExtractor {
 
-		static final ReflectionFieldExtractor INSTANCE = new ReflectionFieldExtractor();
+		static final ReflectionFieldExtractor INSTANCE =
+			new ReflectionFieldExtractor(InlinedValueResolver.noOp());
 
 		/**
 		 * Cache for declared fields by class to avoid repeated reflection calls.
@@ -78,7 +90,10 @@ public interface FieldExtractor {
 		 */
 		private static final Map<Class<?>, Field[]> DECLARED_FIELDS_CACHE = new ConcurrentHashMap<>();
 
-		private ReflectionFieldExtractor() {
+		private final InlinedValueResolver inlinedValueResolver;
+
+		private ReflectionFieldExtractor(InlinedValueResolver inlinedValueResolver) {
+			this.inlinedValueResolver = inlinedValueResolver;
 		}
 
 		@Override
@@ -132,7 +147,8 @@ public interface FieldExtractor {
 
 				try {
 					Object fieldValue = field.get(value);
-					result.put(childPath, new ExtractedField(fieldValue, field.getType()));
+					ExtractedField extracted = new ExtractedField(fieldValue, field.getType());
+					result.put(childPath, inlinedValueResolver.resolve(value, field.getName(), extracted));
 				} catch (IllegalAccessException | SecurityException e) {
 					// Skip fields we can't access
 				}

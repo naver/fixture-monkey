@@ -50,6 +50,7 @@ import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.fixturemonkey.tracing.TraceContextResolutionListener;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
+import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
@@ -110,6 +111,11 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 	// Held here for isLeafType lookups; node-context construction reads them via NodeContextFactory.
 	private final List<LeafTypeResolver> additionalLeafTypeResolvers;
 
+	// Resolves what each field of a value passed to set(...) holds while it is decomposed into child
+	// paths. Installed by JVM language plugins whose declared properties differ from the raw JVM
+	// fields.
+	private final InlinedValueResolver inlinedValueResolver;
+
 	private final ContainerSizeResolverFactory containerSizeResolverFactory;
 	private final ContainerValuePruner containerValuePruner;
 	private final AbstractTypeResolver abstractTypeResolver;
@@ -121,27 +127,30 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 	 * @param seed the seed for random generation
 	 */
 	public AssemblyPlanner(long seed) {
-		this(seed, new JvmNodeCandidateTreeContext(), Collections.emptyList(), Collections.emptyList(), null);
+		this(seed, Collections.emptyList(), Collections.emptyList(), null, InlinedValueResolver.noOp());
 	}
 
 	/**
 	 * Creates a new adapter with all configurable components.
 	 *
 	 * @param seed                       the seed for random generation
-	 * @param treeContext                the tree context for caching subtree information
 	 * @param additionalPromoters        additional node promoters (e.g., KotlinNodePromoter)
 	 * @param additionalLeafTypeResolvers additional leaf type resolvers (e.g., KotlinLeafTypeResolver)
 	 * @param candidateGeneratorWrapper  wraps the candidate generator with platform-specific
 	 *                                   isSupported checks (e.g., KotlinNodeCandidateGenerator)
+	 * @param inlinedValueResolver       reconstructs value types a JVM language inlined into the
+	 *                                   owning member's field while a value passed to
+	 *                                   {@code set(...)} is decomposed
 	 */
 	public AssemblyPlanner(
 		long seed,
-		JvmNodeCandidateTreeContext treeContext,
 		List<JvmNodePromoter> additionalPromoters,
 		List<LeafTypeResolver> additionalLeafTypeResolvers,
-		@Nullable UnaryOperator<JvmNodeCandidateGenerator> candidateGeneratorWrapper
+		@Nullable UnaryOperator<JvmNodeCandidateGenerator> candidateGeneratorWrapper,
+		InlinedValueResolver inlinedValueResolver
 	) {
 		this.seedState = new SeedState(seed);
+		this.inlinedValueResolver = inlinedValueResolver;
 		List<JvmNodePromoter> resolvedPromoters = additionalPromoters != null
 			? additionalPromoters
 			: Collections.emptyList();
@@ -156,7 +165,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 			this.additionalLeafTypeResolvers,
 			candidateGeneratorWrapper
 		);
-		this.treeCache = new TreeContextCache(treeContext, nodeContextFactory);
+		this.treeCache = new TreeContextCache(new JvmNodeCandidateTreeContext(), nodeContextFactory);
 		this.abstractTypeResolver = new AbstractTypeResolver(seedState);
 		this.pathResolverContextFactory = new PathResolverContextFactory(
 			containerSizeResolverFactory,
@@ -256,7 +265,11 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 			? property -> options.getPropertyNameResolver(property).resolve(property)
 			: (Property p) -> p.getName();
 		long analyzeStart = System.nanoTime();
-		AnalysisResult analysisResult = ManipulatorAnalyzer.analyze(directives, nameResolver);
+		AnalysisResult analysisResult = ManipulatorAnalyzer.analyze(
+			directives,
+			nameResolver,
+			inlinedValueResolver
+		);
 		long analyzeTimeNanos = System.nanoTime() - analyzeStart;
 
 		// Resolve interface/abstract class to concrete implementation
@@ -497,6 +510,16 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 	 */
 	public ConcurrentHashMap<?, ?> nodeMetadataCache() {
 		return nodeMetadataCache;
+	}
+
+	/**
+	 * Returns the {@link InlinedValueResolver} applied while decomposing a value passed to
+	 * {@code set(...)}, so that assembly decomposes the value the same way planning did.
+	 *
+	 * @return the inlined value resolver
+	 */
+	public InlinedValueResolver inlinedValueResolver() {
+		return inlinedValueResolver;
 	}
 
 }

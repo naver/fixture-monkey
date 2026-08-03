@@ -63,11 +63,16 @@ import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyDirectiveFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalFixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
+import com.navercorp.fixturemonkey.plugin.JvmTypeSystem;
 import com.navercorp.fixturemonkey.plugin.JvmTypeSystemPlugin;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.seed.SeedFileLoader;
 import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
+import com.navercorp.objectfarm.api.input.InlinedValueResolver;
+import com.navercorp.objectfarm.api.node.JvmNodePromoter;
+import com.navercorp.objectfarm.api.node.LeafTypeResolver;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -85,7 +90,10 @@ public final class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private boolean experimentalFileSeedEnabled = false;
 	private long seed = System.nanoTime();
-	private @Nullable AssemblyPlanner assemblyPlanner;
+	private final List<JvmNodePromoter> jvmNodePromoters = new ArrayList<>();
+	private final List<LeafTypeResolver> leafTypeResolvers = new ArrayList<>();
+	private @Nullable UnaryOperator<JvmNodeCandidateGenerator> candidateGeneratorWrapper;
+	private @Nullable InlinedValueResolver inlinedValueResolver;
 	private @Nullable AssemblyTracer tracer;
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
@@ -441,7 +449,35 @@ public final class FixtureMonkeyBuilder {
 	public FixtureMonkeyBuilder plugin(Plugin plugin) {
 		fixtureMonkeyOptionsBuilder.plugin(plugin);
 		if (plugin instanceof JvmTypeSystemPlugin) {
-			((JvmTypeSystemPlugin)plugin).configure(planner -> this.assemblyPlanner = planner);
+			((JvmTypeSystemPlugin)plugin).configure(new JvmTypeSystem() {
+				@Override
+				public void nodePromoters(List<JvmNodePromoter> nodePromoters) {
+					FixtureMonkeyBuilder.this.jvmNodePromoters.addAll(nodePromoters);
+				}
+
+				@Override
+				public void leafTypeResolvers(List<LeafTypeResolver> leafTypeResolvers) {
+					FixtureMonkeyBuilder.this.leafTypeResolvers.addAll(leafTypeResolvers);
+				}
+
+				@Override
+				public void candidateGeneratorWrapper(UnaryOperator<JvmNodeCandidateGenerator> wrapper) {
+					UnaryOperator<JvmNodeCandidateGenerator> registered =
+						FixtureMonkeyBuilder.this.candidateGeneratorWrapper;
+					FixtureMonkeyBuilder.this.candidateGeneratorWrapper = registered == null
+						? wrapper
+						: generator -> wrapper.apply(registered.apply(generator));
+				}
+
+				@Override
+				public void inlinedValueResolver(InlinedValueResolver resolver) {
+					InlinedValueResolver registered = FixtureMonkeyBuilder.this.inlinedValueResolver;
+					FixtureMonkeyBuilder.this.inlinedValueResolver = registered == null
+						? resolver
+						: (owner, memberName, extracted) ->
+						resolver.resolve(owner, memberName, registered.resolve(owner, memberName, extracted));
+				}
+			});
 		}
 		return this;
 	}
@@ -617,9 +653,13 @@ public final class FixtureMonkeyBuilder {
 
 		AssemblyTracer resolvedTracer = this.tracer != null ? this.tracer : AssemblyTracer.noOp();
 
-		AssemblyPlanner resolvedPlanner = this.assemblyPlanner != null
-			? this.assemblyPlanner
-			: new AssemblyPlanner(seed);
+		AssemblyPlanner resolvedPlanner = new AssemblyPlanner(
+			seed,
+			jvmNodePromoters,
+			leafTypeResolvers,
+			candidateGeneratorWrapper,
+			this.inlinedValueResolver != null ? this.inlinedValueResolver : InlinedValueResolver.noOp()
+		);
 
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,

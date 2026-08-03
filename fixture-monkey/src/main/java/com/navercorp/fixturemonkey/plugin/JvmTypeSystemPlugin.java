@@ -26,10 +26,10 @@ import org.apiguardian.api.API.Status;
  * {@link com.navercorp.fixturemonkey.api.plugin.Plugin} cannot reach through
  * {@code FixtureMonkeyOptionsBuilder} alone.
  * <p>
- * The typical use case is supplying a customized {@code AssemblyPlanner} with
- * language-specific {@code JvmNodePromoter}s, {@code LeafTypeResolver}s, and
- * {@code JvmNodeCandidateGenerator} decorators (e.g., Kotlin value classes, Scala
- * case classes).
+ * The typical use case is registering language-specific {@code JvmNodePromoter}s,
+ * {@code LeafTypeResolver}s, and {@code JvmNodeCandidateGenerator} decorators (e.g., Kotlin
+ * value classes, Scala case classes), which {@code FixtureMonkeyBuilder} assembles into the
+ * {@code AssemblyPlanner} it builds.
  * <p>
  * Implementations are commonly combined with {@code Plugin} on the same class; a single
  * {@code FixtureMonkeyBuilder.plugin(...)} call invokes both SPIs.

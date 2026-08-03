@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
-import com.navercorp.fixturemonkey.planner.AssemblyPlanner
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.MatchPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator
@@ -37,6 +36,7 @@ import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerat
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.kotlin.generator.TripleContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerValueFactory
+import com.navercorp.fixturemonkey.kotlin.input.KotlinValueClassResolver
 import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
 import com.navercorp.fixturemonkey.kotlin.introspector.KotlinDurationIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
@@ -54,7 +54,6 @@ import com.navercorp.fixturemonkey.kotlin.type.KotlinNullabilityUtils
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
-import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
@@ -149,15 +148,10 @@ class KotlinPlugin : Plugin, JvmTypeSystemPlugin {
     }
 
     override fun configure(typeSystem: JvmTypeSystem) {
-        typeSystem.assemblyPlanner(
-            AssemblyPlanner(
-                System.nanoTime(),
-                JvmNodeCandidateTreeContext(),
-                KotlinNodePromoters.all(),
-                listOf(KotlinLeafTypeResolver.INSTANCE),
-                { delegate -> KotlinNodeCandidateGenerator(delegate) }
-            )
-        )
+        typeSystem.nodePromoters(KotlinNodePromoters.all())
+        typeSystem.leafTypeResolvers(listOf(KotlinLeafTypeResolver.INSTANCE))
+        typeSystem.candidateGeneratorWrapper { delegate -> KotlinNodeCandidateGenerator(delegate) }
+        typeSystem.inlinedValueResolver(KotlinValueClassResolver())
     }
 
     private fun isKotlinNonNullableProperty(property: com.navercorp.fixturemonkey.api.property.Property): Boolean {
