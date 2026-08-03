@@ -96,7 +96,7 @@ To install a custom engine for a JVM language, use the new `JvmTypeSystemPlugin`
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .plugin(new MyJvmTypeSystemPlugin()) // configures a custom AssemblyPlanner
+    .plugin(new MyJvmTypeSystemPlugin()) // registers language-specific JVM type-system parts
     .build();
 ```
 

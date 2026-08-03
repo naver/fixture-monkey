@@ -96,7 +96,7 @@ JVM 언어용 커스텀 엔진을 설치하려면 새 `JvmTypeSystemPlugin` SPI�
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .plugin(new MyJvmTypeSystemPlugin()) // 커스텀 AssemblyPlanner 설정
+    .plugin(new MyJvmTypeSystemPlugin()) // 언어별 JVM 타입 시스템 부품 등록
     .build();
 ```
 
