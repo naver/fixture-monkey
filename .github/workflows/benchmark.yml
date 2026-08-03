@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Execute benchmark for ${{ matrix.benchmark-module }}
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v3.5.0
         with:
           arguments: :fixture-monkey-benchmarks:${{ matrix.benchmark-module }}:jmh -Pjmh.quick
       - name: Upload benchmark results

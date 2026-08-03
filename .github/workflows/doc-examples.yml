@@ -25,6 +25,6 @@ jobs:
           distribution: 'temurin'
           java-version: 17
       - name: Run doc example tests
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v3.5.0
         with:
           arguments: :fixture-monkey-tests:doc-examples:java-examples:test :fixture-monkey-tests:doc-examples:kotlin-examples:test
