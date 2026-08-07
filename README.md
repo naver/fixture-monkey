@@ -17,6 +17,7 @@ It focuses on simplifying test writing by facilitating the generation of necessa
 Make your JVM tests more concise and safe with Fixture Monkey.
 
 ## Table of Contents
+- [Use with AI Agents](#use-with-ai-agents)
 - [Quick Start](#quick-start)
 - [Why use Fixture Monkey?](#why-use-fixture-monkey)
 - [Real Test Example](#real-test-example)
@@ -25,6 +26,37 @@ Make your JVM tests more concise and safe with Fixture Monkey.
 - [Additional Resources](#additional-resources)
 - [Contributors](#contributors)
 - [License](#license)
+
+## Use with AI Agents
+
+Fixture Monkey ships a [Claude Code](https://claude.com/claude-code) plugin that teaches the agent to write tests the way the library intends: enumerate the cases a method can produce, keep the ones worth testing, and pin **only** the properties that force the expected outcome — leaving everything else random, so the test stays out of unrelated diffs.
+
+Install it with one line — paste it into Claude Code, or run it in a terminal:
+
+```bash
+claude plugin marketplace add naver/fixture-monkey --sparse .claude-plugin claude-plugins && claude plugin install fixture-monkey@fixture-monkey
+```
+
+Then just ask for tests — `write tests for OrderService.calculate` — and the skill activates on its own. `/fixture-monkey:write-fixture` invokes it explicitly.
+
+The plugin only teaches the agent. Add the library itself to your build from [Quick Start](#quick-start) below.
+
+<details>
+<summary>Notes</summary>
+
+* `--sparse` limits the checkout to the plugin directories instead of cloning the whole library.
+* The `naver/fixture-monkey` shorthand clones over SSH by default. If Git SSH is not set up, prefix the command with `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1`.
+
+</details>
+
+**Using a different agent?** The rules are published as plain documentation, so any tool can read them. Point your Cursor rule, `AGENTS.md`, or Copilot instructions file at:
+
+```
+https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests
+https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference
+```
+
+See the [AI Agents guide](https://naver.github.io/fixture-monkey/docs/agent-guide/) for the full procedure and the condensed Java/Kotlin API reference.
 
 ## Quick Start
 
@@ -210,6 +242,7 @@ Originally developed at [Naver](https://www.navercorp.com/en), Fixture Monkey ha
 
 ### Tools and Plugins
 * [FixtureMonkey Helper](https://plugins.jetbrains.com/plugin/19589-fixturemonkey-helper) - IntelliJ plugin for easier Fixture Monkey usage
+* [Claude Code plugin](#use-with-ai-agents) - teaches the agent to write scenario-faithful fixtures
 
 ### Articles
 * [fixure monkey로 예외 발생 테스트](https://yangbongsoo.tistory.com/68?category=982054)
