@@ -62,7 +62,7 @@ Every builder method has an `Exp` form for `KProperty` references and an `ExpGet
 
 `"status"`, `"customer.name"`, `"items[0].name"`, `"items[*].name"`, `"$"` for the root. Every builder method accepts them.
 
-Avoid them in agent-written code. They break silently on rename, and an unmatched path is ignored rather than reported unless `setExpressionStrictMode(true)` is set on the `FixtureMonkey` instance.
+Avoid them in agent-written code. They break silently on rename, and an unmatched path is ignored rather than reported unless `useExpressionStrictMode()` is set on the `FixtureMonkey` instance.
 
 ## Builder methods
 
@@ -81,7 +81,32 @@ Avoid them in agent-written code. They break silently on rename, and an unmatche
 | `setInner(innerSpec)` | Customize maps and other structures path expressions cannot reach. See [InnerSpec](https://naver.github.io/fixture-monkey/ko/docs/customizing-objects/innerspec) |
 | `instantiate(instantiator)` | Choose a constructor or factory method. See [Instantiate methods](https://naver.github.io/fixture-monkey/ko/docs/generating-objects/instantiate-methods) |
 | `validOnly(boolean)` | When false, allow samples that violate Bean Validation constraints |
-| `copy()` | Branch a builder without mutating the original |
+| `customizeProperty(selector, customizer)` | Transform the `CombinableArbitrary` behind a property, for control `set` cannot express |
+| `map(mapper)` | Returns a **new** builder producing `mapper` applied to each sample |
+| `zipWith(other, combinator)` | Returns a **new** builder combining two builders' samples |
+| `build()` | Returns the underlying `Arbitrary` instead of sampling |
+| `copy()` | Returns an independent copy — the way to branch without affecting the original |
+
+### `ArbitraryBuilder` is mutable
+
+`set`, `size`, `setNull`, `thenApply`, `fixed` and the rest **mutate the builder and return `this`**, and `sample()` does not reset it. Only `copy()`, `map()`, and `zipWith()` hand back a new instance.
+
+That makes the sharing style load-bearing. A helper *method* is safe because it constructs a fresh builder on every call:
+
+```java
+private ArbitraryBuilder<Order> paidOrder() {
+    return fixtureMonkey.giveMeBuilder(Order.class)
+        .set(javaGetter(Order::getStatus), OrderStatus.PAID);
+}
+```
+
+A shared *field* is not. Every pin a test adds sticks to the one instance and leaks into whatever runs next, in execution order:
+
+```java
+private static final ArbitraryBuilder<Order> PAID_ORDER = ...;   // leaks between tests
+```
+
+If a builder must be held, call `copy()` before customizing it.
 
 ### Values helpers
 
@@ -195,7 +220,7 @@ new FailoverIntrospector(List.of(
     ConstructorPropertiesArbitraryIntrospector.INSTANCE))
 ```
 
-`setExpressionStrictMode(true)` does **not** catch this. The path resolves to a real property; the introspector simply never writes it.
+`useExpressionStrictMode()` does **not** catch this. The path resolves to a real property; the introspector simply never writes it.
 
 After configuring a `FixtureMonkey`, sample one instance of each type and assert that the pins landed. A dropped pin is silent, so this throwaway check is the cheapest way to find it:
 
@@ -271,7 +296,7 @@ See [Introspector](https://naver.github.io/fixture-monkey/ko/docs/generating-obj
 | Kotlin | `.plugin(KotlinPlugin())` |
 | Jackson-annotated types | `.plugin(new JacksonPlugin())` |
 | Bean Validation annotations should be honoured | `.plugin(new JakartaValidationPlugin())` |
-| Nulls are getting in the way | `.defaultNotNull(true)` or `.nullInject(0.0)` |
+| Nulls are getting in the way | `.defaultNotNull(true)`, or `defaultNullInjectGenerator` for a rate other than the 0.2 default |
 | Interfaces and sealed types | `.plugin(new InterfacePlugin())` |
 
 See [Fixture Monkey options](https://naver.github.io/fixture-monkey/ko/docs/fixture-monkey-options/overview) for the full option set, and the Plugins section for each plugin — [Kotlin](https://naver.github.io/fixture-monkey/ko/docs/plugins/kotlin-plugin/features) is the one most agents need.
