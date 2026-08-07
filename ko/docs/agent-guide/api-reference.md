@@ -128,7 +128,15 @@ Note the trade-off in `PrimaryConstructorArbitraryIntrospector`: it sees only pr
 | Mockito mocks | `MockitoIntrospector.INSTANCE` | `fixture-monkey-mockito` |
 | Realistic names, addresses, and similar values | `DataFakerArbitraryIntrospector` | `new DataFakerPlugin()` |
 
-Interfaces with no-argument methods fall back to `AnonymousArbitraryIntrospector`, which proxies them, when no introspector matches.
+When no introspector matches, interfaces with no-argument methods fall back to `AnonymousArbitraryIntrospector`, which proxies them.
+
+Set the one you picked on the builder:
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .build();
+```
 
 #### Complete inventory
 
@@ -147,12 +155,6 @@ Interfaces with no-argument methods fall back to `AnonymousArbitraryIntrospector
 | **Building blocks for a custom introspector** | `CompositeArbitraryIntrospector`, `MatchArbitraryIntrospector`, `TypedArbitraryIntrospector` — see [Custom introspector](https://naver.github.io/fixture-monkey/ko/docs/generating-objects/custom-introspector) |
 
 If a collection, enum, or `java.time` value is generating incorrectly, the object introspector is not the cause. Look at the plugin set or the relevant option instead.
-
-```java
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-    .build();
-```
 
 #### Prefer one introspector over a failover chain
 

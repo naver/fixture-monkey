@@ -8,9 +8,9 @@ Human readers looking for an introduction should start with [Creating objects](h
 
 > Pin the properties the scenario depends on. Leave everything else random.
 
-Fixture Monkey exists so a test does not have to name data it does not care about. An agent that sets every field has written the same brittle fixture a hand-rolled builder would have produced, just with more ceremony.
+Fixture Monkey exists so that a test never has to spell out data it does not care about. An agent that sets every field ends up with the same brittle fixture a hand-rolled builder would have produced — just with more ceremony.
 
-Setting only what matters has a second effect that matters for agents in particular: the test stops reacting to unrelated production changes. Add a field to a class, rename one the test never mentions, reorder a constructor — a scenario-faithful fixture keeps compiling and keeps passing, and the test file stays out of the diff.
+There is a second payoff, and for agents it is the one that counts: the test stops reacting to unrelated production changes. Add a field to a class, rename one the test never mentions, reorder a constructor — a scenario-faithful fixture keeps compiling and keeps passing, and the test file stays out of the diff.
 
 ## Pages
 
@@ -32,18 +32,18 @@ Setting only what matters has a second effect that matters for agents in particu
 
 Then ask for a test as usual. The skill activates on its own when a request involves test data; `/fixture-monkey:write-fixture` invokes it explicitly.
 
-**Other agents** — point the tool at these pages. Append `.md` to any of them to get the source text instead of the rendered page, which is what an agent should read:
+**Other agents** — point the tool at these pages. Appending `.md` to any of them returns the source text rather than the rendered page, and the source text is what an agent should read:
 
 ```
 https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests.md
 https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference.md
 ```
 
-These pages are the single source of truth — the repository ships no per-tool copy of them, so there is nothing to drift. For a tool that reads a rules file, point that file at the URLs above rather than pasting the content in:
+These pages are the single source of truth — the repository ships no per-tool copy of them, so nothing can fall out of sync. For a tool that reads a rules file, point that file at the URLs above rather than pasting the content in:
 
 ```markdown
 When writing tests that need test data, follow
-https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests
+https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests.md
 ```
 
 That works as a Cursor rule (`.cursor/rules/*.mdc`), an `AGENTS.md` entry, a `CLAUDE.md` line, or a Copilot instructions file.
