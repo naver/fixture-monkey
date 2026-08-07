@@ -3,7 +3,7 @@ title: "Writing tests"
 sidebar_position: 2
 ---
 
-The procedure for turning a method into tests backed by Fixture Monkey fixtures. Follow it in order.
+The procedure for going from a method to the tests that cover it, with Fixture Monkey supplying the data. Follow it in order.
 
 Steps 1–4 decide *which tests to write*. Steps 5–6 write each one.
 
@@ -79,7 +79,7 @@ The test for a pin: *if this property were random, could the assertion still be 
 Two failure modes, and the second is the common one:
 
 - **Under-pinned** — the test passes or fails depending on the seed. Caught by step 6.
-- **Over-pinned** — the test passes reliably but names data it does not depend on. No test run catches it; it surfaces later as a diff in an unrelated pull request.
+- **Over-pinned** — the test passes reliably but spells out data it does not depend on. No test run catches it; it surfaces later as a diff in an unrelated pull request.
 
 ### Properties that must agree with each other
 
@@ -97,7 +97,7 @@ fixtureMonkey.giveMeBuilder(Order.class)
 
 ## Step 6 — Pin with `set`, then verify
 
-Reach for the first row that fits. Rows lower down cost more performance or more test-to-production coupling.
+Reach for the first row that fits. Rows lower down cost more, either in performance or in test-to-production coupling.
 
 | The case needs | Use | Note |
 | :--- | :--- | :--- |
@@ -110,7 +110,7 @@ Reach for the first row that fits. Rows lower down cost more performance or more
 | A whole object placed as-is | `set(selector, Values.just(value))` | Plain `set` decomposes the value and regenerates its fields; `Values.just` blocks that |
 | A cross-field constraint no other row expresses | `setPostCondition` | Last resort — rejection sampling, so it re-generates until the predicate passes and can be slow or fail to converge |
 
-Select properties **type-safely**, never with string paths. String expressions survive renames silently and, outside [expression strict mode](../fixture-monkey-options/advanced-options-for-experts), an unmatched path is ignored rather than reported — the property stays random and the test fails somewhere unrelated.
+Select properties **type-safely**, never with string paths. Nothing updates a string expression when the property is renamed, and outside [expression strict mode](../fixture-monkey-options/advanced-options-for-experts) a path that no longer matches is ignored rather than reported — the property stays random and the test fails somewhere unrelated.
 
 ```java
 // Java
@@ -135,7 +135,7 @@ If it fails intermittently, the cause is one of two things, handled differently:
 - **A property that forces the outcome was left random.** Pin it — back to step 5.
 - **The production code has a genuine bug on inputs nobody considered.** Report it and leave the failing test in place; do not fix the code as part of writing the test. This is Fixture Monkey finding a real defect, not test flakiness. Do not pin the property to make it go away.
 
-Never adjust a test until it passes over a real defect. That is worse than having no test.
+Never tune a test into passing when the defect it found is real. That is worse than having no test.
 
 To reproduce a specific failure while diagnosing it, fix the seed with `@Seed(1234L)` from `fixture-monkey-junit-jupiter`. The extension logs the seed of any failing test, so a CI failure can be replayed locally. Remove or keep the annotation deliberately — a permanently seeded test no longer explores anything.
 
