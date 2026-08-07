@@ -209,7 +209,7 @@ Kotlin, where `KotlinPlugin` already defaults to `PrimaryConstructorArbitraryInt
 
 From plugins: `JacksonObjectArbitraryIntrospector` (`JacksonPlugin`), `MockitoIntrospector.INSTANCE` (`fixture-monkey-mockito`), `DataFakerArbitraryIntrospector` (`DataFakerPlugin`). Interfaces, abstract classes, and sealed types need `InterfacePlugin` rather than an introspector.
 
-These are the only introspectors you select. `objectIntrospector(...)` replaces **only** the one that builds ordinary objects — collections, maps, enums, `java.time`, and primitives have their own introspectors wired in by default and are unaffected. If one of those generates incorrectly, the object introspector is not the cause. The [API reference](https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference) has the complete inventory.
+These are the only introspectors you select. `objectIntrospector(...)` replaces **only** the one that builds ordinary objects — collections, maps, enums, `java.time`, and primitives have their own introspectors wired in by default and are unaffected. If one of those generates incorrectly, the object introspector is not the cause. The [API reference](https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference.md) has the complete inventory.
 
 #### `FailoverIntrospector` is a last resort
 
@@ -345,10 +345,10 @@ Not pinned: id, customer, address, timestamps, status — the policy does not re
 
 ## Reference
 
-This skill carries the procedure and the syntax most fixtures need. For anything beyond it, fetch the reference — the single source these rules are maintained in:
+This skill carries the procedure and the syntax most fixtures need. For anything beyond it, fetch the reference — the single source these rules are maintained in. **Use the `.md` URLs**, which serve the source text; dropping the suffix gives the rendered page, wrapped in site navigation you do not need:
 
-- https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference
-- https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests
+- https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference.md
+- https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests.md
 
 WebFetch summarises rather than returning the page verbatim, so **ask for the specific thing you need** rather than fetching the page generically. For example: "list every `instantiate` overload with its exact signature", or "give the complete `InnerSpec` syntax for maps, verbatim".
 

@@ -98,6 +98,7 @@ const config: Config = {
   plugins: [
     './plugins/source-code-loader',
     './plugins/preserve-license-comments',
+    './plugins/emit-agent-markdown',
     [
       '@docusaurus/plugin-client-redirects',
       {

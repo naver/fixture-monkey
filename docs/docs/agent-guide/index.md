@@ -35,11 +35,11 @@ Setting only what matters has a second effect that matters for agents in particu
 
 Then ask for a test as usual. The skill activates on its own when a request involves test data; `/fixture-monkey:write-fixture` invokes it explicitly.
 
-**Other agents** — point the tool at these pages. They are stable URLs and are written to be read verbatim:
+**Other agents** — point the tool at these pages. Append `.md` to any of them to get the source text instead of the rendered page, which is what an agent should read:
 
 ```
-https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests
-https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference
+https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests.md
+https://naver.github.io/fixture-monkey/docs/agent-guide/api-reference.md
 ```
 
 These pages are the single source of truth — the repository ships no per-tool copy of them, so there is nothing to drift. For a tool that reads a rules file, point that file at the URLs above rather than pasting the content in:
