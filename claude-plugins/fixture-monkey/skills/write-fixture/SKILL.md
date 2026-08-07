@@ -122,7 +122,29 @@ Select properties type-safely. String paths break silently on rename, and an unm
 | One element | `javaGetter(Order::getItems).index(Item.class, 0)` | `Order::items[0]` |
 | All elements | `javaGetter(Order::getItems).allIndex(Item.class)` | `Order::items["*"]` |
 
+`javaGetter` resolves the property name by stripping a `get`/`is` prefix, or by using the method name as-is when it already matches a field. **Record accessors and other prefix-less getters work unchanged** — `javaGetter(Metric::totalChangeCount)` is as valid as `javaGetter(Order::getStatus)`, including for primitive components. A fluent accessor whose name does not match any field is the one case that fails to resolve.
+
 Java imports `javaGetter` from `com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector` — the identically named one in `...api.experimental` is deprecated. Kotlin needs `KotlinPlugin` and takes the `Exp` suffix on every builder method (`setExp`, `sizeExp`, `setNullExp`, `setNotNullExp`, `setPostConditionExp`), with an `ExpGetter` variant for Java-style getter references.
+
+### Nullability comes first
+
+**Every nullable property is null 20% of the time by default** (`DEFAULT_NULL_INJECT = 0.2`). That single fact causes more confusing failures than anything else here: production code does `projects.stream().collect(toMap(Project::getId, ...))`, `getId()` comes back null, and the NPE looks like a service bug.
+
+So before pinning anything else: **any field the code under test dereferences must be non-null.** Decide it explicitly rather than hoping.
+
+| Scope | How |
+| :--- | :--- |
+| The whole instance | `.defaultNotNull(true)` on the builder |
+| One type, everywhere | `.pushAssignableTypeNullInjectGenerator(Project.class, context -> 0.0d)` |
+| One property, one test | `setNotNull(selector)` |
+
+`defaultNotNull(true)` has a cost: **the entire object graph gets built**, including nested composites the test never touches. That is generation time, and it is a hard failure if any of those types cannot be constructed. Exclude them rather than giving up on the option:
+
+```java
+.addExceptGenerateClass(JiraConfig.class)      // or addExceptGeneratePackage(...)
+```
+
+Do not rely on repeated runs to catch a null. At 20% per field, three runs find it 49% of the time and nine runs 86% — you need about 21 to reach 99% on a *single* field. Repetition is for the randomness you accepted deliberately, not for nullability you left undecided.
 
 **First, confirm the pins actually landed.** Before writing assertions against a newly configured `FixtureMonkey`, sample one instance of each type and check that what you pinned is what you got:
 
@@ -133,11 +155,13 @@ assertThat(probe.getId()).isEqualTo(1L);   // fails here, not 200 lines away
 
 A dropped pin produces no exception and no warning — it surfaces later as an NPE inside production code, on a field the test never mentions. This throwaway check turns that into a five-minute fix.
 
-**Then verify against randomness.** A fixture test that passes once proves nothing — the unpinned properties took one arbitrary set of values. Run it several times with fresh generation:
+**Then verify against randomness.** A fixture test that passes once proves nothing — the unpinned properties took one arbitrary set of values. **Run it at least ten times** with fresh generation:
 
 ```bash
-./gradlew test --tests '*OrderServiceTest*' --rerun-tasks
+for i in $(seq 10); do ./gradlew test --tests '*OrderServiceTest*' --rerun-tasks || break; done
 ```
+
+Ten is a floor, not a guarantee: it catches a 20%-likely value about 89% of the time and a 5%-likely one only 40%. Use it to find *unexpected* sensitivity, and handle nullability by configuration instead, as above.
 
 An intermittent failure has two causes, and they are handled differently:
 
@@ -170,6 +194,18 @@ private ArbitraryBuilder<Order> paidOrder() {
 }
 ```
 
+**`ArbitraryBuilder` is mutable.** `set`, `size`, and the rest add to the builder and return `this` — they do not return a new instance, and `sample()` does not reset it. So the shape above matters: it must be a **method that builds a fresh one per call**, never a shared field.
+
+```java
+// Leaks. Every test's pins accumulate on the one instance, in execution order.
+private static final ArbitraryBuilder<Order> PAID_ORDER = fixtureMonkey.giveMeBuilder(Order.class)...;
+
+// Safe. A new builder per call.
+private ArbitraryBuilder<Order> paidOrder() { ... }
+```
+
+If you do hold a builder and need to branch from it, call `copy()` first.
+
 **Extract a helper only when it carries a decision.** `paidOrder()` earns its place — a default shape several cases reuse and each can extend. A helper that merely renames a one-liner does not:
 
 ```java
@@ -180,7 +216,20 @@ private static JavaGetterMethodPropertySelector<Order, Integer> quantity() {
 }
 ```
 
-Selectors stay inline. Share at the `ArbitraryBuilder` level and stop there.
+Selectors stay inline.
+
+**Above the builder there is one more layer: the `FixtureMonkey` instance itself.** Introspector choice, plugins, and null policy are project-wide decisions, not per-test ones. If two test classes both configure a `FixtureMonkey`, that configuration belongs in a shared holder:
+
+```java
+public final class TestFixtures {
+    public static final FixtureMonkey MONKEY = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .defaultNotNull(true)
+        .build();
+}
+```
+
+Before adding a `FixtureMonkey.builder()` block to a test, look for an existing one in the module and reuse it. Copying a ten-line setup into a third test file is the signal that it should have been extracted — and `ArbitraryBuilder` sharing does not solve it, because the duplication is in the instance, not the builder. Unlike `ArbitraryBuilder`, a `FixtureMonkey` is safe to hold in a static field.
 
 ### How the object actually gets constructed
 
@@ -236,7 +285,7 @@ new FailoverIntrospector(List.of(
     ConstructorPropertiesArbitraryIntrospector.INSTANCE))
 ```
 
-`setExpressionStrictMode(true)` does **not** catch this — the path resolves to a real property; the introspector simply never writes it.
+`useExpressionStrictMode()` does **not** catch this — the path resolves to a real property; the introspector simply never writes it.
 
 **Level 2 — one type.** Do not change the global introspector for a single class: `.pushAssignableTypeArbitraryIntrospector(Order.class, BuilderArbitraryIntrospector.INSTANCE)`, or `register` for broader per-type rules.
 
@@ -292,6 +341,20 @@ when(reader.findServiceCodes(anyCollection())).thenReturn(Map.of(deployment.getI
 Nothing fails at compile time when the two literals drift apart, which is what makes this silent.
 
 Stub only the collaborators the selected case actually reaches — a stub for a call it never makes is dead setup that still has to be maintained.
+
+## When not to use Fixture Monkey
+
+Setup is a real cost, and on a small type `new Money(1_000L, KRW)` can be shorter. But size today is the wrong test: a constructor names **every** component, so adding one puts every test that used `new` into a diff — the exact coupling this guide exists to avoid. Ask **"is this type closed?"**, not "how big is it?".
+
+Use a constructor directly only when all of these hold:
+
+- the type is **closed by nature** — a value object whose shape is the point, like a money amount or a coordinate pair, not an entity that accumulates fields,
+- every component matters to the assertion, so there is nothing incidental to leave random,
+- and it is built in few enough places that a signature change is a small edit.
+
+Entities, DTOs, and request or response payloads fail the first condition however few fields they have today — generate those. When in doubt, generate: over-using Fixture Monkey costs a few lines, under-using it costs an edit to every call site the day the type grows.
+
+The judgement is per type, not per file — a test can construct a small value object directly and still generate the aggregate it goes into.
 
 ## Diff stability
 

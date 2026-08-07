@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "fixture-monkey",
   "displayName": "Fixture Monkey",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Write Java and Kotlin test fixtures that pin only what the scenario depends on and leave the rest random.",
   "author": {
     "name": "Naver",

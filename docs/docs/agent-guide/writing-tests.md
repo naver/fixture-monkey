@@ -178,7 +178,40 @@ private static JavaGetterMethodPropertySelector<Order, Integer> quantity() {
 }
 ```
 
-Selectors are one-liners and stay inline. Share at the `ArbitraryBuilder` level and stop there.
+Selectors are one-liners and stay inline.
+
+### The layer above: the `FixtureMonkey` instance
+
+Introspector choice, plugins, and null policy are project-wide decisions, not per-test ones, and `ArbitraryBuilder` sharing cannot deduplicate them — the duplication lives in the instance. When a second test class needs the same configuration, extract it:
+
+```java
+public final class TestFixtures {
+    public static final FixtureMonkey MONKEY = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .defaultNotNull(true)
+        .build();
+}
+```
+
+Before adding a `FixtureMonkey.builder()` block to a test, look for an existing one in the module and reuse it. A ten-line setup copied into a third test file is the signal it should have been extracted. Unlike `ArbitraryBuilder`, a `FixtureMonkey` is immutable configuration and is safe to hold in a static field.
+
+## When not to use Fixture Monkey
+
+Fixture Monkey is not free: a `FixtureMonkey` instance and an introspector choice are fixed setup, and on a small type with few cases they may not be repaid. A direct `new Money(1_000L, KRW)` can be shorter and more direct.
+
+But size today is the wrong test, because a constructor call names **every** component. Add one component and every `new` in the suite stops compiling; the edit is mechanical but it puts every one of those test files into a diff that has nothing to do with them. That is the exact coupling the rest of this guide exists to avoid, so the question is not "how many components now" but **"is this type closed?"**
+
+Use a constructor directly only when all of these hold:
+
+- the type is **closed by nature** — a value object whose shape is the point, like a money amount or a coordinate pair, not a domain entity that accumulates fields,
+- every component matters to the assertion, so there is no incidental data to leave random,
+- and it is built in few enough places that a signature change is a small edit.
+
+Anything that looks like an entity, a DTO, or a request or response payload fails the first condition, however few fields it has today. Generate those.
+
+Two notes on the cost side. The setup is a per-module cost, not a per-test one — once it lives in a shared `TestFixtures`, comparing a generated test against a hand-written one by line count overstates the difference. And when in doubt, generate: over-using Fixture Monkey costs a few lines, while under-using it costs an edit to every call site the day the type grows.
+
+The judgement is per type, not per file. A test can construct a small value object directly and still generate the aggregate it goes into.
 
 ## Diff stability
 
