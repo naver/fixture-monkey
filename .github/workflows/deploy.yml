@@ -34,7 +34,7 @@ jobs:
           distribution: 'adopt'
           cache: 'gradle'
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
+        uses: gradle/actions/wrapper-validation@v6.2.0
       - name: Restore gradle.properties
         env:
           GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
@@ -42,7 +42,7 @@ jobs:
         run: |
           echo "${GRADLE_PROPERTIES}" >> gradle.properties
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6.2.0
       - name: Check object-farm-api changes
         id: check-object-farm
         if: github.event_name == 'release'
