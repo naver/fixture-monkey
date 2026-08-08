@@ -2,7 +2,7 @@
 assertj = "3.24.2"
 autoparams = "1.1.1"
 checker-qual = "3.50.0"
-datafaker = "1.9.0"
+datafaker = "2.7.0"
 findbugs-annotations = "3.0.1"
 findbugs-jsr305 = "3.0.2"
 jackson = "2.18.8"
