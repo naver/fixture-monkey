@@ -51,7 +51,7 @@ jobs:
           CI: Github Action
 
       - name: Publish test report
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v6
         if: always() # always run even if the previous step fails
         with:
           check_name: JUnit Test Report on JDK ${{ matrix.Java }}
