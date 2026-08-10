@@ -9,7 +9,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: dorny/test-reporter@v1
+      - uses: dorny/test-reporter@v3
         with:
           artifact: test-results            # artifact name
           name: Summary Test Reports                  # Name of the check run which will be created
