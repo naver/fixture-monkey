@@ -104,8 +104,10 @@ Reach for the first row that fits. Rows lower down cost more, either in performa
 | Explicitly absent | `setNull` | |
 | A specific collection size | `size` / `minSize` / `maxSize` | **Set size before setting elements**, or element writes land on a collection that may be too short and are silently dropped |
 | A value derived from another | `thenApply` | See above |
-| A whole object placed as-is | `set(selector, Values.just(value))` | Plain `set` decomposes the value and regenerates its fields; `Values.just` blocks that |
+| That *this exact instance* survives undecomposed | `set(selector, Values.just(value))` | Only when fixing it is genuinely required. Plain `set` decomposes the value and regenerates its fields — silently, so a pre-built list returns with different elements. If the assertion does not depend on those inner values, plain `set` is the right call and leaves them random. `Values.just` freezes a subtree, at the same cost as `fixed()` |
 | A cross-field constraint no other row expresses | `setPostCondition` | Last resort — rejection sampling, so it re-generates until the predicate passes and can be slow or fail to converge |
+
+Two of these interact through call order, and both fail silently. `size` must come before element writes. And where two calls overlap, **the later one wins** — see [Ordering](https://naver.github.io/fixture-monkey/ko/docs/agent-guide/api-reference#ordering-the-last-call-on-an-overlapping-path-wins), which matters most across a parent and its child: `setNull(parent)` followed by `set(parent.child, v)` revives the parent, while the reverse order discards the pin.
 
 Select properties **type-safely**, never with string paths. Nothing updates a string expression when the property is renamed, and outside [expression strict mode](https://naver.github.io/fixture-monkey/ko/docs/fixture-monkey-options/advanced-options-for-experts) a path that no longer matches is ignored rather than reported — the property stays random and the test fails somewhere unrelated.
 
@@ -135,6 +137,37 @@ If it fails intermittently, the cause is one of two things, handled differently:
 Never tune a test into passing when the defect it found is real. That is worse than having no test.
 
 To reproduce a specific failure while diagnosing it, fix the seed with `@Seed(1234L)` from `fixture-monkey-junit-jupiter`. The extension logs the seed of any failing test, so a CI failure can be replayed locally. Remove or keep the annotation deliberately — a permanently seeded test no longer explores anything.
+
+## Constrain the values you did not pin
+
+Leaving a property random does not mean leaving it arbitrary. Plenty of properties are not what a case is about and still cannot hold any value at all: a code that must be twelve numeric digits, an amount that cannot be negative, a date the code requires to be in the past. Generate one freely and the test fails on data no caller could produce — which looks like flakiness, but is missing setup.
+
+This is a different question from step 5. Step 5 asks which properties *force the outcome*; those get pinned. This asks what makes the rest **legal**, and the answer is almost never a pin — it is a constraint, and the only real decision is **where it belongs.** Take the highest row that applies, because the higher it sits, the fewer places restate it:
+
+| The constraint is | Where it belongs | How |
+| :--- | :--- | :--- |
+| **Already declared in production code** as an annotation | A plugin, declared once | `new JakartaValidationPlugin()` or `new JavaxValidationPlugin()`. Generation then honours `@Size`, `@Min`, `@Digits`, `@Pattern`, `@Email`, `@NotBlank`, `@Past` and the rest |
+| True of a domain type wherever it appears | The `FixtureMonkey` instance | `register(TrackingCode.class, ...)`, `registerExactType(...)`, or `registerGroup(...)` to collect many in one class |
+| The project's default for a built-in type | A plugin, declared once | `new JqwikPlugin().javaTypeArbitraryGenerator(...)`, overriding `strings()` or `integers()`; `.javaTimeTypeArbitraryGenerator(...)` for date and time ranges |
+| That values should look realistic — names, addresses | A plugin, declared once | `new DataFakerPlugin()` |
+| True only for the case at hand | The builder | `set(selector, Arbitraries.strings().numeric().ofLength(12))` |
+| A relationship between two properties | The builder | `thenApply`, as in step 5; `setPostCondition` only when nothing else expresses it |
+| That the value must not repeat | The builder | `set(selector, Values.unique(supplier))` |
+
+**Prefer the annotation plugin to every row below it.** When the rule is already written on the production field, the plugin makes generation obey it — stated once, in the place that owns it, and every test follows it when it changes. Restating `@Size(min = 5, max = 10)` as `ofMinLength(5).ofMaxLength(10)` inside a test is the same mistake as retyping a fixture's literal into a stub: two sources of truth, and nothing that fails when they drift.
+
+`register` supplies a builder for the whole type, so the argument-less `set` overload constrains it without naming a property:
+
+```java
+FixtureMonkey.builder()
+    .register(TrackingCode.class, fixture -> fixture.giveMeBuilder(TrackingCode.class)
+        .set(Arbitraries.strings().numeric().ofLength(12)))
+    .build();
+```
+
+Note how this sits against the placement rule in [The layer above](#the-layer-above-the-fixturemonkey-instance). A tracking-code format the assertion never mentions is configuration the outcome does *not* depend on, so it is the kind that may reasonably be shared across test classes — unlike the introspector and the null policy, which decide whether a pin lands at all.
+
+One thing this does not do is fail quietly. When a constraint cannot be satisfied, generation retries and then throws `RetryableFilterMissException`, naming the property. A test that pins against the domain — `setNull` on a `@NotBlank` field — fails there, not somewhere downstream.
 
 ## Stubs follow the same rule
 
@@ -175,22 +208,36 @@ private static JavaGetterMethodPropertySelector<Order, Integer> quantity() {
 }
 ```
 
-Selectors are one-liners and stay inline.
+The test is not whether the selector is inline. It is **whether the call site still shows which property is being selected.** `set(quantity(), 10)` fails it: a name was substituted for a name, and the type disappeared from view.
+
+Factoring out a *path prefix that many pins repeat* passes the test, because the leaf property and the intermediate types stay visible where the pin is written:
+
+```java
+private static final JavaGetterMethodPropertySelector<JiraIssueResponse, JiraFields> FIELDS =
+    javaGetter(JiraIssueResponse::fields);
+
+.set(FIELDS.into(JiraFields::status).into(JiraIssueStatus::name), "Open")
+```
+
+Holding that in a constant is safe, and for a reason worth knowing: `into` returns a new selector wrapping its receiver instead of mutating it, so a shared prefix does not accumulate path segments across tests the way a shared `ArbitraryBuilder` accumulates pins.
 
 ### The layer above: the `FixtureMonkey` instance
 
-Introspector choice, plugins, and null policy are project-wide decisions, not per-test ones, and `ArbitraryBuilder` sharing cannot deduplicate them — the duplication lives in the instance. When a second test class needs the same configuration, extract it:
+Introspector choice, plugins, and null policy decide what a generated object looks like, and whether a pin lands at all. They are not infrastructure sitting underneath the test — they are the reason the test's objects have the shape they have. So keep the instance in the test class:
 
 ```java
-public final class TestFixtures {
-    public static final FixtureMonkey MONKEY = FixtureMonkey.builder()
+class OrderServiceTest {
+    private static final FixtureMonkey FIXTURE = FixtureMonkey.builder()
         .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
         .defaultNotNull(true)
         .build();
-}
 ```
 
-Before adding a `FixtureMonkey.builder()` block to a test, look for an existing one in the module and reuse it. A ten-line setup copied into a third test file is the signal it should have been extracted. Unlike `ArbitraryBuilder`, a `FixtureMonkey` is immutable configuration and is safe to hold in a static field.
+A `FixtureMonkey` is immutable configuration, so a `static final` field is safe here — the hazard described above applies to `ArbitraryBuilder`, not to the instance.
+
+The rule that settles where configuration lives: **the test file shows every choice its outcome depends on.** Someone reading a failing test should not have to open a `TestFixtures` holder to discover that `defaultNotNull(true)` is on, or which introspector decides whether `set(javaGetter(Order::getId), 1L)` is honoured or silently dropped. Extracting a shared holder is right for configuration the outcome does not depend on — a plugin set that is uniform across the module, a project-wide `javaTimeTypeArbitraryGenerator` — and wrong for the introspector and the null policy.
+
+The cost is a few duplicated lines per test class. That is the cheaper side of the trade, because those lines are read far more often than they are edited, and a test that explains itself in one file is worth more than a deduplicated one that does not.
 
 ## When not to use Fixture Monkey
 
@@ -206,7 +253,7 @@ Use a constructor directly only when all of these hold:
 
 Anything that looks like an entity, a DTO, or a request or response payload fails the first condition, however few fields it has today. Generate those.
 
-Two notes on the cost side. The setup is a per-module cost, not a per-test one — once it lives in a shared `TestFixtures`, comparing a generated test against a hand-written one by line count overstates the difference. And when in doubt, generate: over-using Fixture Monkey costs a few lines, while under-using it costs an edit to every call site the day the type grows.
+Two notes on the cost side. The setup is a per-class cost paid once, not a per-test one, so comparing a generated test against a hand-written one by counting lines in the file overstates the difference. And when in doubt, generate: over-using Fixture Monkey costs a few lines, while under-using it costs an edit to every call site the day the type grows.
 
 The judgement is per type, not per file. A test can construct a small value object directly and still generate the aggregate it goes into.
 
@@ -240,7 +287,11 @@ private ArbitraryBuilder<Order> paidOrder() {
 | `fixed()` to "make the test stable" | Freezes the whole graph, so the test stops exploring — and hides the real problem, which is a missing pin | Pin the property that matters |
 | `setPostCondition` where `set` would do | Rejection sampling; slow, and can fail to converge | `set` with an `Arbitrary` |
 | Constructing objects by hand alongside Fixture Monkey | The hand-built one must be updated on every field change | Generate both |
-| A helper that just renames a selector | Costs more lines than it saves and hides the type at the call site | Inline `javaGetter(Type::prop)` |
+| A helper that just renames a selector | Costs more lines than it saves and hides the type at the call site | Inline `javaGetter(Type::prop)`. A shared path *prefix* is different — the call site still shows the leaf |
+| Wrapping every pre-built value in `Values.just` | Freezes subtrees that the case does not depend on, so they stop exploring | Reserve it for when that exact instance is what the case is about |
+| A shared `FixtureMonkey` holder the test's outcome depends on | The reader cannot tell why a pin landed, or why a field is never null, without opening another file | Declare the instance in the test class |
+| Restating a production validation annotation as an `Arbitrary` in the test | Two sources of truth for one rule, and nothing fails when they drift | Add the validation plugin and let the annotation drive generation |
+| `setPostCondition` to filter a rule the domain type always obeys | Rejection sampling per test for something true everywhere | `register` the type once |
 | Retyping a fixture's literal into a stub or assertion | Two sources of truth, and nothing catches the drift | Read it off the sampled object |
 | `get(35)` against a fixed-size result | Couples the case to a production constant | `getLast()` or `size() - 1` |
 | Adding a plugin or introspector to fix one test | Usually a signal the type needs an `instantiate` or a `register` instead | See [How objects get constructed](https://naver.github.io/fixture-monkey/ko/docs/agent-guide/api-reference#how-objects-get-constructed) |

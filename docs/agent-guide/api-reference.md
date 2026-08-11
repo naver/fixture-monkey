@@ -42,6 +42,17 @@ import static com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropert
 
 There is a deprecated `javaGetter` in the `...api.experimental` package. Import from `...api.expression`.
 
+Selectors are values, and `into` returns a **new** selector wrapping its receiver rather than mutating it. A path prefix that many pins share can therefore be held in a constant and reused without the accumulation hazard that makes a shared `ArbitraryBuilder` unsafe:
+
+```java
+private static final JavaGetterMethodPropertySelector<JiraIssueResponse, JiraFields> FIELDS =
+    javaGetter(JiraIssueResponse::fields);
+
+.set(FIELDS.into(JiraFields::status).into(JiraIssueStatus::name), "Open")
+```
+
+Both types are public — `JavaGetterMethodPropertySelector<T, U>` for a root selector, `JoinJavaGetterPropertySelector<T, U>` for the result of `into` — so either can be named in a field or a return type. `into` itself is a default method inherited from a non-public interface, which does not prevent calling it or declaring those types from another package.
+
 ### Kotlin
 
 Requires `KotlinPlugin`. Import from `com.navercorp.fixturemonkey.kotlin`.
@@ -87,6 +98,24 @@ Avoid them in agent-written code. They break silently on rename, and an unmatche
 | `build()` | Returns the underlying `Arbitrary` instead of sampling |
 | `copy()` | Returns an independent copy — the way to branch without affecting the original |
 
+### Ordering: the last call on an overlapping path wins
+
+Manipulators apply in call order, and two of the resulting rules break silently.
+
+`size` must precede element writes, or the elements land on a collection that may be too short and are dropped.
+
+And where two calls overlap, the later one decides — including across a parent and its child, where it determines whether the parent exists at all:
+
+```java
+.setNull(javaGetter(Order::getCustomer))
+.set(javaGetter(Order::getCustomer).into(Customer::getName), "Kim")   // parent revived, name set
+
+.set(javaGetter(Order::getCustomer).into(Customer::getName), "Kim")
+.setNull(javaGetter(Order::getCustomer))                             // parent null, the name pin is gone
+```
+
+The first order is what lets a shared base fixture null a subtree and have each case revive only the part it needs. The second discards the pin without an exception. Sharing setup as a method that returns a builder gives the correct order for free, because the case's own calls always come after.
+
 ### `ArbitraryBuilder` is mutable
 
 `set`, `size`, `setNull`, `thenApply`, `fixed` and the rest **mutate the builder and return `this`**, and `sample()` does not reset it. Only `copy()`, `map()`, and `zipWith()` hand back a new instance.
@@ -112,12 +141,81 @@ If a builder must be held, call `copy()` before customizing it.
 
 From `com.navercorp.fixturemonkey.customizer.Values`:
 
-- `Values.just(value)` — set the value as-is. Without it, `set` decomposes the object and regenerates its properties, which matters for immutable and inlined types.
+- `Values.just(value)` — place the value as-is, blocking decomposition. **Use it only when fixing that exact instance is genuinely required.**
 - `Values.unique(supplier)` — draw a distinct value per generation, for uniquely-constrained columns.
+
+Plain `set` decomposes the value and regenerates its properties, so a pre-built list or nested object comes back with different inner values and nothing is raised to say so. That silence is worth recognising, but it is not by itself a reason to wrap: if the assertion does not depend on those inner values, plain `set` is the correct call and leaves them random. `Values.just` freezes a subtree, which carries the same cost as `fixed()` — the frozen part stops exploring — so reserve it for the case where the exact instance is the thing under test.
+
+## Constraining generated values
+
+Random does not have to mean arbitrary. These are the APIs that narrow what generation produces, in ascending order of scope. For *which* one to reach for, see [Constrain the values you did not pin](https://naver.github.io/fixture-monkey/docs/agent-guide/writing-tests#constrain-the-values-you-did-not-pin) — the short version is to take the widest scope that fits, so the fewest places restate the rule.
+
+**Per property, on the builder**
+
+| Call | Effect |
+| :--- | :--- |
+| `set(selector, arbitrary)` | Any jqwik `Arbitrary`: `Arbitraries.strings().numeric().ofLength(12)`, `.alpha()`, `.ascii()`, `ofMinLength`/`ofMaxLength`, `Arbitraries.longs().greaterThan(100)` |
+| `set(value)` | No selector — constrains the root of the builder. This is the form `register` uses |
+| `set(selector, Values.unique(supplier))` | A distinct value per generation |
+| `thenApply((sample, builder) -> ...)` | Derive one property from another after generation |
+| `setPostCondition(selector, type, predicate)` | Rejection sampling. Last resort: it regenerates until the predicate passes, so it is slow and can fail to converge |
+
+**Per type, on the instance**
+
+| Call | Effect |
+| :--- | :--- |
+| `register(Class, fixture -> builder)` | A default builder for the type and its subtypes, applied wherever the type appears |
+| `registerExactType(Class, ...)` / `registerAssignableType(Class, ...)` | The same, with the matcher stated explicitly |
+| `register(MatcherOperator, priority)` | Arbitrary matching, with priority — lower number wins, and equal priorities are picked randomly |
+| `registerGroup(Class...)` | Collect many registrations in one class: every method that takes a single `FixtureMonkey` parameter and returns an `ArbitraryBuilder<T>` is registered for `T` |
+
+**Project-wide, through a plugin**
+
+| Plugin | Effect |
+| :--- | :--- |
+| `new JakartaValidationPlugin()`, `new JavaxValidationPlugin()` | Generation honours Bean Validation annotations already on the production fields — `@Size`, `@Min`, `@Max`, `@Digits`, `@Pattern`, `@Email`, `@NotBlank`, `@NotEmpty`, `@Past`, `@Future`. Prefer this to restating the same rule in test code |
+| `new JqwikPlugin().javaTypeArbitraryGenerator(...)` | Override the default generator for built-in types by implementing `strings()`, `integers()`, `longs()`, `characters()` and so on. `monkeyStrings()` returns a `MonkeyStringArbitrary`, whose `filterCharacter(predicate)` restricts the character set; the default already excludes ISO control characters |
+| `new JqwikPlugin().javaTimeTypeArbitraryGenerator(...)` | The same for `java.time` and `Date` — override `localDates()`, `instants()`, `zonedDateTimes()` and the rest. Defaults span one year either side of now |
+| `new JqwikPlugin().javaArbitraryResolver(...)` / `.javaTimeArbitraryResolver(...)` | Change how constraints are *applied* to those arbitraries, rather than which arbitrary is used |
+| `javaConstraintGenerator(...)`, `pushJavaConstraintGeneratorCustomizer(...)` | Teach Fixture Monkey a project's own constraint annotations |
+| `new DataFakerPlugin()` | Realistic values — names, addresses, and similar |
+
+An unsatisfiable constraint is not silent: generation retries and then throws `RetryableFilterMissException`, naming the property that could not be produced.
 
 ## How objects get constructed
 
 This is the most common source of "Fixture Monkey does not work on my class". Different class shapes are constructed in completely different ways, and the mechanism is chosen at three levels of scope. Work from the narrowest scope that solves the problem.
+
+### Measure the candidates before classifying
+
+The tables in this section classify a class by its shape, and that classification is a guess. It is right most of the time and silently wrong on precisely the cases that cost the most — a type that *is* built, by an introspector that never writes half of it.
+
+The guess is avoidable. Every introspector can be run against the real class in about two seconds, using nothing but `jshell` and the module's test runtime classpath. Three outcomes matter per candidate: it cannot build the type at all, it builds it but leaves some properties unwritten, or it writes everything.
+
+```java
+FixtureMonkey sut = FixtureMonkey.builder()
+    .objectIntrospector(candidate)
+    .defaultNotNull(true)
+    .build();
+
+Object sample = sut.giveMeOne(Order.class);   // null means this candidate cannot build it
+```
+
+Then read every declared field back by reflection. A field still holding its JVM default was never written — **and a `set` targeting it would be dropped with no exception and no warning.** Two details keep that inference honest:
+
+- **Numbers and booleans need sentinels.** `0` and `false` are legitimate random values, so an unwritten `int` is indistinguishable from a written one. Push a constant for each primitive and wrapper first, and the default becomes proof of absence: `pushExactTypeArbitraryIntrospector(int.class, context -> new ArbitraryIntrospectorResult(CombinableArbitrary.from(7)))`.
+- **Reference types need repetition.** Some values generate as `null` some of the time regardless of the introspector, and `defaultNotNull(true)` does not always override it — `ZoneId` is one. Sample about five times and separate *always* default, which is the introspector, from *sometimes* default, which is nullability and needs a pin instead.
+
+The [Claude Code plugin](https://github.com/naver/fixture-monkey/tree/main/claude-plugins/fixture-monkey/skills/write-fixture/scripts) bundles this as a ready `jshell` script plus a Gradle init script that prints a module's test runtime classpath without touching the build files. Where `jshell` is unavailable it is a JDK 9+ tool, and the classification tables below remain the fallback.
+
+#### Choosing when several candidates work
+
+More than one introspector usually writes everything, and that is not a reason to combine them:
+
+1. **One candidate is complete for every type under test** — set it globally with `objectIntrospector(...)`. This is the common outcome.
+2. **Several cover every type** — take the one that names how the class is actually built: `ConstructorProperties` for records and immutables, `Bean` for JavaBeans, `PrimaryConstructor` for Kotlin. Rank `PriorityConstructor` and `Jackson` last, since they can succeed for reasons unrelated to the class's intended shape.
+3. **Different types need different introspectors** — the one covering the most types globally, plus a [Level 2](#level-2--per-type) override per exception. Two or three overrides beat a chain.
+4. **The exceptions are too numerous to enumerate** — only then a `FailoverIntrospector`, measured rather than assumed. Probing the chain as a single candidate turns [the ordering trap](#the-failover-ordering-trap) into an observation: the same two introspectors leave a field unwritten in one order and write it in the other.
 
 ### Level 1 — the introspector (global default)
 
@@ -221,6 +319,8 @@ new FailoverIntrospector(List.of(
 ```
 
 `useExpressionStrictMode()` does **not** catch this. The path resolves to a real property; the introspector simply never writes it.
+
+Which order is correct is measurable rather than arguable — probe the chain as a single candidate, as described [above](#measure-the-candidates-before-classifying), and read off which fields each ordering leaves unwritten.
 
 After configuring a `FixtureMonkey`, sample one instance of each type and assert that the pins landed. A dropped pin is silent, so this throwaway check is the cheapest way to find it:
 
