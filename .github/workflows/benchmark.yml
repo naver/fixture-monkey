@@ -27,7 +27,7 @@ jobs:
         with:
           arguments: :fixture-monkey-benchmarks:${{ matrix.benchmark-module }}:jmh -Pjmh.quick
       - name: Upload benchmark results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: benchmark-results-${{ matrix.benchmark-module }}
           path: ./fixture-monkey-benchmarks/${{ matrix.benchmark-module }}/build/results/jmh/results.csv
