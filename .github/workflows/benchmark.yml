@@ -21,7 +21,7 @@ jobs:
           - 'fixture-monkey-benchmark'
           - 'fixture-monkey-benchmark-kotlin'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Execute benchmark for ${{ matrix.benchmark-module }}
         uses: gradle/gradle-build-action@v3.5.0
         with:
