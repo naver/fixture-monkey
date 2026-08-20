@@ -28,7 +28,7 @@ Fixture Monkey에서 테스트 데이터를 설정하는 방법은 크게 두 �
 ```java
 // 옵션 사용 - 모든 Product 인스턴스에 적용
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .defaultNotNull(true)  // 모든 필드를 non-null로 설정
+    .defaultNotNull(true)  // null 가능으로 선언된 프로퍼티를 제외하면 null 없음
     .register(Product.class, fm -> fm.giveMeBuilder(Product.class)
         .size("items", 3))  // items는 항상 3개
     .build();

@@ -31,7 +31,7 @@ Example:
 ```java
 // Using options - applies to all Product instances
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .defaultNotNull(true)  // Set all fields to non-null
+    .defaultNotNull(true)  // No nulls except where a property is declared nullable
     .register(Product.class, fm -> fm.giveMeBuilder(Product.class)
         .size("items", 3))  // items always has 3 elements
     .build();

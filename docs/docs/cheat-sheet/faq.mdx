@@ -140,7 +140,7 @@ val product = fixtureMonkey.giveMeBuilder<Product>()
 
 ### How do I handle null values?
 
-You can control null probability using the `nullInject` option:
+You can control null generation with the `defaultNotNull` and `defaultNullInjectGenerator` options:
 
 
 <Tabs groupId="language">
@@ -149,12 +149,24 @@ You can control null probability using the `nullInject` option:
 ```java
 // Create a FixtureMonkey with no null values
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.0) // Set null probability to 0
+    .defaultNotNull(true) // Non-null unless a property is declared nullable
+    .build();
+
+// Create a FixtureMonkey with no null values at all, @Nullable properties included
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .defaultNullInjectGenerator(context -> 0.0)
     .build();
 
 // Create a FixtureMonkey with 50% null probability
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.5) // Set null probability to 50%
+    .defaultNullInjectGenerator(new DefaultNullInjectGenerator(
+        0.5,                                              // null probability
+        false,                                            // nullableContainer
+        false,                                            // defaultNotNull
+        false,                                            // nullableElement
+        new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
+        new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
+    ))
     .build();
 
 // Set a specific field to null
@@ -169,12 +181,26 @@ Person person = fixtureMonkey.giveMeBuilder(Person.class)
 ```kotlin
 // Create a FixtureMonkey with no null values
 val fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.0) // Set null probability to 0
+    .defaultNotNull(true) // Non-null unless a property is declared nullable
+    .build()
+
+// Create a FixtureMonkey with no null values at all, nullable types such as String? included
+val fixtureMonkey = FixtureMonkey.builder()
+    .defaultNullInjectGenerator { 0.0 }
     .build()
 
 // Create a FixtureMonkey with 50% null probability
 val fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.5) // Set null probability to 50%
+    .defaultNullInjectGenerator(
+        DefaultNullInjectGenerator(
+            0.5,                                        // null probability
+            false,                                      // nullableContainer
+            false,                                      // defaultNotNull
+            false,                                      // nullableElement
+            HashSet(DEFAULT_NULLABLE_ANNOTATION_TYPES),
+            HashSet(DEFAULT_NOTNULL_ANNOTATION_TYPES)
+        )
+    )
     .build()
 
 // Set a specific field to null
@@ -186,6 +212,7 @@ val person = fixtureMonkey.giveMeBuilder<Person>()
 </TabItem>
 </Tabs>
 
+`defaultNotNull(true)` leaves a property that declares itself nullable alone - a Java `@Nullable` annotation or a Kotlin type such as `String?` - so it is still null about 20% of the time. See [Default NotNull Setting](../fixture-monkey-options/essential-options-for-beginners#default-notnull-setting).
 
 ### How do I make my tests reproducible?
 

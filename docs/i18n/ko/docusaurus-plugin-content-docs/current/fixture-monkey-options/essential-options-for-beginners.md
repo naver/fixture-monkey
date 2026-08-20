@@ -21,7 +21,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 ### 기본 NotNull 설정
 
-기본적으로 Fixture Monkey는 일부 필드에 대해 `null` 값을 생성할 수 있습니다. 모든 필드에 null이 아닌 값을 원한다면:
+기본적으로 Fixture Monkey는 일부 필드에 대해 `null` 값을 생성할 수 있습니다. 선언 자체가 null을 허용한다고 밝히지 않은 프로퍼티를 null이 아닌 값으로 만들려면:
 
 ```java
 .defaultNotNull(true)
@@ -31,7 +31,18 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 **기본값**: `false` - 이 설정이 없으면 Fixture Monkey는 `@NotNull` 어노테이션이 표시되지 않은 필드에 대해 null 값을 생성할 수 있습니다.
 
-**사용 시기:** NullPointerException을 방지하기 위해 모든 필드가 null이 아닌 값을 가지도록 할 때 사용합니다.
+**사용 시기:** 명시적으로 null 가능하다고 선언된 프로퍼티를 제외하고 테스트 객체가 null이 아닌 값을 가지도록 할 때 사용합니다.
+
+:::warning
+`defaultNotNull(true)`은 타입이 nullability를 밝히지 않은 프로퍼티만 결정합니다. 스스로 null 가능하다고 선언한 프로퍼티는 이 옵션을 켜도 기본 null 확률(약 20%)을 유지합니다:
+
+- `@Nullable` 어노테이션이 붙은 Java 프로퍼티 - 기본 목록의 모든 이름이 해당됩니다: `javax.annotation`, `jakarta.annotation`, `org.springframework.lang`, `org.checkerframework.checker.nullness.qual`, `org.jspecify.annotations`, `org.eclipse.jgit.annotations`, `org.jmlspecs.annotation`
+- `String?`과 같은 Kotlin nullable 타입
+
+`@NotNull`이나 `@NonNull` 어노테이션은 둘보다 우선하므로, 해당 어노테이션이 붙은 프로퍼티는 절대 null이 되지 않습니다.
+
+이런 프로퍼티를 null이 아니게 만들려면 테스트에서 `setNotNull`(Kotlin은 `setNotNullExp`)을 호출하거나, null 확률을 전역으로 바꾸면 됩니다 - [사용자 정의 Null 확률](#사용자-정의-null-확률)을 참조하세요.
+:::
 
 ### Nullable 컨테이너
 
@@ -195,6 +206,26 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     )
     .build();
 ```
+
+위에서 설명한 것처럼 `@Nullable` 어노테이션은 `defaultNotNull(true)`을 덮어씁니다. 어노테이션이 프로퍼티를 null 가능으로 표시하지 못하게 하려면, nullable 어노테이션 집합을 비운 `DefaultNullInjectGenerator`를 넘기고 not-null 집합은 유지해 `@NotNull`이 계속 존중되도록 합니다:
+
+```java
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .defaultNullInjectGenerator(new DefaultNullInjectGenerator(
+        DEFAULT_NULL_INJECT,
+        false,                                           // nullableContainer
+        true,                                            // defaultNotNull
+        false,                                           // nullableElement
+        new HashSet<>(),                                 // 어떤 어노테이션도 null 가능으로 표시하지 않음
+        new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)  // @NotNull은 계속 non-null을 강제
+    ))
+    .build();
+```
+
+이 방법은 Java 어노테이션에만 적용됩니다. `String?`과 같은 Kotlin nullable 타입은 어노테이션이 아니라 선언 자체에서 읽으므로 여기서는 여전히 null 가능한 상태로 남습니다 - 빌더에서 `setNotNullExp`를 사용하거나, 모든 null을 없애려면 `defaultNullInjectGenerator(context -> 0.0)`을 사용하세요.
 
 **기본값**: 기본적으로 null 생성 확률은 프로퍼티의 어노테이션에 의해 결정되며, 일반적으로 `@NotNull`이 있는 필드는 0, 그렇지 않은 경우 0이 아닌 값입니다.
 

@@ -21,7 +21,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 ### Default NotNull Setting
 
-By default, Fixture Monkey can generate `null` values for some fields. To have all fields with non-null values:
+By default, Fixture Monkey can generate `null` values for some fields. To make properties non-null unless their own declaration says they may be absent:
 
 ```java
 .defaultNotNull(true)
@@ -31,7 +31,18 @@ This is one of the most useful options to start with as it helps prevent `NullPo
 
 **Default value**: `false` - Without this setting, Fixture Monkey can generate null values for fields not marked with `@NotNull` annotation.
 
-**When to use:** When you want to ensure all fields are non-null to avoid NullPointerExceptions.
+**When to use:** When you want test objects to be non-null except where a property is explicitly declared nullable.
+
+:::warning
+`defaultNotNull(true)` decides only the properties whose nullability the type leaves unstated. A property that declares itself nullable keeps the default null probability - about 20% - with the option on:
+
+- a Java property annotated `@Nullable`, from any name in the default list: `javax.annotation`, `jakarta.annotation`, `org.springframework.lang`, `org.checkerframework.checker.nullness.qual`, `org.jspecify.annotations`, `org.eclipse.jgit.annotations`, `org.jmlspecs.annotation`
+- a Kotlin nullable type such as `String?`
+
+A `@NotNull` or `@NonNull` annotation takes priority over both, so a property carrying one is never null.
+
+To make such a property non-null, call `setNotNull` (`setNotNullExp` in Kotlin) where a test needs it, or change the null probability globally - see [Custom Null Probability](#custom-null-probability).
+:::
 
 ### Nullable Containers
 
@@ -195,6 +206,26 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     )
     .build();
 ```
+
+A `@Nullable` annotation overrides `defaultNotNull(true)`, as described above. To stop annotations from marking properties nullable at all, pass a `DefaultNullInjectGenerator` whose nullable-annotation set is empty, keeping the not-null set so `@NotNull` is still honoured:
+
+```java
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
+
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .defaultNullInjectGenerator(new DefaultNullInjectGenerator(
+        DEFAULT_NULL_INJECT,
+        false,                                           // nullableContainer
+        true,                                            // defaultNotNull
+        false,                                           // nullableElement
+        new HashSet<>(),                                 // no annotation marks a property nullable
+        new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)  // @NotNull still forces non-null
+    ))
+    .build();
+```
+
+This covers Java annotations only. A Kotlin nullable type such as `String?` is read from the declaration itself rather than from an annotation, so it stays nullable here - use `setNotNullExp` on the builder, or `defaultNullInjectGenerator(context -> 0.0)` to remove every null.
 
 **Default value**: By default, null generation probability is determined by the property's annotations, typically 0 for fields with `@NotNull` and a non-zero value otherwise.
 

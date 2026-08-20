@@ -354,7 +354,7 @@ fun testOrderWithSpecialDiscount() {
 // Define common configurations
 public class TestFixtures {
     public static final FixtureMonkey TEST_FIXTURE_MONKEY = FixtureMonkey.builder()
-        .nullInject(0.0)  // No null values
+        .defaultNotNull(true)  // Non-null unless a property is declared nullable
         .build();
         
     public static ArbitraryBuilder<User> validUser() {
@@ -382,7 +382,7 @@ void testUserRegistration() {
 // Define common configurations
 object TestFixtures {
     val TEST_FIXTURE_MONKEY = FixtureMonkey.builder()
-        .nullInject(0.0)  // No null values
+        .defaultNotNull(true)  // Non-null unless a property is declared nullable
         .build()
         
     fun validUser(): ArbitraryBuilder<User> {

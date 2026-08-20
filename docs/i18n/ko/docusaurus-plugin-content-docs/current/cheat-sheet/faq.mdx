@@ -140,7 +140,7 @@ val product = fixtureMonkey.giveMeBuilder<Product>()
 
 ### null 값은 어떻게 처리하나요?
 
-`nullInject` 옵션을 사용하여 null 확률을 제어할 수 있습니다:
+`defaultNotNull`과 `defaultNullInjectGenerator` 옵션으로 null 생성을 제어할 수 있습니다:
 
 
 <Tabs groupId="language">
@@ -149,12 +149,24 @@ val product = fixtureMonkey.giveMeBuilder<Product>()
 ```java
 // null 값이 없는 FixtureMonkey 생성
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.0) // null 확률을 0으로 설정
+    .defaultNotNull(true) // null 가능으로 선언되지 않은 프로퍼티는 non-null
+    .build();
+
+// @Nullable 프로퍼티까지 포함해 null을 아예 만들지 않는 FixtureMonkey 생성
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .defaultNullInjectGenerator(context -> 0.0)
     .build();
 
 // null 확률이 50%인 FixtureMonkey 생성
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.5) // null 확률을 50%로 설정
+    .defaultNullInjectGenerator(new DefaultNullInjectGenerator(
+        0.5,                                              // null 확률
+        false,                                            // nullableContainer
+        false,                                            // defaultNotNull
+        false,                                            // nullableElement
+        new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
+        new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
+    ))
     .build();
 
 // 특정 필드를 null로 설정
@@ -169,12 +181,26 @@ Person person = fixtureMonkey.giveMeBuilder(Person.class)
 ```kotlin
 // null 값이 없는 FixtureMonkey 생성
 val fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.0) // null 확률을 0으로 설정
+    .defaultNotNull(true) // null 가능으로 선언되지 않은 프로퍼티는 non-null
+    .build()
+
+// String? 같은 nullable 타입까지 포함해 null을 아예 만들지 않는 FixtureMonkey 생성
+val fixtureMonkey = FixtureMonkey.builder()
+    .defaultNullInjectGenerator { 0.0 }
     .build()
 
 // null 확률이 50%인 FixtureMonkey 생성
 val fixtureMonkey = FixtureMonkey.builder()
-    .nullInject(0.5) // null 확률을 50%로 설정
+    .defaultNullInjectGenerator(
+        DefaultNullInjectGenerator(
+            0.5,                                        // null 확률
+            false,                                      // nullableContainer
+            false,                                      // defaultNotNull
+            false,                                      // nullableElement
+            HashSet(DEFAULT_NULLABLE_ANNOTATION_TYPES),
+            HashSet(DEFAULT_NOTNULL_ANNOTATION_TYPES)
+        )
+    )
     .build()
 
 // 특정 필드를 null로 설정
@@ -186,6 +212,7 @@ val person = fixtureMonkey.giveMeBuilder<Person>()
 </TabItem>
 </Tabs>
 
+`defaultNotNull(true)`은 스스로 null 가능하다고 선언한 프로퍼티는 건드리지 않습니다 - Java의 `@Nullable` 어노테이션이나 Kotlin의 `String?` 같은 타입이 여기 해당하며, 여전히 약 20% 확률로 null이 됩니다. [기본 NotNull 설정](../fixture-monkey-options/essential-options-for-beginners#기본-notnull-설정)을 참조하세요.
 
 ### 테스트를 재현 가능하게 만들려면 어떻게 해야 하나요?
 
