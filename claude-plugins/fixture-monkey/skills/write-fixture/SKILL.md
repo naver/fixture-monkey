@@ -24,6 +24,7 @@ That holds even when changing them would be easier:
 | Add `@ConstructorProperties`, a no-arg constructor, or a setter so the type generates | Choose a different introspector, or `instantiate` a specific constructor |
 | Relax a validation annotation that keeps rejecting samples | Pin the property to a valid value, or narrow the `Arbitrary` |
 | Widen a field's visibility to reach it | Reach it through the constructor or an existing accessor |
+| Remove or weaken a `@Nullable` so `defaultNotNull(true)` reaches the field | Leave the annotation alone: `setNotNull` the property, or empty the null-inject generator's nullable-annotation set — see *Nullability comes first* |
 | "Fix" a bug the new test just exposed | Report it and leave the failing test — see step 6 |
 
 If a test genuinely cannot be written without a production change, stop and say so, naming the change and why it is needed. Let the user decide. A production edit smuggled in with a test is the one thing a reviewer will not be looking for.
@@ -157,6 +158,37 @@ So before pinning anything else: **any field the code under test dereferences mu
 | The whole instance | `.defaultNotNull(true)` on the builder |
 | One type, everywhere | `.pushAssignableTypeNullInjectGenerator(Project.class, context -> 0.0d)` |
 | One property, one test | `setNotNull(selector)` |
+
+**`defaultNotNull(true)` only decides what the type left unsaid.** Declared nullability outranks it, and nothing warns you when it loses:
+
+| The property is | Under `defaultNotNull(true)` |
+| :--- | :--- |
+| a Java field with no nullability annotation | never null |
+| a Java field annotated `@Nullable` | **null 20% of the time, unchanged** |
+| a Java field annotated `@NotNull` / `@NonNull` | never null — a not-null annotation also outranks a `@Nullable` on the same property |
+| Kotlin `String?` | **null 20% of the time, unchanged** |
+| Kotlin `String`, or a primitive | never null |
+
+Highest wins: `@NotNull` / `@NonNull` → `@Nullable` or Kotlin `?` → `defaultNotNull(true)` → the 0.2 default. So the annotation that documents "this may be absent" is precisely what keeps the flakiness, and `@Nullable` here means any name in the default list — `javax.annotation`, `jakarta.annotation`, `org.springframework.lang`, `org.checkerframework.checker.nullness.qual`, `org.jspecify.annotations`, `org.eclipse.jgit.annotations`, `org.jmlspecs.annotation`.
+
+The annotation is production code, so it stays. Fix it on the fixture side:
+
+| Reach | How |
+| :--- | :--- |
+| One property, one test | `setNotNull(selector)` — outranks the annotation |
+| Every `@Nullable` in the instance, still honouring `@NotNull` | a `DefaultNullInjectGenerator` whose nullable-annotation set is empty, so nothing flips a property back to nullable and `defaultNotNull` decides |
+
+```java
+// DEFAULT_NULL_INJECT, DEFAULT_NOTNULL_ANNOTATION_TYPES: com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator
+.defaultNullInjectGenerator(new DefaultNullInjectGenerator(
+    DEFAULT_NULL_INJECT, false, true, false,
+    new HashSet<>(),                                     // no @Nullable is recognised
+    new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)))    // @NotNull still forces non-null
+```
+
+`defaultNullInjectGenerator(context -> 0.0d)` is the blunt version: no property is ever null, including one a case wants absent.
+
+**This changed inside 1.1.x.** A `TYPE_USE`-only annotation — `org.jspecify.annotations.Nullable`, `org.checkerframework.checker.nullness.qual.Nullable` — was invisible to generation before 1.1.15, and jspecify joined the default list only in 1.1.16. Null counts per 1000 samples for a `@Nullable`-annotated field under `defaultNotNull(true)`: on 1.1.11 jspecify 0 and checker 0, on 1.1.15 jspecify 0 and checker 187, from 1.1.16 both about 200. A declaration annotation such as `javax.annotation.Nullable` was already 20% on 1.1.11. So an upgrade across that boundary makes a fixture start nulling a field with no change on either side — check the version before concluding the fixture is wrong.
 
 `defaultNotNull(true)` has a cost: **the entire object graph gets built**, including nested composites the test never touches. That is generation time, and it is a hard failure if any of those types cannot be constructed. Exclude them rather than giving up on the option:
 
@@ -374,6 +406,7 @@ These are what make narrow pinning pay off:
 | Configuration the outcome depends on hidden in a shared holder | Declare the `FixtureMonkey` in the test class |
 | Restating a production validation annotation as an `Arbitrary` in the test | Add the validation plugin and let the annotation drive generation |
 | `setPostCondition` to filter a domain rule the type always obeys | `register` the type, so no test repeats it |
+| Trusting `defaultNotNull(true)` to cover a `@Nullable` or Kotlin `?` property | It does not — `setNotNull` it, or empty the generator's nullable-annotation set |
 | Retyping a fixture's literal into a stub or assertion | Read it off the sampled object |
 | `get(35)` against a fixed-size result | `getLast()` or `size() - 1` |
 
