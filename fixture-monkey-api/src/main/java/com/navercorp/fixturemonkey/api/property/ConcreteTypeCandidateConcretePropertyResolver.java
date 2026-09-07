@@ -55,15 +55,9 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 	public List<Property> resolve(Property property) {
 		List<? extends JvmType> typeVariables = property.getJvmType().getTypeVariables();
 
-		if (!typeVariables.isEmpty()) {
-			return concreteTypes.stream()
-				.map(it -> new ReflectiveJvmType(it, typeVariables, property.getAnnotations()))
-				.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
-				.collect(Collectors.toList());
-		}
-
 		return concreteTypes.stream()
-			.map(PropertyUtils::toProperty)
+			.map(it -> new ReflectiveJvmType(it, typeVariables, property.getAnnotations()))
+			.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
 			.collect(Collectors.toList());
 	}
 }
