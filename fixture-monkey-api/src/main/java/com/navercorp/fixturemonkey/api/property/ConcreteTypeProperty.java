@@ -64,6 +64,12 @@ public final class ConcreteTypeProperty implements Property {
 		return Collections.unmodifiableList(concatAnnotations);
 	}
 
+	@Nullable
+	@Override
+	public Boolean isNullable() {
+		return abstractTypeProperty.isNullable();
+	}
+
 	@Override
 	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
