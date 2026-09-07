@@ -21,6 +21,7 @@ package com.navercorp.objectfarm.api.node;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
@@ -53,13 +54,14 @@ public final class JavaArrayElementNodeGenerator implements JvmContainerNodeGene
 	}
 
 	@Override
+	@SuppressWarnings("argument")
 	public List<JvmNode> generateContainerElements(
 		JvmNode containerNode,
 		JvmNodeContext context,
 		ContainerSizeResolver sizeResolver
 	) {
 		JvmType containerType = containerNode.getConcreteType();
-		Class<?> componentType = containerType.getRawType().getComponentType();
+		Class<?> componentType = Objects.requireNonNull(containerType.getRawType().getComponentType());
 
 		// Preserve generic type variables from the container type
 		// For GenericImplementation<String>[], the type variables [String] should be preserved

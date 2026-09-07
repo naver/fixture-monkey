@@ -35,7 +35,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * <p>
  * Combines {@link FieldExtractor} (for POJO field extraction) and
  * {@link ContainerDetector} (for container detection and sizing)
- * to produce a flat {@code Map<PathExpression, Object>} representing
+ * to produce a flat {@code Map<PathExpression, @Nullable Object>} representing
  * every reachable value in the object graph.
  * <p>
  * Uses identity-based visited tracking to safely handle circular references
@@ -67,8 +67,8 @@ public final class ObjectValueExtractor {
 	 * @param basePath the base path for this object (e.g., {@code PathExpression.root()} for "$")
 	 * @return a flat map of path→value for every reachable node in the object graph
 	 */
-	public Map<PathExpression, Object> extract(@Nullable Object value, PathExpression basePath) {
-		Map<PathExpression, Object> result = new LinkedHashMap<>();
+	public Map<PathExpression, @Nullable Object> extract(@Nullable Object value, PathExpression basePath) {
+		Map<PathExpression, @Nullable Object> result = new LinkedHashMap<>();
 		Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
 		extractInternal(value, basePath, result, visited);
 		return result;
@@ -77,7 +77,7 @@ public final class ObjectValueExtractor {
 	private void extractInternal(
 		@Nullable Object value,
 		PathExpression basePath,
-		Map<PathExpression, Object> result,
+		Map<PathExpression, @Nullable Object> result,
 		Set<Object> visited
 	) {
 		if (value == null) {
@@ -94,7 +94,7 @@ public final class ObjectValueExtractor {
 	private void extractObjectFields(
 		Object value,
 		PathExpression basePath,
-		Map<PathExpression, Object> result,
+		Map<PathExpression, @Nullable Object> result,
 		Set<Object> visited
 	) {
 		if (!visited.add(value)) {
@@ -121,7 +121,7 @@ public final class ObjectValueExtractor {
 	private void extractContainer(
 		Object container,
 		PathExpression basePath,
-		Map<PathExpression, Object> result,
+		Map<PathExpression, @Nullable Object> result,
 		Set<Object> visited
 	) {
 		if (container instanceof Map) {
@@ -136,7 +136,7 @@ public final class ObjectValueExtractor {
 	private void extractCollection(
 		Collection<?> collection,
 		PathExpression basePath,
-		Map<PathExpression, Object> result,
+		Map<PathExpression, @Nullable Object> result,
 		Set<Object> visited
 	) {
 		int index = 0;
@@ -153,7 +153,7 @@ public final class ObjectValueExtractor {
 	private void extractArray(
 		Object array,
 		PathExpression basePath,
-		Map<PathExpression, Object> result,
+		Map<PathExpression, @Nullable Object> result,
 		Set<Object> visited
 	) {
 		int length = Array.getLength(array);
@@ -167,7 +167,7 @@ public final class ObjectValueExtractor {
 		}
 	}
 
-	private void extractMap(Map<?, ?> map, PathExpression basePath, Map<PathExpression, Object> result) {
+	private void extractMap(Map<?, ?> map, PathExpression basePath, Map<PathExpression, @Nullable Object> result) {
 		int index = 0;
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
 			PathExpression entryPath = basePath.index(index);

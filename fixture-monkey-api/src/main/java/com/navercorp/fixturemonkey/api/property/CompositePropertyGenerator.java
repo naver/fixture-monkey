@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -50,6 +51,7 @@ public final class CompositePropertyGenerator implements PropertyGenerator {
 		this.propertyGenerators = propertyGenerators;
 	}
 
+	@SuppressWarnings("argument")
 	public List<Property> generateChildProperties(Property property) {
 		Map<String, List<Property>> propertyListsByPropertyName = new HashMap<>();
 
@@ -60,8 +62,10 @@ public final class CompositePropertyGenerator implements PropertyGenerator {
 				.collect(Collectors.toList());
 
 			for (Property generatedProperty : generatedProperties) {
-				List<Property> properties =
-					propertyListsByPropertyName.computeIfAbsent(generatedProperty.getName(), name -> new ArrayList<>());
+				List<Property> properties = propertyListsByPropertyName.computeIfAbsent(
+					Objects.requireNonNull(generatedProperty.getName()),
+					name -> new ArrayList<>()
+				);
 
 				properties.add(generatedProperty);
 			}

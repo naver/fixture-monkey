@@ -155,9 +155,9 @@ final class ValueDecomposer {
 		Map<PathExpression, ValueCandidate> valuesToPut,
 		ValueOrder parentOrder
 	) {
-		Map<PathExpression, Object> extracted = valueExtractor.extract(value, basePath);
+		Map<PathExpression, @Nullable Object> extracted = valueExtractor.extract(value, basePath);
 
-		for (Map.Entry<PathExpression, Object> entry : extracted.entrySet()) {
+		for (Map.Entry<PathExpression, @Nullable Object> entry : extracted.entrySet()) {
 			PathExpression fieldPath = entry.getKey();
 			Object fieldValue = entry.getValue();
 
@@ -188,9 +188,9 @@ final class ValueDecomposer {
 	 * in the tree than the object's actual field value.
 	 */
 	boolean hasContainerFieldExpandedInTree(Object value, PathExpression basePath) {
-		Map<PathExpression, Object> extracted = valueExtractor.extract(value, basePath);
+		Map<PathExpression, @Nullable Object> extracted = valueExtractor.extract(value, basePath);
 
-		for (Map.Entry<PathExpression, Object> entry : extracted.entrySet()) {
+		for (Map.Entry<PathExpression, @Nullable Object> entry : extracted.entrySet()) {
 			Object fieldValue = entry.getValue();
 			if (fieldValue != null && containerDetector.isContainer(fieldValue)) {
 				JvmNode treeNode = nodeTree.resolve(entry.getKey().toExpression());
@@ -300,11 +300,11 @@ final class ValueDecomposer {
 			return;
 		}
 
-		Map<PathExpression, Object> extracted = valueExtractor.extract(container, basePath);
+		Map<PathExpression, @Nullable Object> extracted = valueExtractor.extract(container, basePath);
 
 		Set<PathExpression> skippedPrefixes = new HashSet<>();
 
-		for (Map.Entry<PathExpression, Object> entry : extracted.entrySet()) {
+		for (Map.Entry<PathExpression, @Nullable Object> entry : extracted.entrySet()) {
 			PathExpression path = entry.getKey();
 			Object value = entry.getValue();
 

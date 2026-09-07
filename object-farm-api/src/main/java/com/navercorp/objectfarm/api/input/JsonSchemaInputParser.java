@@ -179,6 +179,7 @@ public final class JsonSchemaInputParser implements TypeInputParser {
 			this.pos = 0;
 		}
 
+		@Nullable
 		Object parseValue() {
 			skipWhitespace();
 			if (pos >= input.length()) {
@@ -203,8 +204,8 @@ public final class JsonSchemaInputParser implements TypeInputParser {
 			}
 		}
 
-		private Map<String, Object> parseObject() {
-			Map<String, Object> result = new HashMap<>();
+		private Map<String, @Nullable Object> parseObject() {
+			Map<String, @Nullable Object> result = new HashMap<>();
 			expect('{');
 			skipWhitespace();
 
@@ -239,8 +240,8 @@ public final class JsonSchemaInputParser implements TypeInputParser {
 			return result;
 		}
 
-		private List<Object> parseArray() {
-			List<Object> result = new ArrayList<>();
+		private List<@Nullable Object> parseArray() {
+			List<@Nullable Object> result = new ArrayList<>();
 			expect('[');
 			skipWhitespace();
 

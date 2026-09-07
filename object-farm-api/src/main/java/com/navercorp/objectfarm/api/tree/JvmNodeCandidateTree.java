@@ -236,8 +236,8 @@ public final class JvmNodeCandidateTree {
 		}
 
 		// Try to use cached subtree if available
-		if (treeContext != null && treeContext.isCached(jvmType)) {
-			SubtreeSnapshot snapshot = treeContext.getCachedSubtree(jvmType);
+		SubtreeSnapshot snapshot = treeContext != null ? treeContext.getCachedSubtree(jvmType) : null;
+		if (snapshot != null) {
 			// Reuse cached subtree
 			List<JvmNodeCandidate> cachedChildren = snapshot.getChildren();
 			Map<JvmNodeCandidate, List<JvmNodeCandidate>> cachedParentChildMap = snapshot.getParentChildMap();

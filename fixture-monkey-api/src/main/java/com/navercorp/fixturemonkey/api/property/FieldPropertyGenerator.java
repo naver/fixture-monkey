@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 			.map(field -> {
 				Object constantValue = null;
 				try {
-					constantValue = field.get(null); // the underlying field is a static field, the argument is ignored.
+					constantValue = getStaticFieldValue(field);
 				} catch (IllegalAccessException ex) {
 					LOGGER.warn("Field {} is inaccessible.", field.getName(), ex);
 				}
@@ -89,5 +90,11 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 
 		return Stream.concat(arbitraryfieldStream, constantPropertyStream)
 			.collect(Collectors.toList());
+	}
+
+	@SuppressWarnings("argument")
+	@Nullable
+	private static Object getStaticFieldValue(Field field) throws IllegalAccessException {
+		return field.get(null); // the underlying field is a static field, the argument is ignored.
 	}
 }
