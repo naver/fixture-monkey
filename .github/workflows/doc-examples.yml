@@ -24,7 +24,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
-      - name: Run doc example tests
-        uses: gradle/gradle-build-action@v3.5.0
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
         with:
-          arguments: :fixture-monkey-tests:doc-examples:java-examples:test :fixture-monkey-tests:doc-examples:kotlin-examples:test
+          # MIT-licensed provider. The default 'enhanced' bundles the proprietary gradle-actions-caching component.
+          cache-provider: basic
+      - name: Run doc example tests
+        run: ./gradlew :fixture-monkey-tests:doc-examples:java-examples:test :fixture-monkey-tests:doc-examples:kotlin-examples:test
