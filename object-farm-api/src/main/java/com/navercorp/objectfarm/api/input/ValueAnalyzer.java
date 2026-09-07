@@ -288,7 +288,7 @@ public final class ValueAnalyzer {
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.Builder builder
+		ValueAnalysisResult.@Nullable Builder builder
 	) {
 		extractContainerSizeResolverInternal(
 			value,
@@ -307,7 +307,7 @@ public final class ValueAnalyzer {
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.Builder builder,
+		ValueAnalysisResult.@Nullable Builder builder,
 		boolean storeContainerElements
 	) {
 		OptionalInt containerSize = containerDetector.getContainerSize(value);
@@ -578,7 +578,7 @@ public final class ValueAnalyzer {
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.Builder builder
+		ValueAnalysisResult.@Nullable Builder builder
 	) {
 		extractFieldContainerSizeResolversInternal(
 			value,
@@ -597,7 +597,7 @@ public final class ValueAnalyzer {
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.Builder builder,
+		ValueAnalysisResult.@Nullable Builder builder,
 		boolean storeContainerElements
 	) {
 		Map<String, ExtractedField> extractedFields = fieldExtractor.extractFields(value, basePath);

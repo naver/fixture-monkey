@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -42,6 +43,7 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 		return property.getJvmType().getRawType().isArray();
 	}
 
+	@SuppressWarnings("argument")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
@@ -57,7 +59,7 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 					elements -> {
 						Class<?> rawType = property.getObjectProperty().getProperty().getJvmType().getRawType();
 						ArrayBuilder arrayBuilder = new ArrayBuilder(
-							rawType.getComponentType(),
+							Objects.requireNonNull(rawType.getComponentType()),
 							elements.size()
 						);
 						for (Object element : elements) {

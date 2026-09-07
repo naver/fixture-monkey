@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -737,12 +738,16 @@ public abstract class Types {
 	 * @param targetSize the desired size
 	 * @return the truncated array, or the original if already small enough
 	 */
+	@SuppressWarnings("argument")
 	public static Object truncateArray(Object array, int targetSize) {
 		int length = java.lang.reflect.Array.getLength(array);
 		if (length <= targetSize) {
 			return array;
 		}
-		Object newArray = java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), targetSize);
+		Object newArray = java.lang.reflect.Array.newInstance(
+			Objects.requireNonNull(array.getClass().getComponentType()),
+			targetSize
+		);
 		System.arraycopy(array, 0, newArray, 0, targetSize);
 		return newArray;
 	}
