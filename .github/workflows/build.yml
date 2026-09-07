@@ -16,7 +16,7 @@ jobs:
     name: Static analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -33,7 +33,7 @@ jobs:
       matrix:
         java: [ '8', '11', '17', '21' ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
