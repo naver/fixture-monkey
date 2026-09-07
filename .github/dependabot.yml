@@ -88,8 +88,10 @@ updates:
           - "minor"
           - "patch"
 
-  # GitHub Actions. Several workflows still pin actions/checkout@v2,
-  # actions/setup-java@v3 and the deprecated gradle/gradle-build-action.
+  # GitHub Actions. Every gradle/actions/setup-gradle step sets
+  # cache-provider: basic on purpose: from v6 the default 'enhanced' provider
+  # bundles the proprietary gradle-actions-caching component, and basic keeps
+  # the pipeline on MIT-licensed code. Keep that input when taking a bump.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
