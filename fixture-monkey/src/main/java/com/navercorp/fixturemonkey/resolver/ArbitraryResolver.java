@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -45,6 +47,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DefaultTreeMatcherMetadata;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
@@ -580,6 +583,10 @@ public final class ArbitraryResolver {
 				.flatMap(it -> doInferPossibleProperties(it, cycleDetector).stream())
 				.collect(Collectors.toSet());
 			collectedProperties.addAll(leafChildProperties);
+
+			for (Property candidate : resolveCandidateProperties(p)) {
+				collectedProperties.addAll(doInferPossibleProperties(candidate, cycleDetector));
+			}
 		});
 
 		return collectedProperties;
@@ -629,7 +636,30 @@ public final class ArbitraryResolver {
 			for (Property child : FIELD_PROPERTY_GENERATOR.generateChildProperties(property)) {
 				collectRelevantTypesFromProperty(child, types, visitedForFields);
 			}
+
+			for (Property candidate : resolveCandidateProperties(property)) {
+				collectRelevantTypesFromProperty(candidate, types, visitedForFields);
+			}
 		}
+	}
+
+	private List<Property> resolveCandidateProperties(Property property) {
+		Class<?> rawType = property.getJvmType().getRawType();
+		if (rawType.isPrimitive()
+			|| (!Modifier.isInterface(rawType.getModifiers()) && !Modifier.isAbstract(rawType.getModifiers()))) {
+			return Collections.emptyList();
+		}
+
+		return monkeyContext.getFixtureMonkeyOptions()
+			.getCandidateConcretePropertyResolvers()
+			.stream()
+			.filter(it -> it.match(property))
+			.map(MatcherOperator::getOperator)
+			.map(it -> it.resolve(property))
+			.filter(Objects::nonNull)
+			.flatMap(List::stream)
+			.filter(it -> it.getJvmType().getRawType() != rawType)
+			.collect(Collectors.toList());
 	}
 
 	/**
