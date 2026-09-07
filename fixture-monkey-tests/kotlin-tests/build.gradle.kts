@@ -13,6 +13,7 @@ dependencies {
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property.arbs)
+    testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.lombok)
     testAnnotationProcessor(libs.lombok)
 }
