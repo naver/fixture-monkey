@@ -53,6 +53,7 @@ jqwik-web = { module = "net.jqwik:jqwik-web", version.ref = "jqwik" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit-jupiter" }
 junit-platform-engine = { module = "org.junit.platform:junit-platform-engine", version.ref = "junit-engine" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-property-arbs = "io.kotest.extensions:kotest-property-arbs:2.1.2"

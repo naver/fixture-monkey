@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.FixedContainerSizeResolver;
-import com.navercorp.objectfarm.api.node.JavaInterfaceNodePromoter;
 import com.navercorp.objectfarm.api.node.JavaMapNodePromoter;
 import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
@@ -41,7 +40,6 @@ class PathResolverIntegrationTest {
 	private static final ContainerSizeResolver DEFAULT_SIZE_RESOLVER = new FixedContainerSizeResolver(2);
 
 	private static final List<JvmNodePromoter> PROMOTERS = Arrays.asList(
-		new JavaInterfaceNodePromoter(),
 		new JavaMapNodePromoter(),
 		new JavaObjectNodePromoter()
 	);

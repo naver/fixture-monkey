@@ -30,8 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.FixedContainerSizeResolver;
-import com.navercorp.objectfarm.api.node.JavaDefaultNodePromoter;
-import com.navercorp.objectfarm.api.node.JavaInterfaceNodePromoter;
 import com.navercorp.objectfarm.api.node.JavaMapNodePromoter;
 import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
@@ -392,14 +390,8 @@ class JvmNodeTreeTest {
 	@Test
 	void transformInterfaceFieldShouldGenerateChildrenAfterResolution() {
 		// given - Interface resolves to TestInterfaceImpl which has 'implField'
-		JavaNodeContext contextWithInterfaceResolver = JavaNodeContext.builder()
-			.seed(-1L)
-			.nodePromoters(Arrays.asList(
-				new JavaInterfaceNodePromoter(),
-				new JavaDefaultNodePromoter(PROMOTERS)
-			))
-			.containerSizeResolver(FIXED_SIZE_RESOLVER)
-			.interfaceResolver(type -> {
+		PathResolverContext resolvers = PathResolverContext.builder()
+			.addInterfaceResolver("$.interfaceField", type -> {
 				if (Types.isAssignable(TestInterface.class, type.getRawType())) {
 					return new ReflectiveJvmType(TestInterfaceImpl.class);
 				}
@@ -408,10 +400,14 @@ class JvmNodeTreeTest {
 			.build();
 
 		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
-			new ReflectiveJvmType(ClassWithInterfaceField.class), contextWithInterfaceResolver
+			new ReflectiveJvmType(ClassWithInterfaceField.class), CONTEXT
 		).build();
 
-		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(contextWithInterfaceResolver);
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(
+			CONTEXT,
+			new JvmNodeCandidateTreeContext(),
+			resolvers
+		);
 
 		// when
 		JvmNodeTree nodeTree = transformer.transform(candidateTree);

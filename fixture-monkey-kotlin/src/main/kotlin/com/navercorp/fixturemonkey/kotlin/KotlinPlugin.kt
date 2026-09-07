@@ -48,7 +48,7 @@ import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.generator.KotlinNullInjectGenerator
 import com.navercorp.fixturemonkey.kotlin.node.KotlinLeafTypeResolver
 import com.navercorp.fixturemonkey.kotlin.node.KotlinNodeCandidateGenerator
-import com.navercorp.fixturemonkey.kotlin.node.KotlinNodePromoters
+import com.navercorp.fixturemonkey.kotlin.node.KotlinNodePromoter
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.KotlinNullabilityUtils
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
@@ -148,7 +148,7 @@ class KotlinPlugin : Plugin, JvmTypeSystemPlugin {
     }
 
     override fun configure(typeSystem: JvmTypeSystem) {
-        typeSystem.nodePromoters(KotlinNodePromoters.all())
+        typeSystem.nodePromoters(listOf(KotlinNodePromoter()))
         typeSystem.leafTypeResolvers(listOf(KotlinLeafTypeResolver.INSTANCE))
         typeSystem.candidateGeneratorWrapper { delegate -> KotlinNodeCandidateGenerator(delegate) }
         typeSystem.inlinedValueResolver(KotlinValueClassResolver())

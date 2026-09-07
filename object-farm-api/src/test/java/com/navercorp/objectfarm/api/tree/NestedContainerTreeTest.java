@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.JavaDefaultNodePromoter;
-import com.navercorp.objectfarm.api.node.JavaInterfaceNodePromoter;
 import com.navercorp.objectfarm.api.node.JavaMapNodePromoter;
 import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
@@ -90,7 +89,6 @@ class NestedContainerTreeTest {
 		ContainerSizeResolver sizeResolver = containerType -> 1;
 
 		List<JvmNodePromoter> promoters = java.util.Arrays.asList(
-			new JavaInterfaceNodePromoter(),
 			new JavaMapNodePromoter(),
 			new JavaObjectNodePromoter()
 		);
