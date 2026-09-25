@@ -158,13 +158,13 @@ public final class InterfaceResolverConverter {
 		return createResolver(pathExpression, resolvedType);
 	}
 
-	private static boolean hasDefaultContainerResolver(Class<?> interfaceType) {
+	static boolean hasDefaultContainerResolver(Class<?> interfaceType) {
 		return Iterable.class.isAssignableFrom(interfaceType)
 			|| Collection.class.isAssignableFrom(interfaceType)
 			|| Map.class.isAssignableFrom(interfaceType);
 	}
 
-	private static boolean isInstantiable(Class<?> type) {
+	static boolean isInstantiable(Class<?> type) {
 		if (Modifier.isPublic(type.getModifiers())) {
 			return true;
 		}

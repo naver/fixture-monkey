@@ -28,6 +28,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.navercorp.objectfarm.api.tree.PathContainerSizeResolver;
+
 class ValueAnalyzerTest {
 
 	private final ValueAnalyzer analyzer = new ValueAnalyzer();
@@ -366,6 +368,27 @@ class ValueAnalyzerTest {
 		boolean hasValueResolver = result.getInterfaceResolvers().stream()
 			.anyMatch(r -> r.matches(com.navercorp.objectfarm.api.expression.PathExpression.of("$.value")));
 		then(hasValueResolver).isFalse();
+	}
+
+	@Test
+	void analyzeDecomposedNestedMapAddressesEntriesAsKeyAndValue() {
+		// given
+		Map<String, String> inner = new HashMap<>();
+		inner.put("ik", "iv");
+		Map<String, Map<String, String>> map = new HashMap<>();
+		map.put("k", inner);
+		ValueAnalyzer analyzer = new ValueAnalyzer();
+
+		// when
+		ValueAnalysisResult result = analyzer.analyzeDecomposed(map, "$");
+
+		// then
+		then(result.getValuesByPath()).containsEntry("$[0][key]", "k");
+		then(result.getValuesByPath()).containsEntry("$[0][value]", inner);
+		then(result.getContainerSizeResolvers())
+			.filteredOn(it -> it instanceof PathContainerSizeResolver)
+			.extracting(it -> ((PathContainerSizeResolver)it).getPattern().toExpression())
+			.contains("$", "$[0][value]");
 	}
 
 	// Test helper classes

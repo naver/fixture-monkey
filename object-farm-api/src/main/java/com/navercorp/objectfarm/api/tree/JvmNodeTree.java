@@ -303,32 +303,10 @@ public final class JvmNodeTree {
 			return;
 		}
 
-		// Handle JvmMapNode specially - children are key and value nodes
-		if (parent instanceof JvmMapNode) {
-			JvmMapNode mapNode = (JvmMapNode) parent;
-			JvmNode keyNode = mapNode.getKeyNode();
-			JvmNode valueNode = mapNode.getValueNode();
-
-			if (keyNode != null && children.contains(keyNode)) {
-				PathExpression keyPath = parentPath.key();
-				paths.put(keyNode, keyPath);
-				parents.put(keyNode, parent);
-				buildPathsRecursive(keyNode, keyPath, paths, parents);
-			}
-
-			if (valueNode != null && children.contains(valueNode)) {
-				PathExpression valuePath = parentPath.value();
-				paths.put(valueNode, valuePath);
-				parents.put(valueNode, parent);
-				buildPathsRecursive(valueNode, valuePath, paths, parents);
-			}
-			return;
-		}
-
-		// Handle JvmMapEntryNode specially - standalone Map.Entry with key and value nodes
-		// Use children directly (resolved nodes from expandMapKeyValue), not mapEntryNode.getKeyNode()/getValueNode()
+		// Handle JvmMapNode and JvmMapEntryNode specially - children are the key and value nodes.
+		// Use children directly (resolved nodes from expandMapKeyValue), not getKeyNode()/getValueNode(),
 		// because resolveNodeType may have returned different node instances
-		if (parent instanceof JvmMapEntryNode) {
+		if (parent instanceof JvmMapNode || parent instanceof JvmMapEntryNode) {
 			// By convention, children[0] is key node, children[1] is value node
 			if (children.size() >= 1) {
 				JvmNode keyNode = children.get(0);
@@ -378,22 +356,31 @@ public final class JvmNodeTree {
 			return findChildByIndex(current, ((IndexSelector) selector).getIndex());
 		} else if (selector instanceof KeySelector) {
 			if (current instanceof JvmMapNode) {
-				return ((JvmMapNode) current).getKeyNode();
+				return resolveMapChild(current, 0, ((JvmMapNode) current).getKeyNode());
 			}
 			if (current instanceof JvmMapEntryNode) {
-				return ((JvmMapEntryNode) current).getKeyNode();
+				return resolveMapChild(current, 0, ((JvmMapEntryNode) current).getKeyNode());
 			}
 			return null;
 		} else if (selector instanceof ValueSelector) {
 			if (current instanceof JvmMapNode) {
-				return ((JvmMapNode) current).getValueNode();
+				return resolveMapChild(current, 1, ((JvmMapNode) current).getValueNode());
 			}
 			if (current instanceof JvmMapEntryNode) {
-				return ((JvmMapEntryNode) current).getValueNode();
+				return resolveMapChild(current, 1, ((JvmMapEntryNode) current).getValueNode());
 			}
 			return null;
 		}
 		return null;
+	}
+
+	@Nullable
+	private JvmNode resolveMapChild(JvmNode mapLikeNode, int childIndex, @Nullable JvmNode template) {
+		List<JvmNode> children = parentChildMap.get(mapLikeNode);
+		if (children != null && children.size() > childIndex) {
+			return children.get(childIndex);
+		}
+		return template;
 	}
 
 	@Nullable
