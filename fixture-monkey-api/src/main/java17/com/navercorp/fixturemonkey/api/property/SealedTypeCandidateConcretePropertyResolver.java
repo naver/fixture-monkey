@@ -38,15 +38,11 @@ public final class SealedTypeCandidateConcretePropertyResolver implements Candid
 
 		List<? extends JvmType> typeVariables = property.getJvmType().getTypeVariables();
 
-		if (!typeVariables.isEmpty()) {
-			return permittedSubclasses
-				.stream()
-				.map(subclass -> new ReflectiveJvmType(subclass, typeVariables, property.getAnnotations()))
-				.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
-				.toList();
-		}
-
-		return permittedSubclasses.stream().map(PropertyUtils::toProperty).toList();
+		return permittedSubclasses
+			.stream()
+			.map(subclass -> new ReflectiveJvmType(subclass, typeVariables, property.getAnnotations()))
+			.map(jvmType -> (Property)new ConcreteTypeProperty(jvmType, property))
+			.toList();
 	}
 
 	private static Set<Class<?>> collectPermittedSubclasses(Class<?> type) {
