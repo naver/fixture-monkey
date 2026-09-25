@@ -71,11 +71,32 @@ public final class GenericTypeResolverConverter {
 
 		GenericTypeResolver genericTypeResolver = jvmType -> new ReflectiveJvmType(
 			jvmType.getRawType(),
-			typeVariables,
+			preferDeclaredContainerTypes(jvmType.getTypeVariables(), typeVariables),
 			jvmType.getAnnotations()
 		);
 
 		return new PathGenericTypeResolver(pattern, genericTypeResolver);
+	}
+
+	private static List<? extends JvmType> preferDeclaredContainerTypes(
+		List<? extends JvmType> declared,
+		List<? extends JvmType> inferred
+	) {
+		if (declared.size() != inferred.size()) {
+			return inferred;
+		}
+		List<JvmType> merged = new ArrayList<>(inferred.size());
+		for (int i = 0; i < inferred.size(); i++) {
+			JvmType inferredType = inferred.get(i);
+			JvmType declaredType = declared.get(i);
+			Class<?> inferredRaw = inferredType.getRawType();
+			Class<?> declaredRaw = declaredType.getRawType();
+			boolean keepDeclared = !InterfaceResolverConverter.isInstantiable(inferredRaw)
+				&& InterfaceResolverConverter.hasDefaultContainerResolver(declaredRaw)
+				&& declaredRaw.isAssignableFrom(inferredRaw);
+			merged.add(keepDeclared ? declaredType : inferredType);
+		}
+		return merged;
 	}
 
 	/**
