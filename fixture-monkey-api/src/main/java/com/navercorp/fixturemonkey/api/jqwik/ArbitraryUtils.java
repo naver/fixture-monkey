@@ -18,6 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.jqwik;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -31,16 +34,41 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 @SuppressWarnings("NullableProblems")
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public abstract class ArbitraryUtils {
+	private static final int MAX_CACHED_ARBITRARIES = 500;
+	private static final Map<Arbitrary<?>, Arbitrary<?>> THREAD_SAFE_ARBITRARIES =
+		new LinkedHashMap<Arbitrary<?>, Arbitrary<?>>(MAX_CACHED_ARBITRARIES, 0.75f, true) {
+			@Override
+			protected boolean removeEldestEntry(Map.Entry<Arbitrary<?>, Arbitrary<?>> eldest) {
+				return size() > MAX_CACHED_ARBITRARIES;
+			}
+		};
+
 	@SuppressWarnings("return")
 	public static <T> CombinableArbitrary<T> toCombinableArbitrary(Arbitrary<T> arbitrary) {
 		return CombinableArbitrary.from(LazyArbitrary.lazy(
 			() -> {
 				if (arbitrary != null) {
-					return newThreadSafeArbitrary(arbitrary).sample();
+					return threadSafeArbitraryOf(arbitrary).sample();
 				}
 				return null;
 			}
 		));
+	}
+
+	/**
+	 * Returns the same thread-safe wrapper for the same arbitrary, so jqwik, which caches generators by arbitrary,
+	 * reuses the wrapper's generator instead of building one for every value.
+	 */
+	@SuppressWarnings("unchecked")
+	private static <T> Arbitrary<T> threadSafeArbitraryOf(Arbitrary<T> arbitrary) {
+		synchronized (THREAD_SAFE_ARBITRARIES) {
+			Arbitrary<?> wrapper = THREAD_SAFE_ARBITRARIES.get(arbitrary);
+			if (wrapper == null) {
+				wrapper = newThreadSafeArbitrary(arbitrary);
+				THREAD_SAFE_ARBITRARIES.put(arbitrary, wrapper);
+			}
+			return (Arbitrary<T>)wrapper;
+		}
 	}
 
 	public static <T> Arbitrary<T> newThreadSafeArbitrary(Arbitrary<T> delegate) {
