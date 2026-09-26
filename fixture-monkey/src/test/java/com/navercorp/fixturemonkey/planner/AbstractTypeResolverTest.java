@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.planner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

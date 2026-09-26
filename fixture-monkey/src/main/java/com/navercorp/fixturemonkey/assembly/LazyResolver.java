@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.projection;
+package com.navercorp.fixturemonkey.assembly;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -26,6 +26,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.TypeCache;
+import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.objectfarm.api.expression.IndexSelector;
 import com.navercorp.objectfarm.api.expression.NameSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;

@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.customizer.LazyDirective;
 import com.navercorp.fixturemonkey.customizer.NullityDirective;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SetDirective;
-import com.navercorp.fixturemonkey.projection.LazyValueHolder;
+import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.type.JvmType;

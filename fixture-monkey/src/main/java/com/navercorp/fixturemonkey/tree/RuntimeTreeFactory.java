@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.planner;
+package com.navercorp.fixturemonkey.tree;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
