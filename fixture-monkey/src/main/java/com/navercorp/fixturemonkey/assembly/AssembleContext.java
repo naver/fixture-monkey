@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.projection;
+package com.navercorp.fixturemonkey.assembly;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,8 +38,8 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.option.InterfaceSelectionStrategy;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
-import com.navercorp.fixturemonkey.planner.RuntimeTreeFactory;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
+import com.navercorp.fixturemonkey.tree.RuntimeTreeFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;

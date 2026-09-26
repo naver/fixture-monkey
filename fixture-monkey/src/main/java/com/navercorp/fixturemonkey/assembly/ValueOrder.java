@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.projection;
+package com.navercorp.fixturemonkey.assembly;
 
 /**
  * Typed ordering for value candidates that encodes source priority.

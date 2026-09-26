@@ -23,7 +23,7 @@ import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
-import com.navercorp.fixturemonkey.projection.ValueProjection;
+import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 

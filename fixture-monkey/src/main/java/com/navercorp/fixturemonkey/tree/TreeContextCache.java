@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.planner;
+package com.navercorp.fixturemonkey.tree;
 
 import java.util.List;
 import java.util.Map;

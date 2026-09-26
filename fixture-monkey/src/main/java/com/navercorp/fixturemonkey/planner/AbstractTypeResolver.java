@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.planner;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;

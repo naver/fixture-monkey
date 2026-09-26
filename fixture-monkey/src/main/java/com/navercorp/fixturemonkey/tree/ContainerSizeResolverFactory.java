@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.planner;
+package com.navercorp.fixturemonkey.tree;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -46,17 +48,18 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * <p>Extracted from {@link AssemblyPlanner} to separate container size
  * resolution concerns from the main adapt orchestration logic.
  */
-final class ContainerSizeResolverFactory {
+@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+public final class ContainerSizeResolverFactory {
 	private static final int DEFAULT_MIN_CONTAINER_SIZE = 0;
 	private static final int DEFAULT_MAX_CONTAINER_SIZE = 3;
 
 	private final SeedState seedState;
 
-	ContainerSizeResolverFactory(SeedState seedState) {
+	public ContainerSizeResolverFactory(SeedState seedState) {
 		this.seedState = seedState;
 	}
 
-	void addAnalysisContainerSizeResolvers(
+	public void addAnalysisContainerSizeResolvers(
 		PathResolverContext.Builder builder,
 		AnalysisResult analysisResult,
 		List<Map.Entry<PathExpression, Integer>> wildcardSizeSequences
@@ -92,7 +95,7 @@ final class ContainerSizeResolverFactory {
 		}
 	}
 
-	void addTypedContainerSizeResolvers(
+	public void addTypedContainerSizeResolvers(
 		PathResolverContext.Builder builder,
 		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes
 	) {
@@ -176,7 +179,7 @@ final class ContainerSizeResolverFactory {
 	 * Uses a constant snapshot (sequence=0) so every resolve produces the same sizes.
 	 * Respects annotation-based size constraints (e.g., @Size) when options are available.
 	 */
-	ContainerSizeResolver createFixedContainerSizeResolver(@Nullable FixtureMonkeyOptions options) {
+	public ContainerSizeResolver createFixedContainerSizeResolver(@Nullable FixtureMonkeyOptions options) {
 		SeedSnapshot fixedSnapshot = seedState.snapshotAt(0);
 
 		return containerType -> {

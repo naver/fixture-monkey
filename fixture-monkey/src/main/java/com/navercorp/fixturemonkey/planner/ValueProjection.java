@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.projection;
+package com.navercorp.fixturemonkey.planner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +33,8 @@ import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.assembly.AssembleContext;
+import com.navercorp.fixturemonkey.assembly.ValueProjectionAssembler;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.projection.NodeProjection;

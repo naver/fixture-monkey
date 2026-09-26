@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tracing;
+package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,8 +35,11 @@ import com.navercorp.fixturemonkey.customizer.SetDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
-import com.navercorp.fixturemonkey.projection.LazyValueHolder;
-import com.navercorp.fixturemonkey.projection.ValueProjection;
+import com.navercorp.fixturemonkey.planner.LazyValueHolder;
+import com.navercorp.fixturemonkey.planner.ValueProjection;
+import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
+import com.navercorp.fixturemonkey.tracing.ResolutionTrace;
+import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;

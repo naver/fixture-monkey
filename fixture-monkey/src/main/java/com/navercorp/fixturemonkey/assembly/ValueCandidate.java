@@ -1,4 +1,4 @@
-package com.navercorp.fixturemonkey.projection;
+package com.navercorp.fixturemonkey.assembly;
 
 import org.jspecify.annotations.Nullable;
 

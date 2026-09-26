@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.projection;
+package com.navercorp.fixturemonkey.planner;
 
 import java.util.HashSet;
 import java.util.Set;

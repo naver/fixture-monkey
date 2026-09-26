@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.projection;
+package com.navercorp.fixturemonkey.assembly;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
@@ -32,6 +32,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
@@ -57,6 +59,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JavaNode;
@@ -71,12 +74,13 @@ import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.type.JvmType;
 
-final class ValueProjectionAssembler {
+@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+public final class ValueProjectionAssembler {
 	private final JvmNodeTree structure;
 	private final Map<PathExpression, @Nullable Object> valuesByPath;
 	private final AssembleContext context;
 
-	ValueProjectionAssembler(
+	public ValueProjectionAssembler(
 		JvmNodeTree structure,
 		Map<PathExpression, @Nullable Object> valuesByPath,
 		AssembleContext context
@@ -86,7 +90,7 @@ final class ValueProjectionAssembler {
 		this.context = context;
 	}
 
-	CombinableArbitrary<?> assemble() {
+	public CombinableArbitrary<?> assemble() {
 		JvmNode rootNode = structure.getRootNode();
 
 		Map<PathExpression, ValueCandidate> mergedCandidates = new HashMap<>();

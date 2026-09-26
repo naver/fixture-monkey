@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.planner;
+package com.navercorp.fixturemonkey.tree;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -93,7 +93,7 @@ public final class NodeContextFactory {
 	private final List<LeafTypeResolver> additionalLeafTypeResolvers;
 	private final @Nullable UnaryOperator<JvmNodeCandidateGenerator> candidateGeneratorWrapper;
 
-	NodeContextFactory(
+	public NodeContextFactory(
 		SeedState seedState,
 		ContainerSizeResolverFactory containerSizeResolverFactory,
 		List<JvmNodePromoter> additionalPromoters,
