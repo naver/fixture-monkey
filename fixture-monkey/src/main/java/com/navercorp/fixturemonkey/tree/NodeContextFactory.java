@@ -61,6 +61,7 @@ import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.node.LeafTypeResolver;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.node.SeedState;
 import com.navercorp.objectfarm.api.nodecandidate.JavaFieldNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
@@ -396,11 +397,19 @@ public final class NodeContextFactory {
 
 		@Override
 		public @Nullable JvmType resolve(JvmType type) {
-			List<JvmType> candidates = resolveAll(type);
+			return resolve(type, seedState.snapshotAt(0));
+		}
+
+		@Override
+		public @Nullable JvmType resolve(JvmType type, SeedSnapshot scope) {
+			List<JvmType> candidates = SeedSnapshot.runIn(
+				SeedPurpose.IMPLEMENTATION.resolverScopeIn(scope, type.hashCode()),
+				() -> resolveAll(type)
+			);
 			if (candidates.isEmpty()) {
 				return null;
 			}
-			Random typeRandom = seedState.snapshot().randomFor(type.hashCode());
+			Random typeRandom = SeedPurpose.IMPLEMENTATION.randomFor(scope, type.hashCode());
 			return candidates.get(typeRandom.nextInt(candidates.size()));
 		}
 

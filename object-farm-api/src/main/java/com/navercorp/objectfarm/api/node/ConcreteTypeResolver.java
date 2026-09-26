@@ -76,14 +76,34 @@ public final class ConcreteTypeResolver {
 		@Nullable InterfaceResolver pathInterfaceResolver,
 		@Nullable GenericTypeResolver pathGenericTypeResolver
 	) {
+		return resolve(type, pathInterfaceResolver, pathGenericTypeResolver, null);
+	}
+
+	/**
+	 * Resolves the type a node of the given type is built with, drawing the interface resolution from the seed scope
+	 * of the node, so the same node in the same sample resolves the same way however the tree was built.
+	 *
+	 * @param type                    the type to resolve
+	 * @param pathInterfaceResolver   the interface resolver for the path of the node, or null if none
+	 * @param pathGenericTypeResolver the generic type resolver for the path of the node, or null if none
+	 * @param scope                   the seed scope of the node, or null to resolve without one
+	 * @return the resolved type, or the given type itself when nothing is resolved
+	 */
+	public JvmType resolve(
+		JvmType type,
+		@Nullable InterfaceResolver pathInterfaceResolver,
+		@Nullable GenericTypeResolver pathGenericTypeResolver,
+		@Nullable SeedSnapshot scope
+	) {
 		Class<?> rawType = type.getRawType();
 		boolean isAbstractType =
 			Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers());
 		boolean isContainerType = context.isContainerType(type);
 
-		JvmType afterInterface = resolveInterfaceType(type, pathInterfaceResolver, isAbstractType, isContainerType);
+		JvmType afterInterface =
+			resolveInterfaceType(type, pathInterfaceResolver, isAbstractType, isContainerType, scope);
 		if (isInaccessibleContainerType(afterInterface)) {
-			afterInterface = resolveByNearestContainerSupertype(afterInterface);
+			afterInterface = resolveByNearestContainerSupertype(afterInterface, scope);
 		}
 		JvmType resolvedType = resolveGenericType(afterInterface, pathGenericTypeResolver);
 
@@ -97,17 +117,18 @@ public final class ConcreteTypeResolver {
 		JvmType type,
 		@Nullable InterfaceResolver pathBasedResolver,
 		boolean isAbstractType,
-		boolean isContainerType
+		boolean isContainerType,
+		@Nullable SeedSnapshot scope
 	) {
 		if (pathBasedResolver != null) {
-			JvmType resolved = pathBasedResolver.resolve(type);
+			JvmType resolved = resolveInterface(pathBasedResolver, type, scope);
 			if (resolved != null) {
 				return resolved;
 			}
-			return isContainerType ? resolveByDefault(type) : type;
+			return isContainerType ? resolveByDefault(type, scope) : type;
 		}
 		if (!isAbstractType || isContainerType) {
-			return resolveByDefault(type);
+			return resolveByDefault(type, scope);
 		}
 		return type;
 	}
@@ -116,7 +137,7 @@ public final class ConcreteTypeResolver {
 		return Types.isJdkInternalType(type.getRawType()) && context.isContainerType(type);
 	}
 
-	private JvmType resolveByNearestContainerSupertype(JvmType type) {
+	private JvmType resolveByNearestContainerSupertype(JvmType type, @Nullable SeedSnapshot scope) {
 		InterfaceResolver defaultResolver = context.getInterfaceResolver();
 		if (defaultResolver == null) {
 			return type;
@@ -139,7 +160,7 @@ public final class ConcreteTypeResolver {
 			if (!context.isContainerType(supertypeJvmType)) {
 				continue;
 			}
-			JvmType resolved = defaultResolver.resolve(supertypeJvmType);
+			JvmType resolved = resolveInterface(defaultResolver, supertypeJvmType, scope);
 			if (resolved != null && !Types.isJdkInternalType(resolved.getRawType())) {
 				return resolved;
 			}
@@ -158,13 +179,21 @@ public final class ConcreteTypeResolver {
 		return supertypes;
 	}
 
-	private JvmType resolveByDefault(JvmType type) {
+	private JvmType resolveByDefault(JvmType type, @Nullable SeedSnapshot scope) {
 		InterfaceResolver defaultResolver = context.getInterfaceResolver();
 		if (defaultResolver == null) {
 			return type;
 		}
-		JvmType resolved = defaultResolver.resolve(type);
+		JvmType resolved = resolveInterface(defaultResolver, type, scope);
 		return resolved != null ? resolved : type;
+	}
+
+	private static @Nullable JvmType resolveInterface(
+		InterfaceResolver resolver,
+		JvmType type,
+		@Nullable SeedSnapshot scope
+	) {
+		return scope != null ? resolver.resolve(type, scope) : resolver.resolve(type);
 	}
 
 	private JvmType resolveGenericType(JvmType type, @Nullable GenericTypeResolver pathBasedResolver) {

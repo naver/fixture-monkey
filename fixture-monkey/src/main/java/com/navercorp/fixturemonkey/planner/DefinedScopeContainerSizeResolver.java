@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.ScopeTies;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
@@ -35,7 +36,8 @@ import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 
 /**
  * Sizes a container a defined scope reaches: the path from a node the scope selects down to the container matches
- * the path the size was declared at, and the size of the highest {@link DirectivePrecedence} wins.
+ * the path the size was declared at, and the size of the highest {@link DirectivePrecedence} wins. Of the scopes of
+ * the same priority selecting the same node, only the one picked there sizes.
  * <p>
  * It is looked up after every size the root scope declared, so a container is sized here only when the root scope
  * declared no size reaching it.
@@ -43,10 +45,13 @@ import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<ContainerSizeResolver> {
 	private final List<ScopedSize> scopedSizes;
 	private final boolean dependsOnAncestors;
+	private final ScopeTies scopeTies;
 
 	DefinedScopeContainerSizeResolver(
-		List<Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>>> resolversLowestPrecedenceFirst
+		List<Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>>> resolversLowestPrecedenceFirst,
+		ScopeTies scopeTies
 	) {
+		this.scopeTies = scopeTies;
 		this.scopedSizes = new ArrayList<>();
 		int sequenceBase = 0;
 		for (Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>> entry
@@ -73,7 +78,7 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 	public @Nullable ContainerSizeResolver resolve(JvmNode containerNode, List<JvmNode> ancestors) {
 		List<JvmNode> nodes = new ArrayList<>(ancestors);
 		nodes.add(containerNode);
-		ScopeChain chain = ScopeChain.ofNodes(nodes, JvmNodePropertyFactory.ofChain(nodes));
+		ScopeChain chain = ScopeChain.ofNodes(nodes, JvmNodePropertyFactory.ofChain(nodes), scopeTies);
 		ScopedSize best = null;
 		int bestDepth = -1;
 		for (ScopedSize scopedSize : scopedSizes) {

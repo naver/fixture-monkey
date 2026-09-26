@@ -54,6 +54,7 @@ import com.navercorp.objectfarm.api.node.JvmMapNode;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
 import com.navercorp.objectfarm.api.nodecandidate.JvmMapEntryNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
@@ -88,6 +89,8 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * </pre>
  */
 public final class JvmNodeTreeTransformer {
+	private static final long CONTAINER_ELEMENTS_SCOPE_KEY = "container elements".hashCode();
+
 	private final JvmNodeContext context;
 	private final JvmNodeCandidateTreeContext treeContext;
 	private final PathResolverContext resolverContext;
@@ -347,7 +350,11 @@ public final class JvmNodeTreeTransformer {
 		PathExpression currentPath
 	) {
 		SizeResolution sizeResolution = resolveContainerSize(containerNode, ctx, currentPath);
-		List<JvmNodeCandidate> elementCandidates = generateContainerElements(containerNode, sizeResolution.resolver);
+		List<JvmNodeCandidate> elementCandidates = generateContainerElements(
+			containerNode,
+			scopedSizeResolver(sizeResolution.resolver, currentPath),
+			currentPath
+		);
 
 		resolverContext
 			.getResolutionListener()
@@ -476,7 +483,8 @@ public final class JvmNodeTreeTransformer {
 		JvmType resolvedType = concreteTypeResolver.resolve(
 			originalType,
 			pathInterfaceResolver,
-			pathGenericTypeResolver
+			pathGenericTypeResolver,
+			scopeAt(elementPath)
 		);
 
 		if (resolvedType == originalType) {
@@ -528,6 +536,19 @@ public final class JvmNodeTreeTransformer {
 				finalType.getRawType().getSimpleName(),
 				pathBasedResolution ? "PATH_BASED" : "DEFAULT"
 			);
+	}
+
+	private ContainerSizeResolver scopedSizeResolver(ContainerSizeResolver resolver, PathExpression path) {
+		SeedSnapshot scope = scopeAt(path);
+		if (scope == null) {
+			return resolver;
+		}
+		return containerType -> resolver.resolveContainerSize(containerType, scope);
+	}
+
+	private @Nullable SeedSnapshot scopeAt(PathExpression path) {
+		SeedSnapshot sampleScope = resolverContext.getSampleScope();
+		return sampleScope != null ? sampleScope.scopeOf(path) : null;
 	}
 
 	/**
@@ -1048,15 +1069,24 @@ public final class JvmNodeTreeTransformer {
 	}
 
 	/**
-	 * Generates container element candidates using the specified size resolver.
+	 * Generates container element candidates using the specified size resolver. The generator runs in a scope nested
+	 * in the container's, so what it draws itself depends only on where the container sits in the sample.
 	 */
 	private List<JvmNodeCandidate> generateContainerElements(
 		JvmNode containerNode,
-		ContainerSizeResolver sizeResolver
+		ContainerSizeResolver sizeResolver,
+		PathExpression path
 	) {
 		for (JvmContainerNodeGenerator generator : context.getContainerNodeGenerators()) {
 			if (generator.isSupported(containerNode.getConcreteType())) {
-				return generator.generateContainerElements(containerNode, context, sizeResolver);
+				SeedSnapshot scope = scopeAt(path);
+				if (scope == null) {
+					return generator.generateContainerElements(containerNode, context, sizeResolver);
+				}
+				return SeedSnapshot.runIn(
+					scope.scope(CONTAINER_ELEMENTS_SCOPE_KEY),
+					() -> generator.generateContainerElements(containerNode, context, sizeResolver)
+				);
 			}
 		}
 		return new ArrayList<>();

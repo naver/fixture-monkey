@@ -53,10 +53,10 @@ class AssemblyPlannerTest {
 
 		// when
 		JvmNodeTree rootTree = planner
-			.plan(new ReflectiveJvmType(Shape.class), EMPTY_SCOPE_SET, false, options, null)
+			.plan(new ReflectiveJvmType(Shape.class), EMPTY_SCOPE_SET, false, options, null, planner.newBuilderScope())
 			.getNodeTree();
 		JvmNodeTree holderTree = planner
-			.plan(new ReflectiveJvmType(Holder.class), EMPTY_SCOPE_SET, false, options, null)
+			.plan(new ReflectiveJvmType(Holder.class), EMPTY_SCOPE_SET, false, options, null, planner.newBuilderScope())
 			.getNodeTree();
 
 		// then

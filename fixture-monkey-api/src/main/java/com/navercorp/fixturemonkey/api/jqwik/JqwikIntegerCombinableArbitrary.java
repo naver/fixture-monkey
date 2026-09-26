@@ -40,7 +40,7 @@ public final class JqwikIntegerCombinableArbitrary implements IntegerCombinableA
 
 	@Override
 	public Integer combined() {
-		return this.integerArbitrary.sample();
+		return ArbitraryUtils.sample(this.integerArbitrary);
 	}
 
 	@Override
