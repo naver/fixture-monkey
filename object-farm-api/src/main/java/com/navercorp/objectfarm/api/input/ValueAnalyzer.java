@@ -572,25 +572,6 @@ public final class ValueAnalyzer {
 		builder.putAllValues(fieldValues);
 	}
 
-	private void extractFieldContainerSizeResolvers(
-		Object value,
-		String basePath,
-		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
-		List<PathResolver<InterfaceResolver>> interfaceResolvers,
-		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.@Nullable Builder builder
-	) {
-		extractFieldContainerSizeResolversInternal(
-			value,
-			basePath,
-			containerSizeResolvers,
-			interfaceResolvers,
-			genericTypeResolvers,
-			builder,
-			false
-		);
-	}
-
 	private void extractFieldContainerSizeResolversInternal(
 		Object value,
 		String basePath,

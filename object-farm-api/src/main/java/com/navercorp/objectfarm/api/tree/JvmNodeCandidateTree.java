@@ -34,6 +34,7 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
+import com.navercorp.objectfarm.api.nodecandidate.FirstMatchNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.JvmMapEntryNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
@@ -69,6 +70,7 @@ public final class JvmNodeCandidateTree {
 
 	private final JvmNodeCandidate rootNode;
 	private final JvmNodeContext jvmNodeContext;
+	private final JvmNodeCandidateGenerator childCandidateGenerator;
 	private final JvmNodeCandidateTreeContext treeContext;
 	private final boolean preBuildResolvedTypes;
 	private final boolean skipAbstractLeafCheck;
@@ -97,6 +99,8 @@ public final class JvmNodeCandidateTree {
 	) {
 		this.rootNode = rootNode;
 		this.jvmNodeContext = jvmNodeContext;
+		this.childCandidateGenerator =
+			new FirstMatchNodeCandidateGenerator(jvmNodeContext.getCandidateNodeGenerators());
 		this.treeContext = treeContext;
 		this.preBuildResolvedTypes = preBuildResolvedTypes;
 		this.skipAbstractLeafCheck = skipAbstractLeafCheck;
@@ -258,28 +262,16 @@ public final class JvmNodeCandidateTree {
 		Map<JvmNodeCandidate, List<JvmNodeCandidate>> subtreeMap = new HashMap<>();
 		List<JvmNodeCandidate> directChildren = new ArrayList<>();
 
-		// Generate children using the first matching generator (first-match-wins).
-		// Generators are ordered by priority: custom generators first, then object property generator.
-		for (JvmNodeCandidateGenerator generator : jvmNodeContext.getCandidateNodeGenerators()) {
-			if (!generator.isSupported(jvmType)) {
-				continue;
-			}
+		List<JvmNodeCandidate> children = childCandidateGenerator.generateNextNodeCandidates(jvmType);
+		if (!children.isEmpty()) {
+			List<JvmNodeCandidate> nodeChildren = getChildren(node);
+			for (JvmNodeCandidate child : children) {
+				if (!nodeChildren.contains(child)) {
+					nodeChildren.add(child);
+					directChildren.add(child);
 
-			List<JvmNodeCandidate> children = generator.generateNextNodeCandidates(jvmType);
-
-			if (!children.isEmpty()) {
-				// Add generated children as children of this node
-				List<JvmNodeCandidate> nodeChildren = getChildren(node);
-				for (JvmNodeCandidate child : children) {
-					if (!nodeChildren.contains(child)) {
-						nodeChildren.add(child);
-						directChildren.add(child);
-
-						// Recursively build tree for each child with updated ancestors
-						buildTree(child, currentDepth + 1, maxDepth, childAncestors);
-					}
+					buildTree(child, currentDepth + 1, maxDepth, childAncestors);
 				}
-				break;
 			}
 		}
 

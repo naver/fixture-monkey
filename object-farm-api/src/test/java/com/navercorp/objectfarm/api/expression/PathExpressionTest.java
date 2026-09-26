@@ -652,4 +652,75 @@ class PathExpressionTest {
 		then(pathA.compareTo(pathA)).isEqualTo(0);
 		then(pathA.compareTo(pathAWithIndex)).isLessThan(0);
 	}
+
+	@Test
+	void truncateToKeepsLeadingSegments() {
+		// given
+		PathExpression path = PathExpression.of("$.items[0].name");
+
+		// when
+		PathExpression actual = path.truncateTo(2);
+
+		// then
+		then(actual).isEqualTo(PathExpression.of("$.items[0]"));
+	}
+
+	@Test
+	void truncateToZeroDepthIsRoot() {
+		// given
+		PathExpression path = PathExpression.of("$.items[0].name");
+
+		// when
+		PathExpression actual = path.truncateTo(0);
+
+		// then
+		then(actual).isEqualTo(PathExpression.root());
+	}
+
+	@Test
+	void truncateToCoveringEverySegmentIsSamePath() {
+		// given
+		PathExpression path = PathExpression.of("$.items[0].name");
+
+		// when
+		PathExpression actual = path.truncateTo(5);
+
+		// then
+		then(actual).isEqualTo(path);
+	}
+
+	@Test
+	void indexUnionIsPattern() {
+		// given
+		PathExpression path = PathExpression.of("$.items[0,1]");
+
+		// when
+		boolean actual = path.hasWildcard();
+
+		// then
+		then(actual).isTrue();
+	}
+
+	@Test
+	void indexUnionMatchesEachOfItsIndices() {
+		// given
+		PathExpression pattern = PathExpression.of("$.items[0,1]");
+
+		// when, then
+		then(pattern.matches(PathExpression.of("$.items[0]"))).isTrue();
+		then(pattern.matches(PathExpression.of("$.items[1]"))).isTrue();
+		then(pattern.matches(PathExpression.of("$.items[2]"))).isFalse();
+	}
+
+	@Test
+	void singleIndexIsNotPattern() {
+		// given
+		PathExpression path = PathExpression.of("$.items[0]");
+
+		// when
+		boolean actual = path.hasWildcard();
+
+		// then
+		then(actual).isFalse();
+	}
 }

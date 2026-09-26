@@ -25,16 +25,16 @@
 ```bash
 ./gradlew build                        # 전체 빌드
 ./gradlew :fixture-monkey:test         # 특정 모듈 테스트
-./gradlew :fixture-monkey:test --tests "com.navercorp.fixturemonkey.test.FixtureMonkeyAdapterTest"
 ```
 
-**Adapter 작업 시 회귀 테스트**:
+**회귀 테스트**:
 ```bash
-./gradlew clean \
-  :fixture-monkey:test --tests "com.navercorp.fixturemonkey.adapter.*" \
-  :fixture-monkey-tests:java-tests:test --tests "com.navercorp.fixturemonkey.tests.java.adapter.*" \
-  :fixture-monkey-tests:java-17-tests:test --tests "com.navercorp.fixturemonkey.tests.java17.adapter.*" \
-  :fixture-monkey-tests:kotlin-tests:test --tests "com.navercorp.fixturemonkey.tests.kotlin.adapter.*"
+./gradlew --continue clean \
+  :object-farm-api:check \
+  :fixture-monkey:test \
+  :fixture-monkey-tests:java-tests:test \
+  :fixture-monkey-tests:java-17-tests:test \
+  :fixture-monkey-tests:kotlin-tests:test
 ```
 
 ## 코드 스타일

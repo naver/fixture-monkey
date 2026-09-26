@@ -33,7 +33,7 @@ public interface ResolutionListener {
 	 * @param path the container path (e.g., "$.items", "$.tags")
 	 * @param containerType the container type name (e.g., "List", "Set", "Map")
 	 * @param size the resolved size
-	 * @param source the source of this size (EXACT_PATH, TYPE_BASED, WILDCARD, DEFAULT)
+	 * @param source the source of this size (EXACT_PATH, TYPE_BASED, PRE_WILDCARD, WILDCARD, POST_WILDCARD, DEFAULT)
 	 */
 	void onContainerSizeResolved(String path, String containerType, int size, String source);
 

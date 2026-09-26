@@ -19,8 +19,10 @@
 package com.navercorp.objectfarm.api.tree;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +33,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.FixedContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.JavaMapNodePromoter;
+import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JavaNodeContext;
 import com.navercorp.objectfarm.api.node.JavaObjectNodePromoter;
 import com.navercorp.objectfarm.api.node.JvmNode;
@@ -51,6 +54,136 @@ class JvmNodeTreeTransformerTest {
 		.nodePromoters(PROMOTERS)
 		.containerSizeResolver(FIXED_SIZE_RESOLVER)
 		.build();
+
+	@Test
+	void rootContainerSizeSizesRootContainer() {
+		// given
+		ReflectiveJvmType listType = new ReflectiveJvmType(
+			List.class,
+			Collections.singletonList(new ReflectiveJvmType(String.class)),
+			Collections.emptyList()
+		);
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(listType, CONTEXT).build();
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
+
+		// when
+		JvmNodeTree nodeTree = transformer.transform(
+			candidateTree,
+			null,
+			5,
+			Collections.emptyList(),
+			PathExpression.of("$.values")
+		);
+
+		// then
+		then(nodeTree.getChildren(nodeTree.getRootNode())).hasSize(5);
+	}
+
+	@Test
+	void rootContainerSizeDoesNotSizeNestedContainers() {
+		// given
+		ReflectiveJvmType innerListType = new ReflectiveJvmType(
+			List.class,
+			Collections.singletonList(new ReflectiveJvmType(String.class)),
+			Collections.emptyList()
+		);
+		ReflectiveJvmType listType = new ReflectiveJvmType(
+			List.class,
+			Collections.singletonList(innerListType),
+			Collections.emptyList()
+		);
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(listType, CONTEXT).build();
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
+
+		// when
+		JvmNodeTree nodeTree = transformer.transform(
+			candidateTree,
+			null,
+			3,
+			Collections.emptyList(),
+			PathExpression.root()
+		);
+
+		// then
+		List<JvmNode> elements = nodeTree.getChildren(nodeTree.getRootNode());
+		then(elements).hasSize(3);
+		then(elements).allSatisfy(element -> then(nodeTree.getChildren(element)).hasSize(2));
+	}
+
+	@Test
+	void rootTakesNameOfFieldItSitsAt() {
+		// given
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(Node.class),
+			CONTEXT
+		).build();
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
+
+		// when
+		JvmNodeTree nodeTree = transformer.transform(
+			candidateTree,
+			null,
+			null,
+			Collections.emptyList(),
+			PathExpression.of("$.holder.next")
+		);
+
+		// then
+		then(nodeTree.getRootNode().getNodeName()).isEqualTo("next");
+		then(nodeTree.getRootNode().getIndex()).isNull();
+	}
+
+	@Test
+	void rootTakesIndexOfElementItSitsAt() {
+		// given
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(Node.class),
+			CONTEXT
+		).build();
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
+
+		// when
+		JvmNodeTree nodeTree = transformer.transform(
+			candidateTree,
+			null,
+			null,
+			Collections.emptyList(),
+			PathExpression.of("$.nodes[2]")
+		);
+
+		// then
+		then(nodeTree.getRootNode().getIndex()).isEqualTo(2);
+	}
+
+	@Test
+	void rootPromotedToSeveralNodesThrows() {
+		// given
+		JvmNodePromoter twoNodePromoter = (candidate, context) -> {
+			JvmNode node = new JavaNode(
+				candidate.getType(),
+				candidate.getType(),
+				candidate.getName(),
+				null,
+				candidate.getCreationMethod()
+			);
+			return Arrays.asList(node, node);
+		};
+		JavaNodeContext twoNodeContext = JavaNodeContext.builder()
+			.seed(-1L)
+			.nodePromoters(Collections.singletonList(twoNodePromoter))
+			.containerSizeResolver(FIXED_SIZE_RESOLVER)
+			.build();
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(String.class),
+			twoNodeContext
+		).build();
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(twoNodeContext);
+
+		// when, then
+		thenThrownBy(() -> transformer.transform(candidateTree))
+			.isInstanceOf(IllegalStateException.class)
+			.hasMessageContaining("exactly one node");
+	}
 
 	@Test
 	void expandRecursiveNodeWithUserPaths() {

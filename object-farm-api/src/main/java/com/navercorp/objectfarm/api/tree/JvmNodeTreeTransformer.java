@@ -27,16 +27,23 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.objectfarm.api.expression.IndexSelector;
+import com.navercorp.objectfarm.api.expression.NameSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.expression.Segment;
+import com.navercorp.objectfarm.api.expression.Selector;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
+import com.navercorp.objectfarm.api.node.FixedContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JavaMapEntryNode;
@@ -117,22 +124,62 @@ public final class JvmNodeTreeTransformer {
 	 * Transforms a JvmNodeCandidateTree into a JvmNodeTree.
 	 */
 	public JvmNodeTree transform(JvmNodeCandidateTree candidateTree) {
-		TransformContext ctx = new TransformContext();
-		PathExpression rootPath = PathExpression.root();
+		return transform(candidateTree, null, null, Collections.emptyList(), PathExpression.root());
+	}
 
-		// Transform root
+	/**
+	 * Transforms a JvmNodeCandidateTree into a JvmNodeTree that will sit at {@code rootPlacementPath} of a larger tree,
+	 * below {@code rootAncestors}. The root gets the place it would have if it had been built as part of that
+	 * tree: it is named after the last segment of {@code rootPlacementPath}, a field name or an element index, and is
+	 * declared with {@code declaredRootType}: the type a sample was requested with, or the interface an
+	 * implementation was chosen for. Resolvers are looked up as they would be for that position. When the root is
+	 * a container, {@code rootContainerSize} fixes its number of elements over any size a resolver gives it.
+	 *
+	 * @param candidateTree     the candidate tree to transform
+	 * @param declaredRootType  the type the root is declared with, or null for its concrete type
+	 * @param rootContainerSize the number of elements of the root container, or null to resolve it
+	 * @param rootAncestors     the nodes above the tree's root in the larger tree, outermost first
+	 * @param rootPlacementPath the path from the root of the larger tree to where this tree's root is placed,
+	 *                          such as {@code $.holder.box} or {@code $.items[2]}; {@link PathExpression#root()}
+	 *                          when this tree is not placed in a larger one. Its last segment names this tree's root
+	 * @return the transformed tree
+	 */
+	public JvmNodeTree transform(
+		JvmNodeCandidateTree candidateTree,
+		@Nullable JvmType declaredRootType,
+		@Nullable Integer rootContainerSize,
+		List<JvmNode> rootAncestors,
+		PathExpression rootPlacementPath
+	) {
+		TransformContext ctx = new TransformContext(rootAncestors, rootPlacementPath, rootContainerSize);
+
 		JvmNodeCandidate rootCandidate = candidateTree.getRootNode();
 		List<JvmNode> rootNodes = promoteCandidate(rootCandidate, ctx);
 
-		if (rootNodes.isEmpty()) {
-			throw new IllegalStateException("Root candidate must produce at least one node");
+		if (rootNodes.size() != 1) {
+			throw new IllegalStateException(
+				"Root candidate must produce exactly one node, but produced " + rootNodes.size()
+			);
 		}
 
-		JvmNode rootNode = rootNodes.get(0);
-		ctx.allNodes.addAll(rootNodes);
+		JvmNode promotedRoot = rootNodes.get(0);
+		JvmNode rootNode = placeRootAt(promotedRoot, rootPlacementPath, declaredRootType);
+		if (rootNode != promotedRoot) {
+			updateNodeMappings(ctx, rootCandidate, promotedRoot, rootNode);
+		}
+		ctx.allNodes.add(rootNode);
 
-		// Transform children
-		transformFromCandidateTree(rootCandidate, rootNode, candidateTree, ctx, new HashSet<>(), rootPath);
+		Set<Class<?>> ancestors = new HashSet<>();
+		for (JvmNode rootAncestor : rootAncestors) {
+			ancestors.add(rootAncestor.getConcreteType().getRawType());
+			ancestors.add(rootAncestor.getDeclaredType().getRawType());
+		}
+
+		if (findChildCandidates(rootNode, ctx).isPresent()) {
+			expandChildren(rootNode, ctx, ancestors, rootPlacementPath);
+		} else {
+			transformFromCandidateTree(rootCandidate, rootNode, candidateTree, ctx, ancestors, rootPlacementPath);
+		}
 
 		return new JvmNodeTree(rootNode, ctx.parentChildMap, ctx.allNodes, ctx.nodeToCandidate, ctx.candidateToNodes);
 	}
@@ -159,13 +206,6 @@ public final class JvmNodeTreeTransformer {
 		List<JvmNode> childNodes = new ArrayList<>();
 
 		for (JvmNodeCandidate childCandidate : childCandidates) {
-			// Skip if already promoted
-			List<JvmNode> existing = ctx.candidateToNodes.get(childCandidate);
-			if (existing != null) {
-				childNodes.addAll(existing);
-				continue;
-			}
-
 			childNodes.addAll(
 				promoteAndExpandCandidates(childCandidate, parentNode, candidateTree, ctx, ancestors, currentPath)
 			);
@@ -285,6 +325,8 @@ public final class JvmNodeTreeTransformer {
 
 		ctx.allNodes.addAll(children);
 		ctx.parentChildMap.put(mapNode, children);
+		ctx.nodeToParent.put(resolvedKey, mapNode);
+		ctx.nodeToParent.put(resolvedValue, mapNode);
 
 		expandChildren(resolvedKey, ctx, ancestors, keyPath);
 		expandChildren(resolvedValue, ctx, ancestors, valuePath);
@@ -353,11 +395,13 @@ public final class JvmNodeTreeTransformer {
 	}
 
 	/**
-	 * Resolves container size using 4-level priority:
+	 * Resolves container size using 6-level priority:
 	 * <ol>
-	 *   <li>Exact path match (builder explicitly set this path)</li>
+	 *   <li>Exact path match (the root container size given to transform, then a builder that set this path)</li>
 	 *   <li>Type-based match (registered builder for the owning type)</li>
+	 *   <li>Ancestor-aware match before wildcards (registered builder for the enclosing node)</li>
 	 *   <li>Wildcard path match (registered builder with wildcard pattern)</li>
+	 *   <li>Ancestor-aware match after wildcards</li>
 	 *   <li>Default resolver</li>
 	 * </ol>
 	 */
@@ -366,13 +410,15 @@ public final class JvmNodeTreeTransformer {
 		TransformContext ctx,
 		PathExpression currentPath
 	) {
-		// 1. Exact path match
+		if (ctx.rootContainerSize != null && currentPath.equals(ctx.rootPlacementPath)) {
+			return new SizeResolution(new FixedContainerSizeResolver(ctx.rootContainerSize), "EXACT_PATH");
+		}
+
 		Optional<ContainerSizeResolver> exactResolver = resolverContext.findExactContainerSizeResolver(currentPath);
 		if (exactResolver.isPresent()) {
 			return new SizeResolution(exactResolver.get(), "EXACT_PATH");
 		}
 
-		// 2. Type-based resolver
 		JvmNode parentNode = ctx.nodeToParent.get(containerNode);
 		String fieldName = containerNode.getNodeName();
 		if (parentNode != null && fieldName != null) {
@@ -385,7 +431,12 @@ public final class JvmNodeTreeTransformer {
 			}
 		}
 
-		// 3. Wildcard path match
+		Optional<ContainerSizeResolver> preWildcardResolver =
+			resolverContext.findPreWildcardContainerSizeResolver(containerNode, ancestorsOf(containerNode, ctx));
+		if (preWildcardResolver.isPresent()) {
+			return new SizeResolution(preWildcardResolver.get(), "PRE_WILDCARD");
+		}
+
 		Optional<ContainerSizeResolver> wildcardResolver = resolverContext.findWildcardContainerSizeResolver(
 			currentPath
 		);
@@ -393,8 +444,12 @@ public final class JvmNodeTreeTransformer {
 			return new SizeResolution(wildcardResolver.get(), "WILDCARD");
 		}
 
-		// 4. Default — use override from resolverContext if available (e.g., for fixed()),
-		// otherwise fall back to the context's default resolver
+		Optional<ContainerSizeResolver> postWildcardResolver = resolverContext
+			.findPostWildcardContainerSizeResolver(containerNode, ancestorsOf(containerNode, ctx));
+		if (postWildcardResolver.isPresent()) {
+			return new SizeResolution(postWildcardResolver.get(), "POST_WILDCARD");
+		}
+
 		ContainerSizeResolver overrideResolver = resolverContext.getDefaultContainerSizeResolver();
 		if (overrideResolver != null) {
 			return new SizeResolution(overrideResolver, "DEFAULT", "fixed");
@@ -560,17 +615,53 @@ public final class JvmNodeTreeTransformer {
 		return copyNode(node, resolvedType, node.getDeclaredType());
 	}
 
+	private static JvmNode placeRootAt(
+		JvmNode rootNode,
+		PathExpression rootPlacementPath,
+		@Nullable JvmType declaredRootType
+	) {
+		String name = rootNode.getNodeName();
+		Integer index = rootNode.getIndex();
+		Segment lastSegment = rootPlacementPath.getLastSegment();
+		if (lastSegment != null) {
+			Selector position = lastSegment.getFirstSelector();
+			if (position instanceof NameSelector) {
+				name = ((NameSelector)position).getName();
+				index = null;
+			} else if (position instanceof IndexSelector) {
+				index = ((IndexSelector)position).getIndex();
+			}
+		}
+		if (declaredRootType == null
+			&& Objects.equals(name, rootNode.getNodeName())
+			&& Objects.equals(index, rootNode.getIndex())) {
+			return rootNode;
+		}
+		JvmType declaredType = declaredRootType != null ? declaredRootType : rootNode.getDeclaredType();
+		return copyNode(rootNode, rootNode.getConcreteType(), declaredType, name, index);
+	}
+
 	/**
 	 * Copies a node with the given concrete and declared types, preserving Map/MapEntry semantics.
 	 */
 	private static JvmNode copyNode(JvmNode node, JvmType concreteType, JvmType declaredType) {
+		return copyNode(node, concreteType, declaredType, node.getNodeName(), node.getIndex());
+	}
+
+	private static JvmNode copyNode(
+		JvmNode node,
+		JvmType concreteType,
+		JvmType declaredType,
+		@Nullable String name,
+		@Nullable Integer index
+	) {
 		if (node instanceof JvmMapNode) {
 			JvmMapNode mapNode = (JvmMapNode)node;
 			return new JavaMapNode(
 				concreteType,
 				declaredType,
-				node.getNodeName(),
-				node.getIndex(),
+				name,
+				index,
 				mapNode.getKeyNode(),
 				mapNode.getValueNode(),
 				node.getCreationMethod()
@@ -581,14 +672,14 @@ public final class JvmNodeTreeTransformer {
 			return new JavaMapEntryNode(
 				concreteType,
 				declaredType,
-				node.getNodeName(),
-				node.getIndex(),
+				name,
+				index,
 				mapEntryNode.getKeyNode(),
 				mapEntryNode.getValueNode(),
 				mapEntryNode.getCreationMethod()
 			);
 		}
-		return new JavaNode(concreteType, declaredType, node.getNodeName(), node.getIndex(), node.getCreationMethod());
+		return new JavaNode(concreteType, declaredType, name, index, node.getCreationMethod());
 	}
 
 	/**
@@ -655,6 +746,20 @@ public final class JvmNodeTreeTransformer {
 				&& ancestors.contains(rawType)
 				&& expansionContext.shouldExpandPath(currentPath, rawType, ancestors);
 
+		Optional<List<JvmNodeCandidate>> ancestorAwareChildren = findChildCandidates(node, ctx);
+		if (ancestorAwareChildren.isPresent()) {
+			List<JvmNode> childNodes = new ArrayList<>();
+			for (JvmNodeCandidate childCandidate : ancestorAwareChildren.get()) {
+				childNodes.addAll(
+					promoteAndExpandCandidates(childCandidate, node, null, ctx, childAncestors, currentPath)
+				);
+			}
+			if (!childNodes.isEmpty()) {
+				ctx.parentChildMap.put(node, childNodes);
+			}
+			return;
+		}
+
 		// Record ctx state before expansion for snapshot collection
 		int allNodesBefore = ctx.allNodes.size();
 
@@ -703,6 +808,27 @@ public final class JvmNodeTreeTransformer {
 					);
 			}
 		}
+	}
+
+	private Optional<List<JvmNodeCandidate>> findChildCandidates(JvmNode node, TransformContext ctx) {
+		if (!resolverContext.hasAncestorAwareResolvers()) {
+			return Optional.empty();
+		}
+		return resolverContext.findChildCandidates(node, ancestorsOf(node, ctx));
+	}
+
+	private List<JvmNode> ancestorsOf(JvmNode node, TransformContext ctx) {
+		if (!resolverContext.hasAncestorAwareResolvers()) {
+			return Collections.emptyList();
+		}
+		LinkedList<JvmNode> ancestors = new LinkedList<>();
+		JvmNode ancestor = ctx.nodeToParent.get(node);
+		while (ancestor != null) {
+			ancestors.addFirst(ancestor);
+			ancestor = ctx.nodeToParent.get(ancestor);
+		}
+		ancestors.addAll(0, ctx.rootAncestors);
+		return ancestors;
 	}
 
 	/**
@@ -755,7 +881,7 @@ public final class JvmNodeTreeTransformer {
 			for (JvmNode node : entry.getValue()) {
 				clonedNodes.add(requireClone(cloneMap, node));
 			}
-			ctx.candidateToNodes.put(entry.getKey(), clonedNodes);
+			ctx.candidateToNodes.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).addAll(clonedNodes);
 		}
 
 		// 4. Restore nodeToParent with cloned nodes
@@ -943,7 +1069,7 @@ public final class JvmNodeTreeTransformer {
 	private List<JvmNode> promoteAndExpandCandidates(
 		JvmNodeCandidate childCandidate,
 		@Nullable JvmNode parentNodeForMapping,
-		JvmNodeCandidateTree candidateTree,
+		@Nullable JvmNodeCandidateTree candidateTree,
 		TransformContext ctx,
 		Set<Class<?>> ancestors,
 		PathExpression currentPath
@@ -966,7 +1092,11 @@ public final class JvmNodeTreeTransformer {
 			}
 			result.add(resolvedChild);
 
-			if (isTypeChanged(childCandidate.getType(), resolvedChild.getConcreteType())) {
+			if (
+				candidateTree == null
+					|| isTypeChanged(childCandidate.getType(), resolvedChild.getConcreteType())
+					|| findChildCandidates(resolvedChild, ctx).isPresent()
+			) {
 				expandChildren(resolvedChild, ctx, ancestors, childPath);
 			} else {
 				transformFromCandidateTree(childCandidate, resolvedChild, candidateTree, ctx, ancestors, childPath);
@@ -996,7 +1126,7 @@ public final class JvmNodeTreeTransformer {
 		List<JvmNode> promotedNodes = promoter.promote(candidate, context);
 
 		// Register mappings
-		ctx.candidateToNodes.put(candidate, new ArrayList<>(promotedNodes));
+		ctx.candidateToNodes.computeIfAbsent(candidate, k -> new ArrayList<>()).addAll(promotedNodes);
 		for (JvmNode node : promotedNodes) {
 			ctx.nodeToCandidate.put(node, candidate);
 		}
@@ -1094,5 +1224,18 @@ public final class JvmNodeTreeTransformer {
 		final List<JvmNode> allNodes = new ArrayList<>(INITIAL_CAPACITY);
 		final Map<JvmNode, JvmNodeCandidate> nodeToCandidate = new HashMap<>(INITIAL_CAPACITY);
 		final Map<JvmNodeCandidate, List<JvmNode>> candidateToNodes = new HashMap<>(INITIAL_CAPACITY);
+		final List<JvmNode> rootAncestors;
+		final PathExpression rootPlacementPath;
+		final @Nullable Integer rootContainerSize;
+
+		TransformContext(
+			List<JvmNode> rootAncestors,
+			PathExpression rootPlacementPath,
+			@Nullable Integer rootContainerSize
+		) {
+			this.rootAncestors = rootAncestors;
+			this.rootPlacementPath = rootPlacementPath;
+			this.rootContainerSize = rootContainerSize;
+		}
 	}
 }
