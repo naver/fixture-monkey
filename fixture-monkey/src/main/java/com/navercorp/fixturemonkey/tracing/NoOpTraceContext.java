@@ -114,11 +114,6 @@ final class NoOpTraceContext implements TraceContext {
 	}
 
 	@Override
-	public void setCacheHit(boolean cacheHit) {
-		// no-op
-	}
-
-	@Override
 	public void setManipulatorCount(int count) {
 		// no-op
 	}

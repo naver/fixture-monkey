@@ -18,16 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
-import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
@@ -39,7 +34,6 @@ public final class MonkeyContextBuilder {
 	private ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
 	private ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private ConcurrentLruCache<TreeRootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
-	private List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders;
 	private int cacheSize = 2048;
 	private int generatorContextSize = 1000;
 
@@ -78,13 +72,6 @@ public final class MonkeyContextBuilder {
 		return this;
 	}
 
-	public MonkeyContextBuilder registeredObjectBuilder(
-		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders
-	) {
-		this.registeredObjectBuilders = registeredObjectBuilders;
-		return this;
-	}
-
 	public MonkeyContext build() {
 		if (arbitrariesByProperty == null) {
 			arbitrariesByProperty = new ConcurrentLruCache<>(cacheSize);
@@ -98,15 +85,10 @@ public final class MonkeyContextBuilder {
 			generatorContextByRootProperty = new ConcurrentLruCache<>(generatorContextSize);
 		}
 
-		if (registeredObjectBuilders == null) {
-			registeredObjectBuilders = new ArrayList<>();
-		}
-
 		return new MonkeyContext(
 			arbitrariesByProperty,
 			javaArbitrariesByProperty,
 			generatorContextByRootProperty,
-			registeredObjectBuilders,
 			fixtureMonkeyOptions
 		);
 	}

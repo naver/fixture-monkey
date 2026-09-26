@@ -117,7 +117,7 @@ public final class MonkeyDirectiveFactory {
 		return new SizeDirective(path, sequence.getAndIncrement(), min, max);
 	}
 
-	public DirectiveSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
+	public List<PathDirective> newDirectives(ManipulatorHolderSet manipulatorHolderSet) {
 		int baseSequence = sequence.getAndIncrement();
 
 		List<PathDirective> directives = new ArrayList<>();
@@ -160,7 +160,7 @@ public final class MonkeyDirectiveFactory {
 		directives.addAll(sizeDirectives);
 
 		sequence.set(sequence.get() + directives.size());
-		return new DirectiveSet(directives);
+		return directives;
 	}
 
 	public MonkeyDirectiveFactory copy() {
@@ -187,22 +187,26 @@ public final class MonkeyDirectiveFactory {
 		} else if (value instanceof Arbitrary) {
 			return new LazyDirective(
 				path, seq, limit, expressionStrictMode,
-				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample())
+				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
+				decomposedContainerValueFactory
 			);
 		} else if (value instanceof DefaultArbitraryBuilder) {
 			return new LazyDirective(
 				path, seq, limit, expressionStrictMode,
-				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample())
+				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample()),
+				decomposedContainerValueFactory
 			);
 		} else if (value instanceof Supplier) {
 			return new LazyDirective(
 				path, seq, limit, expressionStrictMode,
-				LazyArbitrary.lazy((Supplier<?>)value)
+				LazyArbitrary.lazy((Supplier<?>)value),
+				decomposedContainerValueFactory
 			);
 		} else if (value instanceof LazyArbitrary) {
 			return new LazyDirective(
 				path, seq, limit, expressionStrictMode,
-				(LazyArbitrary<?>)value
+				(LazyArbitrary<?>)value,
+				decomposedContainerValueFactory
 			);
 		} else if (value instanceof Unique) {
 			return new JustDirective(

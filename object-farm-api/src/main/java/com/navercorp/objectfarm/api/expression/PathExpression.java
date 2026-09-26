@@ -48,7 +48,6 @@ public final class PathExpression implements Comparable<PathExpression> {
 	private volatile PathExpression cachedParent;
 	private final ConcurrentMap<String, PathExpression> cachedChildren = new ConcurrentHashMap<>(16);
 	private volatile byte cachedHasWildcard; // 0=not computed, 1=false, 2=true
-	private volatile byte cachedHasTypeSelector; // 0=not computed, 1=false, 2=true
 
 	private PathExpression(List<Segment> segments) {
 		this.segments = Collections.unmodifiableList(new ArrayList<>(segments));
@@ -256,14 +255,6 @@ public final class PathExpression implements Comparable<PathExpression> {
 		return new PathExpression(newSegments, true);
 	}
 
-	public PathExpression appendSegment(Segment segment) {
-		Objects.requireNonNull(segment, "segment must not be null");
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(segment);
-		return new PathExpression(newSegments, true);
-	}
-
 	public PathExpression append(PathExpression other) {
 		if (other.isRoot()) {
 			return this;
@@ -406,23 +397,6 @@ public final class PathExpression implements Comparable<PathExpression> {
 			}
 		}
 		cachedHasWildcard = 1;
-		return false;
-	}
-
-	public boolean hasTypeSelector() {
-		byte cached = cachedHasTypeSelector;
-		if (cached != 0) {
-			return cached == 2;
-		}
-		for (Segment segment : segments) {
-			for (Selector selector : segment.getSelectors()) {
-				if (selector instanceof TypeSelector) {
-					cachedHasTypeSelector = 2;
-					return true;
-				}
-			}
-		}
-		cachedHasTypeSelector = 1;
 		return false;
 	}
 

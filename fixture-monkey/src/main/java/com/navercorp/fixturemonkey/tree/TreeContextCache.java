@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.tree;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,9 +26,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext;
@@ -55,7 +53,6 @@ public final class TreeContextCache {
 
 	private final Map<Key, JvmNodeContext> nodeContextCache;
 	private final Map<Key, JvmNodeCandidateTree> candidateTreeCache;
-	private final Map<Key, JvmNodeCandidateTree> concreteTypeCandidateTreeCache;
 
 	public TreeContextCache(JvmNodeCandidateTreeContext treeContext, NodeContextFactory nodeContextFactory) {
 		this.treeContext = treeContext;
@@ -63,7 +60,6 @@ public final class TreeContextCache {
 		this.nodeContextFactory = nodeContextFactory;
 		this.nodeContextCache = new ConcurrentHashMap<>();
 		this.candidateTreeCache = new ConcurrentHashMap<>();
-		this.concreteTypeCandidateTreeCache = new ConcurrentHashMap<>();
 	}
 
 	public JvmNodeCandidateTreeContext getTreeContext() {
@@ -77,27 +73,25 @@ public final class TreeContextCache {
 	/**
 	 * Returns a cached {@link JvmNodeContext} for the given root type and options, or builds and caches one.
 	 * <p>
-	 * Bypasses the cache when {@code propertyConfigurers} or {@code introspectorsByType} are non-empty,
-	 * since those alter context construction.
+	 * Bypasses the cache when {@code instantiators} is non-empty, since it alters context construction.
 	 */
 	public JvmNodeContext getOrBuildNodeContext(
 		JvmType rootType,
 		@Nullable FixtureMonkeyOptions options,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		Map<Class<?>, ArbitraryIntrospector> introspectorsByType
+		Map<Class<?>, InstantiatorProcessResult> instantiators
 	) {
-		if (!propertyConfigurers.isEmpty() || !introspectorsByType.isEmpty()) {
-			return nodeContextFactory.build(rootType, options, propertyConfigurers, introspectorsByType);
+		if (!instantiators.isEmpty()) {
+			return nodeContextFactory.build(rootType, options, instantiators);
 		}
 
 		Key cacheKey = new Key(rootType, options);
 		return nodeContextCache.computeIfAbsent(cacheKey, key ->
-			nodeContextFactory.build(rootType, options, propertyConfigurers, introspectorsByType)
+			nodeContextFactory.build(rootType, options, instantiators)
 		);
 	}
 
 	/**
-	 * Returns a cached {@link JvmNodeCandidateTree} for the resolved root type, or builds and caches one.
+	 * Returns a cached {@link JvmNodeCandidateTree} for the given type, or builds and caches one.
 	 * <p>
 	 * When {@code hasCustomConfigurers} is true, uses a fresh {@link JvmNodeCandidateTreeContext} and
 	 * skips caching to avoid leaking per-call configuration into shared state.
@@ -116,31 +110,6 @@ public final class TreeContextCache {
 		return candidateTreeCache.computeIfAbsent(cacheKey, key ->
 			buildCandidateTree(resolvedRootType, context, treeContext)
 		);
-	}
-
-	/**
-	 * Returns a cached {@link JvmNodeCandidateTree} for the concrete type produced during interface resolution,
-	 * or builds and caches one.
-	 */
-	public JvmNodeCandidateTree getOrBuildConcreteCandidateTree(
-		JvmType concreteType,
-		JvmNodeContext context,
-		@Nullable FixtureMonkeyOptions options
-	) {
-		Key cacheKey = new Key(concreteType, options);
-		return concreteTypeCandidateTreeCache.computeIfAbsent(cacheKey, key ->
-			buildCandidateTree(concreteType, context, treeContext)
-		);
-	}
-
-	/**
-	 * Clears all caches and the subtree context.
-	 */
-	public void clear() {
-		nodeContextCache.clear();
-		candidateTreeCache.clear();
-		concreteTypeCandidateTreeCache.clear();
-		subtreeContext.clear();
 	}
 
 	private static JvmNodeCandidateTree buildCandidateTree(
