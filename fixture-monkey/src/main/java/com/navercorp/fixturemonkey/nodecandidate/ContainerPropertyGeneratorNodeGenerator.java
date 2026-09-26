@@ -114,7 +114,7 @@ public final class ContainerPropertyGeneratorNodeGenerator implements JvmContain
 				}
 			}
 			CreationMethod creationMethod = new ContainerElementCreationMethod(index);
-			elements.add(new JavaNode(elementType, "[" + index + "]", index, creationMethod));
+			elements.add(new JavaNode(elementType, elementType, "[" + index + "]", index, creationMethod));
 		}
 		return elements;
 	}

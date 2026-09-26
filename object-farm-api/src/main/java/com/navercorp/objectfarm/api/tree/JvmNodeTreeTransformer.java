@@ -556,11 +556,19 @@ public final class JvmNodeTreeTransformer {
 	/**
 	 * Creates a new node with the resolved type, preserving Map/MapEntry semantics.
 	 */
-	private JvmNode createResolvedNode(JvmNode node, JvmType resolvedType) {
+	private static JvmNode createResolvedNode(JvmNode node, JvmType resolvedType) {
+		return copyNode(node, resolvedType, node.getDeclaredType());
+	}
+
+	/**
+	 * Copies a node with the given concrete and declared types, preserving Map/MapEntry semantics.
+	 */
+	private static JvmNode copyNode(JvmNode node, JvmType concreteType, JvmType declaredType) {
 		if (node instanceof JvmMapNode) {
 			JvmMapNode mapNode = (JvmMapNode)node;
 			return new JavaMapNode(
-				resolvedType,
+				concreteType,
+				declaredType,
 				node.getNodeName(),
 				node.getIndex(),
 				mapNode.getKeyNode(),
@@ -571,7 +579,8 @@ public final class JvmNodeTreeTransformer {
 		if (node instanceof JvmMapEntryNode) {
 			JvmMapEntryNode mapEntryNode = (JvmMapEntryNode)node;
 			return new JavaMapEntryNode(
-				resolvedType,
+				concreteType,
+				declaredType,
 				node.getNodeName(),
 				node.getIndex(),
 				mapEntryNode.getKeyNode(),
@@ -579,7 +588,7 @@ public final class JvmNodeTreeTransformer {
 				mapEntryNode.getCreationMethod()
 			);
 		}
-		return new JavaNode(resolvedType, node.getNodeName(), node.getIndex(), node.getCreationMethod());
+		return new JavaNode(concreteType, declaredType, node.getNodeName(), node.getIndex(), node.getCreationMethod());
 	}
 
 	/**
@@ -787,6 +796,7 @@ public final class JvmNodeTreeTransformer {
 	private static JvmNode cloneNode(JvmNode original) {
 		return new JavaNode(
 			original.getConcreteType(),
+			original.getDeclaredType(),
 			original.getNodeName(),
 			original.getIndex(),
 			original.getCreationMethod()

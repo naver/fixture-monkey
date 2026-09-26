@@ -33,7 +33,8 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * </ul>
  */
 public final class JavaMapNode implements JvmMapNode {
-	private final JvmType type;
+	private final JvmType concreteType;
+	private final JvmType declaredType;
 	@Nullable
 	private final String nodeName;
 	@Nullable
@@ -44,47 +45,46 @@ public final class JavaMapNode implements JvmMapNode {
 	private final CreationMethod creationMethod;
 
 	/**
-	 * Creates a new JavaMapNode without index and creation method.
+	 * Creates a new JavaMapNode declared with its concrete type, without index and creation method.
 	 *
-	 * @param type      the concrete JVM type for this map node
-	 * @param nodeName  the name of this node
-	 * @param keyNode   the key node
-	 * @param valueNode the value node
+	 * @param concreteType the concrete JVM type for this map node
+	 * @param nodeName     the name of this node
+	 * @param keyNode      the key node
+	 * @param valueNode    the value node
 	 */
 	public JavaMapNode(
-		JvmType type,
+		JvmType concreteType,
 		@Nullable String nodeName,
 		JvmNode keyNode,
 		JvmNode valueNode
 	) {
-		this(type, nodeName, null, keyNode, valueNode, null);
+		this(concreteType, concreteType, nodeName, null, keyNode, valueNode, null);
 	}
 
 	/**
-	 * Creates a new JavaMapNode with an index but without a creation method.
-	 * <p>
-	 * This constructor is provided for backward compatibility.
+	 * Creates a new JavaMapNode declared with its concrete type, with an index but without a creation method.
 	 *
-	 * @param type      the concrete JVM type for this map node
-	 * @param nodeName  the name of this node
-	 * @param index     the index within the parent container (may be null)
-	 * @param keyNode   the key node
-	 * @param valueNode the value node
+	 * @param concreteType the concrete JVM type for this map node
+	 * @param nodeName     the name of this node
+	 * @param index        the index within the parent container (may be null)
+	 * @param keyNode      the key node
+	 * @param valueNode    the value node
 	 */
 	public JavaMapNode(
-		JvmType type,
+		JvmType concreteType,
 		@Nullable String nodeName,
 		@Nullable Integer index,
 		JvmNode keyNode,
 		JvmNode valueNode
 	) {
-		this(type, nodeName, index, keyNode, valueNode, null);
+		this(concreteType, concreteType, nodeName, index, keyNode, valueNode, null);
 	}
 
 	/**
 	 * Creates a new JavaMapNode with all fields.
 	 *
-	 * @param type           the concrete JVM type for this map node
+	 * @param concreteType   the concrete JVM type for this map node
+	 * @param declaredType   the type the node is declared with where it is referenced
 	 * @param nodeName       the name of this node
 	 * @param index          the index within the parent container (may be null)
 	 * @param keyNode        the key node
@@ -92,14 +92,16 @@ public final class JavaMapNode implements JvmMapNode {
 	 * @param creationMethod the creation method metadata (may be null)
 	 */
 	public JavaMapNode(
-		JvmType type,
+		JvmType concreteType,
+		JvmType declaredType,
 		@Nullable String nodeName,
 		@Nullable Integer index,
 		JvmNode keyNode,
 		JvmNode valueNode,
 		@Nullable CreationMethod creationMethod
 	) {
-		this.type = type;
+		this.concreteType = concreteType;
+		this.declaredType = declaredType;
 		this.nodeName = nodeName;
 		this.index = index;
 		this.keyNode = keyNode;
@@ -109,7 +111,12 @@ public final class JavaMapNode implements JvmMapNode {
 
 	@Override
 	public JvmType getConcreteType() {
-		return type;
+		return concreteType;
+	}
+
+	@Override
+	public JvmType getDeclaredType() {
+		return declaredType;
 	}
 
 	@Override

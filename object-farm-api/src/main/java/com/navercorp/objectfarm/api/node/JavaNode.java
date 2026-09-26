@@ -30,7 +30,8 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * by {@link com.navercorp.objectfarm.api.tree.JvmNodeTree} rather than by this class.
  */
 public final class JavaNode implements JvmNode {
-	private final JvmType type;
+	private final JvmType concreteType;
+	private final JvmType declaredType;
 	@Nullable
 	private final String nodeName;
 	@Nullable
@@ -39,43 +40,46 @@ public final class JavaNode implements JvmNode {
 	private final CreationMethod creationMethod;
 
 	/**
-	 * Creates a new JavaNode without index and creation method.
+	 * Creates a new JavaNode declared with its concrete type, without index and creation method.
 	 *
-	 * @param type     the concrete JVM type for this node
-	 * @param nodeName the name of this node
+	 * @param concreteType the concrete JVM type for this node
+	 * @param nodeName     the name of this node
 	 */
-	public JavaNode(JvmType type, @Nullable String nodeName) {
-		this(type, nodeName, null, null);
+	public JavaNode(JvmType concreteType, @Nullable String nodeName) {
+		this(concreteType, concreteType, nodeName, null, null);
 	}
 
 	/**
-	 * Creates a new JavaNode with an index but without a creation method.
+	 * Creates a new JavaNode declared with its concrete type, with an index but without a creation method.
 	 * <p>
 	 * This constructor is provided for backward compatibility.
 	 *
-	 * @param type     the concrete JVM type for this node
-	 * @param nodeName the name of this node
-	 * @param index    the index within the parent container (may be null)
+	 * @param concreteType the concrete JVM type for this node
+	 * @param nodeName     the name of this node
+	 * @param index        the index within the parent container (may be null)
 	 */
-	public JavaNode(JvmType type, @Nullable String nodeName, @Nullable Integer index) {
-		this(type, nodeName, index, null);
+	public JavaNode(JvmType concreteType, @Nullable String nodeName, @Nullable Integer index) {
+		this(concreteType, concreteType, nodeName, index, null);
 	}
 
 	/**
 	 * Creates a new JavaNode with all fields.
 	 *
-	 * @param type           the concrete JVM type for this node
+	 * @param concreteType   the concrete JVM type for this node
+	 * @param declaredType   the type the node is declared with where it is referenced
 	 * @param nodeName       the name of this node
 	 * @param index          the index within the parent container (may be null)
 	 * @param creationMethod the creation method metadata (may be null)
 	 */
 	public JavaNode(
-		JvmType type,
+		JvmType concreteType,
+		JvmType declaredType,
 		@Nullable String nodeName,
 		@Nullable Integer index,
 		@Nullable CreationMethod creationMethod
 	) {
-		this.type = type;
+		this.concreteType = concreteType;
+		this.declaredType = declaredType;
 		this.nodeName = nodeName;
 		this.index = index;
 		this.creationMethod = creationMethod;
@@ -83,7 +87,12 @@ public final class JavaNode implements JvmNode {
 
 	@Override
 	public JvmType getConcreteType() {
-		return type;
+		return concreteType;
+	}
+
+	@Override
+	public JvmType getDeclaredType() {
+		return declaredType;
 	}
 
 	@Override

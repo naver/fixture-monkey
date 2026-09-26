@@ -85,7 +85,7 @@ class KotlinNodePromoter : JvmNodePromoter {
         )
 
         return listOf(
-            JavaNode(type, node.name, null, node.creationMethod)
+            JavaNode(type, type, node.name, null, node.creationMethod)
         )
     }
 
