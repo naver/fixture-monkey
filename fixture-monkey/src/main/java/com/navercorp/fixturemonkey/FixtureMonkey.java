@@ -147,7 +147,10 @@ public final class FixtureMonkey {
 			new TypeParameterProperty(type.getJvmType())
 		);
 
-		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
+		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(
+			monkeyContext,
+			assemblyPlanner.newBuilderScope()
+		);
 
 		return new DefaultArbitraryBuilder<>(
 			rootProperty,
@@ -167,7 +170,10 @@ public final class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
+		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(
+			monkeyContext,
+			assemblyPlanner.newBuilderScope()
+		);
 
 		PathDirective directive = monkeyManipulatorFactory.newDirective(
 			PathExpression.root(),

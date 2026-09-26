@@ -58,6 +58,19 @@ public interface InterfaceResolver extends NodeCustomizer {
 	@Nullable
 	JvmType resolve(JvmType interfaceType);
 
+	/**
+	 * Resolves an interface type drawing any randomness from the scope of the node being resolved, so the same node
+	 * in the same sample resolves the same way however the tree was built.
+	 *
+	 * @param interfaceType the interface type to resolve
+	 * @param scope         the seed scope of the node
+	 * @return the concrete implementation type to use for node generation, or null if not resolvable
+	 */
+	@Nullable
+	default JvmType resolve(JvmType interfaceType, SeedSnapshot scope) {
+		return resolve(interfaceType);
+	}
+
 
 	/**
 	 * Resolves an interface type to all possible concrete implementation types.

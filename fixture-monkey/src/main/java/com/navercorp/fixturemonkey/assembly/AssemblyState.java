@@ -22,12 +22,12 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
+import com.navercorp.fixturemonkey.customizer.ScopeTies;
 import com.navercorp.fixturemonkey.decompose.DecomposedContainerDetector;
 import com.navercorp.fixturemonkey.decompose.PropertyFieldExtractor;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
@@ -36,6 +36,7 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.ObjectValueExtractor;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -51,7 +52,8 @@ final class AssemblyState {
 	final AssembleContext context;
 	final CandidateLookup candidates;
 	final LimitCounter limits;
-	final long assemblySeed;
+	final SeedSnapshot sampleScope;
+	final ScopeTies scopeTies;
 	final AtomicInteger interfaceSelectionCounter;
 
 	final AssemblyTree assemblyTree;
@@ -76,10 +78,11 @@ final class AssemblyState {
 		this.scopes = ScopeLookup.from(plan.getAnalysisResult(), plan.getAnalyzedDefinedScopes());
 		this.candidates = CandidateLookup.from(plan.getValues().getValuesByPath(), scopes);
 		this.limits = new LimitCounter(plan.getAnalyzedRootScope(), plan.getAnalyzedDefinedScopes());
-		this.assemblySeed = ThreadLocalRandom.current().nextLong();
+		this.sampleScope = context.getSampleScope();
+		this.scopeTies = plan.getScopeTies();
 		this.interfaceSelectionCounter = new AtomicInteger(0);
 
-		this.assemblyTree = new AssemblyTree(context.getPlan().getNodeTree());
+		this.assemblyTree = new AssemblyTree(plan.getNodeTree(), sampleScope);
 		this.propertyPathPropertyByNode = new IdentityHashMap<>();
 		this.resolvedLazyCache = new IdentityHashMap<>();
 		FixtureMonkeyOptions options = context.getOptions();
@@ -116,6 +119,6 @@ final class AssemblyState {
 	 * Returns the chain of the nodes placed along {@code path}, where the scopes that apply at its end are looked up.
 	 */
 	ScopeChain chainOf(PathExpression path) {
-		return ScopeChain.ofPath(path, assemblyTree::nodeAt, properties::matchingPropertyOf);
+		return ScopeChain.ofPath(path, assemblyTree::nodeAt, properties::matchingPropertyOf, scopeTies);
 	}
 }

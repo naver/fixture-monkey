@@ -44,7 +44,7 @@ public final class JqwikBigIntegerCombinableArbitrary implements BigIntegerCombi
 
 	@Override
 	public BigInteger combined() {
-		return this.bigIntegerArbitrary.sample();
+		return ArbitraryUtils.sample(this.bigIntegerArbitrary);
 	}
 
 	@Override

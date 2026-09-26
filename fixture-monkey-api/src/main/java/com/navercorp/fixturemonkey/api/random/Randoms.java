@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.random;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -28,6 +29,7 @@ import net.jqwik.engine.SourceOfRandomness;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.engine.EngineUtils;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 
 /**
  * Reference jqwik SourceOfRandomness
@@ -39,6 +41,9 @@ public abstract class Randoms {
 	private static final ThreadLocal<Random> CURRENT;
 	@SuppressWarnings("type.argument")
 	private static final ThreadLocal<Long> SEED;
+	private static final AtomicLong SEED_GENERATIONS = new AtomicLong();
+	@SuppressWarnings("type.argument")
+	private static final ThreadLocal<Long> SEED_GENERATION = ThreadLocal.withInitial(() -> 0L);
 
 	static {
 		SEED = ThreadLocal.withInitial(System::nanoTime);
@@ -94,7 +99,24 @@ public abstract class Randoms {
 		return CURRENT.get();
 	}
 
+	/**
+	 * Returns the random a value generated now draws from: the random of the running seed scope while a node's
+	 * value is generated, so the value depends only on where the node sits in the sample, or the global seeded
+	 * random outside any scope.
+	 *
+	 * @return the random to draw from
+	 */
 	public static Random current() {
+		Random scoped = SeedSnapshot.currentRandom();
+		return scoped != null ? scoped : global();
+	}
+
+	/**
+	 * Returns the global seeded random, which changes only when a seed is set.
+	 *
+	 * @return the global seeded random
+	 */
+	public static Random global() {
 		return EngineUtils.useJqwikEngine()
 			? SourceOfRandomness.current()
 			: CURRENT.get();
@@ -102,6 +124,16 @@ public abstract class Randoms {
 
 	public static long currentSeed() {
 		return SEED.get();
+	}
+
+	/**
+	 * Returns the generation of the seed set last on this thread. It changes whenever a seed is set, even to the same
+	 * value, and is {@code 0} before any seed is set on this thread.
+	 *
+	 * @return the generation of the current seed
+	 */
+	public static long currentSeedGeneration() {
+		return SEED_GENERATION.get();
 	}
 
 	public static int nextInt(int bound) {
@@ -120,6 +152,7 @@ public abstract class Randoms {
 			Random random = newRandom(seed);
 			CURRENT.set(random);
 			SEED.set(seed);
+			SEED_GENERATION.set(SEED_GENERATIONS.incrementAndGet());
 		} catch (NumberFormatException nfe) {
 			throw new IllegalArgumentException(String.format("[%s] is not a valid random seed.", seed));
 		}

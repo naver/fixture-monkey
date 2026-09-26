@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
 import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 
 /**
@@ -59,7 +60,7 @@ final class LazyResolver {
 		}
 		return order.isRootScope()
 			? resolveLazyWithCache((LazyValueHolder)value, state)
-			: evaluate((LazyValueHolder)value);
+			: evaluate((LazyValueHolder)value, state);
 	}
 
 	static @Nullable Object resolveLazyValueWithCache(@Nullable Object value, AssemblyState state) {
@@ -70,7 +71,7 @@ final class LazyResolver {
 		if (state.resolvedLazyCache.containsKey(holder)) {
 			return state.resolvedLazyCache.get(holder);
 		}
-		Object resolved = evaluate(holder);
+		Object resolved = evaluate(holder, state);
 		if (resolved != null && resolved != RECURSION_BLOCKED) {
 			state.resolvedLazyCache.put(holder, resolved);
 		}
@@ -89,7 +90,11 @@ final class LazyResolver {
 	 * @return the evaluated value (may be null if supplier returns null),
 	 *         or {@link #RECURSION_BLOCKED} if evaluation would cause recursion for the same scope
 	 */
-	static @Nullable Object evaluate(LazyValueHolder holder) {
+	static @Nullable Object evaluate(LazyValueHolder holder, AssemblyState state) {
+		return AssemblyPlanner.evaluateInScope(state.assemblyTree.nextLazyScope(), () -> evaluate(holder));
+	}
+
+	private static @Nullable Object evaluate(LazyValueHolder holder) {
 		LazyArbitrary<?> lazyArbitrary = holder.getLazyArbitrary();
 		if (!holder.isRootLevel()) {
 			return evaluateFresh(lazyArbitrary);

@@ -59,5 +59,17 @@ public interface ContainerSizeResolver extends NodeCustomizer {
 	 * @return the resolved size of the container
 	 */
 	int resolveContainerSize(JvmType containerType);
+
+	/**
+	 * Resolves the size of a container drawing any randomness from the scope of the container's node, so the same
+	 * container in the same sample gets the same size however the tree was built.
+	 *
+	 * @param containerType the type of the container
+	 * @param scope         the seed scope of the container's node
+	 * @return the resolved size of the container
+	 */
+	default int resolveContainerSize(JvmType containerType, SeedSnapshot scope) {
+		return resolveContainerSize(containerType);
+	}
 }
 

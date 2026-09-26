@@ -19,8 +19,12 @@
 package com.navercorp.objectfarm.api.node;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
+
+import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.expression.Segment;
 
 /**
  * An immutable snapshot of seed state for deterministic random generation.
@@ -49,6 +53,7 @@ import org.jspecify.annotations.Nullable;
 public final class SeedSnapshot {
 
 	private static final long GOLDEN_RATIO_PRIME = 0x9E3779B97F4A7C15L;
+	private static final ThreadLocal<@Nullable Random> CURRENT_RANDOM = new ThreadLocal<>();
 
 	private final long baseSeed;
 	private final long sequence;
@@ -90,6 +95,82 @@ public final class SeedSnapshot {
 	 */
 	public Random randomFor(int typeHash) {
 		return new Random(seedFor(typeHash));
+	}
+
+	/**
+	 * Returns the scope nested in this one under {@code key}. A child depends on its parent and its key, and on the
+	 * order scopes are nested in, so {@code a.scope(x).scope(y)} differs from {@code a.scope(y).scope(x)}.
+	 *
+	 * @param key what tells the child apart from its siblings
+	 * @return the child scope
+	 */
+	public SeedSnapshot scope(long key) {
+		return new SeedSnapshot(mix(mix(baseSeed ^ sequence * GOLDEN_RATIO_PRIME) + key), 0);
+	}
+
+	/**
+	 * Returns the scope of the node reached through {@code segment} from the node this scope belongs to.
+	 *
+	 * @param segment the segment leading to the child node
+	 * @return the child node's scope
+	 */
+	public SeedSnapshot scope(Segment segment) {
+		return scope(segment.toExpression().hashCode());
+	}
+
+	/**
+	 * Returns the scope of the node at {@code path} when this is the scope of the root, nesting one scope per
+	 * segment.
+	 *
+	 * @param path the path of the node
+	 * @return the node's scope
+	 */
+	public SeedSnapshot scopeOf(PathExpression path) {
+		SeedSnapshot scope = this;
+		for (Segment segment : path.getSegments()) {
+			scope = scope.scope(segment);
+		}
+		return scope;
+	}
+
+	/**
+	 * Runs {@code action} with the random of {@code scope} as the current random, so values drawn while it runs
+	 * come from the scope. The random is created once for the run, and the previous one is restored afterwards.
+	 *
+	 * @param scope  the scope to draw from
+	 * @param action the action drawing values
+	 * @param <T>    the result type
+	 * @return the action's result
+	 */
+	public static <T> T runIn(SeedSnapshot scope, Supplier<T> action) {
+		Random outer = CURRENT_RANDOM.get();
+		CURRENT_RANDOM.set(new Random(scope.seedFor(0)));
+		try {
+			return action.get();
+		} finally {
+			if (outer != null) {
+				CURRENT_RANDOM.set(outer);
+			} else {
+				CURRENT_RANDOM.remove();
+			}
+		}
+	}
+
+	/**
+	 * Returns the random of the scope running on this thread.
+	 *
+	 * @return the current random, or null when no scope is running
+	 */
+	@Nullable
+	public static Random currentRandom() {
+		return CURRENT_RANDOM.get();
+	}
+
+	private static long mix(long value) {
+		long mixed = value;
+		mixed = (mixed ^ (mixed >>> 30)) * 0xbf58476d1ce4e5b9L;
+		mixed = (mixed ^ (mixed >>> 27)) * 0x94d049bb133111ebL;
+		return mixed ^ (mixed >>> 31);
 	}
 
 	/**

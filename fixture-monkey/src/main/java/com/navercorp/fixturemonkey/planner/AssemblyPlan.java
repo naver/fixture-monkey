@@ -25,8 +25,10 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
+import com.navercorp.fixturemonkey.customizer.ScopeTies;
 import com.navercorp.fixturemonkey.tree.NodeTreeFactory;
 import com.navercorp.objectfarm.api.input.InlinedValueResolver;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 
 /**
@@ -55,6 +57,8 @@ public final class AssemblyPlan {
 	private final ConcurrentHashMap<?, ?> typeMetadataCache;
 	private final long analyzeTimeNanos;
 	private final long treeBuildTimeNanos;
+	private final SeedSnapshot sampleScope;
+	private final ScopeTies scopeTies;
 
 	/**
 	 * Creates a new AssemblyPlan.
@@ -68,6 +72,7 @@ public final class AssemblyPlan {
 	 * @param typeMetadataCache     metadata assembly derives per type, kept across samples
 	 * @param analyzeTimeNanos      time spent in ManipulatorAnalyzer.analyze() in nanoseconds
 	 * @param treeBuildTimeNanos    time spent building the JvmNodeTree in nanoseconds
+	 * @param sampleScope           the seed scope of the sample
 	 */
 	public AssemblyPlan(
 		ValueProjection values,
@@ -78,7 +83,8 @@ public final class AssemblyPlan {
 		InlinedValueResolver inlinedValueResolver,
 		ConcurrentHashMap<?, ?> typeMetadataCache,
 		long analyzeTimeNanos,
-		long treeBuildTimeNanos
+		long treeBuildTimeNanos,
+		SeedSnapshot sampleScope
 	) {
 		this.values = values;
 		this.analysisResult = analysisResult;
@@ -89,6 +95,28 @@ public final class AssemblyPlan {
 		this.typeMetadataCache = typeMetadataCache;
 		this.analyzeTimeNanos = analyzeTimeNanos;
 		this.treeBuildTimeNanos = treeBuildTimeNanos;
+		this.sampleScope = sampleScope;
+		this.scopeTies = ScopeTies.of(scopeSet.getDefinedScopes(), sampleScope);
+	}
+
+	/**
+	 * Returns the ties among the defined scopes of the sample, which pick one of the scopes of the same priority
+	 * selecting the same node.
+	 *
+	 * @return the ties of the sample
+	 */
+	public ScopeTies getScopeTies() {
+		return scopeTies;
+	}
+
+	/**
+	 * Returns the seed scope of the sample this plan is for; every decision of the sample is drawn from a scope
+	 * nested in it.
+	 *
+	 * @return the sample's seed scope
+	 */
+	public SeedSnapshot getSampleScope() {
+		return sampleScope;
 	}
 
 	/**

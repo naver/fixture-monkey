@@ -27,8 +27,13 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.tree.SeedPurpose;
+import com.navercorp.fixturemonkey.tree.SeedScopeKey;
+import com.navercorp.fixturemonkey.tree.SeedScopeSequence;
 import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 
 /**
@@ -41,9 +46,31 @@ final class AssemblyTree {
 	private final Map<JvmNode, List<JvmNode>> resizedChildrenByNode = new IdentityHashMap<>();
 	private final Map<JvmNode, JvmNodeTree> concreteTreeByNode = new IdentityHashMap<>();
 	private final Map<String, JvmNode> nodeByPath = new HashMap<>();
+	private final SeedScopeSequence sampleScopes;
+	private final Map<String, SeedSnapshot> scopeByPath = new HashMap<>();
+	private final Map<String, Integer> generationsByPath = new HashMap<>();
+	private final Map<String, Integer> introspectionsByPath = new HashMap<>();
 
-	AssemblyTree(JvmNodeTree plannedTree) {
+	AssemblyTree(JvmNodeTree plannedTree, SeedSnapshot sampleScope) {
 		this.plannedTree = plannedTree;
+		this.sampleScopes = new SeedScopeSequence(sampleScope);
+	}
+
+	/**
+	 * Returns the seed scope of the node at {@code path}, nesting one scope per segment from the sample's scope.
+	 */
+	SeedSnapshot scopeAt(PathExpression path) {
+		List<Segment> segments = path.getSegments();
+		if (segments.isEmpty()) {
+			return sampleScopes.getScope();
+		}
+		String key = path.toExpression();
+		SeedSnapshot scope = scopeByPath.get(key);
+		if (scope == null) {
+			scope = scopeAt(path.truncateTo(segments.size() - 1)).scope(segments.get(segments.size() - 1));
+			scopeByPath.put(key, scope);
+		}
+		return scope;
 	}
 
 	JvmNode getRootNode() {
@@ -106,6 +133,32 @@ final class AssemblyTree {
 		return nodes;
 	}
 
+	/**
+	 * Returns the scope the next generation of the value at {@code path} draws from. Each generation of the same
+	 * path in the sample, even one by a freshly assembled arbitrary, draws from its own scope.
+	 */
+	SeedSnapshot nextValueScope(PathExpression path) {
+		return SeedPurpose.VALUE.scopeIn(scopeAt(path)).scope(nextCount(generationsByPath, path));
+	}
+
+	/**
+	 * Returns the scope the next introspection of the node at {@code path} in the sample draws from, which is what an
+	 * introspector or an arbitrary generator draws while building the node's arbitrary. Each introspection of the same
+	 * path in the sample draws from its own scope.
+	 */
+	SeedSnapshot nextIntrospectionScope(PathExpression path) {
+		return SeedPurpose.VALUE.scopeIn(scopeAt(path))
+			.scope(SeedScopeKey.INTROSPECTION.key())
+			.scope(nextCount(introspectionsByPath, path));
+	}
+
+	/**
+	 * Returns the scope the next lazy value evaluated in the sample draws from, so each evaluation draws differently.
+	 */
+	SeedSnapshot nextLazyScope() {
+		return SeedPurpose.VALUE.scopeIn(sampleScopes.next(SeedScopeKey.LAZY));
+	}
+
 	void placeNode(PathExpression path, JvmNode node) {
 		nodeByPath.put(path.toExpression(), node);
 	}
@@ -118,5 +171,13 @@ final class AssemblyTree {
 		for (JvmNode treeNode : concreteTree.getAllNodes()) {
 			concreteTreeByNode.put(treeNode, concreteTree);
 		}
+	}
+
+	private static int nextCount(Map<String, Integer> countsByPath, PathExpression path) {
+		String key = path.toExpression();
+		Integer counted = countsByPath.get(key);
+		int count = counted != null ? counted : 0;
+		countsByPath.put(key, count + 1);
+		return count;
 	}
 }

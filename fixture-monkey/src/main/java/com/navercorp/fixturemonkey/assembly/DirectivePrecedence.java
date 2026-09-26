@@ -22,7 +22,9 @@ import com.navercorp.fixturemonkey.customizer.Scope;
 
 /**
  * The precedence of a directive among the directives that reach the same node: the one whose scope node sits outer
- * wins, then the one whose scope has the lower priority number, then the one declared later.
+ * wins, then the one whose scope has the lower priority number, then the one declared later. Of the scopes of the
+ * same priority selecting the same node only one applies there, so the declaration order decides only between
+ * directives of the same scope.
  * <p>
  * The root scope's node is the node a sample starts from and its priority is {@link Scope#ROOT_PRIORITY}, so it
  * wins over every defined scope by the same rule.

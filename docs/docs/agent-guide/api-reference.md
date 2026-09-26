@@ -169,7 +169,7 @@ Random does not have to mean arbitrary. These are the APIs that narrow what gene
 | :--- | :--- |
 | `register(Class, fixture -> builder)` | A default builder for the type and its subtypes, applied wherever the type appears |
 | `registerExactType(Class, ...)` / `registerAssignableType(Class, ...)` | The same, with the matcher stated explicitly |
-| `register(MatcherOperator, priority)` | Arbitrary matching, with priority — lower number wins, and equal priorities are picked randomly |
+| `register(MatcherOperator, priority)` | Arbitrary matching, with priority — lower number wins, and equal priorities are picked randomly per node (the same seed picks the same one) |
 | `registerGroup(Class...)` | Collect many registrations in one class: every method that takes a single `FixtureMonkey` parameter and returns an `ArbitraryBuilder<T>` is registered for `T` |
 
 **Project-wide, through a plugin**

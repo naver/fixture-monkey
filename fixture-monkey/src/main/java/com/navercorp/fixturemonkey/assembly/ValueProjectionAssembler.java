@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -65,11 +66,13 @@ import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
 import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
+import com.navercorp.fixturemonkey.tree.SeedPurpose;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JvmMapEntryNode;
 import com.navercorp.objectfarm.api.node.JvmMapNode;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.nodecandidate.ConstructorParamCreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
 import com.navercorp.objectfarm.api.nodecandidate.FieldAccessCreationMethod;
@@ -130,8 +133,24 @@ public final class ValueProjectionAssembler {
 		context.getTraceContext().recordMergedCandidates(traceValues, traceOrders, traceSources);
 	}
 
-	@SuppressWarnings("dereference.of.nullable")
 	private CombinableArbitrary<?> assembleNode(
+		JvmNode node,
+		AssemblyState state,
+		@Nullable ArbitraryGeneratorContext parentContext,
+		@Nullable PropertyPath parentPath,
+		PathExpression currentPath,
+		Set<Class<?>> visitedTypes
+	) {
+		CombinableArbitrary<?> generated =
+			generateNode(node, state, parentContext, parentPath, currentPath, visitedTypes);
+		if (generated == CombinableArbitrary.NOT_GENERATED) {
+			return generated;
+		}
+		return scoped(generated, state.assemblyTree, currentPath);
+	}
+
+	@SuppressWarnings("dereference.of.nullable")
+	private CombinableArbitrary<?> generateNode(
 		JvmNode node,
 		AssemblyState state,
 		@Nullable ArbitraryGeneratorContext parentContext,
@@ -587,13 +606,18 @@ public final class ValueProjectionAssembler {
 			// and wraps with TraceableCombinableArbitrary.
 			CombinableArbitrary<?> result;
 			if (typeSpecificIntrospector != null) {
-				ArbitraryIntrospectorResult introspectorResult = typeSpecificIntrospector.introspect(context);
+				ArbitraryIntrospectorResult introspectorResult =
+					inIntrospectionScope(currentPath, state, () -> typeSpecificIntrospector.introspect(context));
 				result = new TraceableCombinableArbitrary<>(
 					introspectorResult.getValue().injectNull(nullInject),
 					propertyPath
 				);
 			} else {
-				result = options.getDefaultArbitraryGenerator().generate(context);
+				result = inIntrospectionScope(
+					currentPath,
+					state,
+					() -> options.getDefaultArbitraryGenerator().generate(context)
+				);
 			}
 
 			result = applyFilters(result, currentPath, currentRawType, state);
@@ -662,15 +686,20 @@ public final class ValueProjectionAssembler {
 
 		@SuppressWarnings("deprecation")
 		CandidateConcretePropertyResolver resolver = options.getCandidateConcretePropertyResolver(interfaceProperty);
-		List<Property> implementations =
-			resolver != null ? resolver.resolve(interfaceProperty) : Collections.emptyList();
+		SeedSnapshot nodeScope = state.sampleScope.scopeOf(currentPath);
+		List<Property> implementations = resolver != null
+			? SeedSnapshot.runIn(
+				SeedPurpose.IMPLEMENTATION.resolverScopeIn(nodeScope, node.getConcreteType().hashCode()),
+				() -> resolver.resolve(interfaceProperty)
+			)
+			: Collections.emptyList();
 
 		if (implementations == null || implementations.isEmpty()) {
 			return CombinableArbitrary.NOT_GENERATED;
 		}
 
 		InterfaceSelectionStrategy strategy = InterfaceSelectionStrategy.RANDOM;
-		long seed = state.assemblySeed;
+		long seed = SeedPurpose.IMPLEMENTATION.seedFor(nodeScope);
 		int sampleIndex = state.interfaceSelectionCounter.getAndIncrement();
 
 		int selectedIndex = strategy.selectIndex(implementations.size(), seed, sampleIndex);
@@ -929,10 +958,15 @@ public final class ValueProjectionAssembler {
 
 			CombinableArbitrary<?> result;
 			if (typeSpecificIntrospector != null) {
-				ArbitraryIntrospectorResult introspectorResult = typeSpecificIntrospector.introspect(context);
+				ArbitraryIntrospectorResult introspectorResult =
+					inIntrospectionScope(currentPath, state, () -> typeSpecificIntrospector.introspect(context));
 				result = introspectorResult.getValue();
 			} else {
-				result = options.getDefaultArbitraryGenerator().generate(context);
+				result = inIntrospectionScope(
+					currentPath,
+					state,
+					() -> options.getDefaultArbitraryGenerator().generate(context)
+				);
 			}
 
 			Class<?> concreteRawType = Types.normalizeRawType(concreteProperty.getJvmType().getRawType());
@@ -1083,6 +1117,7 @@ public final class ValueProjectionAssembler {
 					);
 				},
 				propertyPath,
+				currentPath,
 				nullInject,
 				state
 			);
@@ -1218,6 +1253,7 @@ public final class ValueProjectionAssembler {
 					return assembleNode(childNode, state, currentContext, propertyPath, childPath, visitedTypes);
 				},
 				propertyPath,
+				currentPath,
 				nullInject,
 				state
 			);
@@ -1339,6 +1375,7 @@ public final class ValueProjectionAssembler {
 				return assembleNode(childNode, state, currentContext, propertyPath, childPath, visitedTypes);
 			},
 			propertyPath,
+			currentPath,
 			nullInject,
 			state
 		);
@@ -1478,6 +1515,7 @@ public final class ValueProjectionAssembler {
 					return assembleNode(childNode, state, currentContext, propertyPath, childPath, visitedTypes);
 				},
 				propertyPath,
+				currentPath,
 				nullInject,
 				state
 			);
@@ -1539,8 +1577,8 @@ public final class ValueProjectionAssembler {
 		if (scopeSet.hasScopedInstantiators()) {
 			List<JvmNode> chain = state.assemblyTree.ancestorNodes(path);
 			chain.add(node);
-			instantiators =
-				scopeSet.instantiatorsAt(type, ScopeChain.ofNodes(chain, state.properties::matchingPropertyOf));
+			ScopeChain scopeChain = ScopeChain.ofNodes(chain, state.properties::matchingPropertyOf, state.scopeTies);
+			instantiators = scopeSet.instantiatorsAt(type, scopeChain);
 		} else {
 			instantiators = scopeSet.getGlobalInstantiators();
 		}
@@ -1631,6 +1669,7 @@ public final class ValueProjectionAssembler {
 		@Nullable ArbitraryGeneratorContext parentContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> childResolver,
 		PropertyPath propertyPath,
+		PathExpression currentPath,
 		double nullInject,
 		AssemblyState state
 	) {
@@ -1649,7 +1688,23 @@ public final class ValueProjectionAssembler {
 			state.context.getLoggingContext()
 		);
 
-		return state.context.getOptions().getDefaultArbitraryGenerator().generate(context).injectNull(nullInject);
+		return inIntrospectionScope(
+			currentPath,
+			state,
+			() -> state.context.getOptions().getDefaultArbitraryGenerator().generate(context)
+		).injectNull(nullInject);
+	}
+
+	private static <T> T inIntrospectionScope(PathExpression path, AssemblyState state, Supplier<T> introspection) {
+		return SeedSnapshot.runIn(state.assemblyTree.nextIntrospectionScope(path), introspection);
+	}
+
+	private static <T> CombinableArbitrary<T> scoped(
+		CombinableArbitrary<T> generated,
+		AssemblyTree assemblyTree,
+		PathExpression path
+	) {
+		return new ScopedCombinableArbitrary<>(generated, assemblyTree, path);
 	}
 
 	private ArbitraryProperty buildChildArbitraryPropertyCached(
