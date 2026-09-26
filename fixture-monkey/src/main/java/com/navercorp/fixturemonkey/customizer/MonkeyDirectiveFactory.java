@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
@@ -187,7 +188,7 @@ public final class MonkeyDirectiveFactory {
 		} else if (value instanceof Arbitrary) {
 			return new LazyDirective(
 				path, seq, limit, expressionStrictMode,
-				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
+				LazyArbitrary.lazy(() -> ArbitraryUtils.sample((Arbitrary<?>)value)),
 				decomposedContainerValueFactory
 			);
 		} else if (value instanceof DefaultArbitraryBuilder) {

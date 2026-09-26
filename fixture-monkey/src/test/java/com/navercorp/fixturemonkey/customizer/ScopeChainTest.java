@@ -98,7 +98,7 @@ class ScopeChainTest {
 		JvmNodeCandidateTree candidateTree =
 			new JvmNodeCandidateTree.Builder(new ReflectiveJvmType(Parent.class), CONTEXT).build();
 		JvmNodeTree tree = new JvmNodeTreeTransformer(CONTEXT).transform(candidateTree);
-		return ScopeChain.ofPath(PathExpression.of(path), tree::resolve, NO_PROPERTY);
+		return ScopeChain.ofPath(PathExpression.of(path), tree::resolve, NO_PROPERTY, ScopeTies.none());
 	}
 
 	@SuppressWarnings("unused")

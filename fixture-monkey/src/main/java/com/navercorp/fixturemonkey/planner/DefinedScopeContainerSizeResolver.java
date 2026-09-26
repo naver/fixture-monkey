@@ -28,6 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.ScopeTies;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
@@ -37,7 +38,8 @@ import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 /**
  * Sizes a container a defined scope reaches: the path from a node the scope selects down to the container matches
  * the path the size was declared at. The scope with the lower priority number wins; among scopes of the same
- * priority, unlike values, an inner scope wins over an outer one, and at the same node the later declared one.
+ * priority, unlike values, an inner scope wins over an outer one, and at the same node only the one picked among
+ * them sizes.
  * <p>
  * One instance looks at the scope nodes below the node a sample starts from, the other only at that node. The root
  * scope sits at that node too and wins there, so a defined scope selecting it sizes a container only when no size
@@ -49,12 +51,15 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 	private final int[] pathLengthsShortestFirst;
 	private final boolean dependsOnAncestors;
 	private final boolean atSampleRoot;
+	private final ScopeTies scopeTies;
 
 	DefinedScopeContainerSizeResolver(
 		List<Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>>> resolversLowestPrecedenceFirst,
-		boolean atSampleRoot
+		boolean atSampleRoot,
+		ScopeTies scopeTies
 	) {
 		this.atSampleRoot = atSampleRoot;
+		this.scopeTies = scopeTies;
 		this.scopedSizesByPriority = new TreeMap<>();
 		List<ScopedSize> scopedSizes = new ArrayList<>();
 		for (Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>> entry
@@ -83,7 +88,7 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 	public @Nullable ContainerSizeResolver resolve(JvmNode containerNode, List<JvmNode> ancestors) {
 		List<JvmNode> nodes = new ArrayList<>(ancestors);
 		nodes.add(containerNode);
-		ScopeChain chain = ScopeChain.ofNodes(nodes, JvmNodePropertyFactory.ofChain(nodes));
+		ScopeChain chain = ScopeChain.ofNodes(nodes, JvmNodePropertyFactory.ofChain(nodes), scopeTies);
 		for (List<ScopedSize> samePriority : scopedSizesByPriority.values()) {
 			for (int pathLength : pathLengthsShortestFirst) {
 				int scopeDepth = chain.depth() - pathLength;

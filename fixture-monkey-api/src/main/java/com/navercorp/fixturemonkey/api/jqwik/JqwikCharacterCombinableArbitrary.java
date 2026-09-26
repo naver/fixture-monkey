@@ -40,7 +40,7 @@ public final class JqwikCharacterCombinableArbitrary implements CharacterCombina
 
 	@Override
 	public Character rawValue() {
-		return this.characterArbitrary.sample();
+		return ArbitraryUtils.sample(this.characterArbitrary);
 	}
 
 	@Override
@@ -128,6 +128,6 @@ public final class JqwikCharacterCombinableArbitrary implements CharacterCombina
 
 	@Override
 	public Character combined() {
-		return this.characterArbitrary.sample();
+		return ArbitraryUtils.sample(this.characterArbitrary);
 	}
 }

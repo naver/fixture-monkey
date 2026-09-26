@@ -22,16 +22,15 @@ import com.navercorp.fixturemonkey.api.arbitrary.ShortCombinableArbitrary
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.short
-import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.util.function.Predicate
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 class KotestShortCombinableArbitrary(private val arb: Arb<Short> = Arb.short()) : ShortCombinableArbitrary {
-    override fun combined(): Short = arb.single()
+    override fun combined(): Short = arb.sampleInScope()
 
-    override fun rawValue(): Short = arb.single()
+    override fun rawValue(): Short = arb.sampleInScope()
 
     override fun withRange(min: Short, max: Short): ShortCombinableArbitrary =
         KotestShortCombinableArbitrary(Arb.short().filter { it in min..max })

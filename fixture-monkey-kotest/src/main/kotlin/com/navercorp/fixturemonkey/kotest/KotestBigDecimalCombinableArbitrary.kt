@@ -23,7 +23,6 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.bigDecimal
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.map
-import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.math.BigDecimal
@@ -36,7 +35,7 @@ class KotestBigDecimalCombinableArbitrary(
     private val arb: Arb<BigDecimal> = Arb.bigDecimal()
 ) : BigDecimalCombinableArbitrary {
 
-    override fun combined(): BigDecimal = arb.single()
+    override fun combined(): BigDecimal = arb.sampleInScope()
 
     override fun rawValue(): BigDecimal = this.combined()
 

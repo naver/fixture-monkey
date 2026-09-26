@@ -6,6 +6,7 @@ dependencies {
     testImplementation(projects.fixtureMonkeyJavaxValidation)
     testImplementation(projects.fixtureMonkeyDatafaker)
     testImplementation(projects.fixtureMonkeyJackson)
+    testImplementation(libs.jqwik.engine)
     testImplementation(libs.jspecify)
     testImplementation(libs.checker.qual)
     testImplementation(libs.lombok)
