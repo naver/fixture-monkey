@@ -149,19 +149,6 @@ public final class Segment {
 	}
 
 	/**
-	 * Creates a key-value union segment for Map entries.
-	 * This matches both the key and value of a Map entry.
-	 *
-	 * @return a new segment with KeySelector and ValueSelector
-	 */
-	public static Segment ofKeyValue() {
-		List<Selector> selectors = new ArrayList<>();
-		selectors.add(new KeySelector());
-		selectors.add(new ValueSelector());
-		return new Segment(selectors);
-	}
-
-	/**
 	 * Creates a type segment for type-based matching.
 	 *
 	 * @param type the target type to match
@@ -180,6 +167,70 @@ public final class Segment {
 	 */
 	public static Segment ofType(Class<?> type, boolean exact) {
 		return of(new TypeSelector(type, exact));
+	}
+
+	/**
+	 * Returns whether this segment, as a pattern, matches {@code pathSegment}: {@code [*]} matches an index, key or
+	 * value, {@code .*} matches any name, and a segment of several selectors matches when any of its selectors
+	 * matches one of the path segment's.
+	 *
+	 * @param pathSegment the segment of a concrete path
+	 * @return true when this segment matches it
+	 */
+	public boolean matches(Segment pathSegment) {
+		if (!isSingleSelector() || !pathSegment.isSingleSelector()) {
+			for (Selector patternSelector : selectors) {
+				for (Selector pathSelector : pathSegment.getSelectors()) {
+					if (selectorMatches(patternSelector, pathSelector)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		return selectorMatches(getFirstSelector(), pathSegment.getFirstSelector());
+	}
+
+	private static boolean selectorMatches(Selector patternSelector, Selector pathSelector) {
+		if (patternSelector instanceof WildcardSelector) {
+			return (pathSelector instanceof IndexSelector
+				|| pathSelector instanceof KeySelector
+				|| pathSelector instanceof ValueSelector);
+		}
+		if (patternSelector instanceof KeySelector) {
+			return pathSelector instanceof KeySelector;
+		}
+		if (patternSelector instanceof ValueSelector) {
+			return pathSelector instanceof ValueSelector;
+		}
+		if (patternSelector instanceof TypeSelector) {
+			if (!(pathSelector instanceof TypeSelector)) {
+				return false;
+			}
+			TypeSelector patternType = (TypeSelector)patternSelector;
+			TypeSelector pathType = (TypeSelector)pathSelector;
+			return patternType.matchesType(pathType.getTargetType());
+		}
+		if (patternSelector instanceof NameSelector) {
+			if (!(pathSelector instanceof NameSelector)) {
+				return false;
+			}
+			NameSelector patternName = (NameSelector)patternSelector;
+			if ("*".equals(patternName.getName())) {
+				return true;
+			}
+			NameSelector pathName = (NameSelector)pathSelector;
+			return patternName.getName().equals(pathName.getName());
+		}
+		if (patternSelector instanceof IndexSelector) {
+			if (!(pathSelector instanceof IndexSelector)) {
+				return false;
+			}
+			IndexSelector patternIndex = (IndexSelector)patternSelector;
+			IndexSelector pathIndex = (IndexSelector)pathSelector;
+			return patternIndex.getIndex() == pathIndex.getIndex();
+		}
+		return false;
 	}
 
 	/**

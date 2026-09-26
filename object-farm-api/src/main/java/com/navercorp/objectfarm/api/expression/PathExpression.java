@@ -333,6 +333,22 @@ public final class PathExpression implements Comparable<PathExpression> {
 		return cached;
 	}
 
+	/**
+	 * Returns this path cut down to its first {@code depth} segments.
+	 *
+	 * @param depth the number of leading segments to keep
+	 * @return the root when {@code depth} is zero or less, this path when it covers every segment
+	 */
+	public PathExpression truncateTo(int depth) {
+		if (depth <= 0) {
+			return ROOT;
+		}
+		if (depth >= segments.size()) {
+			return this;
+		}
+		return new PathExpression(new ArrayList<>(segments.subList(0, depth)), true);
+	}
+
 	@Nullable
 	public Segment getLastSegment() {
 		if (segments.isEmpty()) {
@@ -342,8 +358,7 @@ public final class PathExpression implements Comparable<PathExpression> {
 	}
 
 	/**
-	 * Checks if this pattern matches the given path.
-	 * {@link WildcardSelector} matches any {@link IndexSelector}, {@link KeySelector}, or {@link ValueSelector}.
+	 * Checks if this pattern matches the given path, segment by segment as {@link Segment#matches(Segment)} does.
 	 */
 	public boolean matches(PathExpression path) {
 		List<Segment> pathSegments = path.getSegments();
@@ -356,7 +371,7 @@ public final class PathExpression implements Comparable<PathExpression> {
 			Segment patternSegment = segments.get(i);
 			Segment pathSegment = pathSegments.get(i);
 
-			if (!segmentMatches(patternSegment, pathSegment)) {
+			if (!patternSegment.matches(pathSegment)) {
 				return false;
 			}
 		}
@@ -364,66 +379,10 @@ public final class PathExpression implements Comparable<PathExpression> {
 		return true;
 	}
 
-	private boolean segmentMatches(Segment patternSegment, Segment pathSegment) {
-		if (!patternSegment.isSingleSelector() || !pathSegment.isSingleSelector()) {
-			for (Selector patternSelector : patternSegment.getSelectors()) {
-				for (Selector pathSelector : pathSegment.getSelectors()) {
-					if (selectorMatches(patternSelector, pathSelector)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-		return selectorMatches(patternSegment.getFirstSelector(), pathSegment.getFirstSelector());
-	}
-
-	private boolean selectorMatches(Selector patternSelector, Selector pathSelector) {
-		if (patternSelector instanceof WildcardSelector) {
-			return (pathSelector instanceof IndexSelector
-				|| pathSelector instanceof KeySelector
-				|| pathSelector instanceof ValueSelector);
-		}
-		if (patternSelector instanceof KeySelector) {
-			return pathSelector instanceof KeySelector;
-		}
-		if (patternSelector instanceof ValueSelector) {
-			return pathSelector instanceof ValueSelector;
-		}
-		if (patternSelector instanceof TypeSelector) {
-			if (!(pathSelector instanceof TypeSelector)) {
-				return false;
-			}
-			TypeSelector patternType = (TypeSelector)patternSelector;
-			TypeSelector pathType = (TypeSelector)pathSelector;
-			return patternType.matchesType(pathType.getTargetType());
-		}
-		if (patternSelector instanceof NameSelector) {
-			if (!(pathSelector instanceof NameSelector)) {
-				return false;
-			}
-			NameSelector patternName = (NameSelector)patternSelector;
-			// ".*" is the field-level wildcard — matches any NameSelector
-			if ("*".equals(patternName.getName())) {
-				return true;
-			}
-			NameSelector pathName = (NameSelector)pathSelector;
-			return patternName.getName().equals(pathName.getName());
-		}
-		if (patternSelector instanceof IndexSelector) {
-			if (!(pathSelector instanceof IndexSelector)) {
-				return false;
-			}
-			IndexSelector patternIndex = (IndexSelector)patternSelector;
-			IndexSelector pathIndex = (IndexSelector)pathSelector;
-			return patternIndex.getIndex() == pathIndex.getIndex();
-		}
-		return false;
-	}
 
 	/**
-	 * Returns true if this path contains {@link WildcardSelector} ({@code [*]}) or {@code .*}.
+	 * Returns true if this path is a pattern that matches more than one concrete path: it contains
+	 * {@link WildcardSelector} ({@code [*]}), {@code .*}, or a union of selectors such as {@code [0,1]}.
 	 */
 	public boolean hasWildcard() {
 		byte cached = cachedHasWildcard;
@@ -431,6 +390,10 @@ public final class PathExpression implements Comparable<PathExpression> {
 			return cached == 2;
 		}
 		for (Segment segment : segments) {
+			if (!segment.isSingleSelector()) {
+				cachedHasWildcard = 2;
+				return true;
+			}
 			for (Selector selector : segment.getSelectors()) {
 				if (selector instanceof WildcardSelector) {
 					cachedHasWildcard = 2;
