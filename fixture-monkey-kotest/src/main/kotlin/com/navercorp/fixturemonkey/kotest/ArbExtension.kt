@@ -30,7 +30,6 @@ import com.navercorp.fixturemonkey.kotlin.propertyExpressionGenerator
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
-import io.kotest.property.arbitrary.single
 import java.util.function.Supplier
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubtypeOf
@@ -58,14 +57,14 @@ inline fun <reified T> FixtureMonkey.giveMeArb(crossinline applyBuilder: KotlinT
 
 fun <T : Any?> ArbitraryBuilder<T>.setArb(expression: String, arb: Arb<Any>): ArbitraryBuilder<T> = this.set(
     expression,
-    Supplier { arb.single() }
+    Supplier { arb.sampleInScope() }
 )
 
 fun <T : Any?> ArbitraryBuilder<T>.setArb(propertySelector: PropertySelector, arb: Arb<Any>): ArbitraryBuilder<T> =
     this.set(
         propertySelector,
-        Supplier { arb.single() }
+        Supplier { arb.sampleInScope() }
     )
 
 fun <T : Any?> ArbitraryBuilder<T>.setArb(p: KProperty1<T, Any?>, arb: Arb<Any>): ArbitraryBuilder<T> =
-    this.set(propertyExpressionGenerator(p), Supplier { arb.single() })
+    this.set(propertyExpressionGenerator(p), Supplier { arb.sampleInScope() })

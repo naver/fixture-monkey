@@ -42,7 +42,7 @@ class FixtureMonkeyBuilderSeedTest {
 
 		// then — must match the canonical first String of seed-1 verified by
 		// FixtureMonkeySeedExtensionTest.seedReturnsSame / arbitraryBuilderSampleReturnsSame
-		then(actual).isEqualTo("㼌✠섨ꝓ仛禦催ᘓ蓊類౺阹瞻");
+		then(actual).isEqualTo("\u03b4\u914e\u2dc4\u8358\u8b0e\u941c\u3e90");
 	}
 
 	@Test
@@ -55,7 +55,9 @@ class FixtureMonkeyBuilderSeedTest {
 		String actual = sut.giveMeOne(String.class);
 
 		// then — must match FixtureMonkeySeedExtensionTest.latterValue
-		then(actual).isEqualTo("婵얎⽒竻·俌欕悳잸횑ٻ킐結㗗蜵ꓣ몒둡塸聩");
+		then(actual).isEqualTo(
+			"\u5f93\u5eac\u6874\u0212\ua91e\u5d9a\u4da5\u2c3e\u431c\ubba2\u2c84\ud12c\ucc3c\u2c18"
+			+ "\u04a3\u4084\u4365\u8741");
 	}
 
 	@Test
@@ -67,7 +69,7 @@ class FixtureMonkeyBuilderSeedTest {
 		Integer actual = sut.giveMeOne(Integer.class);
 
 		// then — must match FixtureMonkeySeedExtensionTest.integerReturnsSame
-		then(actual).isEqualTo(86904);
+		then(actual).isEqualTo(3588295);
 	}
 
 	@Test
@@ -79,6 +81,6 @@ class FixtureMonkeyBuilderSeedTest {
 		Long actual = sut.giveMeOne(Long.class);
 
 		// then — must match FixtureMonkeySeedExtensionTest.longReturnsSame
-		then(actual).isEqualTo(-1555898L);
+		then(actual).isEqualTo(-1740023L);
 	}
 }

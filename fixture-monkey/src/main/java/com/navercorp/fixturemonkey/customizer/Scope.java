@@ -34,8 +34,11 @@ import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
  * over every other scope. Any other scope is a defined scope, whose nodes the user defines: {@code register(...)}
  * declares one, the matcher it is registered with becomes the selector, and what its builder declared becomes the
  * directives and instantiators of the scope. Where defined scopes conflict, a scope with a lower priority number
- * takes precedence wherever its node sits, then the one with the outer node (the inner node for a container size),
- * and otherwise the later declared one.
+ * takes precedence wherever its node sits, then the one with the outer node (the inner node for a container size).
+ * Of the scopes of the same priority selecting the same node, one is picked for that node from the sample's seed,
+ * and only the picked one applies there.
+ *
+ * @see ScopeTies
  */
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public final class Scope {

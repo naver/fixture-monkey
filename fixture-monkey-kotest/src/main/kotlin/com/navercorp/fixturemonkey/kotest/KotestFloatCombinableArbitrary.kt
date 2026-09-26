@@ -25,7 +25,6 @@ import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.choice
 import io.kotest.property.arbitrary.filter
-import io.kotest.property.arbitrary.single
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -33,9 +32,9 @@ class KotestFloatCombinableArbitrary(
     private val floatArb: Arb<Float> = Arb.float()
 ) : FloatCombinableArbitrary {
 
-    override fun combined(): Float = floatArb.single()
+    override fun combined(): Float = floatArb.sampleInScope()
 
-    override fun rawValue(): Float = floatArb.single()
+    override fun rawValue(): Float = floatArb.sampleInScope()
 
     override fun withRange(min: Float, max: Float): FloatCombinableArbitrary {
         return KotestFloatCombinableArbitrary(Arb.float(min, max))

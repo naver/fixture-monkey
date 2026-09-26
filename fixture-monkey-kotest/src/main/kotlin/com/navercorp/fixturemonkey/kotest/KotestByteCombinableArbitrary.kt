@@ -22,14 +22,13 @@ import com.navercorp.fixturemonkey.api.arbitrary.ByteCombinableArbitrary
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.byte
 import io.kotest.property.arbitrary.filter
-import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.util.function.Predicate
 
 @API(since = "1.1.15", status = Status.EXPERIMENTAL)
 class KotestByteCombinableArbitrary(private val arb: Arb<Byte> = Arb.byte()) : ByteCombinableArbitrary {
-    override fun combined(): Byte = arb.single()
+    override fun combined(): Byte = arb.sampleInScope()
 
     override fun rawValue(): Byte = this.combined()
 

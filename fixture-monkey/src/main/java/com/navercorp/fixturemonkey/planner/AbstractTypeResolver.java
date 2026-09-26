@@ -32,7 +32,8 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
-import com.navercorp.objectfarm.api.node.SeedState;
+import com.navercorp.fixturemonkey.tree.SeedPurpose;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -44,25 +45,23 @@ import com.navercorp.objectfarm.api.type.JvmType;
  */
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class AbstractTypeResolver {
-	private final SeedState seedState;
-
-	public AbstractTypeResolver(SeedState seedState) {
-		this.seedState = seedState;
-	}
-
 	/**
-	 * Walks the candidate-resolver chain until a concrete type is reached or the recursion depth runs out.
-	 * Non-abstract input types are returned unchanged.
+	 * Walks the candidate-resolver chain until a concrete type is reached or the recursion depth runs out, drawing
+	 * each choice from {@code scope}, the seed scope of the node the type sits at. Non-abstract input types are
+	 * returned unchanged.
 	 *
 	 * @param type              the type to resolve
 	 * @param resolverLookup    looks up the {@link CandidateConcretePropertyResolver} for a property,
 	 *                          returning {@code null} when none is configured
 	 * @param maxRecursionDepth maximum number of resolver hops before bailing out
+	 * @param scope             the seed scope of the node the type sits at
+	 * @return the resolved concrete type, or the last type reached
 	 */
 	public JvmType resolve(
 		JvmType type,
 		Function<Property, @Nullable CandidateConcretePropertyResolver> resolverLookup,
-		int maxRecursionDepth
+		int maxRecursionDepth,
+		SeedSnapshot scope
 	) {
 		JvmType currentType = type;
 		Set<Class<?>> visited = new HashSet<>();
@@ -85,12 +84,15 @@ public final class AbstractTypeResolver {
 				return currentType;
 			}
 
-			List<Property> candidates = resolver.resolve(property);
+			List<Property> candidates = SeedSnapshot.runIn(
+				SeedPurpose.IMPLEMENTATION.resolverScopeIn(scope, currentType.hashCode()),
+				() -> resolver.resolve(property)
+			);
 			if (candidates == null || candidates.isEmpty()) {
 				return currentType;
 			}
 
-			Random random = seedState.snapshot().randomFor(currentType.hashCode());
+			Random random = SeedPurpose.IMPLEMENTATION.randomFor(scope, currentType.hashCode());
 			Property selected = candidates.get(random.nextInt(candidates.size()));
 
 			currentType = selected.getJvmType();

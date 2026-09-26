@@ -31,8 +31,9 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * This resolver is used to determine which concrete type should be used when generating
  * nodes for an interface type.
  * <p>
- * For deterministic resolution when multiple implementations are available,
- * implementations should store a seed in their constructor and use it internally.
+ * For deterministic resolution when multiple implementations are available, draw from the scope given to
+ * {@link #resolve(JvmType, SeedSnapshot)}, so the choice depends only on where the node sits in the sample. An
+ * implementation used without a scope can keep a seed of its own.
  * <p>
  * Example implementations:
  * <pre>
@@ -58,6 +59,18 @@ public interface InterfaceResolver extends NodeCustomizer {
 	@Nullable
 	JvmType resolve(JvmType interfaceType);
 
+	/**
+	 * Resolves an interface type drawing any randomness from the scope of the node being resolved, so the same node
+	 * in the same sample resolves the same way however the tree was built.
+	 *
+	 * @param interfaceType the interface type to resolve
+	 * @param scope         the seed scope of the node
+	 * @return the concrete implementation type to use for node generation, or null if not resolvable
+	 */
+	@Nullable
+	default JvmType resolve(JvmType interfaceType, SeedSnapshot scope) {
+		return resolve(interfaceType);
+	}
 
 	/**
 	 * Resolves an interface type to all possible concrete implementation types.
