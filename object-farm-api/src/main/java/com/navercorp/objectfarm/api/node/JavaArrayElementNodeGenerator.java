@@ -76,7 +76,7 @@ public final class JavaArrayElementNodeGenerator implements JvmContainerNodeGene
 		List<JvmNode> elementNodes = new ArrayList<>();
 		for (int i = 0; i < arraySize; i++) {
 			CreationMethod creationMethod = new ContainerElementCreationMethod(i);
-			elementNodes.add(new JavaNode(elementType, "[" + i + "]", i, creationMethod));
+			elementNodes.add(new JavaNode(elementType, elementType, "[" + i + "]", i, creationMethod));
 		}
 
 		return Collections.unmodifiableList(elementNodes);

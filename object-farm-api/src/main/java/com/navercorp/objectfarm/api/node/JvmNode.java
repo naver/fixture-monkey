@@ -55,6 +55,18 @@ public interface JvmNode {
 	JvmType getConcreteType();
 
 	/**
+	 * Returns the type the node is declared with where it is referenced: a field's type, a container's element
+	 * type, the type a sample was requested with. It differs from {@link #getConcreteType()} when an
+	 * implementation was chosen for an interface or abstract declared type. Matching what a node is (a
+	 * registered matcher, a scope) uses this type; building the node uses the concrete one.
+	 *
+	 * @return the declared type
+	 */
+	default JvmType getDeclaredType() {
+		return getConcreteType();
+	}
+
+	/**
 	 * Returns the name of this node, if available.
 	 * The name typically represents the field name, map key, or other identifier
 	 * that distinguishes this node within its parent context.

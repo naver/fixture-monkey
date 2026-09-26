@@ -75,6 +75,7 @@ public final class JavaMapElementNodeGenerator implements JvmContainerNodeGenera
 			CreationMethod creationMethod = new ContainerElementCreationMethod(i);
 			elementNodes.add(new JavaMapNode(
 				containerType,
+				containerType,
 				"[" + i + "]",
 				i,
 				new JavaNode(keyType, "key"),

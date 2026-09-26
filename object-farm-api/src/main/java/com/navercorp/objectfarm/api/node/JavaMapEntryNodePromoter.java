@@ -42,6 +42,7 @@ public final class JavaMapEntryNodePromoter implements JvmNodePromoter {
 
 		JvmNode keyNode = new JavaNode(
 			mapEntryCandidate.getKey().getType(),
+			mapEntryCandidate.getKey().getType(),
 			mapEntryCandidate.getKey().getName(),
 			null,
 			mapEntryCandidate.getKey().getCreationMethod()
@@ -49,12 +50,14 @@ public final class JavaMapEntryNodePromoter implements JvmNodePromoter {
 
 		JvmNode valueNode = new JavaNode(
 			mapEntryCandidate.getValue().getType(),
+			mapEntryCandidate.getValue().getType(),
 			mapEntryCandidate.getValue().getName(),
 			null,
 			mapEntryCandidate.getValue().getCreationMethod()
 		);
 
 		JavaMapEntryNode mapEntryNode = new JavaMapEntryNode(
+			mapEntryCandidate.getType(),
 			mapEntryCandidate.getType(),
 			mapEntryCandidate.getName(),
 			null,

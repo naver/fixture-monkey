@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -62,9 +63,50 @@ import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 	private final Function<JvmNode, @Nullable JvmNode> parentLookup;
+	private final boolean declaredTypes;
 
 	public JvmNodePropertyFactory(Function<JvmNode, @Nullable JvmNode> parentLookup) {
+		this(parentLookup, false);
+	}
+
+	private JvmNodePropertyFactory(Function<JvmNode, @Nullable JvmNode> parentLookup, boolean declaredTypes) {
 		this.parentLookup = parentLookup;
+		this.declaredTypes = declaredTypes;
+	}
+
+	/**
+	 * Creates a factory whose properties have the types nodes are declared with rather than the implementations
+	 * chosen for them, for matching what a node is: a registered matcher or a scope sees a field declared
+	 * {@code List<String>} as a list even when an {@code ArrayList} is built for it.
+	 *
+	 * @param parentLookup the parent of a node
+	 * @return the factory
+	 */
+	public static JvmNodePropertyFactory forMatching(Function<JvmNode, @Nullable JvmNode> parentLookup) {
+		return new JvmNodePropertyFactory(parentLookup, true);
+	}
+
+	/**
+	 * Creates a factory for matching the nodes of a chain, where each node's parent is the node before it. Used
+	 * while a tree is being built, when only the chain above a node is known.
+	 *
+	 * @param chain the nodes from the outermost ancestor down to the node, the parent right before each node
+	 * @return the factory
+	 * @see #forMatching(Function)
+	 */
+	public static JvmNodePropertyFactory ofChain(List<JvmNode> chain) {
+		return forMatching(node -> {
+			for (int i = chain.size() - 1; i > 0; i--) {
+				if (chain.get(i) == node) {
+					return chain.get(i - 1);
+				}
+			}
+			return null;
+		});
+	}
+
+	private JvmType typeOf(JvmNode node) {
+		return declaredTypes ? node.getDeclaredType() : node.getConcreteType();
 	}
 
 	/**
@@ -98,7 +140,7 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 	@SuppressWarnings({"argument", "dereference.of.nullable", "unboxing.of.nullable"})
 	@Override
 	public Property apply(JvmNode node) {
-		JvmType jvmType = node.getConcreteType();
+		JvmType jvmType = typeOf(node);
 		CreationMethod creationMethod = node.getCreationMethod();
 		Boolean nullable = jvmType.getNullable();
 
@@ -152,7 +194,7 @@ public class JvmNodePropertyFactory implements Function<JvmNode, Property> {
 					) {
 						annotationSource = grandParent;
 					}
-					Property containerProperty = fromType(annotationSource.getConcreteType());
+					Property containerProperty = fromType(typeOf(annotationSource));
 					Property elementProperty = new TypeNameProperty(jvmType, node.getNodeName(), null);
 					return new DefaultContainerElementProperty(
 						containerProperty,

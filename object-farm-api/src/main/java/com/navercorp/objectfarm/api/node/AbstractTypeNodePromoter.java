@@ -56,6 +56,8 @@ public final class AbstractTypeNodePromoter implements JvmNodePromoter {
 	public List<JvmNode> promote(JvmNodeCandidate node, JvmNodeContext context) {
 		JvmType nodeType = node.getType();
 
-		return Collections.singletonList(new JavaNode(nodeType, node.getName(), null, node.getCreationMethod()));
+		return Collections.singletonList(
+			new JavaNode(nodeType, nodeType, node.getName(), null, node.getCreationMethod())
+		);
 	}
 }

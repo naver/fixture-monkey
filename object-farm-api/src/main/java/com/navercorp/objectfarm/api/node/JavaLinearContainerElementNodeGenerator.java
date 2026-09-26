@@ -74,7 +74,7 @@ public final class JavaLinearContainerElementNodeGenerator implements JvmContain
 		List<JvmNode> elementNodes = new ArrayList<>();
 		for (int i = 0; i < containerSize; i++) {
 			CreationMethod creationMethod = new ContainerElementCreationMethod(i);
-			elementNodes.add(new JavaNode(elementType, "[" + i + "]", i, creationMethod));
+			elementNodes.add(new JavaNode(elementType, elementType, "[" + i + "]", i, creationMethod));
 		}
 
 		return Collections.unmodifiableList(elementNodes);
