@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -39,6 +40,7 @@ import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 
 /**
  * {@link FixtureMonkey} → {@link ArbitraryBuilder} → {@link CombinableArbitrary}
@@ -51,9 +53,17 @@ import com.navercorp.fixturemonkey.customizer.SizeDirective;
  */
 @API(since = "0.4.0", status = Status.INTERNAL)
 public final class ArbitraryBuilderContext {
+	private static final long SAMPLE = "sample".hashCode();
+	private static final long CHILD = "child".hashCode();
+	private static final long FIX = "fix".hashCode();
+
 	private final List<PathDirective> directives;
 	private final Map<Class<?>, InstantiatorProcessResult> instantiatorsByType;
 	private final MonkeyContext monkeyContext;
+	private final SeedSnapshot builderScope;
+	private final AtomicInteger sampleCount = new AtomicInteger();
+	private final AtomicInteger childCount = new AtomicInteger();
+	private final AtomicInteger fixCount = new AtomicInteger();
 
 	private @Nullable Boolean optionValidOnly;
 
@@ -67,13 +77,15 @@ public final class ArbitraryBuilderContext {
 		Map<Class<?>, InstantiatorProcessResult> instantiatorsByType,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
-		MonkeyContext monkeyContext
+		MonkeyContext monkeyContext,
+		SeedSnapshot builderScope
 	) {
 		this.directives = directives;
 		this.instantiatorsByType = instantiatorsByType;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 		this.monkeyContext = monkeyContext;
+		this.builderScope = builderScope;
 	}
 
 	/**
@@ -81,12 +93,13 @@ public final class ArbitraryBuilderContext {
 	 * It will be removed when all related class migrate to api module.
 	 */
 	@Deprecated
-	public static ArbitraryBuilderContext newBuilderContext(MonkeyContext monkeyContext) {
+	public static ArbitraryBuilderContext newBuilderContext(MonkeyContext monkeyContext, SeedSnapshot builderScope) {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(),
 			new HashMap<>(),
 			null, null,
-			monkeyContext
+			monkeyContext,
+			builderScope
 		);
 	}
 
@@ -98,13 +111,32 @@ public final class ArbitraryBuilderContext {
 			new HashMap<>(instantiatorsByType),
 			fixedState,
 			fixedCombinableArbitrary,
-			monkeyContext
+			monkeyContext,
+			nextChildScope()
 		);
 
 		copiedContext.setCustomizedValidOnly(customizedValidOnly);
 		copiedContext.setOptionValidOnly(optionValidOnly);
 
 		return copiedContext;
+	}
+
+	/**
+	 * Returns the seed scope of this builder's next sample; the n-th sample of a builder always gets the same scope.
+	 *
+	 * @return the next sample's seed scope
+	 */
+	public SeedSnapshot nextSampleScope() {
+		return builderScope.scope(SAMPLE).scope(sampleCount.getAndIncrement());
+	}
+
+	/**
+	 * Returns the seed scope of the next builder derived from this one, such as a copy.
+	 *
+	 * @return the derived builder's seed scope
+	 */
+	public SeedSnapshot nextChildScope() {
+		return builderScope.scope(CHILD).scope(childCount.getAndIncrement());
 	}
 
 	public void addDirective(PathDirective directive) {
@@ -138,10 +170,13 @@ public final class ArbitraryBuilderContext {
 	 * {@code ArbitraryBuilder.fixed()} so subsequent samples produce deterministic container sizes.
 	 */
 	public void fixContainerSizes() {
+		SeedSnapshot fixScope = builderScope.scope(FIX).scope(fixCount.getAndIncrement());
 		for (int i = 0; i < directives.size(); i++) {
 			PathDirective directive = directives.get(i);
 			if (directive instanceof SizeDirective) {
-				directives.set(i, ((SizeDirective)directive).fix());
+				SizeDirective sizeDirective = (SizeDirective)directive;
+				SeedSnapshot pathScope = fixScope.scope(sizeDirective.path().hashCode());
+				directives.set(i, SeedSnapshot.runIn(pathScope, sizeDirective::fix));
 			}
 		}
 	}

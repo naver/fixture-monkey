@@ -28,6 +28,7 @@ dependencies {
 
     compileOnly(libs.jqwik.engine)
     compileOnly(libs.jqwik.api)
+    compileOnly(libs.junit.platform.engine)
     compileOnly(libs.jqwik.web)
     compileOnly(libs.jqwik.time)
     compileOnly(libs.rgxgen)

@@ -25,7 +25,6 @@ import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.of
-import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.util.function.Predicate
@@ -34,7 +33,7 @@ import java.util.function.Predicate
 class KotestCharacterCombinableArbitrary(
     private val arb: Arb<Char> = DEFAULT_CHAR_ARB
 ) : CharacterCombinableArbitrary {
-    override fun combined(): Char = arb.single()
+    override fun combined(): Char = arb.sampleInScope()
 
     override fun rawValue(): Char = this.combined()
 

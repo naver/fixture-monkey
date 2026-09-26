@@ -58,7 +58,7 @@ public final class JqwikStringCombinableArbitrary implements StringCombinableArb
 			characterListArbitrary = characterListArbitrary.ofMaxSize(this.maxSize);
 		}
 
-		List<Character> characters = characterListArbitrary.sample();
+		List<Character> characters = ArbitraryUtils.sample(characterListArbitrary);
 		StringBuilder stringBuilder = new StringBuilder();
 		for (Character character : characters) {
 			stringBuilder.append(character);

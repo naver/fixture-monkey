@@ -28,6 +28,7 @@ import net.jqwik.engine.SourceOfRandomness;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.engine.EngineUtils;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 
 /**
  * Reference jqwik SourceOfRandomness
@@ -94,7 +95,24 @@ public abstract class Randoms {
 		return CURRENT.get();
 	}
 
+	/**
+	 * Returns the random a value generated now draws from: the random of the running seed scope while a node's
+	 * value is generated, so the value depends only on where the node sits in the sample, or the global seeded
+	 * random outside any scope.
+	 *
+	 * @return the random to draw from
+	 */
 	public static Random current() {
+		Random scoped = SeedSnapshot.currentRandom();
+		return scoped != null ? scoped : global();
+	}
+
+	/**
+	 * Returns the global seeded random, which changes only when a seed is set.
+	 *
+	 * @return the global seeded random
+	 */
+	public static Random global() {
 		return EngineUtils.useJqwikEngine()
 			? SourceOfRandomness.current()
 			: CURRENT.get();

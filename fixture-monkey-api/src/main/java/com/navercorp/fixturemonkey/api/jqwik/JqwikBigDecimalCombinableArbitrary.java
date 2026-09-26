@@ -43,7 +43,7 @@ public final class JqwikBigDecimalCombinableArbitrary implements BigDecimalCombi
 
 	@Override
 	public BigDecimal combined() {
-		return this.bigDecimalArbitrary.sample();
+		return ArbitraryUtils.sample(this.bigDecimalArbitrary);
 	}
 
 	@Override

@@ -25,14 +25,13 @@ import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.negativeLong
 import io.kotest.property.arbitrary.positiveLong
-import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.util.function.Predicate
 
 @API(since = "1.1.16", status = Status.EXPERIMENTAL)
 class KotestLongCombinableArbitrary(private val arb: Arb<Long> = Arb.long()) : LongCombinableArbitrary {
-    override fun combined(): Long = arb.single()
+    override fun combined(): Long = arb.sampleInScope()
 
     override fun rawValue(): Long = this.combined()
 
