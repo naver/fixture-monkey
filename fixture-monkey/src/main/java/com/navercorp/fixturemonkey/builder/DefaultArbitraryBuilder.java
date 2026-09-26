@@ -58,7 +58,6 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -67,7 +66,6 @@ import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.DirectiveSet;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.MonkeyDirectiveFactory;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
@@ -88,14 +86,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	 * It has the actual applied manipulators.
 	 */
 	private final ArbitraryBuilderContext activeContext;
-	/**
-	 * List of matcher operators that have been registered but not yet activated.
-	 * Manipulators in {@link #activeContext} are always applied, while manipulators in these standby contexts
-	 * are evaluated and applied lazily only if their match conditions are satisfied during object building.
-	 * Keeping them separate prevents stack overflow that can occur from nested {@code thenApply} calls
-	 * during registration.
-	 */
-	private final List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 
@@ -104,7 +94,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		ArbitraryResolver resolver,
 		MonkeyDirectiveFactory directiveFactory,
 		ArbitraryBuilderContext context,
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor
 	) {
@@ -113,7 +102,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.activeContext = context;
 		this.directiveFactory = directiveFactory;
 		this.monkeyContext = monkeyContext;
-		this.standbyContexts = standbyContexts;
 		this.instantiatorProcessor = instantiatorProcessor;
 	}
 
@@ -189,8 +177,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
-		DirectiveSet manipulatorSet = innerSpec.getManipulatorSet(directiveFactory);
-		this.activeContext.addDirectives(manipulatorSet.getDirectives());
+		this.activeContext.addDirectives(innerSpec.getDirectives(directiveFactory));
 		return this;
 	}
 
@@ -471,8 +458,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		InstantiatorProcessResult result = instantiatorProcessor.process(typeReference, instantiator);
 
 		Class<?> type = Types.getActualType(typeReference.getType());
-		activeContext.putArbitraryIntrospector(type, result.getIntrospector());
-		activeContext.putPropertyConfigurer(type, result.getProperties());
+		activeContext.putInstantiator(type, result);
 		return this;
 	}
 
@@ -519,7 +505,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			resolver,
 			directiveFactory,
 			activeContext.copy(),
-			standbyContexts,
 			monkeyContext,
 			instantiatorProcessor
 		);
@@ -533,12 +518,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext activeContext) {
 		if (activeContext.isFixed()) {
 			if (activeContext.getFixedCombinableArbitrary() == null || activeContext.fixedExpired()) {
-				Object fixed = resolver.resolve(
-						rootProperty,
-						activeContext,
-						standbyContexts
-					)
-					.combined();
+				Object fixed = resolver.resolve(rootProperty, activeContext).combined();
 
 				PathExpression rootPathExpression = PathExpression.root();
 				activeContext.addDirective(directiveFactory.newDirective(rootPathExpression, fixed));
@@ -551,11 +531,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			return fixedArbitrary;
 		}
 
-		return resolver.resolve(
-			rootProperty,
-			activeContext,
-			standbyContexts
-		);
+		return resolver.resolve(rootProperty, activeContext);
 	}
 
 	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {
@@ -573,7 +549,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			resolver,
 			directiveFactory,
 			context,
-			standbyContexts,
 			monkeyContext,
 			instantiatorProcessor
 		);

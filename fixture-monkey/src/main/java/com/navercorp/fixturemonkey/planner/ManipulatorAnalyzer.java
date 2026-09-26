@@ -18,29 +18,15 @@
 
 package com.navercorp.fixturemonkey.planner;
 
-import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
-import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
-import static com.navercorp.fixturemonkey.api.type.Types.isBoxedPrimitive;
-import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
-import static com.navercorp.fixturemonkey.api.type.Types.normalizeRawType;
-import static com.navercorp.fixturemonkey.api.type.Types.toJvmType;
 import static com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
 import static com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
 
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -49,26 +35,25 @@ import org.jspecify.annotations.Nullable;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.customizer.CustomizerDirective;
 import com.navercorp.fixturemonkey.customizer.FilterDirective;
 import com.navercorp.fixturemonkey.customizer.JustDirective;
 import com.navercorp.fixturemonkey.customizer.LazyDirective;
 import com.navercorp.fixturemonkey.customizer.NullityDirective;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
+import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.SetDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.customizer.Values;
+import com.navercorp.fixturemonkey.decompose.DecomposedContainerDetector;
+import com.navercorp.fixturemonkey.decompose.PropertyFieldExtractor;
 import com.navercorp.fixturemonkey.tracing.ResolutionTrace;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
-import com.navercorp.objectfarm.api.input.ExtractedField;
 import com.navercorp.objectfarm.api.input.FieldExtractor;
 import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.input.ValueAnalysisResult;
@@ -96,81 +81,105 @@ public final class ManipulatorAnalyzer {
 	}
 
 	/**
-	 * Analyzes a list of {@link PathDirective}s and extracts topology-affecting information.
+	 * Analyzes the root scope's directives and extracts topology-affecting information.
 	 * <p>
 	 * The {@code nameResolver} is used when decomposing {@code set("$", complexObject)} values so
 	 * plugin-specific naming (e.g., Jackson {@code @JsonProperty}) is preserved on the produced
 	 * child paths. Pass {@code null} to fall back to {@link Property#getName()}.
 	 *
-	 * @param directives              the list of directives to analyze
+	 * @param rootScope               the root scope, with the directives the sampled builder declared in order
 	 * @param nameResolver            per-property name resolver applied to decomposed child paths
 	 * @param inlinedValueResolver    reconstructs value types a JVM language inlined into the
 	 *                                decomposed object's fields
 	 */
 	public static AnalysisResult analyze(
-		List<PathDirective> directives,
+		Scope rootScope,
 		@Nullable Function<Property, String> nameResolver,
 		InlinedValueResolver inlinedValueResolver
 	) {
-		List<PathResolver<InterfaceResolver>> interfaceResolvers = new ArrayList<>();
-		List<PathResolver<GenericTypeResolver>> genericTypeResolvers = new ArrayList<>();
-		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers = new ArrayList<>();
-		Map<PathExpression, Integer> containerSizeSequenceByPath = new HashMap<>();
-		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath = new HashMap<>();
-		List<PathExpression> justPaths = new ArrayList<>();
-		Set<PathExpression> notNullPaths = new HashSet<>();
-		Map<PathExpression, @Nullable Object> valuesByPath = new HashMap<>();
-		Map<PathExpression, List<PostConditionFilter>> filtersByPath = new HashMap<>();
-		Map<PathExpression, Integer> limitsByPath = new HashMap<>();
-		Map<PathExpression, Integer> valueOrderByPath = new HashMap<>();
-		Map<PathExpression, List<PropertyCustomizer>> customizersByPath = new HashMap<>();
-		List<ResolutionTrace.NodeCollision> nodeCollisions = new ArrayList<>();
+		AnalyzedScope declared = new AnalyzedScope(rootScope);
+		PlanningValueStore values = new PlanningValueStore(nameResolver, inlinedValueResolver);
 		boolean strictMode = false;
-
-		for (int order = 0; order < directives.size(); order++) {
-			PathDirective directive = directives.get(order);
-
+		for (PathDirective directive : rootScope.getDirectives()) {
 			if (!strictMode && directive.strict()) {
 				strictMode = true;
 			}
-
-			analyzeDirective(
-				directive,
-				order,
-				interfaceResolvers,
-				genericTypeResolvers,
-				containerSizeResolvers,
-				containerSizeSequenceByPath,
-				latestSizeDirectiveByPath,
-				justPaths,
-				notNullPaths,
-				valuesByPath,
-				filtersByPath,
-				limitsByPath,
-				valueOrderByPath,
-				customizersByPath,
-				nodeCollisions,
-				nameResolver,
-				inlinedValueResolver
-			);
+			interpret(directive, declared, values);
 		}
+		return values.toResult(declared, strictMode);
+	}
 
-		return new AnalysisResult(
-			interfaceResolvers,
-			genericTypeResolvers,
-			containerSizeResolvers,
-			containerSizeSequenceByPath,
-			latestSizeDirectiveByPath,
-			justPaths,
-			notNullPaths,
-			valuesByPath,
-			filtersByPath,
-			limitsByPath,
-			valueOrderByPath,
-			customizersByPath,
-			nodeCollisions,
-			strictMode
-		);
+	/**
+	 * Analyzes each defined scope, keeping their order.
+	 *
+	 * @param definedScopes the defined scopes, the one with the lowest precedence first
+	 * @return the analyzed scopes, in the same order
+	 */
+	public static List<AnalyzedScope> analyze(List<Scope> definedScopes) {
+		List<AnalyzedScope> analyzed = new ArrayList<>(definedScopes.size());
+		for (Scope scope : definedScopes) {
+			analyzed.add(analyze(scope));
+		}
+		return analyzed;
+	}
+
+	/**
+	 * Analyzes the directives declared for a defined scope, with paths relative to the node the scope selects.
+	 * Values stay as declared: unlike the root scope's, they are expanded during assembly, where the nodes the scope
+	 * selects become known.
+	 *
+	 * @param scope the scope, with the directives declared for it in order
+	 * @return the scope's directives by relative path
+	 */
+	public static AnalyzedScope analyze(Scope scope) {
+		AnalyzedScope declared = new AnalyzedScope(scope);
+		AssemblyValueStore values = new AssemblyValueStore(declared);
+		for (PathDirective directive : scope.getDirectives()) {
+			interpret(directive, declared, values);
+		}
+		return declared;
+	}
+
+	// Records what one scope declared, by path relative to the node the scope selects. Where the scope's values go
+	// depends on when the scope's nodes become known: the root scope's while planning, any other scope's during
+	// assembly
+	private static void interpret(PathDirective directive, AnalyzedScope declared, ValueStore values) {
+		PathExpression path = directive.path();
+		int limit = directive.limit();
+		// A limit of 0 is recorded too, which stops the directive from being applied at all
+		if (limit != PathDirective.UNLIMITED) {
+			declared.putLimit(path, limit);
+		}
+		if (directive instanceof FilterDirective) {
+			FilterDirective filter = (FilterDirective)directive;
+			declared.addFilter(path, new PostConditionFilter(filter.type(), filter.filter()));
+		} else if (directive instanceof CustomizerDirective) {
+			@SuppressWarnings({"unchecked", "rawtypes"})
+			Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer =
+				(Function)((CustomizerDirective<?>)directive).customizer();
+			declared.addCustomizer(path, new PropertyCustomizer(customizer));
+		} else if (directive instanceof SetDirective) {
+			declared.overrideCustomizersAt(path);
+			values.set((SetDirective)directive);
+		} else if (directive instanceof JustDirective) {
+			declared.overrideCustomizersAt(path);
+			values.just((JustDirective)directive);
+		} else if (directive instanceof NullityDirective) {
+			NullityDirective nullity = (NullityDirective)directive;
+			if (nullity.toNull()) {
+				declared.overrideCustomizersAt(path);
+				values.setNull(nullity);
+				declared.unmarkNotNull(path);
+			} else {
+				values.clearNull(path);
+				declared.markNotNull(path);
+			}
+		} else if (directive instanceof LazyDirective) {
+			declared.overrideCustomizersAt(path);
+			values.lazy((LazyDirective)directive);
+		} else if (directive instanceof SizeDirective) {
+			values.size((SizeDirective)directive);
+		}
 	}
 
 	/**
@@ -190,67 +199,105 @@ public final class ManipulatorAnalyzer {
 		Collections.emptyMap(),
 		Collections.emptyMap(),
 		Collections.emptyList(),
-		Collections.emptySet(),
 		Collections.emptyMap(),
 		Collections.emptyMap(),
-		Collections.emptyMap(),
-		Collections.emptyMap(),
-		Collections.emptyMap(),
+		new AnalyzedScope(Scope.root(Collections.emptyList(), Collections.emptyMap())),
 		Collections.emptyList(),
 		false
 	);
 
-	private static void analyzeDirective(
-		PathDirective directive,
-		int order,
-		List<PathResolver<InterfaceResolver>> interfaceResolvers,
-		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
-		Map<PathExpression, Integer> containerSizeSequenceByPath,
-		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath,
-		List<PathExpression> justPaths,
-		Set<PathExpression> notNullPaths,
-		Map<PathExpression, @Nullable Object> valuesByPath,
-		Map<PathExpression, List<PostConditionFilter>> filtersByPath,
-		Map<PathExpression, Integer> limitsByPath,
-		Map<PathExpression, Integer> valueOrderByPath,
-		Map<PathExpression, List<PropertyCustomizer>> customizersByPath,
-		List<ResolutionTrace.NodeCollision> nodeCollisions,
-		@Nullable Function<Property, String> nameResolver,
-		InlinedValueResolver inlinedValueResolver
-	) {
-		PathExpression pathExpression = directive.path();
-		int limit = directive.limit();
-		// Only PathDirective.UNLIMITED means "apply to every matching path", so any other value is
-		// recorded and enforced as a cap. A limit of 0 is recorded too, which stops the directive
-		// from being applied at all (see ValueProjectionAssembler: remainingLimit <= 0).
-		if (limit != PathDirective.UNLIMITED) {
-			limitsByPath.put(pathExpression, limit);
+	// Where a scope's values and sizes go
+	private interface ValueStore {
+		void set(SetDirective directive);
+
+		void just(JustDirective directive);
+
+		void setNull(NullityDirective directive);
+
+		void clearNull(PathExpression path);
+
+		void lazy(LazyDirective directive);
+
+		void size(SizeDirective directive);
+	}
+
+	// Keeps the values as declared; they are expanded during assembly for each node the scope selects
+	private static final class AssemblyValueStore implements ValueStore {
+		private final AnalyzedScope declared;
+
+		private AssemblyValueStore(AnalyzedScope declared) {
+			this.declared = declared;
 		}
 
-		if (directive instanceof FilterDirective) {
-			FilterDirective filterDirective = (FilterDirective)directive;
-			filtersByPath
-				.computeIfAbsent(pathExpression, k -> new ArrayList<>())
-				.add(new PostConditionFilter(filterDirective.type(), filterDirective.filter()));
-			return;
+		@Override
+		public void set(SetDirective directive) {
+			declared.putValue(directive.path(), directive.value());
 		}
 
-		if (directive instanceof CustomizerDirective) {
-			CustomizerDirective<?> customizerDirective = (CustomizerDirective<?>)directive;
-			@SuppressWarnings({"unchecked", "rawtypes"})
-			Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer =
-				(Function)customizerDirective.customizer();
-			boolean afterSet = valuesByPath.containsKey(pathExpression);
-			customizersByPath
-				.computeIfAbsent(pathExpression, k -> new ArrayList<>())
-				.add(new PropertyCustomizer(customizer, order, afterSet));
-			return;
+		@Override
+		public void just(JustDirective directive) {
+			declared.putValue(directive.path(), directive.value());
 		}
 
-		if (directive instanceof SetDirective) {
+		@Override
+		public void setNull(NullityDirective directive) {
+			declared.putValue(directive.path(), null);
+		}
+
+		@Override
+		public void clearNull(PathExpression path) {
+			declared.removeNullValue(path);
+		}
+
+		@Override
+		public void lazy(LazyDirective directive) {
+			boolean rootLevel = directive.path().isRoot();
+			if (rootLevel) {
+				declared.clearSupersededByRootLazy();
+			}
+			declared.putValue(
+				directive.path(),
+				new LazyValueHolder(directive.lazyArbitrary(), declared.getSelector(), rootLevel)
+			);
+		}
+
+		@Override
+		public void size(SizeDirective directive) {
+			declared.putContainerSize(directive.path(), directive.containerInfo());
+		}
+
+	}
+
+	// Expands the values right away: the root scope's paths are fixed from the node a sample starts from, so values
+	// are decomposed and the resolvers they imply are made during planning
+	private static final class PlanningValueStore implements ValueStore {
+		private final @Nullable Function<Property, String> nameResolver;
+		private final InlinedValueResolver inlinedValueResolver;
+		private final List<PathResolver<InterfaceResolver>> interfaceResolvers = new ArrayList<>();
+		private final List<PathResolver<GenericTypeResolver>> genericTypeResolvers = new ArrayList<>();
+		private final List<PathResolver<ContainerSizeResolver>> containerSizeResolvers = new ArrayList<>();
+		private final Map<PathExpression, Integer> containerSizeSequenceByPath = new HashMap<>();
+		private final Map<PathExpression, SizeDirective> latestSizeDirectiveByPath = new HashMap<>();
+		private final List<PathExpression> justPaths = new ArrayList<>();
+		private final Map<PathExpression, @Nullable Object> valuesByPath = new HashMap<>();
+		private final Map<PathExpression, Integer> valueOrderByPath = new HashMap<>();
+		private final List<ResolutionTrace.NodeCollision> nodeCollisions = new ArrayList<>();
+
+		private PlanningValueStore(
+			@Nullable Function<Property, String> nameResolver,
+			InlinedValueResolver inlinedValueResolver
+		) {
+			this.nameResolver = nameResolver;
+			this.inlinedValueResolver = inlinedValueResolver;
+		}
+
+		@Override
+		public void set(SetDirective directive) {
+			if (yieldsToJust(directive.path(), directive.value(), directive.decomposedContainerValueFactory())) {
+				return;
+			}
 			analyzeSetDirective(
-				(SetDirective)directive,
+				directive,
 				interfaceResolvers,
 				genericTypeResolvers,
 				containerSizeResolvers,
@@ -261,49 +308,92 @@ public final class ManipulatorAnalyzer {
 				nameResolver,
 				inlinedValueResolver
 			);
-			return;
 		}
 
-		if (directive instanceof JustDirective) {
-			JustDirective justDirective = (JustDirective)directive;
-			Object value = justDirective.value();
+		@Override
+		public void just(JustDirective directive) {
+			PathExpression pathExpression = directive.path();
+			Object value = directive.value();
+			int sequence = directive.sequence();
 			if (value != null) {
-				recordCollisionIfExists(pathExpression, order, value, valuesByPath, valueOrderByPath, nodeCollisions);
-				valuesByPath.put(pathExpression, value);
-				valueOrderByPath.put(pathExpression, order);
-			}
-			justPaths.add(pathExpression);
-			return;
-		}
-
-		if (directive instanceof NullityDirective) {
-			NullityDirective nullityDirective = (NullityDirective)directive;
-			int nullitySequence = nullityDirective.sequence();
-			if (nullityDirective.toNull()) {
 				recordCollisionIfExists(
 					pathExpression,
-					nullitySequence,
-					null,
+					sequence,
+					value,
 					valuesByPath,
 					valueOrderByPath,
 					nodeCollisions
 				);
-				valuesByPath.put(pathExpression, null);
-				valueOrderByPath.put(pathExpression, nullitySequence);
-				notNullPaths.remove(pathExpression);
-			} else {
-				if (valuesByPath.containsKey(pathExpression) && valuesByPath.get(pathExpression) == null) {
-					valuesByPath.remove(pathExpression);
-					valueOrderByPath.remove(pathExpression);
-				}
-				notNullPaths.add(pathExpression);
+				valuesByPath.put(pathExpression, value);
+				valueOrderByPath.put(pathExpression, sequence);
 			}
-			return;
+			justPaths.add(pathExpression);
 		}
 
-		if (directive instanceof LazyDirective) {
+		// A value set with Values.just() stays as it is: a later value that would be decomposed into it (a container
+		// or an object with fields) is ignored, while a single value, null or another just replaces it
+		private boolean yieldsToJust(
+			PathExpression path,
+			@Nullable Object value,
+			DecomposedContainerValueFactory decomposedContainerValueFactory
+		) {
+			if (value == null || !justPaths.contains(path)) {
+				return false;
+			}
+			ContainerDetector containerDetector = new DecomposedContainerDetector(decomposedContainerValueFactory);
+			if (containerDetector.isContainer(value)) {
+				return true;
+			}
+			String ownPath = path.toExpression();
+			ValueAnalysisResult result = new ValueAnalyzer(
+				containerDetector,
+				new PropertyFieldExtractor(nameResolver, inlinedValueResolver)
+			).analyzeDecomposed(value, ownPath);
+			for (String decomposedPath : result.getValuesByPath().keySet()) {
+				if (!decomposedPath.equals(ownPath)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public void setNull(NullityDirective directive) {
+			PathExpression pathExpression = directive.path();
+			int nullitySequence = directive.sequence();
+			recordCollisionIfExists(
+				pathExpression,
+				nullitySequence,
+				null,
+				valuesByPath,
+				valueOrderByPath,
+				nodeCollisions
+			);
+			valuesByPath.put(pathExpression, null);
+			valueOrderByPath.put(pathExpression, nullitySequence);
+		}
+
+		@Override
+		public void clearNull(PathExpression path) {
+			if (valuesByPath.containsKey(path) && valuesByPath.get(path) == null) {
+				valuesByPath.remove(path);
+				valueOrderByPath.remove(path);
+			}
+		}
+
+		@Override
+		public void lazy(LazyDirective directive) {
+			if (justPaths.contains(directive.path())) {
+				Object value = directive.lazyArbitrary().getValue();
+				if (!(value instanceof Values.Just)
+					&& !(value instanceof Arbitrary)
+					&& yieldsToJust(directive.path(), value, directive.decomposedContainerValueFactory())) {
+					directive.lazyArbitrary().clear();
+					return;
+				}
+			}
 			analyzeLazyDirective(
-				(LazyDirective)directive,
+				directive,
 				interfaceResolvers,
 				genericTypeResolvers,
 				containerSizeResolvers,
@@ -315,15 +405,31 @@ public final class ManipulatorAnalyzer {
 				nameResolver,
 				inlinedValueResolver
 			);
-			return;
 		}
 
-		if (directive instanceof SizeDirective) {
+		@Override
+		public void size(SizeDirective directive) {
 			analyzeSizeDirective(
-				(SizeDirective)directive,
+				directive,
 				containerSizeResolvers,
 				containerSizeSequenceByPath,
 				latestSizeDirectiveByPath
+			);
+		}
+
+		private AnalysisResult toResult(AnalyzedScope declared, boolean strictMode) {
+			return new AnalysisResult(
+				interfaceResolvers,
+				genericTypeResolvers,
+				containerSizeResolvers,
+				containerSizeSequenceByPath,
+				latestSizeDirectiveByPath,
+				justPaths,
+				valuesByPath,
+				valueOrderByPath,
+				declared,
+				nodeCollisions,
+				strictMode
 			);
 		}
 	}
@@ -421,8 +527,8 @@ public final class ManipulatorAnalyzer {
 			.removeIf(key -> key.toExpression().startsWith(indexPrefix) && !valuesByPath.containsKey(key));
 
 		DecomposedContainerValueFactory factory = directive.decomposedContainerValueFactory();
-		ContainerDetector containerDetector = createContainerDetector(factory);
-		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver, inlinedValueResolver);
+		ContainerDetector containerDetector = new DecomposedContainerDetector(factory);
+		FieldExtractor fieldExtractor = new PropertyFieldExtractor(nameResolver, inlinedValueResolver);
 
 		ValueAnalyzer analyzer = new ValueAnalyzer(containerDetector, fieldExtractor);
 		ValueAnalysisResult result = analyzer.analyzeDecomposed(value, pathExpression.toExpression());
@@ -576,9 +682,9 @@ public final class ManipulatorAnalyzer {
 			);
 		valueOrderByPath.keySet().removeIf(key -> key.isChildOf(pathExpression) && !valuesByPath.containsKey(key));
 
-		// Use standard container detector and property-aware field extractor for lazy values
-		ContainerDetector containerDetector = ContainerDetector.standard();
-		FieldExtractor fieldExtractor = createFieldExtractor(nameResolver, inlinedValueResolver);
+		ContainerDetector containerDetector =
+			new DecomposedContainerDetector(directive.decomposedContainerValueFactory());
+		FieldExtractor fieldExtractor = new PropertyFieldExtractor(nameResolver, inlinedValueResolver);
 
 		ValueAnalyzer analyzer = new ValueAnalyzer(containerDetector, fieldExtractor);
 		ValueAnalysisResult result = analyzer.analyzeDecomposed(value, pathExpression.toExpression());
@@ -655,108 +761,6 @@ public final class ManipulatorAnalyzer {
 				new ResolutionTrace.NodeCollision(path.toExpression(), previousOrder, previousValue, newOrder, newValue)
 			);
 		}
-	}
-
-	/**
-	 * Creates a ContainerDetector that uses DecomposedContainerValueFactory.
-	 */
-	private static ContainerDetector createContainerDetector(DecomposedContainerValueFactory factory) {
-		return value -> {
-			if (value == null) {
-				return OptionalInt.empty();
-			}
-			try {
-				DecomposableJavaContainer decomposed = factory.from(value);
-				if (decomposed != null) {
-					return OptionalInt.of(decomposed.getSize());
-				}
-				return OptionalInt.empty();
-			} catch (IllegalArgumentException e) {
-				return OptionalInt.empty();
-			}
-		};
-	}
-
-	/**
-	 * Creates a FieldExtractor for value decomposition.
-	 * <p>
-	 * Uses {@link FieldPropertyGenerator}/{@link com.navercorp.fixturemonkey.api.property.FieldProperty}
-	 * to enumerate child properties so plugin-specific {@link PropertyNameResolver}s (e.g., Jackson
-	 * {@code @JsonProperty}) take effect, but reads each value via direct {@link Field#get(Object)}
-	 * — never through {@code Property.getValue}.
-	 */
-	@SuppressWarnings({"argument", "type.argument", "methodref.return", "return"})
-	private static FieldExtractor createFieldExtractor(
-		@Nullable Function<Property, String> nameResolver,
-		InlinedValueResolver inlinedValueResolver
-	) {
-		Function<Property, String> resolver = nameResolver != null ? nameResolver : Property::getName;
-		return new FieldExtractor() {
-			@Override
-			public Map<String, ExtractedField> extractFields(@Nullable Object value, String basePath) {
-				List<Property> childProperties = getChildProperties(value);
-				if (childProperties == null) {
-					return new HashMap<>();
-				}
-
-				Map<String, ExtractedField> result = new HashMap<>();
-				for (Property childProperty : childProperties) {
-					String name = resolver.apply(childProperty);
-					if (name == null) {
-						continue;
-					}
-					String childPath = basePath + "." + name;
-					Class<?> declaredType = normalizeRawType(childProperty.getJvmType().getRawType());
-					Object fieldValue = readPropertyValue(childProperty, value);
-					ExtractedField extracted = new ExtractedField(fieldValue, declaredType);
-					result.put(
-						childPath,
-						inlinedValueResolver.resolve(value, childProperty.getName(), extracted)
-					);
-				}
-				return result;
-			}
-
-			private @Nullable List<Property> getChildProperties(@Nullable Object value) {
-				if (value == null) {
-					return null;
-				}
-				Class<?> clazz = value.getClass();
-				if (clazz.isPrimitive() || clazz == String.class || clazz.isEnum() || clazz.isArray()) {
-					return null;
-				}
-				if (isBoxedPrimitive(clazz)) {
-					return null;
-				}
-				if (
-					value instanceof Collection
-						|| value instanceof Map
-						|| value instanceof Iterator
-						|| value instanceof Stream
-				) {
-					return null;
-				}
-				if (isJavaType(clazz)) {
-					return null;
-				}
-				AnnotatedType annotatedType = generateAnnotatedTypeWithoutAnnotation(clazz);
-				Property parentProperty = new TypeParameterProperty(toJvmType(annotatedType, Collections.emptyList()));
-				return FIELD_PROPERTY_GENERATOR.generateChildProperties(parentProperty);
-			}
-
-			private @Nullable Object readPropertyValue(Property property, @Nullable Object instance) {
-				if (instance == null || !(property instanceof FieldProperty)) {
-					return null;
-				}
-				Field field = ((FieldProperty)property).getField();
-				try {
-					field.setAccessible(true);
-					return field.get(instance);
-				} catch (IllegalAccessException ex) {
-					return null;
-				}
-			}
-		};
 	}
 
 	/**

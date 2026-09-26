@@ -34,9 +34,10 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
+import com.navercorp.fixturemonkey.customizer.Scope;
+import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 
 /**
@@ -51,8 +52,7 @@ import com.navercorp.fixturemonkey.customizer.SizeDirective;
 @API(since = "0.4.0", status = Status.INTERNAL)
 public final class ArbitraryBuilderContext {
 	private final List<PathDirective> directives;
-	private final Map<Class<?>, List<Property>> propertyConfigurers;
-	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
+	private final Map<Class<?>, InstantiatorProcessResult> instantiatorsByType;
 	private final MonkeyContext monkeyContext;
 
 	private @Nullable Boolean optionValidOnly;
@@ -64,15 +64,13 @@ public final class ArbitraryBuilderContext {
 
 	private ArbitraryBuilderContext(
 		List<PathDirective> directives,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
+		Map<Class<?>, InstantiatorProcessResult> instantiatorsByType,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
 		MonkeyContext monkeyContext
 	) {
 		this.directives = directives;
-		this.propertyConfigurers = propertyConfigurers;
-		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
+		this.instantiatorsByType = instantiatorsByType;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 		this.monkeyContext = monkeyContext;
@@ -87,7 +85,6 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(),
 			new HashMap<>(),
-			new HashMap<>(),
 			null, null,
 			monkeyContext
 		);
@@ -98,8 +95,7 @@ public final class ArbitraryBuilderContext {
 
 		ArbitraryBuilderContext copiedContext = new ArbitraryBuilderContext(
 			copiedDirectives,
-			new HashMap<>(propertyConfigurers),
-			new HashMap<>(arbitraryIntrospectorsByType),
+			new HashMap<>(instantiatorsByType),
 			fixedState,
 			fixedCombinableArbitrary,
 			monkeyContext
@@ -150,20 +146,33 @@ public final class ArbitraryBuilderContext {
 		}
 	}
 
-	public void putPropertyConfigurer(Class<?> type, List<Property> propertyConfigurer) {
-		this.propertyConfigurers.put(type, propertyConfigurer);
+	public void putInstantiator(Class<?> type, InstantiatorProcessResult instantiator) {
+		this.instantiatorsByType.put(type, instantiator);
 	}
 
-	public void putArbitraryIntrospector(Class<?> type, ArbitraryIntrospector arbitraryIntrospector) {
-		this.arbitraryIntrospectorsByType.put(type, arbitraryIntrospector);
+	/**
+	 * Returns what this context declared as the root scope, for the builder being sampled.
+	 */
+	public Scope toRootScope() {
+		return Scope.root(new ArrayList<>(directives), getInstantiators());
 	}
 
-	public Map<Class<?>, ArbitraryIntrospector> getArbitraryIntrospectorsByType() {
-		return arbitraryIntrospectorsByType;
+	/**
+	 * Returns what this context declared as a defined scope, for a {@code register(...)} builder.
+	 *
+	 * @param selector the nodes the scope applies to
+	 * @param priority the priority of the scope; a lower number takes precedence
+	 * @return the scope
+	 */
+	public Scope toScope(ScopeSelector selector, int priority) {
+		return new Scope(selector, priority, new ArrayList<>(directives), getInstantiators());
 	}
 
-	public Map<Class<?>, List<Property>> getPropertyConfigurers() {
-		return propertyConfigurers;
+	public Map<Class<?>, InstantiatorProcessResult> getInstantiators() {
+		if (instantiatorsByType.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(new HashMap<>(instantiatorsByType));
 	}
 
 	public void setOptionValidOnly(@Nullable Boolean optionValidOnly) {

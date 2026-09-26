@@ -22,9 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -85,8 +83,6 @@ public final class FixtureMonkeyBuilder {
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers = new ArrayList<>();
 	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuildersWithPriority = new ArrayList<>();
-	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-		registeredPriorityMatchersByName = new HashMap<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private boolean experimentalFileSeedEnabled = false;
 	private long seed = System.nanoTime();
@@ -666,7 +662,6 @@ public final class FixtureMonkeyBuilder {
 			manipulatorOptimizer,
 			registeredArbitraryBuildersWithPriority,
 			monkeyManipulatorFactory,
-			registeredPriorityMatchersByName,
 			resolvedPlanner,
 			resolvedTracer
 		);

@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.customizer;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 
@@ -35,19 +36,22 @@ public final class LazyDirective implements PathDirective {
 	private final int limit;
 	private final boolean strict;
 	private final LazyArbitrary<?> lazyArbitrary;
+	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
 	public LazyDirective(
 		PathExpression path,
 		int sequence,
 		int limit,
 		boolean strict,
-		LazyArbitrary<?> lazyArbitrary
+		LazyArbitrary<?> lazyArbitrary,
+		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
 		this.path = path;
 		this.sequence = sequence;
 		this.limit = limit;
 		this.strict = strict;
 		this.lazyArbitrary = lazyArbitrary;
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 	}
 
 	@Override
@@ -72,5 +76,9 @@ public final class LazyDirective implements PathDirective {
 
 	public LazyArbitrary<?> lazyArbitrary() {
 		return lazyArbitrary;
+	}
+
+	public DecomposedContainerValueFactory decomposedContainerValueFactory() {
+		return decomposedContainerValueFactory;
 	}
 }

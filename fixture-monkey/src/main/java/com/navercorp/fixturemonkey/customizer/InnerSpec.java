@@ -528,9 +528,8 @@ public final class InnerSpec {
 		return this;
 	}
 
-	public DirectiveSet getManipulatorSet(MonkeyDirectiveFactory monkeyManipulatorFactory) {
-		ManipulatorHolderSet manipulatorHolderSet = traverse(this);
-		return monkeyManipulatorFactory.newManipulatorSet(manipulatorHolderSet);
+	public List<PathDirective> getDirectives(MonkeyDirectiveFactory monkeyDirectiveFactory) {
+		return monkeyDirectiveFactory.newDirectives(traverse(this));
 	}
 
 	private InnerSpec newNextInnerSpec(InnerSpec innerSpec, DefaultDeclarativeExpression parentDeclarativeExpression) {

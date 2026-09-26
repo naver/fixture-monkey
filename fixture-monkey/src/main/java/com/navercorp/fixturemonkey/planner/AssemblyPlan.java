@@ -18,27 +18,27 @@
 
 package com.navercorp.fixturemonkey.planner;
 
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
-import com.navercorp.fixturemonkey.projection.ValueProjection;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
+import com.navercorp.fixturemonkey.tree.NodeTreeFactory;
+import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
-import com.navercorp.objectfarm.api.tree.PathResolverContext;
 
 /**
  * Plan produced by {@link AssemblyPlanner} that downstream {@code Assembler}s consume to assemble values.
  * <p>
  * This plan contains:
  * <ul>
- *   <li>The generated JvmNodeTree with immutable topology</li>
- *   <li>Values projection extracted from manipulators</li>
- *   <li>The original analysis result for further processing</li>
+ *   <li>Values projection extracted from manipulators, over the generated JvmNodeTree</li>
+ *   <li>The analyzed root scope and defined scopes</li>
+ *   <li>What assembly builds with the same way planning did: the node tree factory and the inlined value
+ *   resolver</li>
  * </ul>
- * <p>
- * Values can be accessed via {@link #getValues()} which returns a {@link ValueProjection}
- * for node-based and path-based access.
  *
  * @see AssemblyPlanner
  * @see AnalysisResult
@@ -46,76 +46,49 @@ import com.navercorp.objectfarm.api.tree.PathResolverContext;
  */
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class AssemblyPlan {
-	private final JvmNodeTree nodeTree;
 	private final ValueProjection values;
-	/**
-	 * May be null for default implementations.
-	 */
 	private final AnalysisResult analysisResult;
-
+	private final List<AnalyzedScope> analyzedDefinedScopes;
+	private final ScopeSet scopeSet;
+	private final NodeTreeFactory nodeTreeFactory;
+	private final InlinedValueResolver inlinedValueResolver;
+	private final ConcurrentHashMap<?, ?> typeMetadataCache;
 	private final long analyzeTimeNanos;
 	private final long treeBuildTimeNanos;
-	private final boolean cacheHit;
-	private final @Nullable PathResolverContext resolverContext;
 
 	/**
 	 * Creates a new AssemblyPlan.
 	 *
-	 * @param nodeTree       the generated JvmNodeTree
-	 * @param values         the values projection extracted from manipulators
-	 * @param analysisResult the original analysis result (may be null for default implementations)
-	 */
-	public AssemblyPlan(JvmNodeTree nodeTree, ValueProjection values, AnalysisResult analysisResult) {
-		this(nodeTree, values, analysisResult, 0, 0, false, null);
-	}
-
-	/**
-	 * Creates a new AssemblyPlan with timing information.
-	 *
-	 * @param nodeTree          the generated JvmNodeTree
-	 * @param values            the values projection extracted from manipulators
-	 * @param analysisResult    the original analysis result (may be null for default implementations)
-	 * @param analyzeTimeNanos  time spent in ManipulatorAnalyzer.analyze() in nanoseconds
-	 * @param treeBuildTimeNanos time spent building the JvmNodeTree in nanoseconds
+	 * @param values                the values projection extracted from manipulators, over the generated tree
+	 * @param analysisResult        the analysis of the root scope
+	 * @param analyzedDefinedScopes the analyzed defined scopes, the one with the lowest precedence first
+	 * @param scopeSet              the scopes of the sample, asked which instantiators apply where
+	 * @param nodeTreeFactory       builds the trees assembly needs on demand the way this plan builds its own
+	 * @param inlinedValueResolver  decomposes a value passed to {@code set(...)} the way planning did
+	 * @param typeMetadataCache     metadata assembly derives per type, kept across samples
+	 * @param analyzeTimeNanos      time spent in ManipulatorAnalyzer.analyze() in nanoseconds
+	 * @param treeBuildTimeNanos    time spent building the JvmNodeTree in nanoseconds
 	 */
 	public AssemblyPlan(
-		JvmNodeTree nodeTree,
 		ValueProjection values,
 		AnalysisResult analysisResult,
+		List<AnalyzedScope> analyzedDefinedScopes,
+		ScopeSet scopeSet,
+		NodeTreeFactory nodeTreeFactory,
+		InlinedValueResolver inlinedValueResolver,
+		ConcurrentHashMap<?, ?> typeMetadataCache,
 		long analyzeTimeNanos,
 		long treeBuildTimeNanos
 	) {
-		this(nodeTree, values, analysisResult, analyzeTimeNanos, treeBuildTimeNanos, false, null);
-	}
-
-	/**
-	 * Creates a new AssemblyPlan with timing, cache, and resolver-context information.
-	 *
-	 * @param nodeTree           the generated JvmNodeTree
-	 * @param values             the values projection extracted from manipulators
-	 * @param analysisResult     the original analysis result (may be null for default implementations)
-	 * @param analyzeTimeNanos   time spent in ManipulatorAnalyzer.analyze() in nanoseconds
-	 * @param treeBuildTimeNanos time spent building the JvmNodeTree in nanoseconds
-	 * @param cacheHit           whether this result was retrieved from cache
-	 * @param resolverContext    the path resolver context produced during planning, used by the
-	 *                           {@code RuntimeTreeFactory} during assembly
-	 */
-	public AssemblyPlan(
-		JvmNodeTree nodeTree,
-		ValueProjection values,
-		AnalysisResult analysisResult,
-		long analyzeTimeNanos,
-		long treeBuildTimeNanos,
-		boolean cacheHit,
-		@Nullable PathResolverContext resolverContext
-	) {
-		this.nodeTree = nodeTree;
 		this.values = values;
 		this.analysisResult = analysisResult;
+		this.analyzedDefinedScopes = analyzedDefinedScopes;
+		this.scopeSet = scopeSet;
+		this.nodeTreeFactory = nodeTreeFactory;
+		this.inlinedValueResolver = inlinedValueResolver;
+		this.typeMetadataCache = typeMetadataCache;
 		this.analyzeTimeNanos = analyzeTimeNanos;
 		this.treeBuildTimeNanos = treeBuildTimeNanos;
-		this.cacheHit = cacheHit;
-		this.resolverContext = resolverContext;
 	}
 
 	/**
@@ -124,14 +97,11 @@ public final class AssemblyPlan {
 	 * @return the JvmNodeTree with immutable topology
 	 */
 	public JvmNodeTree getNodeTree() {
-		return nodeTree;
+		return values.getStructure();
 	}
 
 	/**
 	 * Returns the values projection extracted from manipulators.
-	 * <p>
-	 * The projection provides node-based and path-based access to values.
-	 * This is the preferred way to access values.
 	 *
 	 * @return the ValueProjection containing values mapped to nodes
 	 */
@@ -140,50 +110,84 @@ public final class AssemblyPlan {
 	}
 
 	/**
-	 * Returns the original analysis result.
+	 * Returns the analysis of the root scope.
 	 *
-	 * @return the analysis result, or null if not available
+	 * @return the analysis result
 	 */
 	public AnalysisResult getAnalysisResult() {
 		return analysisResult;
 	}
 
 	/**
-	 * Returns the time spent in ManipulatorAnalyzer.analyze() in nanoseconds.
+	 * Returns what the root scope declared, by path from the root.
 	 *
-	 * @return analyze time in nanoseconds
+	 * @return the analyzed root scope
+	 */
+	public AnalyzedScope getAnalyzedRootScope() {
+		return analysisResult.getAnalyzedRootScope();
+	}
+
+	/**
+	 * Returns what each defined scope declared, by path relative to the node the scope selects.
+	 *
+	 * @return the analyzed defined scopes, the one with the lowest precedence first
+	 */
+	public List<AnalyzedScope> getAnalyzedDefinedScopes() {
+		return analyzedDefinedScopes;
+	}
+
+	/**
+	 * Returns the scopes of the sample, which decide the instantiators to build with where an instance sits.
+	 *
+	 * @return the scope set
+	 */
+	public ScopeSet getScopeSet() {
+		return scopeSet;
+	}
+
+	/**
+	 * Returns the factory building the trees assembly needs on demand the way this plan builds its own.
+	 *
+	 * @return the node tree factory
+	 */
+	public NodeTreeFactory getNodeTreeFactory() {
+		return nodeTreeFactory;
+	}
+
+	/**
+	 * Returns the {@link InlinedValueResolver} applied while decomposing a value passed to {@code set(...)}, so that
+	 * assembly decomposes the value the same way planning did.
+	 *
+	 * @return the inlined value resolver
+	 */
+	public InlinedValueResolver getInlinedValueResolver() {
+		return inlinedValueResolver;
+	}
+
+	/**
+	 * Returns the metadata assembly derives per type, kept across samples. Its entries are typed by assembly.
+	 *
+	 * @return the type metadata cache
+	 */
+	public ConcurrentHashMap<?, ?> getTypeMetadataCache() {
+		return typeMetadataCache;
+	}
+
+	/**
+	 * Returns the time spent analyzing the root scope.
+	 *
+	 * @return the analysis time in nanoseconds
 	 */
 	public long getAnalyzeTimeNanos() {
 		return analyzeTimeNanos;
 	}
 
 	/**
-	 * Returns the time spent building the JvmNodeTree in nanoseconds.
+	 * Returns the time spent building the tree.
 	 *
-	 * @return tree build time in nanoseconds
+	 * @return the tree build time in nanoseconds
 	 */
 	public long getTreeBuildTimeNanos() {
 		return treeBuildTimeNanos;
-	}
-
-	/**
-	 * Returns whether this result was retrieved from cache.
-	 *
-	 * @return true if the result was a cache hit, false otherwise
-	 */
-	public boolean isCacheHit() {
-		return cacheHit;
-	}
-
-	/**
-	 * Returns the {@link PathResolverContext} produced during planning.
-	 * <p>
-	 * This is the same context the {@code RuntimeTreeFactory} should see during assembly so
-	 * that anonymous-tree creation makes the same resolution decisions as the planned tree.
-	 *
-	 * @return the resolver context, or {@code null} when not produced by the planner
-	 */
-	public @Nullable PathResolverContext getResolverContext() {
-		return resolverContext;
 	}
 }

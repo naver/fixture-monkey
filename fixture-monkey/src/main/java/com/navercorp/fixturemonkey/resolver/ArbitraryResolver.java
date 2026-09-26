@@ -24,8 +24,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -41,35 +40,24 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DefaultTreeMatcherMetadata;
-import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.assembly.AssembleContext;
+import com.navercorp.fixturemonkey.assembly.ValueProjectionAssembler;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
-import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
-import com.navercorp.fixturemonkey.customizer.DirectiveSet;
-import com.navercorp.fixturemonkey.customizer.PathDirective;
-import com.navercorp.fixturemonkey.customizer.SizeDirective;
+import com.navercorp.fixturemonkey.customizer.Scope;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
-import com.navercorp.fixturemonkey.planner.TypedValueExtractor;
-import com.navercorp.fixturemonkey.projection.AssembleContext;
-import com.navercorp.fixturemonkey.projection.ValueProjection;
-import com.navercorp.fixturemonkey.tracing.AssemblyTraceBuilder;
+import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
-import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.type.JvmType;
-import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -79,156 +67,60 @@ public final class ArbitraryResolver {
 	private final AssemblyPlanner assemblyPlanner;
 	private final AssemblyTracer tracer;
 	private final Map<Class<?>, Set<Property>> inferredPropertiesCache;
+	private final Supplier<List<Scope>> registeredScopes;
+	private final Map<JvmType, List<Scope>> definedScopesByRootType;
 
 	public ArbitraryResolver(
 		MonkeyContext monkeyContext,
 		AssemblyPlanner assemblyPlanner,
 		AssemblyTracer tracer,
-		@Nullable Map<Class<?>, Set<Property>> inferredPropertiesCache
+		@Nullable Map<Class<?>, Set<Property>> inferredPropertiesCache,
+		Supplier<List<Scope>> registeredScopes,
+		Map<JvmType, List<Scope>> definedScopesByRootType
 	) {
 		this.monkeyContext = monkeyContext;
 		this.assemblyPlanner = assemblyPlanner;
 		this.tracer = tracer;
 		this.inferredPropertiesCache =
 			inferredPropertiesCache != null ? inferredPropertiesCache : new ConcurrentHashMap<>();
+		this.registeredScopes = registeredScopes;
+		this.definedScopesByRootType = definedScopesByRootType;
 	}
 
-	public CombinableArbitrary<?> resolve(
-		TreeRootProperty rootProperty,
-		ArbitraryBuilderContext activeContext,
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts
-	) {
+	public CombinableArbitrary<?> resolve(TreeRootProperty rootProperty, ArbitraryBuilderContext activeContext) {
 		FixtureMonkeyOptions options = monkeyContext.getFixtureMonkeyOptions();
-		List<PathDirective> activeDirectives = activeContext.getDirectives();
 
 		return new RootArbitrary<>(
 			rootProperty,
-			() -> generate(rootProperty, activeContext, activeDirectives, standbyContexts, options),
+			() -> generate(rootProperty, activeContext, options),
 			options.getGenerateMaxTries(),
 			options.getDefaultArbitraryValidator(),
-			activeContext::isValidOnly,
-			() -> {
-			}
+			activeContext::isValidOnly
 		);
 	}
 
 	private CombinableArbitrary<Object> generate(
 		TreeRootProperty rootProperty,
 		ArbitraryBuilderContext activeContext,
-		List<PathDirective> activeDirectives,
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		FixtureMonkeyOptions options
 	) {
 		long prepStart = System.nanoTime();
-
-		boolean hasRegisteredBuilders = !monkeyContext.getRegisteredArbitraryBuilders().isEmpty();
-		boolean hasStandbyContexts = !standbyContexts.isEmpty();
-
-		// Fast path: when no registered builders and no standby contexts,
-		// skip all register-related preparation (inferPossibleProperties, collectRelevantTypes,
-		// typed values/container sizes collection, registered property configurers/introspectors)
-		if (!hasRegisteredBuilders && !hasStandbyContexts) {
-			return generateFastPath(
-				rootProperty,
-				activeContext,
-				activeDirectives,
-				options,
-				prepStart
-			);
-		}
-
-		return generateFullPath(
-			rootProperty,
-			activeContext,
-			activeDirectives,
-			standbyContexts,
-			options,
-			prepStart
-		);
-	}
-
-	/**
-	 * Fast path when no registered builders or standby contexts exist.
-	 * Skips all register-related preparation for significantly better performance.
-	 */
-	private CombinableArbitrary<Object> generateFastPath(
-		TreeRootProperty rootProperty,
-		ArbitraryBuilderContext activeContext,
-		List<PathDirective> activeDirectives,
-		FixtureMonkeyOptions options,
-		long prepStart
-	) {
-		// Set validOnly from inferred property annotations (only if builderContextInitializers exist)
-		if (!options.getBuilderContextInitializers().isEmpty()) {
-			Set<Property> inferredProperties = inferPossibleProperties(rootProperty, new CycleDetector());
-			Set<Annotation> allAnnotations = inferredProperties
-				.stream()
-				.flatMap(p -> p.getAnnotations().stream())
-				.collect(Collectors.toSet());
-			options
-				.getBuilderContextInitializers()
-				.stream()
-				.filter(it -> it.match(new DefaultTreeMatcherMetadata(allAnnotations)))
-				.findFirst()
-				.map(TreeMatcherOperator::getOperator)
-				.ifPresent(it -> activeContext.setOptionValidOnly(it.isValidOnly()));
-		}
-
-		// Active context container info only (no registered builders to merge)
-		List<SizeDirective> sizeDirectives = new ArrayList<>(activeContext.getSizeDirectives());
-
-		Set<String> activePaths = sizeDirectives
-			.stream()
-			.map(m -> m.path().toExpression())
-			.collect(Collectors.toSet());
-
-		Map<Class<?>, ArbitraryIntrospector> introspectorsByType = activeContext.getArbitraryIntrospectorsByType();
-
-		DirectiveSet manipulatorSet = new DirectiveSet(
-			new ArrayList<>(activeDirectives),
-			Collections.emptyMap(),
-			Collections.emptyMap(),
-			activeContext.getPropertyConfigurers(),
-			introspectorsByType,
-			activeContext.isFixed()
-		);
-		JvmType rootJvmType = rootProperty.getJvmType();
-
+		applyValidOnlyOption(rootProperty, activeContext, options);
+		ScopeSet scopeSet = new ScopeSet(activeContext.toRootScope(), definedScopesOf(rootProperty));
 		long prepNanos = System.nanoTime() - prepStart;
 
-		return assembleAdapterResult(
-			rootProperty,
-			activeContext,
-			activeDirectives,
-			options,
-			manipulatorSet,
-			rootJvmType,
-			sizeDirectives,
-			activePaths,
-			Collections.emptyMap(),
-			Collections.emptyMap(),
-			Collections.emptySet(),
-			introspectorsByType,
-			prepNanos
-		);
+		return assemble(rootProperty, activeContext, options, scopeSet, prepNanos);
 	}
 
-	/**
-	 * Full path for adapter generation with registered builders and standby contexts.
-	 */
-	private CombinableArbitrary<Object> generateFullPath(
+	private void applyValidOnlyOption(
 		TreeRootProperty rootProperty,
 		ArbitraryBuilderContext activeContext,
-		List<PathDirective> activeDirectives,
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standbyContexts,
-		FixtureMonkeyOptions options,
-		long prepStart
+		FixtureMonkeyOptions options
 	) {
-		// Infer possible properties for type-based matching
-		Set<Property> inferredProperties = inferPossibleProperties(rootProperty, new CycleDetector());
-
-		// Set validOnly from all inferred property annotations (gathered from the entire tree)
-		Set<Annotation> allAnnotations = inferredProperties
+		if (options.getBuilderContextInitializers().isEmpty()) {
+			return;
+		}
+		Set<Annotation> allAnnotations = inferPossibleProperties(rootProperty, new CycleDetector())
 			.stream()
 			.flatMap(p -> p.getAnnotations().stream())
 			.collect(Collectors.toSet());
@@ -239,241 +131,51 @@ public final class ArbitraryResolver {
 			.findFirst()
 			.map(TreeMatcherOperator::getOperator)
 			.ifPresent(it -> activeContext.setOptionValidOnly(it.isValidOnly()));
-
-		// Get registered property builders for type-based matching
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> registeredPropertyContexts =
-			monkeyContext
-				.getRegisteredArbitraryBuilders()
-				.stream()
-				.map(it ->
-					new PriorityMatcherOperator<>(
-						it.getMatcher(),
-						((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext(),
-						it.getPriority()
-					)
-				)
-				.collect(Collectors.toList());
-
-		// 1. Collect SizeDirectives from registered root builders
-		List<SizeDirective> standbySizeDirectives = standbyContexts
-			.stream()
-			.map(PriorityMatcherOperator::getOperator)
-			.flatMap(ctx -> ctx.getSizeDirectives().stream())
-			.collect(Collectors.toList());
-
-		// 2. Collect SizeDirectives from registered property builders
-		// Use inferred properties for matching
-		List<SizeDirective> registeredPropertySizeDirectives = registeredPropertyContexts
-			.stream()
-			.filter(it -> inferredProperties.stream().anyMatch(it::match))
-			.map(PriorityMatcherOperator::getOperator)
-			.flatMap(ctx -> ctx.getSizeDirectives().stream())
-			.collect(Collectors.toList());
-
-		// 3. Collect SizeDirectives from the active context
-		List<SizeDirective> activeSizeDirectives = new ArrayList<>(activeContext.getSizeDirectives());
-
-		// 4. Merge all SizeDirectives (active overrides registered when paths overlap)
-		Set<String> activePaths = activeSizeDirectives
-			.stream()
-			.map(m -> m.path().toExpression())
-			.collect(Collectors.toSet());
-
-		List<SizeDirective> nonOverlappingStandbyDirectives = standbySizeDirectives
-			.stream()
-			.filter(m -> !activePaths.contains(m.path().toExpression()))
-			.collect(Collectors.toList());
-
-		List<SizeDirective> nonOverlappingPropertyDirectives = registeredPropertySizeDirectives
-			.stream()
-			.filter(m -> !activePaths.contains(m.path().toExpression()))
-			.collect(Collectors.toList());
-
-		List<SizeDirective> mergedSizeDirectives = new ArrayList<>();
-		mergedSizeDirectives.addAll(activeSizeDirectives);
-		mergedSizeDirectives.addAll(nonOverlappingStandbyDirectives);
-		mergedSizeDirectives.addAll(nonOverlappingPropertyDirectives);
-
-		// Compute relevant types to filter register entries
-		// Only collect register operations for types that exist in the sample target's type tree
-		Set<Class<?>> relevantTypes = collectRelevantTypes(rootProperty);
-
-		// 5. Collect type-based container sizes
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes = new HashMap<>();
-		for (PriorityMatcherOperator<ArbitraryBuilderContext> registered : registeredPropertyContexts) {
-			Matcher matcher = registered.getMatcher();
-
-			Class<?> targetType = null;
-			if (matcher instanceof ExactTypeMatcher) {
-				targetType = ((ExactTypeMatcher)matcher).getType();
-			} else if (matcher instanceof AssignableTypeMatcher) {
-				targetType = ((AssignableTypeMatcher)matcher).getAnchorType();
-			}
-
-			if (targetType == null || !isRelevantType(targetType, matcher, relevantTypes)) {
-				continue;
-			}
-
-			JvmType jvmType = resolveJvmTypeForMatcher(targetType, matcher, relevantTypes);
-
-			for (SizeDirective directive : registered.getOperator().getSizeDirectives()) {
-				String fieldPath = directive.path().toExpression();
-
-				// Note: activePaths check is NOT applied here because typedContainerSizes
-				// are type-scoped (keyed by JvmType). A registered builder for ListStringObject
-				// with path "$.values" should not be blocked by an active path "$.values" that
-				// refers to a different type (e.g., NestedListStringObject.values).
-				// Path-based container size resolution (EXACT_PATH) already takes priority
-				// over type-based resolution (TYPE_BASED) in JvmNodeTreeTransformer.
-
-				String fieldName = fieldPath.startsWith("$.") ? fieldPath.substring(2) : fieldPath;
-				ArbitraryContainerInfo containerInfo = directive.containerInfo();
-
-				Map<String, ArbitraryContainerInfo> fieldSizes = typedContainerSizes.computeIfAbsent(jvmType, k ->
-					new HashMap<>()
-				);
-				ArbitraryContainerInfo existing = fieldSizes.get(fieldName);
-				if (existing != null) {
-					int mergedMin = Math.max(existing.getElementMinSize(), containerInfo.getElementMinSize());
-					int mergedMax = Math.min(existing.getElementMaxSize(), containerInfo.getElementMaxSize());
-					if (mergedMin > mergedMax) {
-						mergedMax = mergedMin;
-					}
-					containerInfo = new ArbitraryContainerInfo(mergedMin, mergedMax);
-				}
-				fieldSizes.put(fieldName, containerInfo);
-			}
-		}
-
-		// 6. Collect type-based set values
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> sortedByPriority = new ArrayList<>(
-			registeredPropertyContexts
-		);
-		// Sort by descending priority (higher number = lower priority processed first).
-		// populateFromNodeManipulator uses put() (last-write-wins), so higher-priority
-		// registers (lower number) are processed last and override lower-priority ones.
-		sortedByPriority.sort(
-			Comparator.comparingInt(PriorityMatcherOperator<ArbitraryBuilderContext>::getPriority).reversed()
-		);
-
-		Map<JvmType, Map<String, @Nullable Object>> typedValues = new HashMap<>();
-		for (PriorityMatcherOperator<ArbitraryBuilderContext> registered : sortedByPriority) {
-			Matcher matcher = registered.getMatcher();
-
-			Class<?> targetType = null;
-			if (matcher instanceof ExactTypeMatcher) {
-				targetType = ((ExactTypeMatcher)matcher).getType();
-			} else if (matcher instanceof AssignableTypeMatcher) {
-				targetType = ((AssignableTypeMatcher)matcher).getAnchorType();
-			}
-
-			if (targetType == null || !isRelevantType(targetType, matcher, relevantTypes)) {
-				continue;
-			}
-
-			// For AssignableTypeMatcher, use the actual relevant subtype as the JvmType key
-			// so that typed values are matched against the concrete type in the tree
-			JvmType jvmType = resolveJvmTypeForMatcher(targetType, matcher, relevantTypes);
-			List<PathDirective> directives = registered.getOperator().getDirectives();
-			for (PathDirective directive : directives) {
-				TypedValueExtractor.extract(directive, jvmType, typedValues);
-			}
-		}
-
-		// Only use activeDirectives (registered manipulators are skipped
-		// because ManipulatorAnalyzer already handles type-based matching via typedValues)
-
-		// Collect registered property configurers using inferredProperties
-		Map<Class<?>, List<Property>> registeredPropertyConfigurers = registeredPropertyContexts
-			.stream()
-			.filter(it -> inferredProperties.stream().anyMatch(it::match))
-			.map(PriorityMatcherOperator::getOperator)
-			.map(ArbitraryBuilderContext::getPropertyConfigurers)
-			.findFirst()
-			.orElse(Collections.emptyMap());
-
-		Map<Class<?>, List<Property>> mergedPropertyConfigurers = new HashMap<>(registeredPropertyConfigurers);
-		mergedPropertyConfigurers.putAll(activeContext.getPropertyConfigurers());
-
-		// Collect registered introspectors using inferredProperties
-		Map<Class<?>, ArbitraryIntrospector> registeredIntrospectors = registeredPropertyContexts
-			.stream()
-			.filter(it -> inferredProperties.stream().anyMatch(it::match))
-			.map(PriorityMatcherOperator::getOperator)
-			.map(ArbitraryBuilderContext::getArbitraryIntrospectorsByType)
-			.findFirst()
-			.orElse(Collections.emptyMap());
-
-		Map<Class<?>, ArbitraryIntrospector> mergedIntrospectors = new HashMap<>(registeredIntrospectors);
-		mergedIntrospectors.putAll(activeContext.getArbitraryIntrospectorsByType());
-
-		List<PathDirective> joinedDirectives = new ArrayList<>(activeDirectives);
-		joinedDirectives.addAll(mergedSizeDirectives);
-		DirectiveSet manipulatorSet = new DirectiveSet(
-			joinedDirectives,
-			typedContainerSizes,
-			typedValues,
-			mergedPropertyConfigurers,
-			mergedIntrospectors,
-			activeContext.isFixed()
-		);
-		JvmType rootJvmType = rootProperty.getJvmType();
-
-		long prepNanos = System.nanoTime() - prepStart;
-
-		return assembleAdapterResult(
-			rootProperty,
-			activeContext,
-			activeDirectives,
-			options,
-			manipulatorSet,
-			rootJvmType,
-			mergedSizeDirectives,
-			activePaths,
-			typedValues,
-			typedContainerSizes,
-			relevantTypes,
-			mergedIntrospectors,
-			prepNanos
-		);
 	}
 
 	/**
-	 * Common adapter assembly logic shared by fast path and full path.
+	 * Returns a defined scope for each register() builder whose type can appear in the sample. The register() builders
+	 * do not change once registered, so the scopes are found once for each root type.
 	 */
+	private List<Scope> definedScopesOf(TreeRootProperty rootProperty) {
+		List<Scope> scopes = registeredScopes.get();
+		if (scopes.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return definedScopesByRootType.computeIfAbsent(
+			rootProperty.getJvmType(),
+			rootType -> definedScopesAmong(scopes, collectRelevantTypes(rootProperty))
+		);
+	}
+
+	private static List<Scope> definedScopesAmong(List<Scope> scopes, Set<Class<?>> relevantTypes) {
+		List<Scope> definedScopes = new ArrayList<>();
+		for (Scope scope : scopes) {
+			if (scope.getSelector().mayAppearAmong(relevantTypes)) {
+				definedScopes.add(scope);
+			}
+		}
+		return Collections.unmodifiableList(definedScopes);
+	}
+
 	@SuppressWarnings({"unchecked", "argument", "dereference.of.nullable"})
-	private CombinableArbitrary<Object> assembleAdapterResult(
+	private CombinableArbitrary<Object> assemble(
 		TreeRootProperty rootProperty,
 		ArbitraryBuilderContext activeContext,
-		List<PathDirective> directives,
 		FixtureMonkeyOptions options,
-		DirectiveSet manipulatorSet,
-		JvmType rootJvmType,
-		List<SizeDirective> sizeDirectives,
-		Set<String> activePaths,
-		Map<JvmType, Map<String, @Nullable Object>> typedValues,
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes,
-		Set<Class<?>> relevantTypes,
-		Map<Class<?>, ArbitraryIntrospector> mergedIntrospectors,
+		ScopeSet scopeSet,
 		long prepNanos
 	) {
-		// Create trace context early to capture resolution events
+		JvmType rootJvmType = rootProperty.getJvmType();
 		TraceContext traceContext = tracer.createTraceContext();
-
-		// Measure total adapter time
 		long adapterStartTime = System.nanoTime();
 
-		AssemblyPlan assemblyPlan = assemblyPlanner.plan(
-			rootJvmType,
-			manipulatorSet,
-			options,
-			traceContext
-		);
+		AssemblyPlan assemblyPlan =
+			assemblyPlanner.plan(rootJvmType, scopeSet, activeContext.isFixed(), options, traceContext);
 
 		AnalysisResult analysisResult = assemblyPlan.getAnalysisResult();
 		ValueProjection values = assemblyPlan.getValues();
 
-		// Strict mode validation
 		if (analysisResult.isStrictMode()) {
 			Set<String> invalidPaths = values.getUnresolvedNonWildcardPaths();
 			if (!invalidPaths.isEmpty()) {
@@ -483,59 +185,26 @@ public final class ArbitraryResolver {
 			}
 		}
 
-		// Assemble using ValueProjection
 		traceContext.setRootType(rootJvmType.getRawType().getName());
 
-		Set<PathExpression> userContainerSizePaths = activePaths
-			.stream()
-			.map(PathExpression::of)
-			.collect(Collectors.toSet());
-
-		// Convert typedValues to TypeSelector-based PathExpression entries
-		TypedValueExtractor.ConversionResult typedPathConversion = TypedValueExtractor.convertToPathExpressions(
-			typedValues
-		);
-
-		AssembleContext assembleContext = AssembleContext.builder(monkeyContext)
+		AssembleContext assembleContext = AssembleContext.builder(monkeyContext, assemblyPlan)
 			.rootProperty(rootProperty)
-			.justPaths(new HashSet<>(analysisResult.getJustPaths()))
-			.notNullPaths(analysisResult.getNotNullPaths())
-			.filtersByPath(analysisResult.getFiltersByPath())
-			.limitsByPath(new HashMap<>(analysisResult.getLimitsByPath()))
-			.valueOrderByPath(analysisResult.getValueOrderByPath())
-			.customizersByPath(analysisResult.getCustomizersByPath())
-			.typedPathValues(typedPathConversion.values)
-			.typedPathOrders(typedPathConversion.orders)
-			.introspectorsByType(mergedIntrospectors)
 			.traceContext(traceContext)
-			.runtimeTreeFactory(this.assemblyPlanner)
-			.pathResolverContext(assemblyPlan.getResolverContext())
-			.nodeMetadataCache(this.assemblyPlanner.nodeMetadataCache())
-			.inlinedValueResolver(this.assemblyPlanner.inlinedValueResolver())
-			.userContainerSizePaths(userContainerSizePaths)
 			.build();
 
-		// Measure assembly time
 		long assemblyStartTime = System.nanoTime();
-		CombinableArbitrary<Object> result = (CombinableArbitrary<Object>)values.assemble(assembleContext);
+		CombinableArbitrary<Object> result =
+			(CombinableArbitrary<Object>)ValueProjectionAssembler.assemble(assembleContext);
 		long assemblyTimeNanos = System.nanoTime() - assemblyStartTime;
 
-		// Calculate total adapter time
 		long totalAdapterTimeNanos = System.nanoTime() - adapterStartTime;
 
-		// Build and invoke trace with collected data
 		AssemblyTraceBuilder.buildAndInvoke(
 			traceContext,
-			directives,
-			sizeDirectives,
-			analysisResult,
 			assemblyPlan,
 			prepNanos,
 			assemblyTimeNanos,
 			totalAdapterTimeNanos,
-			typedValues,
-			typedContainerSizes,
-			relevantTypes,
 			activeContext.isFixed(),
 			tracer
 		);
@@ -660,41 +329,6 @@ public final class ArbitraryResolver {
 			.flatMap(List::stream)
 			.filter(it -> it.getJvmType().getRawType() != rawType)
 			.collect(Collectors.toList());
-	}
-
-	/**
-	 * Checks if a registered type is relevant to the current type tree.
-	 * For ExactTypeMatcher, checks direct containment.
-	 * For AssignableTypeMatcher, also checks if any relevant type is a subtype of the target.
-	 */
-	private boolean isRelevantType(Class<?> targetType, Matcher matcher, Set<Class<?>> relevantTypes) {
-		if (relevantTypes.contains(targetType)) {
-			return true;
-		}
-		if (matcher instanceof AssignableTypeMatcher) {
-			return relevantTypes.stream().anyMatch(targetType::isAssignableFrom);
-		}
-		return false;
-	}
-
-	/**
-	 * Resolves the JvmType to use as a key for typed values/container sizes.
-	 * For AssignableTypeMatcher where the anchor type is not directly in relevantTypes,
-	 * uses the first matching subtype from relevantTypes so that the values are applied
-	 * to the concrete type in the tree.
-	 */
-	private JvmType resolveJvmTypeForMatcher(Class<?> targetType, Matcher matcher, Set<Class<?>> relevantTypes) {
-		if (relevantTypes.contains(targetType)) {
-			return new ReflectiveJvmType(targetType);
-		}
-		if (matcher instanceof AssignableTypeMatcher) {
-			for (Class<?> relevantType : relevantTypes) {
-				if (targetType.isAssignableFrom(relevantType)) {
-					return new ReflectiveJvmType(relevantType);
-				}
-			}
-		}
-		return new ReflectiveJvmType(targetType);
 	}
 
 	private static final class CycleDetector {

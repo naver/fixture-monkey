@@ -19,8 +19,10 @@
 package com.navercorp.fixturemonkey.planner;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -34,34 +36,40 @@ import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.DirectiveSet;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
+import com.navercorp.fixturemonkey.customizer.ScopeChain;
+import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
-import com.navercorp.fixturemonkey.nodecandidate.InterfaceMethodNodeCandidateGenerator;
 import com.navercorp.fixturemonkey.plugin.LeafTypeRegistry;
-import com.navercorp.fixturemonkey.projection.ValueProjection;
-import com.navercorp.fixturemonkey.resolver.AbstractTypeResolver;
+import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.fixturemonkey.tracing.TraceContextResolutionListener;
+import com.navercorp.fixturemonkey.tree.ContainerSizeResolverFactory;
+import com.navercorp.fixturemonkey.tree.DefaultNodeTreeFactory;
+import com.navercorp.fixturemonkey.tree.NodeContextFactory;
+import com.navercorp.fixturemonkey.tree.NodeTreeFactory;
+import com.navercorp.fixturemonkey.tree.TreeContextCache;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.InlinedValueResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
-import com.navercorp.objectfarm.api.node.JavaNodeContext;
-import com.navercorp.objectfarm.api.node.JvmNodeContext;
+import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.node.LeafTypeResolver;
 import com.navercorp.objectfarm.api.node.SeedState;
+import com.navercorp.objectfarm.api.nodecandidate.FirstMatchNodeCandidateGenerator;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidateGenerator;
+import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 import com.navercorp.objectfarm.api.tree.ExpansionContext;
-import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext;
-import com.navercorp.objectfarm.api.tree.JvmNodeSubtreeContext;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 import com.navercorp.objectfarm.api.tree.JvmNodeTreeTransformer;
 import com.navercorp.objectfarm.api.tree.PathResolver;
@@ -71,7 +79,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
- * Default assembly planner. Also exposes {@link RuntimeTreeFactory} and {@link LeafTypeRegistry}.
+ * Default assembly planner. Also exposes {@link NodeTreeFactory} and {@link LeafTypeRegistry}.
  * <p>
  * This implementation:
  * <ol>
@@ -83,29 +91,29 @@ import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
  * </ol>
  * <p>
  * The {@link PathResolverContext} produced for each plan is carried back inside
- * {@link AssemblyPlan} and passed explicitly to {@link RuntimeTreeFactory#createAnonymousNodeTree}
+ * {@link AssemblyPlan} and passed explicitly to {@link NodeTreeFactory#createAnonymousNodeTree}
  * at the call site, replacing the previous {@code ThreadLocal} smuggling channel.
  * <p>
  * Directive order is preserved end-to-end via {@link PathDirective#sequence()}, so later
  * directives override earlier ones at the same path.
  */
 @API(since = "1.2.0", status = Status.EXPERIMENTAL)
-public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegistry {
+public final class AssemblyPlanner implements LeafTypeRegistry {
 	private static final ContainerDetector CONTAINER_DETECTOR = ContainerDetector.standard();
 
 	private final SeedState seedState;
-	// Tracks the global Random instance used for the most recent adapt() call.
+	// Tracks the global Random instance used for the most recent plan() call.
 	// When Randoms.newGlobalSeed() creates a new instance (e.g. via @Seed), reference inequality
 	// triggers a SeedState reset so seeded reruns produce deterministic container sizes.
 	private @Nullable Random lastSeenRandom;
 
 	// Performance optimization cache for (JvmNodeContext, JvmNodeCandidateTree) — keyed by (type, options identity).
 	// NOTE: AssemblyPlan/JvmNodeTree are NOT cached because container sizes must vary on each call.
+
 	private final TreeContextCache treeCache;
 
-	// Cross-call cache for assembly node metadata (Property, resolvers, isContainerType)
-	// Type-erased here since CachedNodeMetadata is package-private in projection package
-	private final ConcurrentHashMap<Object, Object> nodeMetadataCache = new ConcurrentHashMap<>();
+	// Metadata assembly derives per type, kept across samples; typed by assembly, which owns the entry type
+	private final ConcurrentHashMap<Object, Object> typeMetadataCache = new ConcurrentHashMap<>();
 
 	// Additional leaf type resolvers (e.g., KotlinLeafTypeResolver for Kotlin support).
 	// Held here for isLeafType lookups; node-context construction reads them via NodeContextFactory.
@@ -122,7 +130,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 	private final PathResolverContextFactory pathResolverContextFactory;
 
 	/**
-	 * Creates a new adapter with the specified seed.
+	 * Creates a new planner with the specified seed.
 	 *
 	 * @param seed the seed for random generation
 	 */
@@ -131,7 +139,7 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 	}
 
 	/**
-	 * Creates a new adapter with all configurable components.
+	 * Creates a new planner with all configurable components.
 	 *
 	 * @param seed                       the seed for random generation
 	 * @param additionalPromoters        additional node promoters (e.g., KotlinNodePromoter)
@@ -175,19 +183,15 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 
 	public AssemblyPlan plan(
 		JvmType rootType,
-		DirectiveSet manipulatorSet,
+		ScopeSet scopeSet,
+		boolean fixed,
 		@Nullable FixtureMonkeyOptions options,
 		@Nullable TraceContext traceContext
 	) {
-		// When tracing is enabled, skip caching to ensure all resolution events are captured
 		ResolutionListener resolutionListener = TraceContextResolutionListener.of(traceContext);
 
 		resetSeedStateIfRandomChanged();
-		if (manipulatorSet.isEmpty()) {
-			return buildDefaultAssemblyPlan(rootType, options, resolutionListener, manipulatorSet.isFixed());
-		}
-
-		return buildAssemblyPlan(rootType, manipulatorSet, options, resolutionListener);
+		return buildAssemblyPlan(rootType, scopeSet, fixed, options, resolutionListener);
 	}
 
 	private synchronized void resetSeedStateIfRandomChanged() {
@@ -198,167 +202,113 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 		}
 	}
 
-	private AssemblyPlan buildDefaultAssemblyPlan(
-		JvmType rootType,
-		@Nullable FixtureMonkeyOptions options,
-		ResolutionListener resolutionListener,
-		boolean isFixed
-	) {
-		JvmType resolvedRootType = walkCandidateChain(rootType, options);
-
-		long treeBuildStart = System.nanoTime();
-
-		JvmNodeContext context = treeCache.getOrBuildNodeContext(
-			resolvedRootType,
-			options,
-			Collections.emptyMap(),
-			Collections.emptyMap()
-		);
-		JvmNodeCandidateTree candidateTree =
-			treeCache.getOrBuildCandidateTree(resolvedRootType, context, options, false);
-
-		PathResolverContext.Builder resolverContextBuilder = PathResolverContext.builder().resolutionListener(
-			resolutionListener
-		);
-		if (isFixed) {
-			resolverContextBuilder.defaultContainerSizeResolver(
-				containerSizeResolverFactory.createFixedContainerSizeResolver(options)
-			);
-		}
-		PathResolverContext resolverContext = resolverContextBuilder.build();
-
-		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(
-			context,
-			treeCache.getTreeContext(),
-			resolverContext,
-			null, // No expansion context for empty manipulators
-			treeCache.getSubtreeContext()
-		);
-
-		JvmNodeTree nodeTree = transformer.transform(candidateTree);
-		long treeBuildTimeNanos = System.nanoTime() - treeBuildStart;
-
-		AnalysisResult analysisResult = ManipulatorAnalyzer.emptyResult();
-		ValueProjection valueProjection = ValueProjection.of(nodeTree, Collections.emptyMap());
-
-		return new AssemblyPlan(
-			nodeTree,
-			valueProjection,
-			analysisResult,
-			0,
-			treeBuildTimeNanos,
-			false,
-			resolverContext
-		);
-	}
-
 	private AssemblyPlan buildAssemblyPlan(
 		JvmType rootType,
-		DirectiveSet manipulatorSet,
+		ScopeSet scopeSet,
+		boolean fixed,
 		@Nullable FixtureMonkeyOptions options,
 		ResolutionListener resolutionListener
 	) {
-		List<PathDirective> directives = manipulatorSet.getDirectives();
 
 		@SuppressWarnings({"argument", "methodref.return", "return"})
 		Function<Property, String> nameResolver = options != null
 			? property -> options.getPropertyNameResolver(property).resolve(property)
 			: (Property p) -> p.getName();
 		long analyzeStart = System.nanoTime();
-		AnalysisResult analysisResult = ManipulatorAnalyzer.analyze(
-			directives,
-			nameResolver,
-			inlinedValueResolver
-		);
+		AnalysisResult analysisResult =
+			ManipulatorAnalyzer.analyze(scopeSet.getRootScope(), nameResolver, inlinedValueResolver);
 		long analyzeTimeNanos = System.nanoTime() - analyzeStart;
 
-		// Resolve interface/abstract class to concrete implementation
-		// For non-container abstract types, check if there's a "$" path InterfaceResolver
-		// from explicit set(concreteValue) - it takes precedence over default resolution
 		JvmType resolvedRootType = resolveRootType(rootType, analysisResult, options);
 
 		Map<PathExpression, @Nullable Object> prunedValuesByPath =
 			containerValuePruner.pruneValuesExceedingContainerSize(
 				analysisResult.getValuesByPath(),
 				analysisResult.getLatestSizeDirectiveByPath(),
-				analysisResult.getValueOrderByPath()
+				analysisResult.getValueOrderByPath(),
+				analysisResult.getJustPaths()
 			);
 
-		// Remove child values under just paths — Values.just() makes the value immutable,
-		// so child path values (e.g., $.string) should not override the just value (e.g., $).
+		// A Values.just value is kept whole, so values declared inside it are dropped
 		ContainerValuePruner.pruneChildrenOfJustPaths(prunedValuesByPath, analysisResult.getJustPaths());
 
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> mergedTypedContainerSizes =
-			pathResolverContextFactory.inferAndMergeTypedContainerSizes(
-				manipulatorSet.getTypedValues(),
-				manipulatorSet.getTypedContainerSizes()
-			);
+		List<AnalyzedScope> analyzedDefinedScopes =
+			ManipulatorAnalyzer.analyze(scopeSet.getDefinedScopes());
+		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes =
+			pathResolverContextFactory.resolveContainerSizes(analyzedDefinedScopes);
+
+		Map<Class<?>, InstantiatorProcessResult> instantiators = scopeSet.getGlobalInstantiators();
 
 		PathResolverContext resolverContext = pathResolverContextFactory.build(
 			analysisResult,
-			mergedTypedContainerSizes,
+			definedScopeContainerSizes,
 			resolutionListener,
-			manipulatorSet.isFixed(),
-			options
-		);
-
-		// Use fresh treeCache.getTreeContext() when propertyConfigurers or introspectorsByType are present
-		// to avoid caching issues (cached subtrees don't respect custom property generators)
-		boolean hasCustomConfigurers =
-			!manipulatorSet.getPropertyConfigurers().isEmpty()
-				|| !manipulatorSet.getArbitraryIntrospectorsByType().isEmpty();
-
-		JvmNodeContext context = treeCache.getOrBuildNodeContext(
-			resolvedRootType,
+			fixed,
 			options,
-			manipulatorSet.getPropertyConfigurers(),
-			manipulatorSet.getArbitraryIntrospectorsByType()
+			definedScopeInstantiatorChildCandidateResolver(scopeSet, resolvedRootType, options)
 		);
 
 		ExpansionContext expansionContext = null;
-		Set<PathExpression> userPaths = analysisResult.getValuesByPath().keySet();
-		if (!userPaths.isEmpty()) {
-			expansionContext = new ExpansionContext(userPaths);
+		Set<PathExpression> rootValuePaths = analysisResult.getValuesByPath().keySet();
+		if (!rootValuePaths.isEmpty()) {
+			expansionContext = new ExpansionContext(rootValuePaths);
 		}
 
-		JvmNodeCandidateTreeContext effectiveTreeContext = hasCustomConfigurers
-			? new JvmNodeCandidateTreeContext()
-			: treeCache.getTreeContext();
-
 		long treeBuildStart = System.nanoTime();
-		JvmNodeCandidateTree candidateTree = treeCache.getOrBuildCandidateTree(
+		DefaultNodeTreeFactory nodeTreeFactory =
+			new DefaultNodeTreeFactory(treeCache, options, resolverContext, instantiators, expansionContext);
+		JvmNodeTree nodeTree = nodeTreeFactory.createConcreteNodeTree(
 			resolvedRootType,
-			context,
-			options,
-			hasCustomConfigurers
+			rootType,
+			PathExpression.root(),
+			Collections.emptyList()
 		);
-
-		JvmNodeSubtreeContext effectiveSubtreeContext = hasCustomConfigurers
-			? null
-			: treeCache.getSubtreeContext();
-
-		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(
-			context,
-			effectiveTreeContext,
-			resolverContext,
-			expansionContext,
-			effectiveSubtreeContext
-		);
-
-		JvmNodeTree nodeTree = transformer.transform(candidateTree);
 		long treeBuildTimeNanos = System.nanoTime() - treeBuildStart;
 
 		ValueProjection valueProjection = ValueProjection.fromPathExpressionMap(nodeTree, prunedValuesByPath);
 
 		return new AssemblyPlan(
-			nodeTree,
 			valueProjection,
 			analysisResult,
+			analyzedDefinedScopes,
+			scopeSet,
+			nodeTreeFactory,
+			inlinedValueResolver,
+			typeMetadataCache,
 			analyzeTimeNanos,
-			treeBuildTimeNanos,
-			false,
-			resolverContext
+			treeBuildTimeNanos
 		);
+	}
+
+	private @Nullable AncestorAwareResolver<List<JvmNodeCandidate>> definedScopeInstantiatorChildCandidateResolver(
+		ScopeSet scopeSet,
+		JvmType rootType,
+		@Nullable FixtureMonkeyOptions options
+	) {
+		if (!scopeSet.hasScopedInstantiators()) {
+			return null;
+		}
+		Map<Map<Class<?>, InstantiatorProcessResult>, JvmNodeCandidateGenerator> generatorsByInstantiators =
+			new IdentityHashMap<>();
+		return (node, ancestors) -> {
+			List<JvmNode> chain = new ArrayList<>(ancestors);
+			chain.add(node);
+			Map<Class<?>, InstantiatorProcessResult> scoped = scopeSet.scopedInstantiatorsAt(
+				Types.normalizeRawType(node.getConcreteType().getRawType()),
+				ScopeChain.ofNodes(chain, JvmNodePropertyFactory.ofChain(chain))
+			);
+			if (scoped == null) {
+				return null;
+			}
+			return generatorsByInstantiators
+				.computeIfAbsent(
+					scoped,
+					it -> new FirstMatchNodeCandidateGenerator(
+						treeCache.getOrBuildNodeContext(rootType, options, it).getCandidateNodeGenerators()
+					)
+				)
+				.generateNextNodeCandidates(node.getConcreteType());
+		};
 	}
 
 	/**
@@ -414,72 +364,6 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 	}
 
 	@Override
-	public @Nullable JvmNodeTree createConcreteNodeTree(JvmType concreteType, @Nullable FixtureMonkeyOptions options) {
-		if (options == null) {
-			return null;
-		}
-
-		JvmNodeContext context = treeCache.getOrBuildNodeContext(
-			concreteType,
-			options,
-			Collections.emptyMap(),
-			Collections.emptyMap()
-		);
-
-		JvmNodeCandidateTree candidateTree = treeCache.getOrBuildConcreteCandidateTree(concreteType, context, options);
-
-		PathResolverContext localContext = PathResolverContext.builder().build();
-
-		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(
-			context,
-			treeCache.getTreeContext(),
-			localContext,
-			null,
-			treeCache.getSubtreeContext()
-		);
-
-		return transformer.transform(candidateTree);
-	}
-
-	@Override
-	public @Nullable JvmNodeTree createAnonymousNodeTree(
-		JvmType interfaceType,
-		@Nullable FixtureMonkeyOptions options,
-		PathResolverContext resolverContext
-	) {
-		if (options == null) {
-			return null;
-		}
-
-		JavaNodeContext baseContext = (JavaNodeContext)treeCache.getOrBuildNodeContext(
-			interfaceType,
-			options,
-			Collections.emptyMap(),
-			Collections.emptyMap()
-		);
-
-		JavaNodeContext anonymousContext = baseContext.withAdditionalGenerator(
-			new InterfaceMethodNodeCandidateGenerator()
-		);
-
-		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(interfaceType, anonymousContext)
-			.withTreeContext(treeCache.getTreeContext())
-			.withPreBuildResolvedTypes(true)
-			.withSkipAbstractLeafCheck(true)
-			.build();
-
-		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(
-			anonymousContext,
-			treeCache.getTreeContext(),
-			resolverContext,
-			null,
-			treeCache.getSubtreeContext()
-		);
-
-		return transformer.transform(candidateTree);
-	}
-
-	@Override
 	public boolean isLeafType(Class<?> type) {
 		if (Types.isJavaType(type)) {
 			return true;
@@ -494,32 +378,4 @@ public final class AssemblyPlanner implements RuntimeTreeFactory, LeafTypeRegist
 
 		return false;
 	}
-
-	public void clearCache() {
-		treeCache.clear();
-		nodeMetadataCache.clear();
-	}
-
-	/**
-	 * Returns the cross-call node metadata cache used by {@code Assembler} for assembly optimization.
-	 * <p>
-	 * The cache maps {@code JvmType} instances to derived metadata (Property, resolvers, etc.)
-	 * across multiple assembly calls.
-	 *
-	 * @return the node metadata cache
-	 */
-	public ConcurrentHashMap<?, ?> nodeMetadataCache() {
-		return nodeMetadataCache;
-	}
-
-	/**
-	 * Returns the {@link InlinedValueResolver} applied while decomposing a value passed to
-	 * {@code set(...)}, so that assembly decomposes the value the same way planning did.
-	 *
-	 * @return the inlined value resolver
-	 */
-	public InlinedValueResolver inlinedValueResolver() {
-		return inlinedValueResolver;
-	}
-
 }

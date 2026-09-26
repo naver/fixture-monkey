@@ -64,7 +64,7 @@ class RegisterTest {
 	}
 
 	@Test
-	void registerSizeLessThanThree() {
+	void registerSizeWithCustomMatcher() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -74,7 +74,7 @@ class RegisterTest {
 						&& it.getJvmType().getTypeVariables().size() == 1
 						&& it.getJvmType().getTypeVariables().get(0).getRawType().equals(String.class),
 					fixture -> fixture.giveMeBuilder(new TypeReference<List<String>>() {
-					}).maxSize("$", 2)
+					}).size("$", 5)
 				)
 			)
 			.build();
@@ -84,7 +84,7 @@ class RegisterTest {
 		});
 
 		// then
-		then(actual).hasSizeLessThan(3);
+		then(actual).hasSize(5);
 	}
 
 	@Test
@@ -229,10 +229,7 @@ class RegisterTest {
 			.collect(Collectors.toList());
 
 		// then
-		then(samples).allMatch(it -> {
-			int size = it.getValues().size();
-			return size >= 2 && size <= 4;
-		});
+		then(samples).allMatch(it -> it.getValues().size() <= 4);
 	}
 
 	@Test
@@ -380,7 +377,7 @@ class RegisterTest {
 	}
 
 	@Test
-	void registerOverlappingTypesSetInnerTypeHasPriority() {
+	void registerOverlappingTypesSetOuterTypeHasPriority() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -399,11 +396,11 @@ class RegisterTest {
 		NestedStringListWrapper actual = sut.giveMeOne(NestedStringListWrapper.class);
 
 		// then
-		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromInner"));
+		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromOuter"));
 	}
 
 	@Test
-	void registerOverlappingTypesSetInnerTypeHasPriorityRegardlessOfOrder() {
+	void registerOverlappingTypesSetOuterTypeHasPriorityRegardlessOfOrder() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -422,7 +419,7 @@ class RegisterTest {
 		NestedStringListWrapper actual = sut.giveMeOne(NestedStringListWrapper.class);
 
 		// then
-		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromInner"));
+		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromOuter"));
 	}
 
 	@Test
