@@ -40,7 +40,7 @@ public final class JqwikByteCombinableArbitrary implements ByteCombinableArbitra
 
 	@Override
 	public Byte combined() {
-		return this.byteArbitrary.sample();
+		return ArbitraryUtils.sample(this.byteArbitrary);
 	}
 
 	@Override

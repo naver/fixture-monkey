@@ -40,6 +40,7 @@ import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 import com.navercorp.objectfarm.api.tree.PathContainerSizeResolver;
@@ -74,10 +75,12 @@ final class PathResolverContextFactory {
 		ResolutionListener resolutionListener,
 		boolean isFixed,
 		@Nullable FixtureMonkeyOptions options,
-		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver
+		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver,
+		SeedSnapshot sampleScope
 	) {
 		PathResolverContext.Builder builder = PathResolverContext.builder()
-			.resolutionListener(resolutionListener);
+			.resolutionListener(resolutionListener)
+			.sampleScope(sampleScope);
 		if (ancestorAwareChildCandidateResolver != null) {
 			builder.ancestorAwareChildCandidateResolver(ancestorAwareChildCandidateResolver);
 		}

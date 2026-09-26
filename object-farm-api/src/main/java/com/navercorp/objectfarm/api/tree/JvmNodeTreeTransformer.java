@@ -55,6 +55,7 @@ import com.navercorp.objectfarm.api.node.JvmMapNode;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
@@ -345,7 +346,8 @@ public final class JvmNodeTreeTransformer {
 		PathExpression currentPath
 	) {
 		SizeResolution sizeResolution = resolveContainerSize(containerNode, ctx, currentPath);
-		List<JvmNode> elements = generateContainerElements(containerNode, sizeResolution.resolver);
+		List<JvmNode> elements =
+			generateContainerElements(containerNode, scopedSizeResolver(sizeResolution.resolver, currentPath));
 
 		resolverContext
 			.getResolutionListener()
@@ -518,7 +520,7 @@ public final class JvmNodeTreeTransformer {
 	) {
 		Optional<InterfaceResolver> pathBasedResolver = resolverContext.findInterfaceResolver(path);
 		if (pathBasedResolver.isPresent()) {
-			JvmType resolved = pathBasedResolver.get().resolve(originalType);
+			JvmType resolved = resolveInterface(pathBasedResolver.get(), originalType, path);
 			if (resolved != null) {
 				return resolved;
 			}
@@ -527,7 +529,7 @@ public final class JvmNodeTreeTransformer {
 			if (isContainerType) {
 				InterfaceResolver defaultResolver = context.getInterfaceResolver();
 				if (defaultResolver != null) {
-					JvmType fallback = defaultResolver.resolve(originalType);
+					JvmType fallback = resolveInterface(defaultResolver, originalType, path);
 					if (fallback != null) {
 						return fallback;
 					}
@@ -536,13 +538,31 @@ public final class JvmNodeTreeTransformer {
 		} else if (!isAbstractType || isContainerType) {
 			InterfaceResolver defaultResolver = context.getInterfaceResolver();
 			if (defaultResolver != null) {
-				JvmType resolved = defaultResolver.resolve(originalType);
+				JvmType resolved = resolveInterface(defaultResolver, originalType, path);
 				if (resolved != null) {
 					return resolved;
 				}
 			}
 		}
 		return originalType;
+	}
+
+	private @Nullable JvmType resolveInterface(InterfaceResolver resolver, JvmType interfaceType, PathExpression path) {
+		SeedSnapshot scope = scopeAt(path);
+		return scope != null ? resolver.resolve(interfaceType, scope) : resolver.resolve(interfaceType);
+	}
+
+	private ContainerSizeResolver scopedSizeResolver(ContainerSizeResolver resolver, PathExpression path) {
+		SeedSnapshot scope = scopeAt(path);
+		if (scope == null) {
+			return resolver;
+		}
+		return containerType -> resolver.resolveContainerSize(containerType, scope);
+	}
+
+	private @Nullable SeedSnapshot scopeAt(PathExpression path) {
+		SeedSnapshot sampleScope = resolverContext.getSampleScope();
+		return sampleScope != null ? sampleScope.scopeOf(path) : null;
 	}
 
 	/**

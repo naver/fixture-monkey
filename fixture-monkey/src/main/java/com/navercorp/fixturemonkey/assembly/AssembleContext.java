@@ -28,6 +28,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 
 /**
  * Context for ValueProjectionAssembler.assemble() containing all necessary information
@@ -121,6 +122,15 @@ public final class AssembleContext {
 	 */
 	public ArbitraryGeneratorLoggingContext getLoggingContext() {
 		return loggingContext;
+	}
+
+	/**
+	 * Returns the seed scope of the sample being assembled.
+	 *
+	 * @return the sample's seed scope
+	 */
+	public SeedSnapshot getSampleScope() {
+		return plan.getSampleScope();
 	}
 
 	/**

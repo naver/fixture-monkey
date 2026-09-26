@@ -29,6 +29,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.apiguardian.api.API;
@@ -63,6 +64,7 @@ import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.node.LeafTypeResolver;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.node.SeedState;
 import com.navercorp.objectfarm.api.nodecandidate.FirstMatchNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
@@ -100,6 +102,8 @@ import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 @API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class AssemblyPlanner implements LeafTypeRegistry {
 	private static final ContainerDetector CONTAINER_DETECTOR = ContainerDetector.standard();
+	private static final long NESTED_BUILDER = "builder".hashCode();
+	private static final ThreadLocal<@Nullable ScopeFrame> CURRENT_SCOPE = new ThreadLocal<>();
 
 	private final SeedState seedState;
 	// Tracks the global Random instance used for the most recent plan() call.
@@ -185,16 +189,55 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 		ScopeSet scopeSet,
 		boolean fixed,
 		@Nullable FixtureMonkeyOptions options,
-		@Nullable TraceContext traceContext
+		@Nullable TraceContext traceContext,
+		SeedSnapshot sampleScope
 	) {
 		ResolutionListener resolutionListener = TraceContextResolutionListener.of(traceContext);
 
+		return buildAssemblyPlan(rootType, scopeSet, fixed, options, resolutionListener, sampleScope);
+	}
+
+	/**
+	 * Returns the seed scope of a new builder. A builder created while a sample is being generated — by a lazy
+	 * value or {@code thenApply} — takes a scope nested in that sample's, so how many samples came before does not
+	 * change it; any other builder takes the next scope of this planner's seed.
+	 *
+	 * @return the new builder's seed scope
+	 */
+	public SeedSnapshot newBuilderScope() {
+		ScopeFrame frame = CURRENT_SCOPE.get();
+		if (frame != null) {
+			return frame.scope.scope(NESTED_BUILDER).scope(frame.createdBuilders++);
+		}
 		resetSeedStateIfRandomChanged();
-		return buildAssemblyPlan(rootType, scopeSet, fixed, options, resolutionListener);
+		return seedState.snapshot();
+	}
+
+	/**
+	 * Evaluates {@code action} drawing its values from {@code scope} and giving any builder it creates a seed scope
+	 * nested in {@code scope}.
+	 *
+	 * @param scope  the seed scope of the sample being generated
+	 * @param action the action creating builders
+	 * @param <T>    the result type
+	 * @return the action's result
+	 */
+	public static <T> T evaluateInScope(SeedSnapshot scope, Supplier<T> action) {
+		ScopeFrame outer = CURRENT_SCOPE.get();
+		CURRENT_SCOPE.set(new ScopeFrame(scope));
+		try {
+			return SeedSnapshot.runIn(scope, action);
+		} finally {
+			if (outer != null) {
+				CURRENT_SCOPE.set(outer);
+			} else {
+				CURRENT_SCOPE.remove();
+			}
+		}
 	}
 
 	private synchronized void resetSeedStateIfRandomChanged() {
-		Random current = Randoms.current();
+		Random current = Randoms.global();
 		if (current != lastSeenRandom) {
 			seedState.reset(Randoms.currentSeed());
 			lastSeenRandom = current;
@@ -206,7 +249,8 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 		ScopeSet scopeSet,
 		boolean fixed,
 		@Nullable FixtureMonkeyOptions options,
-		ResolutionListener resolutionListener
+		ResolutionListener resolutionListener,
+		SeedSnapshot sampleScope
 	) {
 
 		@SuppressWarnings({"argument", "methodref.return", "return"})
@@ -214,11 +258,13 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 			? property -> options.getPropertyNameResolver(property).resolve(property)
 			: (Property p) -> p.getName();
 		long analyzeStart = System.nanoTime();
-		AnalysisResult analysisResult =
-			ManipulatorAnalyzer.analyze(scopeSet.getRootScope(), nameResolver, inlinedValueResolver);
+		AnalysisResult analysisResult = evaluateInScope(
+			sampleScope,
+			() -> ManipulatorAnalyzer.analyze(scopeSet.getRootScope(), nameResolver, inlinedValueResolver)
+		);
 		long analyzeTimeNanos = System.nanoTime() - analyzeStart;
 
-		JvmType resolvedRootType = resolveRootType(rootType, analysisResult, options);
+		JvmType resolvedRootType = resolveRootType(rootType, analysisResult, options, sampleScope);
 
 		Map<PathExpression, @Nullable Object> prunedValuesByPath =
 			containerValuePruner.pruneValuesExceedingContainerSize(
@@ -243,7 +289,8 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 			resolutionListener,
 			fixed,
 			options,
-			definedScopeInstantiatorChildCandidateResolver(scopeSet, resolvedRootType, options)
+			definedScopeInstantiatorChildCandidateResolver(scopeSet, resolvedRootType, options),
+			sampleScope
 		);
 
 		ExpansionContext expansionContext = null;
@@ -274,7 +321,8 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 			inlinedValueResolver,
 			typeMetadataCache,
 			analyzeTimeNanos,
-			treeBuildTimeNanos
+			treeBuildTimeNanos,
+			sampleScope
 		);
 	}
 
@@ -321,7 +369,8 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 	private JvmType resolveRootType(
 		JvmType rootType,
 		AnalysisResult analysisResult,
-		@Nullable FixtureMonkeyOptions options
+		@Nullable FixtureMonkeyOptions options,
+		SeedSnapshot sampleScope
 	) {
 		Class<?> rawType = rootType.getRawType();
 		boolean abstractOrInterface =
@@ -329,7 +378,7 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 		if (!abstractOrInterface
 			|| Collection.class.isAssignableFrom(rawType)
 			|| Map.class.isAssignableFrom(rawType)) {
-			return walkCandidateChain(rootType, options);
+			return walkCandidateChain(rootType, options, sampleScope);
 		}
 
 		PathExpression rootPath = PathExpression.of("$");
@@ -344,21 +393,25 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 			}
 		}
 
-		return walkCandidateChain(rootType, options);
+		return walkCandidateChain(rootType, options, sampleScope);
 	}
 
 	/**
 	 * Adapts {@link FixtureMonkeyOptions} to {@link AbstractTypeResolver#resolve} inputs and
 	 * passes through the input type when {@code options} is null.
 	 */
-	private JvmType walkCandidateChain(JvmType type, @Nullable FixtureMonkeyOptions options) {
+	private JvmType walkCandidateChain(
+		JvmType type,
+		@Nullable FixtureMonkeyOptions options,
+		SeedSnapshot sampleScope
+	) {
 		if (options == null) {
 			return type;
 		}
 		@SuppressWarnings("deprecation")
 		Function<Property, @Nullable CandidateConcretePropertyResolver> resolverLookup =
 			options::getCandidateConcretePropertyResolver;
-		return abstractTypeResolver.resolve(type, resolverLookup, options.getMaxRecursionDepth());
+		return abstractTypeResolver.resolve(type, resolverLookup, options.getMaxRecursionDepth(), sampleScope);
 	}
 
 	@Override
@@ -375,5 +428,14 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 		}
 
 		return false;
+	}
+
+	private static final class ScopeFrame {
+		private final SeedSnapshot scope;
+		private int createdBuilders;
+
+		private ScopeFrame(SeedSnapshot scope) {
+			this.scope = scope;
+		}
 	}
 }

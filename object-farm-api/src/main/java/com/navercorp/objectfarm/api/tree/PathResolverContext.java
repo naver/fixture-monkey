@@ -30,6 +30,7 @@ import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 
 /**
@@ -80,6 +81,7 @@ public final class PathResolverContext {
 		null,
 		null,
 		null,
+		null,
 		null
 	);
 
@@ -107,6 +109,8 @@ public final class PathResolverContext {
 
 	private final @Nullable AncestorAwareResolver<ContainerSizeResolver> postWildcardContainerSizeResolver;
 
+	private final @Nullable SeedSnapshot sampleScope;
+
 	private PathResolverContext(
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
@@ -115,7 +119,8 @@ public final class PathResolverContext {
 		@Nullable ContainerSizeResolver defaultContainerSizeResolver,
 		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver,
 		@Nullable AncestorAwareResolver<ContainerSizeResolver> preWildcardContainerSizeResolver,
-		@Nullable AncestorAwareResolver<ContainerSizeResolver> postWildcardContainerSizeResolver
+		@Nullable AncestorAwareResolver<ContainerSizeResolver> postWildcardContainerSizeResolver,
+		@Nullable SeedSnapshot sampleScope
 	) {
 		this.containerSizeResolvers = containerSizeResolvers;
 		this.interfaceResolvers = interfaceResolvers;
@@ -125,6 +130,7 @@ public final class PathResolverContext {
 		this.ancestorAwareChildCandidateResolver = ancestorAwareChildCandidateResolver;
 		this.preWildcardContainerSizeResolver = preWildcardContainerSizeResolver;
 		this.postWildcardContainerSizeResolver = postWildcardContainerSizeResolver;
+		this.sampleScope = sampleScope;
 	}
 
 	/**
@@ -293,6 +299,17 @@ public final class PathResolverContext {
 	}
 
 	/**
+	 * Returns the seed scope of the sample the tree is built for; a node's decisions are drawn from the scope
+	 * nested in it along the node's path.
+	 *
+	 * @return the sample's seed scope, or null to draw decisions without one
+	 */
+	@Nullable
+	public SeedSnapshot getSampleScope() {
+		return sampleScope;
+	}
+
+	/**
 	 * Returns the resolution listener for tracking resolution decisions.
 	 *
 	 * @return the resolution listener (never null)
@@ -342,6 +359,7 @@ public final class PathResolverContext {
 		private AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver;
 		private AncestorAwareResolver<ContainerSizeResolver> preWildcardContainerSizeResolver;
 		private AncestorAwareResolver<ContainerSizeResolver> postWildcardContainerSizeResolver;
+		private SeedSnapshot sampleScope;
 
 		private Builder() {
 		}
@@ -487,6 +505,17 @@ public final class PathResolverContext {
 			return this;
 		}
 
+		/**
+		 * Sets the seed scope of the sample the tree is built for.
+		 *
+		 * @param sampleScope the sample's seed scope
+		 * @return this builder
+		 */
+		public Builder sampleScope(SeedSnapshot sampleScope) {
+			this.sampleScope = sampleScope;
+			return this;
+		}
+
 
 		/**
 		 * Builds the PathResolverContext.
@@ -501,7 +530,8 @@ public final class PathResolverContext {
 				&& defaultContainerSizeResolver == null
 				&& ancestorAwareChildCandidateResolver == null
 				&& preWildcardContainerSizeResolver == null
-				&& postWildcardContainerSizeResolver == null) {
+				&& postWildcardContainerSizeResolver == null
+				&& sampleScope == null) {
 				return EMPTY;
 			}
 			return new PathResolverContext(
@@ -512,7 +542,8 @@ public final class PathResolverContext {
 				defaultContainerSizeResolver,
 				ancestorAwareChildCandidateResolver,
 				preWildcardContainerSizeResolver,
-				postWildcardContainerSizeResolver
+				postWildcardContainerSizeResolver,
+				sampleScope
 			);
 		}
 	}

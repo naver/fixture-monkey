@@ -170,8 +170,14 @@ public final class ArbitraryResolver {
 		TraceContext traceContext = tracer.createTraceContext();
 		long adapterStartTime = System.nanoTime();
 
-		AssemblyPlan assemblyPlan =
-			assemblyPlanner.plan(rootJvmType, scopeSet, activeContext.isFixed(), options, traceContext);
+		AssemblyPlan assemblyPlan = assemblyPlanner.plan(
+			rootJvmType,
+			scopeSet,
+			activeContext.isFixed(),
+			options,
+			traceContext,
+			activeContext.nextSampleScope()
+		);
 
 		AnalysisResult analysisResult = assemblyPlan.getAnalysisResult();
 		ValueProjection values = assemblyPlan.getValues();
