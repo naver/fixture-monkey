@@ -35,6 +35,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
@@ -71,7 +72,7 @@ import com.navercorp.objectfarm.api.type.WildcardRawType;
  * leaf type resolvers, and interface resolvers.
  * <p>
  * Construction follows {@link FixtureMonkeyOptions} together with per-call
- * {@code propertyConfigurers} and {@code introspectorsByType} overrides.
+ * instantiators by type.
  */
 @API(since = "1.2.0", status = Status.EXPERIMENTAL)
 public final class NodeContextFactory {
@@ -113,8 +114,7 @@ public final class NodeContextFactory {
 	public JvmNodeContext build(
 		JvmType rootType,
 		@Nullable FixtureMonkeyOptions options,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		Map<Class<?>, ArbitraryIntrospector> introspectorsByType
+		Map<Class<?>, InstantiatorProcessResult> instantiators
 	) {
 		ContainerSizeResolver containerSizeResolver = containerSizeResolverFactory.createContainerSizeResolver(options);
 
@@ -124,7 +124,7 @@ public final class NodeContextFactory {
 			.containerSizeResolver(containerSizeResolver);
 
 		if (options != null) {
-			configureOptions(builder, rootType, options, propertyConfigurers, introspectorsByType);
+			configureOptions(builder, rootType, options, instantiators);
 		}
 
 		return builder.build();
@@ -134,12 +134,11 @@ public final class NodeContextFactory {
 		JavaNodeContext.Builder builder,
 		JvmType rootType,
 		FixtureMonkeyOptions options,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		Map<Class<?>, ArbitraryIntrospector> introspectorsByType
+		Map<Class<?>, InstantiatorProcessResult> instantiators
 	) {
 		NameResolvingNodeCandidateGenerator.ChildNameResolver nameResolver = createNodeNameResolver(options);
 		configureCandidateGenerator(
-			builder, rootType, options, propertyConfigurers, introspectorsByType, nameResolver
+			builder, rootType, options, instantiators, nameResolver
 		);
 
 		builder.interfaceResolver(new OptionsInterfaceResolver(seedState, options));
@@ -153,8 +152,7 @@ public final class NodeContextFactory {
 		JavaNodeContext.Builder builder,
 		JvmType rootType,
 		FixtureMonkeyOptions options,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		Map<Class<?>, ArbitraryIntrospector> introspectorsByType,
+		Map<Class<?>, InstantiatorProcessResult> instantiators,
 		NameResolvingNodeCandidateGenerator.ChildNameResolver nameResolver
 	) {
 		ArbitraryGenerator defaultGenerator = options.getDefaultArbitraryGenerator();
@@ -188,8 +186,7 @@ public final class NodeContextFactory {
 
 		PropertyGenerator compositeGenerator = createCompositePropertyGenerator(
 			basePropertyGenerator,
-			propertyConfigurers,
-			introspectorsByType,
+			instantiators,
 			propertyGenerators
 		);
 		JvmNodeCandidateGenerator candidateGenerator = new NameResolvingNodeCandidateGenerator(
@@ -200,7 +197,7 @@ public final class NodeContextFactory {
 
 		builder.leafTypeExclusion(
 			jvmType -> shouldExcludeFromLeaf(
-				jvmType, propertyConfigurers, introspectorsByType, propertyGenerators, basePropertyGenerator
+				jvmType, instantiators, propertyGenerators, basePropertyGenerator
 			)
 		);
 	}
@@ -229,8 +226,7 @@ public final class NodeContextFactory {
 	 */
 	private static boolean shouldExcludeFromLeaf(
 		JvmType jvmType,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		Map<Class<?>, ArbitraryIntrospector> introspectorsByType,
+		Map<Class<?>, InstantiatorProcessResult> instantiators,
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
 		PropertyGenerator basePropertyGenerator
 	) {
@@ -239,7 +235,7 @@ public final class NodeContextFactory {
 			return false;
 		}
 
-		if (propertyConfigurers.containsKey(rawType) || introspectorsByType.containsKey(rawType)) {
+		if (instantiators.containsKey(rawType)) {
 			return true;
 		}
 
@@ -338,30 +334,30 @@ public final class NodeContextFactory {
 
 	/**
 	 * Creates a composite PropertyGenerator that checks configurations in order:
-	 * 1. propertyConfigurers (explicit property list from instantiate())
-	 * 2. introspectorsByType (introspector's getRequiredPropertyGenerator())
+	 * 1. instantiators properties (explicit property list from instantiate())
+	 * 2. instantiators introspector (introspector's getRequiredPropertyGenerator())
 	 * 3. propertyGenerators (from pushExactTypePropertyGenerator())
 	 * 4. baseGenerator (default behavior)
 	 */
 	private static PropertyGenerator createCompositePropertyGenerator(
 		PropertyGenerator baseGenerator,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		Map<Class<?>, ArbitraryIntrospector> introspectorsByType,
+		Map<Class<?>, InstantiatorProcessResult> instantiators,
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators
 	) {
-		if (propertyConfigurers.isEmpty() && introspectorsByType.isEmpty() && propertyGenerators.isEmpty()) {
+		if (instantiators.isEmpty() && propertyGenerators.isEmpty()) {
 			return baseGenerator;
 		}
 
 		return property -> {
 			Class<?> actualType = Types.normalizeRawType(property.getJvmType().getRawType());
 
-			List<Property> configuredProperties = propertyConfigurers.get(actualType);
+			InstantiatorProcessResult instantiator = instantiators.get(actualType);
+			List<Property> configuredProperties = instantiator != null ? instantiator.getProperties() : null;
 			if (configuredProperties != null) {
 				return configuredProperties;
 			}
 
-			ArbitraryIntrospector introspector = introspectorsByType.get(actualType);
+			ArbitraryIntrospector introspector = instantiator != null ? instantiator.getIntrospector() : null;
 			if (introspector != null) {
 				PropertyGenerator introspectorGenerator = introspector.getRequiredPropertyGenerator(property);
 				if (introspectorGenerator != null) {

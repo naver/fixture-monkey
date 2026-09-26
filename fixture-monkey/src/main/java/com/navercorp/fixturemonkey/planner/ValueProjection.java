@@ -32,28 +32,22 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.assembly.AssembleContext;
-import com.navercorp.fixturemonkey.assembly.ValueProjectionAssembler;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.projection.NodeProjection;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
 
 /**
- * A projection that maps paths to Object values and provides assembly capability.
+ * A projection that maps paths to Object values.
  * <p>
  * ValueProjection implements {@link NodeProjection} for Object values and provides
  * a structured way to store and retrieve values associated with paths in a JvmNodeTree.
- * It also supports assembling these values into a complete object using the
- * {@link #assemble(AssembleContext)} method.
  * <p>
  * Values are stored internally by PathExpression to avoid JvmNode aliasing issues
  * caused by JvmNodeSubtreeContext sharing nodes across container elements.
  *
  * @see NodeProjection
  * @see JvmNodeTree
- * @see AssembleContext
  */
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class ValueProjection implements NodeProjection<Object> {
@@ -160,8 +154,22 @@ public final class ValueProjection implements NodeProjection<Object> {
 		return path != null && valuesByPath.containsKey(path);
 	}
 
-	private Map<PathExpression, @Nullable Object> toPathExpressionMap() {
-		return new HashMap<>(valuesByPath);
+	/**
+	 * Returns the tree the paths of this projection are resolved against.
+	 *
+	 * @return the tree structure
+	 */
+	public JvmNodeTree getStructure() {
+		return structure;
+	}
+
+	/**
+	 * Returns the values of this projection keyed by path.
+	 *
+	 * @return an unmodifiable map of paths to values
+	 */
+	public Map<PathExpression, @Nullable Object> getValuesByPath() {
+		return valuesByPath;
 	}
 
 	/**
@@ -229,21 +237,6 @@ public final class ValueProjection implements NodeProjection<Object> {
 	}
 
 	/**
-	 * Assembles the values in this projection into a CombinableArbitrary.
-	 * <p>
-	 * This method traverses the node tree and generates objects based on the stored values.
-	 * Values that are explicitly set in the projection are used directly; missing values
-	 * are generated using fixture-monkey's arbitrary generation infrastructure.
-	 *
-	 * @param context the assembly context containing options and configuration
-	 * @return a CombinableArbitrary that produces the assembled object
-	 */
-	public CombinableArbitrary<?> assemble(AssembleContext context) {
-		return new ValueProjectionAssembler(structure, toPathExpressionMap(), context).assemble();
-	}
-
-
-	/**
 	 * Creates a new builder for building a ValueProjection.
 	 *
 	 * @param structure the JvmNodeTree that provides the structure
@@ -251,19 +244,6 @@ public final class ValueProjection implements NodeProjection<Object> {
 	 */
 	public static Builder builder(JvmNodeTree structure) {
 		return new Builder(structure);
-	}
-
-	/**
-	 * Creates a ValueProjection from a map of path strings to values.
-	 *
-	 * @param tree the JvmNodeTree to use for path resolution
-	 * @param valuesByPath the map of path expression strings to values
-	 * @return a new ValueProjection containing the resolved mappings
-	 */
-	public static ValueProjection of(JvmNodeTree tree, Map<String, @Nullable Object> valuesByPath) {
-		Builder builder = builder(tree);
-		valuesByPath.forEach(builder::putByPath);
-		return builder.build();
 	}
 
 	/**

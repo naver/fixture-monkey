@@ -129,7 +129,6 @@ public interface AssemblyTracer {
 				System.out.printf("  Assembly:     %.2f ms%n", timing.getAssemblyTimeNanos() / 1_000_000.0);
 				System.out.printf("  Total:        %.2f ms%n", timing.getTotalTimeNanos() / 1_000_000.0);
 				System.out.println("  Nodes:        " + timing.getNodeCount());
-				System.out.println("  CacheHit:     " + timing.isCacheHit());
 				System.out.println("  Manipulators: " + timing.getManipulatorCount());
 				System.out.println("  Values:       " + timing.getValueCount());
 				System.out.println("  PathMatches:  " + timing.getPathMatchCount());

@@ -24,7 +24,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 /**
  * Per-{@code JvmType} memoization of derived assembly metadata.
  * Populated once on first encounter and reused across all assembly calls (cross-call cache
- * lives on {@code AssemblyPlanner.nodeMetadataCache}).
+ * is {@code AssemblyPlan.getTypeMetadataCache()}).
  */
 final class CachedTypeMetadata {
 	final PropertyNameResolver nameResolver;

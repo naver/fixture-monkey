@@ -20,9 +20,7 @@ package com.navercorp.objectfarm.api.tree;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -33,7 +31,6 @@ import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
-import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * A context that holds path-based resolvers for tree transformation.
@@ -79,7 +76,6 @@ public final class PathResolverContext {
 		Collections.emptyList(),
 		Collections.emptyList(),
 		Collections.emptyList(),
-		Collections.emptyMap(),
 		ResolutionListener.noOp(),
 		null,
 		null,
@@ -90,13 +86,6 @@ public final class PathResolverContext {
 	private final List<PathResolver<ContainerSizeResolver>> containerSizeResolvers;
 	private final List<PathResolver<InterfaceResolver>> interfaceResolvers;
 	private final List<PathResolver<GenericTypeResolver>> genericTypeResolvers;
-
-	/**
-	 * Type-based container size resolvers.
-	 * Maps owner type to (field name -> container size resolver).
-	 * Used for registered builders that apply to all instances of a type, regardless of path.
-	 */
-	private final Map<JvmType, Map<String, ContainerSizeResolver>> typedContainerSizes;
 
 	/**
 	 * Listener for tracking resolution decisions.
@@ -122,7 +111,6 @@ public final class PathResolverContext {
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		Map<JvmType, Map<String, ContainerSizeResolver>> typedContainerSizes,
 		ResolutionListener resolutionListener,
 		@Nullable ContainerSizeResolver defaultContainerSizeResolver,
 		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver,
@@ -132,7 +120,6 @@ public final class PathResolverContext {
 		this.containerSizeResolvers = containerSizeResolvers;
 		this.interfaceResolvers = interfaceResolvers;
 		this.genericTypeResolvers = genericTypeResolvers;
-		this.typedContainerSizes = typedContainerSizes;
 		this.resolutionListener = resolutionListener;
 		this.defaultContainerSizeResolver = defaultContainerSizeResolver;
 		this.ancestorAwareChildCandidateResolver = ancestorAwareChildCandidateResolver;
@@ -250,23 +237,6 @@ public final class PathResolverContext {
 	}
 
 	/**
-	 * Finds a type-based container size resolver for the given owner type and field name.
-	 * This is used for registered builders that apply to all instances of a type,
-	 * regardless of their path in the tree (supporting recursive structures).
-	 *
-	 * @param ownerType the type that owns the container field
-	 * @param fieldName the name of the container field
-	 * @return an Optional containing the resolver, or empty if not configured
-	 */
-	public Optional<ContainerSizeResolver> findTypedContainerSizeResolver(JvmType ownerType, String fieldName) {
-		Map<String, ContainerSizeResolver> fieldSizes = typedContainerSizes.get(ownerType);
-		if (fieldSizes == null) {
-			return Optional.empty();
-		}
-		return Optional.ofNullable(fieldSizes.get(fieldName));
-	}
-
-	/**
 	 * Finds the direct child candidates of a node chosen from its ancestors.
 	 *
 	 * @param node      the node
@@ -367,7 +337,6 @@ public final class PathResolverContext {
 		private final List<PathResolver<ContainerSizeResolver>> containerSizeResolvers = new ArrayList<>();
 		private final List<PathResolver<InterfaceResolver>> interfaceResolvers = new ArrayList<>();
 		private final List<PathResolver<GenericTypeResolver>> genericTypeResolvers = new ArrayList<>();
-		private final Map<JvmType, Map<String, ContainerSizeResolver>> typedContainerSizes = new HashMap<>();
 		private ResolutionListener resolutionListener = ResolutionListener.noOp();
 		private ContainerSizeResolver defaultContainerSizeResolver;
 		private AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver;
@@ -458,37 +427,6 @@ public final class PathResolverContext {
 		}
 
 		/**
-		 * Adds a type-based container size for the given owner type and field name.
-		 * This is used for registered builders that apply to all instances of a type.
-		 *
-		 * @param ownerType the type that owns the container field
-		 * @param fieldName the name of the container field
-		 * @param size      the container size
-		 * @return this builder
-		 */
-		public Builder addTypedContainerSize(JvmType ownerType, String fieldName, int size) {
-			return addTypedContainerSizeResolver(ownerType, fieldName, containerType -> size);
-		}
-
-		/**
-		 * Adds a type-based container size resolver for the given owner type and field name.
-		 * This is used for registered builders that apply to all instances of a type.
-		 *
-		 * @param ownerType the type that owns the container field
-		 * @param fieldName the name of the container field
-		 * @param resolver  the container size resolver
-		 * @return this builder
-		 */
-		public Builder addTypedContainerSizeResolver(
-			JvmType ownerType,
-			String fieldName,
-			ContainerSizeResolver resolver
-		) {
-			typedContainerSizes.computeIfAbsent(ownerType, k -> new HashMap<>()).put(fieldName, resolver);
-			return this;
-		}
-
-		/**
 		 * Sets the resolution listener for tracking resolution decisions.
 		 *
 		 * @param listener the resolution listener (null will use no-op)
@@ -559,7 +497,6 @@ public final class PathResolverContext {
 			if (containerSizeResolvers.isEmpty()
 				&& interfaceResolvers.isEmpty()
 				&& genericTypeResolvers.isEmpty()
-				&& typedContainerSizes.isEmpty()
 				&& resolutionListener == ResolutionListener.noOp()
 				&& defaultContainerSizeResolver == null
 				&& ancestorAwareChildCandidateResolver == null
@@ -571,7 +508,6 @@ public final class PathResolverContext {
 				Collections.unmodifiableList(new ArrayList<>(containerSizeResolvers)),
 				Collections.unmodifiableList(new ArrayList<>(interfaceResolvers)),
 				Collections.unmodifiableList(new ArrayList<>(genericTypeResolvers)),
-				Collections.unmodifiableMap(new HashMap<>(typedContainerSizes)),
 				resolutionListener,
 				defaultContainerSizeResolver,
 				ancestorAwareChildCandidateResolver,

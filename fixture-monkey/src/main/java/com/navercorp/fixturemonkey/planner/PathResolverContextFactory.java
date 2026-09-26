@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.planner;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -31,24 +32,25 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.tree.ContainerSizeResolverFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
+import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
+import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
+import com.navercorp.objectfarm.api.tree.PathContainerSizeResolver;
 import com.navercorp.objectfarm.api.tree.PathInterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.tree.ResolutionListener;
-import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
- * Builds a {@link PathResolverContext} from analysis output and registered builder data.
- * <p>
- * Aggregates analysis-derived container size resolvers (with wildcard-vs-exact precedence applied),
- * type-scoped container size resolvers, interface resolvers, and generic type resolvers. Optionally
- * infers additional type-scoped container sizes from typed values that are themselves containers.
+ * Builds a {@link PathResolverContext}: the root scope's sizes, interface and generic type resolvers by path, and
+ * the defined scopes' sizes by the nodes they select, including the size of a defined scope's container value.
  */
 @API(since = "1.2.0", status = Status.EXPERIMENTAL)
 final class PathResolverContextFactory {
@@ -68,27 +70,21 @@ final class PathResolverContextFactory {
 	 */
 	public PathResolverContext build(
 		AnalysisResult analysisResult,
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes,
+		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes,
 		ResolutionListener resolutionListener,
 		boolean isFixed,
-		@Nullable FixtureMonkeyOptions options
+		@Nullable FixtureMonkeyOptions options,
+		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver
 	) {
-		PathResolverContext.Builder builder = PathResolverContext.builder().resolutionListener(resolutionListener);
+		PathResolverContext.Builder builder = PathResolverContext.builder()
+			.resolutionListener(resolutionListener);
+		if (ancestorAwareChildCandidateResolver != null) {
+			builder.ancestorAwareChildCandidateResolver(ancestorAwareChildCandidateResolver);
+		}
 
 		Map<PathExpression, Integer> sizeSequenceByPath = analysisResult.getContainerSizeSequenceByPath();
 
-		List<Map.Entry<PathExpression, Integer>> wildcardSizeSequences = new ArrayList<>();
-		for (Map.Entry<PathExpression, Integer> entry : sizeSequenceByPath.entrySet()) {
-			if (entry.getKey().hasWildcard()) {
-				wildcardSizeSequences.add(new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()));
-			}
-		}
-
-		containerSizeResolverFactory.addAnalysisContainerSizeResolvers(
-			builder,
-			analysisResult,
-			wildcardSizeSequences
-		);
+		addRootScopeContainerSizeResolvers(builder, analysisResult);
 
 		Map<PathExpression, Integer> valueOrderByPath = analysisResult.getValueOrderByPath();
 		for (PathResolver<InterfaceResolver> resolver : analysisResult.getInterfaceResolvers()) {
@@ -110,7 +106,7 @@ final class PathResolverContextFactory {
 			builder.addGenericTypeResolver(resolver);
 		}
 
-		containerSizeResolverFactory.addTypedContainerSizeResolvers(builder, typedContainerSizes);
+		addDefinedScopeContainerSizeResolver(builder, definedScopeContainerSizes);
 
 		if (isFixed) {
 			builder.defaultContainerSizeResolver(
@@ -121,33 +117,94 @@ final class PathResolverContextFactory {
 		return builder.build();
 	}
 
-	/**
-	 * Augments {@code explicitTypedContainerSizes} with sizes inferred from container-typed values
-	 * in {@code typedValues}. Values that are containers contribute a fixed size resolver
-	 * (size, size) for their {@code (ownerType, fieldName)}.
-	 */
-	public Map<JvmType, Map<String, ArbitraryContainerInfo>> inferAndMergeTypedContainerSizes(
-		Map<JvmType, Map<String, @Nullable Object>> typedValues,
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> explicitTypedContainerSizes
+	public List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> resolveContainerSizes(
+		List<AnalyzedScope> analyzedDefinedScopes
 	) {
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> merged = new HashMap<>(explicitTypedContainerSizes);
-
-		for (Map.Entry<JvmType, Map<String, @Nullable Object>> typeEntry : typedValues.entrySet()) {
-			JvmType ownerType = typeEntry.getKey();
-			for (Map.Entry<String, @Nullable Object> fieldEntry : typeEntry.getValue().entrySet()) {
-				String fieldName = fieldEntry.getKey();
-				Object value = fieldEntry.getValue();
-
-				OptionalInt containerSize = containerDetector.getContainerSize(value);
-				if (!containerSize.isPresent()) {
-					continue;
+		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> sizes = new ArrayList<>();
+		for (AnalyzedScope directives : analyzedDefinedScopes) {
+			Map<PathExpression, ArbitraryContainerInfo> containerSizes =
+				new HashMap<>(directives.getContainerSizesByPath());
+			for (Map.Entry<PathExpression, @Nullable Object> valueEntry : directives.getValuesByPath().entrySet()) {
+				OptionalInt containerSize = containerDetector.getContainerSize(valueEntry.getValue());
+				if (containerSize.isPresent()) {
+					int size = containerSize.getAsInt();
+					containerSizes.putIfAbsent(valueEntry.getKey(), new ArbitraryContainerInfo(size, size));
 				}
-
-				int size = containerSize.getAsInt();
-				merged.computeIfAbsent(ownerType, k -> new HashMap<>())
-					.putIfAbsent(fieldName, new ArbitraryContainerInfo(size, size));
+			}
+			if (!containerSizes.isEmpty()) {
+				sizes.add(new AbstractMap.SimpleImmutableEntry<>(directives.getSelector(), containerSizes));
 			}
 		}
-		return merged;
+		return sizes;
+	}
+
+	private void addRootScopeContainerSizeResolvers(
+		PathResolverContext.Builder builder,
+		AnalysisResult analysisResult
+	) {
+		Map<PathExpression, Integer> sequenceByPath = analysisResult.getContainerSizeSequenceByPath();
+		List<Map.Entry<PathExpression, Integer>> wildcardSizeSequences = new ArrayList<>();
+		for (Map.Entry<PathExpression, Integer> entry : sequenceByPath.entrySet()) {
+			if (entry.getKey().hasWildcard()) {
+				wildcardSizeSequences.add(entry);
+			}
+		}
+		for (PathResolver<ContainerSizeResolver> resolver : analysisResult.getContainerSizeResolvers()) {
+			PathExpression resolverPath = extractResolverPath(resolver);
+			if (resolverPath == null) {
+				builder.addContainerSizeResolver(resolver);
+				continue;
+			}
+
+			// Sequence wins: a wildcard resolver with higher sequence shadows any exact-path
+			// resolver at a matching path. Build-time pruning is what enables this — the runtime
+			// EXACT-over-WILDCARD precedence in JvmNodeTreeTransformer would otherwise prevent
+			// the wildcard from taking effect at the shadowed exact path.
+			if (!resolverPath.hasWildcard() && !wildcardSizeSequences.isEmpty()) {
+				Integer ownSequence = sequenceByPath.get(resolverPath);
+				boolean overriddenByWildcard = false;
+				for (Map.Entry<PathExpression, Integer> wildcardEntry : wildcardSizeSequences) {
+					if (wildcardEntry.getKey().matches(resolverPath)
+						&& (ownSequence == null || wildcardEntry.getValue() > ownSequence)) {
+						overriddenByWildcard = true;
+						break;
+					}
+				}
+				if (overriddenByWildcard) {
+					continue;
+				}
+			}
+
+			builder.addContainerSizeResolver(resolver);
+		}
+	}
+
+	private void addDefinedScopeContainerSizeResolver(
+		PathResolverContext.Builder builder,
+		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes
+	) {
+		if (definedScopeContainerSizes.isEmpty()) {
+			return;
+		}
+		List<Map.Entry<ScopeSelector, Map<PathExpression, ContainerSizeResolver>>> resolversByScope = new ArrayList<>();
+		for (Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>> entry : definedScopeContainerSizes) {
+			Map<PathExpression, ContainerSizeResolver> resolversByField = new LinkedHashMap<>();
+			entry.getValue().forEach((field, info) ->
+				resolversByField.put(field, containerSizeResolverFactory.createContainerSizeResolver(info))
+			);
+			resolversByScope.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), resolversByField));
+		}
+		builder.preWildcardContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope, false));
+		builder.postWildcardContainerSizeResolver(
+			new DefinedScopeContainerSizeResolver(resolversByScope, true)
+		);
+	}
+
+	private static @Nullable PathExpression extractResolverPath(PathResolver<ContainerSizeResolver> resolver) {
+		if (resolver instanceof PathContainerSizeResolver) {
+			PathContainerSizeResolver sizeResolver = (PathContainerSizeResolver) resolver;
+			return sizeResolver.getPattern();
+		}
+		return null;
 	}
 }

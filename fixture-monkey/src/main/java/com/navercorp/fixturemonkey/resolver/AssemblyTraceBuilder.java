@@ -34,6 +34,8 @@ import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.SetDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
+import com.navercorp.fixturemonkey.planner.AnalyzedScope;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
 import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.fixturemonkey.planner.ValueProjection;
@@ -43,7 +45,6 @@ import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
-import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * Builds the resolution trace from collected data and invokes the tracer.
@@ -56,73 +57,88 @@ public final class AssemblyTraceBuilder {
 	private AssemblyTraceBuilder() {
 	}
 
+	private static String registeredPath(String typeName, PathExpression relativePath) {
+		if (relativePath.isRoot()) {
+			return typeName + ".$";
+		}
+		return typeName + relativePath.toExpression().substring(1);
+	}
+
 	/**
 	 * Builds the resolution trace from collected data and invokes the tracer.
 	 *
-	 * @param relevantTypes types that exist in the sample target's type tree; only register
-	 *                      operations for these types are included in the trace output
 	 * @param isFixed whether the builder is in fixed (deterministic) mode
 	 */
 	public static void buildAndInvoke(
 		TraceContext traceContext,
-		List<PathDirective> manipulators,
-		List<SizeDirective> sizeDirectives,
-		AnalysisResult analysisResult,
-		AssemblyPlan adaptationResult,
+		AssemblyPlan plan,
 		long prepTimeNanos,
 		long assemblyTimeNanos,
 		long totalAdapterTimeNanos,
-		Map<JvmType, Map<String, @Nullable Object>> typedValues,
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes,
-		Set<Class<?>> relevantTypes,
 		boolean isFixed,
-		AssemblyTracer adapterTracer
+		AssemblyTracer tracer
 	) {
 		if (!traceContext.isEnabled()) {
 			return;
 		}
 
+		AnalysisResult analysisResult = plan.getAnalysisResult();
+		List<PathDirective> manipulators = plan.getScopeSet().getRootScope().getDirectives();
 		traceContext.recordBuilderContext(isFixed, analysisResult.isStrictMode());
+		List<AnalyzedScope> analyzedDefinedScopes = plan.getAnalyzedDefinedScopes();
 
 		int sequence = 0;
 
 		// Register entries are recorded first — they execute before direct manipulators
-		if (typedValues != null) {
-			for (Map.Entry<JvmType, Map<String, @Nullable Object>> entry : typedValues.entrySet()) {
-				Class<?> rawType = entry.getKey().getRawType();
-				if (!relevantTypes.contains(rawType)) {
-					continue;
+		for (AnalyzedScope directives : analyzedDefinedScopes) {
+			String typeName = directives.getSelector().toString();
+
+			for (Map.Entry<PathExpression, @Nullable Object> valueEntry : directives.getValuesByPath().entrySet()) {
+				Object value = valueEntry.getValue();
+				String type;
+				if (value instanceof LazyValueHolder) {
+					type = "SetLazy";
+					value = "<lazy>";
+				} else {
+					type = "SetDecomposedValue";
 				}
-				String typeName = rawType.getSimpleName();
-				for (Map.Entry<String, @Nullable Object> fieldEntry : entry.getValue().entrySet()) {
-					String fieldPath = fieldEntry.getKey();
-					String path = "$".equals(fieldPath) ? typeName + ".$" : typeName + "." + fieldPath;
-					Object value = fieldEntry.getValue();
-					String type;
-					if (value instanceof LazyValueHolder) {
-						type = "SetLazy";
-						value = "<lazy>";
-					} else {
-						type = "SetDecomposedValue";
-					}
-					traceContext.recordManipulator(path, type, sequence++, value, null, SOURCE_REGISTER);
+				traceContext.recordManipulator(
+					registeredPath(typeName, valueEntry.getKey()), type, sequence++, value, null, SOURCE_REGISTER
+				);
+			}
+
+			for (PathExpression notNullPath : directives.getNotNullPaths()) {
+				traceContext.recordManipulator(
+					registeredPath(typeName, notNullPath), "SetNotNull", sequence++, null, null, SOURCE_REGISTER
+				);
+			}
+
+			for (Map.Entry<PathExpression, List<PostConditionFilter>> filterEntry
+				: directives.getFiltersByPath().entrySet()) {
+				for (int i = 0; i < filterEntry.getValue().size(); i++) {
+					traceContext.recordManipulator(
+						registeredPath(typeName, filterEntry.getKey()),
+						"SetPostCondition",
+						sequence++,
+						null,
+						null,
+						SOURCE_REGISTER
+					);
 				}
 			}
-		}
 
-		if (typedContainerSizes != null) {
-			for (Map.Entry<JvmType, Map<String, ArbitraryContainerInfo>> entry : typedContainerSizes.entrySet()) {
-				Class<?> rawType = entry.getKey().getRawType();
-				if (!relevantTypes.contains(rawType)) {
-					continue;
-				}
-				String typeName = rawType.getSimpleName();
-				for (Map.Entry<String, ArbitraryContainerInfo> sizeEntry : entry.getValue().entrySet()) {
-					String path = typeName + "." + sizeEntry.getKey();
-					ArbitraryContainerInfo info = sizeEntry.getValue();
-					String sizeInfo = "size=" + info.getElementMinSize() + "-" + info.getElementMaxSize();
-					traceContext.recordManipulator(path, "ContainerInfo", sequence++, sizeInfo, null, SOURCE_REGISTER);
-				}
+			for (Map.Entry<PathExpression, ArbitraryContainerInfo> sizeEntry
+				: directives.getContainerSizesByPath().entrySet()) {
+				ArbitraryContainerInfo info = sizeEntry.getValue();
+				String sizeInfo = "size=" + info.getElementMinSize() + "-" + info.getElementMaxSize();
+				traceContext.recordManipulator(
+					registeredPath(typeName, sizeEntry.getKey()),
+					"ContainerInfo",
+					sequence++,
+					sizeInfo,
+					null,
+					SOURCE_REGISTER
+				);
 			}
 		}
 
@@ -145,7 +161,7 @@ public final class AssemblyTraceBuilder {
 						totalDecomposed++;
 					}
 				}
-				Set<String> unresolvedNonWildcard = adaptationResult.getValues().getUnresolvedNonWildcardPaths();
+				Set<String> unresolvedNonWildcard = plan.getValues().getUnresolvedNonWildcardPaths();
 				for (String up : unresolvedNonWildcard) {
 					if (up.startsWith(pathPrefix)) {
 						unmatched++;
@@ -178,7 +194,11 @@ public final class AssemblyTraceBuilder {
 			}
 		}
 
-		for (SizeDirective directive : sizeDirectives) {
+		for (PathDirective sizeManipulator : manipulators) {
+			if (!(sizeManipulator instanceof SizeDirective)) {
+				continue;
+			}
+			SizeDirective directive = (SizeDirective)sizeManipulator;
 			String path = directive.path().toExpression();
 			ArbitraryContainerInfo info = directive.containerInfo();
 			String sizeInfo = "size=" + info.getElementMinSize() + "-" + info.getElementMaxSize();
@@ -216,13 +236,9 @@ public final class AssemblyTraceBuilder {
 			traceContext.recordJustPath(justPathStr, ignoredChildPaths);
 		}
 
-		if (adaptationResult.isCacheHit()) {
-			traceContext.recordCacheStatus("tree", ResolutionTrace.CacheResult.HIT, null);
-		} else {
-			traceContext.recordCacheStatus("tree", ResolutionTrace.CacheResult.MISS, "has manipulators");
-		}
+		traceContext.recordCacheStatus("tree", ResolutionTrace.CacheResult.MISS, "has manipulators");
 
-		Map<String, ValueProjection.UnresolvedPathInfo> unresolvedWithDiag = adaptationResult
+		Map<String, ValueProjection.UnresolvedPathInfo> unresolvedWithDiag = plan
 			.getValues()
 			.getUnresolvedPathsWithDiagnostics();
 		for (Map.Entry<String, ValueProjection.UnresolvedPathInfo> entry : unresolvedWithDiag.entrySet()) {
@@ -234,7 +250,7 @@ public final class AssemblyTraceBuilder {
 			);
 		}
 
-		JvmNodeTree nodeTree = adaptationResult.getNodeTree();
+		JvmNodeTree nodeTree = plan.getNodeTree();
 		JvmNode root = nodeTree.getRootNode();
 		List<JvmNode> rootChildren = nodeTree.getChildren(root);
 		if (rootChildren != null && !rootChildren.isEmpty()) {
@@ -247,7 +263,7 @@ public final class AssemblyTraceBuilder {
 			}
 			Collections.sort(fieldNames);
 
-			Set<String> unresolvedNonWildcard = adaptationResult.getValues().getUnresolvedNonWildcardPaths();
+			Set<String> unresolvedNonWildcard = plan.getValues().getUnresolvedNonWildcardPaths();
 			List<String> unmatchedTargets = new ArrayList<>();
 			for (String p : unresolvedNonWildcard) {
 				if (p.startsWith("$.") && !p.substring(2).contains(".") && !p.contains("[")) {
@@ -262,35 +278,31 @@ public final class AssemblyTraceBuilder {
 			}
 		}
 
-		if (typedValues != null) {
-			for (Map.Entry<JvmType, Map<String, @Nullable Object>> entry : typedValues.entrySet()) {
-				if (!relevantTypes.contains(entry.getKey().getRawType())) {
-					continue;
-				}
-				String targetType = entry.getKey().getRawType().getSimpleName();
-				int manipulatorCount = entry.getValue().size();
-				int containerSizeCount =
-					typedContainerSizes != null && typedContainerSizes.containsKey(entry.getKey())
-						? typedContainerSizes.get(entry.getKey()).size()
-						: 0;
-				traceContext.recordRegisteredBuilder(targetType, manipulatorCount, containerSizeCount);
-			}
+		for (AnalyzedScope directives : analyzedDefinedScopes) {
+			int manipulatorCount =
+				directives.getValuesByPath().size()
+					+ directives.getNotNullPaths().size()
+					+ directives.getFiltersByPath().size();
+			traceContext.recordRegisteredBuilder(
+				directives.getSelector().toString(),
+				manipulatorCount,
+				directives.getContainerSizesByPath().size()
+			);
 		}
 
-		traceContext.recordTiming("analyze", adaptationResult.getAnalyzeTimeNanos());
-		traceContext.recordTiming("treeBuild", adaptationResult.getTreeBuildTimeNanos());
+		traceContext.recordTiming("analyze", plan.getAnalyzeTimeNanos());
+		traceContext.recordTiming("treeBuild", plan.getTreeBuildTimeNanos());
 		traceContext.recordTiming("assembly", assemblyTimeNanos);
 		traceContext.recordTiming("total", totalAdapterTimeNanos);
 		traceContext.recordTiming("prep", prepTimeNanos);
 
-		traceContext.setNodeCount(adaptationResult.getNodeTree().size());
+		traceContext.setNodeCount(plan.getNodeTree().size());
 		traceContext.setManipulatorCount(sequence);
 		traceContext.setValueCount(analysisResult.getValuesByPath().size());
-		traceContext.setCacheHit(adaptationResult.isCacheHit());
 
 		ResolutionTrace trace = traceContext.build();
 		if (trace != null) {
-			adapterTracer.onResolutionComplete(trace);
+			tracer.onResolutionComplete(trace);
 		}
 	}
 }
