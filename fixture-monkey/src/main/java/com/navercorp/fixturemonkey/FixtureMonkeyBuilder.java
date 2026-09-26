@@ -22,9 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -85,8 +83,6 @@ public final class FixtureMonkeyBuilder {
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers = new ArrayList<>();
 	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuildersWithPriority = new ArrayList<>();
-	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-		registeredPriorityMatchersByName = new HashMap<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private boolean experimentalFileSeedEnabled = false;
 	private long seed = System.nanoTime();
@@ -323,8 +319,8 @@ public final class FixtureMonkeyBuilder {
 	/**
 	 * Registers an ArbitraryBuilder with the DEFAULT priority (Integer.MAX_VALUE).
 	 *
-	 * @param registeredArbitraryBuilder the MatcherOperator containing the matcher
-	 * and the ArbitraryBuilder to be registered
+	 * @param type                       the type the ArbitraryBuilder is registered for, including its subtypes
+	 * @param registeredArbitraryBuilder the function creating the ArbitraryBuilder to be registered
 	 * @return the current instance of FixtureMonkeyBuilder for method chaining
 	 */
 	public FixtureMonkeyBuilder register(
@@ -336,14 +332,14 @@ public final class FixtureMonkeyBuilder {
 
 	/**
 	 * Registers an ArbitraryBuilder with a specified priority.
+	 * <p>
+	 * If multiple ArbitraryBuilders with the same priority apply, the one registered last wins.
 	 *
-	 * @param registeredArbitraryBuilder the MatcherOperator containing the matcher
-	 * and the ArbitraryBuilder to be registered
-	 * @param priority the priority of the ArbitraryBuilder; higher values indicate lower priority
+	 * @param type                       the type the ArbitraryBuilder is registered for, including its subtypes
+	 * @param registeredArbitraryBuilder the function creating the ArbitraryBuilder to be registered
+	 * @param priority                   the priority of the ArbitraryBuilder; higher values indicate lower priority
 	 * @return the current instance of FixtureMonkeyBuilder for method chaining
 	 * @throws IllegalArgumentException if the priority is less than 0
-	 *
-	 * If multiple ArbitraryBuilders have the same priority, one of them will be selected randomly.
 	 */
 	public FixtureMonkeyBuilder register(
 		Class<?> type,
@@ -666,7 +662,6 @@ public final class FixtureMonkeyBuilder {
 			manipulatorOptimizer,
 			registeredArbitraryBuildersWithPriority,
 			monkeyManipulatorFactory,
-			registeredPriorityMatchersByName,
 			resolvedPlanner,
 			resolvedTracer
 		);

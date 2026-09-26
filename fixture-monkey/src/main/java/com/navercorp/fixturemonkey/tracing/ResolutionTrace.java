@@ -528,7 +528,6 @@ public final class ResolutionTrace {
 		private final long assemblyTimeNanos;
 		private final long totalTimeNanos;
 		private final int nodeCount;
-		private final boolean cacheHit;
 		private final int manipulatorCount;
 		private final int valueCount;
 		private final int pathMatchCount;
@@ -540,7 +539,6 @@ public final class ResolutionTrace {
 			long assemblyTimeNanos,
 			long totalTimeNanos,
 			int nodeCount,
-			boolean cacheHit,
 			int manipulatorCount,
 			int valueCount,
 			int pathMatchCount
@@ -551,7 +549,6 @@ public final class ResolutionTrace {
 			this.assemblyTimeNanos = assemblyTimeNanos;
 			this.totalTimeNanos = totalTimeNanos;
 			this.nodeCount = nodeCount;
-			this.cacheHit = cacheHit;
 			this.manipulatorCount = manipulatorCount;
 			this.valueCount = valueCount;
 			this.pathMatchCount = pathMatchCount;
@@ -579,10 +576,6 @@ public final class ResolutionTrace {
 
 		public int getNodeCount() {
 			return nodeCount;
-		}
-
-		public boolean isCacheHit() {
-			return cacheHit;
 		}
 
 		public int getManipulatorCount() {
@@ -616,7 +609,6 @@ public final class ResolutionTrace {
 		private long assemblyTimeNanos;
 		private long totalTimeNanos;
 		private int nodeCount;
-		private boolean cacheHit;
 		private int manipulatorCount;
 		private int valueCount;
 		private int pathMatchCount;
@@ -844,12 +836,6 @@ public final class ResolutionTrace {
 			return this;
 		}
 
-		public Builder cacheHit(boolean hit) {
-			this.cacheHit = hit;
-			this.hasTiming = true;
-			return this;
-		}
-
 		public Builder manipulatorCount(int count) {
 			this.manipulatorCount = count;
 			this.hasTiming = true;
@@ -945,7 +931,6 @@ public final class ResolutionTrace {
 					assemblyTimeNanos,
 					totalTimeNanos,
 					nodeCount,
-					cacheHit,
 					manipulatorCount,
 					valueCount,
 					pathMatchCount

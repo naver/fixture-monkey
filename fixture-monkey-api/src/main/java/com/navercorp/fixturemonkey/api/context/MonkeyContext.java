@@ -20,17 +20,14 @@ package com.navercorp.fixturemonkey.api.context;
 
 import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
 
-import java.util.List;
 import java.util.TreeMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
-import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
-import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
@@ -49,19 +46,16 @@ public final class MonkeyContext {
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private final ConcurrentLruCache<TreeRootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
-	private final List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders;
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	public MonkeyContext(
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty,
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty,
 		ConcurrentLruCache<TreeRootProperty, MonkeyGeneratorContext> generatorContextByRootProperty,
-		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
 		FixtureMonkeyOptions fixtureMonkeyOptions
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
 		this.javaArbitrariesByProperty = javaArbitrariesByProperty;
 		this.generatorContextByRootProperty = generatorContextByRootProperty;
-		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 	}
 
@@ -94,10 +88,6 @@ public final class MonkeyContext {
 			rootProperty,
 			property -> new MonkeyGeneratorContext(new TreeMap<>())
 		);
-	}
-
-	public List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> getRegisteredArbitraryBuilders() {
-		return registeredArbitraryBuilders;
 	}
 
 	public FixtureMonkeyOptions getFixtureMonkeyOptions() {

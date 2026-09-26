@@ -52,41 +52,43 @@ final class TypeMetadataResolver {
 	}
 
 	static PropertyNameResolver resolveNameResolver(JvmNode node, Property property, AssemblyState state) {
-		if (state.typeMetadataCache != null) {
-			CachedTypeMetadata cached = state.typeMetadataCache.get(node.getConcreteType());
-			if (cached != null) {
-				return cached.nameResolver;
-			}
+		CachedTypeMetadata cached = state.typeMetadataCache.get(node.getConcreteType());
+		if (cached != null) {
+			return cached.nameResolver;
 		}
-		return state.options.getPropertyNameResolver(property);
+		return state.context.getOptions().getPropertyNameResolver(property);
 	}
 
 	static NullInjectGenerator resolveNullInjectGenerator(JvmNode node, Property property, AssemblyState state) {
-		if (state.typeMetadataCache != null) {
-			CachedTypeMetadata cached = state.typeMetadataCache.get(node.getConcreteType());
-			if (cached != null) {
-				return cached.nullInjectGenerator;
-			}
+		CachedTypeMetadata cached = state.typeMetadataCache.get(node.getConcreteType());
+		if (cached != null) {
+			return cached.nullInjectGenerator;
 		}
-		return state.options.getNullInjectGenerator(property);
+		return state.context.getOptions().getNullInjectGenerator(property);
 	}
 
 	@SuppressWarnings("deprecation")
 	static void writeBackTypeMetadata(JvmNode node, Property property, AssemblyState state) {
-		if (state.typeMetadataCache == null) {
-			return;
-		}
 		JvmType jvmType = node.getConcreteType();
 		if (!state.typeMetadataCache.containsKey(jvmType)) {
-			PropertyNameResolver resolver = state.options.getPropertyNameResolver(property);
-			NullInjectGenerator generator = state.options.getNullInjectGenerator(property);
-			boolean isContainer = computeIsContainerType(jvmType, state.options);
-			boolean hasCandidateResolvers = state.options.getCandidateConcretePropertyResolver(property) != null;
+			PropertyNameResolver resolver = state.context.getOptions().getPropertyNameResolver(property);
+			FixtureMonkeyOptions options = state.context.getOptions();
+			NullInjectGenerator generator = options.getNullInjectGenerator(property);
+			boolean isContainer = computeIsContainerType(jvmType, options);
+			boolean hasCandidateResolvers = options.getCandidateConcretePropertyResolver(property) != null;
 			state.typeMetadataCache.putIfAbsent(
 				jvmType,
 				new CachedTypeMetadata(resolver, generator, isContainer, hasCandidateResolvers)
 			);
 		}
+	}
+
+	static boolean isContainerType(JvmType jvmType, AssemblyState state) {
+		CachedTypeMetadata cached = state.typeMetadataCache.get(jvmType);
+		if (cached != null) {
+			return cached.isContainerType;
+		}
+		return computeIsContainerType(jvmType, state.context.getOptions());
 	}
 
 	static boolean computeIsContainerType(JvmType jvmType, @Nullable FixtureMonkeyOptions options) {

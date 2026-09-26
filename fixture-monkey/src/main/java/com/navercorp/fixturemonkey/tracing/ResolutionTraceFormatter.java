@@ -158,24 +158,24 @@ final class ResolutionTraceFormatter {
 			}
 		}
 
-		// 3. Values by path section — split user-set vs decomposed
-		Map<String, Object> userSetValues = new LinkedHashMap<>();
-		Map<String, PathExpression> userSetKeyMap = new LinkedHashMap<>();
+		// 3. Values by path section — split direct vs decomposed
+		Map<String, Object> directValues = new LinkedHashMap<>();
+		Map<String, PathExpression> directKeyMap = new LinkedHashMap<>();
 		int decomposedCount = 0;
 		for (Map.Entry<PathExpression, @Nullable Object> entry : valuesByPath.entrySet()) {
 			String pathStr = entry.getKey().toExpression();
 			if (decomposedValuePaths.contains(pathStr)) {
 				decomposedCount++;
 			} else {
-				userSetValues.put(pathStr, entry.getValue());
-				userSetKeyMap.put(pathStr, entry.getKey());
+				directValues.put(pathStr, entry.getValue());
+				directKeyMap.put(pathStr, entry.getKey());
 			}
 		}
 
 		int valuesPathWidth = 28;
-		if (!userSetValues.isEmpty()) {
+		if (!directValues.isEmpty()) {
 			int maxLen = 0;
-			for (String key : userSetValues.keySet()) {
+			for (String key : directValues.keySet()) {
 				if (key.length() > maxLen) {
 					maxLen = key.length();
 				}
@@ -187,9 +187,9 @@ final class ResolutionTraceFormatter {
 			sb.append(" (with sequence order)");
 		}
 		sb.append("\n");
-		for (Map.Entry<String, Object> entry : userSetValues.entrySet()) {
+		for (Map.Entry<String, Object> entry : directValues.entrySet()) {
 			sb.append("  ").append(pad(entry.getKey(), valuesPathWidth));
-			PathExpression pathExpr = userSetKeyMap.get(entry.getKey());
+			PathExpression pathExpr = directKeyMap.get(entry.getKey());
 			Integer order = pathExpr != null ? valueOrderByPath.get(pathExpr) : null;
 			if (order != null) {
 				sb.append(" [seq=").append(order).append("]");
@@ -273,19 +273,19 @@ final class ResolutionTraceFormatter {
 
 		// 7. Merged Candidates section
 		if (!mergedCandidates.isEmpty()) {
-			int userSetCount = 0;
+			int directCount = 0;
 			int registerCount = 0;
 			for (MergedCandidateEntry e : mergedCandidates) {
 				if ("DIRECT".equals(e.source())) {
-					userSetCount++;
+					directCount++;
 				} else if ("REGISTER".equals(e.source())) {
 					registerCount++;
 				}
 			}
 
 			sb.append("\u25b8 Merged Candidates (").append(mergedCandidates.size()).append(" paths");
-			if (userSetCount > 0) {
-				sb.append(", ").append(userSetCount).append(" DIRECT");
+			if (directCount > 0) {
+				sb.append(", ").append(directCount).append(" DIRECT");
 			}
 			if (registerCount > 0) {
 				sb.append(", ").append(registerCount).append(" REGISTER");
@@ -430,7 +430,6 @@ final class ResolutionTraceFormatter {
 			sb.append("  Assembly:     ").append(formatNanos(timing.getAssemblyTimeNanos())).append("\n");
 			sb.append("  Total:        ").append(formatNanos(timing.getTotalTimeNanos())).append("\n");
 			sb.append("  Node Count:   ").append(timing.getNodeCount()).append("\n");
-			sb.append("  Cache Hit:    ").append(timing.isCacheHit()).append("\n");
 			sb.append("  Manipulators: ").append(timing.getManipulatorCount()).append("\n");
 			sb.append("  Values:       ").append(timing.getValueCount()).append("\n");
 			sb.append("  PathMatches:  ").append(timing.getPathMatchCount()).append("\n\n");

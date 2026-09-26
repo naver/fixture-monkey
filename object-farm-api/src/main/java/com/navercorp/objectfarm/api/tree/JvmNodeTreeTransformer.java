@@ -395,10 +395,9 @@ public final class JvmNodeTreeTransformer {
 	}
 
 	/**
-	 * Resolves container size using 6-level priority:
+	 * Resolves container size using 5-level priority:
 	 * <ol>
 	 *   <li>Exact path match (the root container size given to transform, then a builder that set this path)</li>
-	 *   <li>Type-based match (registered builder for the owning type)</li>
 	 *   <li>Ancestor-aware match before wildcards (registered builder for the enclosing node)</li>
 	 *   <li>Wildcard path match (registered builder with wildcard pattern)</li>
 	 *   <li>Ancestor-aware match after wildcards</li>
@@ -417,18 +416,6 @@ public final class JvmNodeTreeTransformer {
 		Optional<ContainerSizeResolver> exactResolver = resolverContext.findExactContainerSizeResolver(currentPath);
 		if (exactResolver.isPresent()) {
 			return new SizeResolution(exactResolver.get(), "EXACT_PATH");
-		}
-
-		JvmNode parentNode = ctx.nodeToParent.get(containerNode);
-		String fieldName = containerNode.getNodeName();
-		if (parentNode != null && fieldName != null) {
-			Optional<ContainerSizeResolver> typedResolver = resolverContext.findTypedContainerSizeResolver(
-				parentNode.getConcreteType(),
-				fieldName
-			);
-			if (typedResolver.isPresent()) {
-				return new SizeResolution(typedResolver.get(), "TYPE_BASED");
-			}
 		}
 
 		Optional<ContainerSizeResolver> preWildcardResolver =

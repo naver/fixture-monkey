@@ -31,22 +31,15 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
-import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.node.SeedState;
-import com.navercorp.objectfarm.api.tree.PathContainerSizeResolver;
-import com.navercorp.objectfarm.api.tree.PathResolver;
-import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
- * Factory for creating {@link ContainerSizeResolver}s from manipulators and options.
- *
- * <p>Extracted from {@link AssemblyPlanner} to separate container size
- * resolution concerns from the main adapt orchestration logic.
+ * Creates the {@link ContainerSizeResolver}s trees are sized with: from the options, for {@code fixed()} mode, and
+ * for a declared size, drawing sizes from the seed.
  */
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public final class ContainerSizeResolverFactory {
@@ -59,62 +52,22 @@ public final class ContainerSizeResolverFactory {
 		this.seedState = seedState;
 	}
 
-	public void addAnalysisContainerSizeResolvers(
-		PathResolverContext.Builder builder,
-		AnalysisResult analysisResult,
-		List<Map.Entry<PathExpression, Integer>> wildcardSizeSequences
-	) {
-		Map<PathExpression, Integer> sequenceByPath = analysisResult.getContainerSizeSequenceByPath();
-		for (PathResolver<ContainerSizeResolver> resolver : analysisResult.getContainerSizeResolvers()) {
-			PathExpression resolverPath = extractResolverPath(resolver);
-			if (resolverPath == null) {
-				builder.addContainerSizeResolver(resolver);
-				continue;
+	/**
+	 * Creates a ContainerSizeResolver that sizes containers within the bounds of a declared size.
+	 *
+	 * @param containerInfo the declared size bounds
+	 * @return a resolver drawing sizes from the seed within the bounds
+	 */
+	public ContainerSizeResolver createContainerSizeResolver(ArbitraryContainerInfo containerInfo) {
+		int minSize = containerInfo.getElementMinSize();
+		int maxSize = containerInfo.getElementMaxSize();
+		return containerType -> {
+			if (minSize == maxSize) {
+				return minSize;
 			}
-
-			// Sequence wins: a wildcard resolver with higher sequence shadows any exact-path
-			// resolver at a matching path. Build-time pruning is what enables this — the runtime
-			// EXACT-over-WILDCARD precedence in JvmNodeTreeTransformer would otherwise prevent
-			// the wildcard from taking effect at the shadowed exact path.
-			if (!resolverPath.hasWildcard() && !wildcardSizeSequences.isEmpty()) {
-				Integer ownSequence = sequenceByPath.get(resolverPath);
-				boolean overriddenByWildcard = false;
-				for (Map.Entry<PathExpression, Integer> wildcardEntry : wildcardSizeSequences) {
-					if (wildcardEntry.getKey().matches(resolverPath)
-						&& (ownSequence == null || wildcardEntry.getValue() > ownSequence)) {
-						overriddenByWildcard = true;
-						break;
-					}
-				}
-				if (overriddenByWildcard) {
-					continue;
-				}
-			}
-
-			builder.addContainerSizeResolver(resolver);
-		}
-	}
-
-	public void addTypedContainerSizeResolvers(
-		PathResolverContext.Builder builder,
-		Map<JvmType, Map<String, ArbitraryContainerInfo>> typedContainerSizes
-	) {
-		for (Map.Entry<JvmType, Map<String, ArbitraryContainerInfo>> entry : typedContainerSizes.entrySet()) {
-			JvmType ownerType = entry.getKey();
-			for (Map.Entry<String, ArbitraryContainerInfo> fieldEntry : entry.getValue().entrySet()) {
-				ArbitraryContainerInfo containerInfo = fieldEntry.getValue();
-				int minSize = containerInfo.getElementMinSize();
-				int maxSize = containerInfo.getElementMaxSize();
-				ContainerSizeResolver resolver = containerType -> {
-					if (minSize == maxSize) {
-						return minSize;
-					}
-					int range = maxSize - minSize + 1;
-					return minSize + nextRandomForType(containerType).nextInt(range);
-				};
-				builder.addTypedContainerSizeResolver(ownerType, fieldEntry.getKey(), resolver);
-			}
-		}
+			int range = maxSize - minSize + 1;
+			return minSize + nextRandomForType(containerType).nextInt(range);
+		};
 	}
 
 	/**
@@ -125,7 +78,7 @@ public final class ContainerSizeResolverFactory {
 	 * varied sizes; two adapters created with the same seed see the same sequence and
 	 * therefore the same sizes for the same call pattern.
 	 */
-	ContainerSizeResolver createContainerSizeResolver(@Nullable FixtureMonkeyOptions options) {
+	public ContainerSizeResolver createContainerSizeResolver(@Nullable FixtureMonkeyOptions options) {
 		if (options != null) {
 			return containerType -> {
 				Property property = JvmNodePropertyFactory.fromType(containerType);
@@ -214,15 +167,7 @@ public final class ContainerSizeResolverFactory {
 		};
 	}
 
-	private static @Nullable PathExpression extractResolverPath(PathResolver<ContainerSizeResolver> resolver) {
-		if (resolver instanceof PathContainerSizeResolver) {
-			PathContainerSizeResolver sizeResolver = (PathContainerSizeResolver) resolver;
-			return sizeResolver.getPattern();
-		}
-		return null;
-	}
-
-	static @Nullable Integer getEnumSizeLimit(JvmType containerType) {
+	private static @Nullable Integer getEnumSizeLimit(JvmType containerType) {
 		Class<?> rawType = containerType.getRawType();
 		List<? extends JvmType> typeVariables = containerType.getTypeVariables();
 

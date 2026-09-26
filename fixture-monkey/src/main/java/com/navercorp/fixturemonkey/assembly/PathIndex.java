@@ -36,35 +36,26 @@ final class PathIndex {
 
 	private final Map<PathExpression, Set<PathExpression>> childPathsByParent;
 	private final Set<PathExpression> wildcardParentPaths;
-	private final Set<PathExpression> typePatternPaths;
 
 	PathIndex(
 		Set<PathExpression> valuePaths,
-		Set<PathExpression> userContainerSizePaths,
-		Set<PathExpression> customizerPaths,
-		Set<PathExpression> notNullPaths
+		Set<PathExpression> rootContainerSizePaths,
+		Set<PathExpression> rootCustomizerFilterNotNullPaths
 	) {
 		this.childPathsByParent = new HashMap<>();
 		this.wildcardParentPaths = new HashSet<>();
-		this.typePatternPaths = new HashSet<>();
 
 		indexAncestors(valuePaths);
-		indexAncestors(userContainerSizePaths);
-		indexAncestors(customizerPaths);
-		indexAncestors(notNullPaths);
+		indexAncestors(rootContainerSizePaths);
+		indexAncestors(rootCustomizerFilterNotNullPaths);
 
-		for (PathExpression sizePath : userContainerSizePaths) {
+		for (PathExpression sizePath : rootContainerSizePaths) {
 			childPathsByParent.computeIfAbsent(sizePath, k -> new HashSet<>());
 		}
 	}
 
 	private void indexAncestors(Set<PathExpression> paths) {
 		for (PathExpression path : paths) {
-			if (path.hasTypeSelector()) {
-				typePatternPaths.add(path);
-				continue;
-			}
-
 			PathExpression ancestor = path.getParent();
 			while (ancestor != null && !ancestor.equals(path)) {
 				childPathsByParent.computeIfAbsent(ancestor, k -> new HashSet<>()).add(path);
@@ -100,9 +91,5 @@ final class PathIndex {
 				|| childPathsByParent.containsKey(wildcardPath);
 		}
 		return false;
-	}
-
-	Set<PathExpression> getTypePatternPaths() {
-		return typePatternPaths;
 	}
 }

@@ -181,11 +181,6 @@ final class ActiveTraceContext implements TraceContext {
 	}
 
 	@Override
-	public void setCacheHit(boolean cacheHit) {
-		builder.cacheHit(cacheHit);
-	}
-
-	@Override
 	public void setManipulatorCount(int count) {
 		builder.manipulatorCount(count);
 	}

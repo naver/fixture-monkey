@@ -18,93 +18,49 @@
 
 package com.navercorp.fixturemonkey.assembly;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.api.option.InterfaceSelectionStrategy;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
+import com.navercorp.fixturemonkey.planner.AssemblyPlan;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
-import com.navercorp.fixturemonkey.tree.RuntimeTreeFactory;
-import com.navercorp.objectfarm.api.expression.PathExpression;
-import com.navercorp.objectfarm.api.input.InlinedValueResolver;
-import com.navercorp.objectfarm.api.tree.PathResolverContext;
 
 /**
- * Context for ValueProjection.assemble() containing all necessary information
+ * Context for ValueProjectionAssembler.assemble() containing all necessary information
  * to generate objects from a ValueProjection.
  * <p>
  * This class encapsulates:
  * <ul>
+ *   <li>The {@link AssemblyPlan} being assembled, with the scopes it was made from</li>
  *   <li>MonkeyContext for options and generator context</li>
  *   <li>TreeRootProperty for root type information</li>
- *   <li>Just paths (for Values.just() - truly immutable values)</li>
- *   <li>Filters by path (post-conditions)</li>
- *   <li>Limits by path (for wildcard patterns)</li>
+ *   <li>TraceContext for collecting assembly debugging information</li>
  * </ul>
  * <p>
- * Path resolution follows the "more specific path wins" rule:
- * <ul>
- *   <li>If both "$.object" and "$.object.str" have values, "$.object.str" takes precedence for that field.</li>
- *   <li>This applies to all manipulations including setNull(), set(), etc.</li>
- * </ul>
- * <p>
- * The only exception is Values.just() (tracked in justPaths):
- * <ul>
- *   <li>Values.just() creates truly immutable values where child paths are ignored.</li>
- *   <li>This is intentional: when a user sets Values.just(object), they want that exact object.</li>
- * </ul>
+ * What the scopes declared and which declaration wins at a path are not kept here; assembly looks them up in the
+ * plan's scopes.
  * <p>
  * Use the builder pattern to create instances:
  * <pre>
- * AssembleContext context = AssembleContext.builder(monkeyContext)
+ * AssembleContext context = AssembleContext.builder(monkeyContext, assemblyPlan)
  *     .rootProperty(rootProperty)
- *     .justPaths(justPaths)
- *     .filtersByPath(filtersByPath)
- *     .limitsByPath(limitsByPath)
  *     .build();
  * </pre>
  *
- * @see ValueProjection#assemble(AssembleContext)
+ * @see ValueProjectionAssembler#assemble(AssembleContext)
  * @since 1.1.0
  */
 @API(since = "1.1.17", status = Status.EXPERIMENTAL)
 public final class AssembleContext {
-	private final MonkeyContext monkeyContext;
+	private final AssemblyPlan plan;
 	private final TreeRootProperty rootProperty;
 	private final FixtureMonkeyOptions options;
 	private final MonkeyGeneratorContext generatorContext;
 	private final ArbitraryGeneratorLoggingContext loggingContext;
-	private final Set<PathExpression> justPaths;
-	private final Set<PathExpression> notNullPaths;
-	private final Map<PathExpression, List<AnalysisResult.PostConditionFilter>> filtersByPath;
-	private final Map<PathExpression, Integer> limitsByPath;
-	private final InterfaceSelectionStrategy interfaceSelectionStrategy;
-	/**
-	 * TypeSelector-based path values converted from typedValues.
-	 * Maps TypeSelector paths -> value, used as lower-priority entries in valuesByPath.
-	 */
-	private final Map<PathExpression, @Nullable Object> typedPathValues;
-
-	/**
-	 * Order numbers for typedPathValues entries.
-	 * Negative values ensure they have lower priority than user-set values.
-	 */
-	private final Map<PathExpression, Integer> typedPathOrders;
 
 	/**
 	 * Trace context for collecting assembly debugging information.
@@ -112,87 +68,23 @@ public final class AssembleContext {
 	 */
 	private final TraceContext traceContext;
 
-	/**
-	 * Order of values by path. Used to determine priority when wildcard and specific paths conflict.
-	 * Higher order values take precedence over lower order values.
-	 */
-	private final Map<PathExpression, Integer> valueOrderByPath;
-
-	/**
-	 * Customizers by path for customizeProperty operations.
-	 * These are applied during assembly to transform the generated CombinableArbitrary.
-	 */
-	private final Map<PathExpression, List<AnalysisResult.PropertyCustomizer>> customizersByPath;
-
-	/**
-	 * Type-specific introspectors from instantiate() calls.
-	 * Maps target type -> ArbitraryIntrospector for that type.
-	 * Used for determining how to construct objects of specific types during assembly.
-	 */
-	private final Map<Class<?>, ArbitraryIntrospector> introspectorsByType;
-
-	/**
-	 * Builds runtime-resolved trees (concrete/anonymous) during assembly.
-	 */
-	private final @Nullable RuntimeTreeFactory runtimeTreeFactory;
-
-	/**
-	 * Path resolver context produced during planning. Passed to
-	 * {@link RuntimeTreeFactory#createAnonymousNodeTree} so the anonymous tree built at
-	 * assembly time sees the same resolution decisions as the planned tree.
-	 */
-	private final @Nullable PathResolverContext pathResolverContext;
-
-	/**
-	 * Cross-call cache for assembly node metadata. Type-erased here since {@code CachedTypeMetadata}
-	 * is package-private in this package.
-	 */
-	private final @Nullable ConcurrentHashMap<?, ?> nodeMetadataCache;
-
-	/**
-	 * Paths where the user has explicitly set container sizes via size() calls.
-	 * These paths should block type-based values from registered builders,
-	 * since the user's size() should take precedence.
-	 */
-	private final Set<PathExpression> userContainerSizePaths;
-
-	/**
-	 * Resolves what each field of a value passed to {@code set(...)} holds while it is decomposed
-	 * into child paths.
-	 */
-	private final InlinedValueResolver inlinedValueResolver;
-
 	private AssembleContext(Builder builder) {
-		this.monkeyContext = builder.monkeyContext;
+		this.plan = builder.plan;
 		this.rootProperty = builder.rootProperty;
 		this.options = builder.monkeyContext.getFixtureMonkeyOptions();
 		this.generatorContext = builder.monkeyContext.newGeneratorContext(builder.rootProperty);
 		this.loggingContext = new ArbitraryGeneratorLoggingContext(this.options.isEnableLoggingFail());
-		this.justPaths = Collections.unmodifiableSet(new HashSet<>(builder.justPaths));
-		this.notNullPaths = Collections.unmodifiableSet(new HashSet<>(builder.notNullPaths));
-		this.filtersByPath = Collections.unmodifiableMap(new HashMap<>(builder.filtersByPath));
-		this.limitsByPath = new HashMap<>(builder.limitsByPath); // Mutable for tracking during generation
-		this.interfaceSelectionStrategy = builder.interfaceSelectionStrategy;
 		this.traceContext = builder.traceContext != null ? builder.traceContext : TraceContext.noOp();
-		this.valueOrderByPath = Collections.unmodifiableMap(new HashMap<>(builder.valueOrderByPath));
-		this.customizersByPath = Collections.unmodifiableMap(new HashMap<>(builder.customizersByPath));
-		this.introspectorsByType = Collections.unmodifiableMap(new HashMap<>(builder.introspectorsByType));
-		this.runtimeTreeFactory = builder.runtimeTreeFactory;
-		this.pathResolverContext = builder.pathResolverContext;
-		this.nodeMetadataCache = builder.nodeMetadataCache;
-		this.inlinedValueResolver = builder.inlinedValueResolver;
-		this.userContainerSizePaths = Collections.unmodifiableSet(new HashSet<>(builder.userContainerSizePaths));
-		this.typedPathValues = Collections.unmodifiableMap(new HashMap<>(builder.typedPathValues));
-		this.typedPathOrders = Collections.unmodifiableMap(new HashMap<>(builder.typedPathOrders));
 	}
 
 	/**
-	 * Returns the MonkeyContext.
+	 * Returns the plan being assembled: its tree and values, the scopes it was made from, and the node tree factory
+	 * that builds the trees assembly needs on demand.
 	 *
-	 * @return the MonkeyContext
+	 * @return the plan
 	 */
-	public MonkeyContext getMonkeyContext() {
-		return monkeyContext;
+	public AssemblyPlan getPlan() {
+		return plan;
 	}
 
 	/**
@@ -232,81 +124,6 @@ public final class AssembleContext {
 	}
 
 	/**
-	 * Returns the just paths (paths set via Values.just() which are truly immutable).
-	 * <p>
-	 * Child values under these paths are intentionally ignored.
-	 * This is the ONLY exception to the "more specific path wins" rule.
-	 * <p>
-	 * Rationale: Values.just() means "use this exact object as-is".
-	 * If a user wanted to modify child properties, they should use regular set() instead.
-	 *
-	 * @return unmodifiable set of just paths
-	 */
-	public Set<PathExpression> getJustPaths() {
-		return justPaths;
-	}
-
-	/**
-	 * Returns the paths set via setNotNull() which require null injection to be 0.
-	 * <p>
-	 * When a path is in this set, the assembly process will override the null injection
-	 * probability to 0 for that path, ensuring a non-null value is generated.
-	 *
-	 * @return unmodifiable set of not-null paths
-	 */
-	public Set<PathExpression> getNotNullPaths() {
-		return notNullPaths;
-	}
-
-	/**
-	 * Returns the filters by path.
-	 *
-	 * @return unmodifiable map of filters by path
-	 */
-	public Map<PathExpression, List<AnalysisResult.PostConditionFilter>> getFiltersByPath() {
-		return filtersByPath;
-	}
-
-	/**
-	 * Returns the mutable limits map for tracking during generation.
-	 * <p>
-	 * This map is mutable to allow decrementing limits as values are generated.
-	 *
-	 * @return mutable map of limits by path
-	 */
-	public Map<PathExpression, Integer> getLimitsByPath() {
-		return limitsByPath;
-	}
-
-	/**
-	 * Returns the interface selection strategy used for selecting implementations
-	 * of interface or abstract types during assembly.
-	 *
-	 * @return the interface selection strategy
-	 */
-	public InterfaceSelectionStrategy getInterfaceSelectionStrategy() {
-		return interfaceSelectionStrategy;
-	}
-
-	/**
-	 * Returns the TypeSelector-based path values converted from typedValues.
-	 *
-	 * @return unmodifiable map of TypeSelector paths to values
-	 */
-	public Map<PathExpression, @Nullable Object> getTypedPathValues() {
-		return typedPathValues;
-	}
-
-	/**
-	 * Returns the order numbers for typedPathValues entries.
-	 *
-	 * @return unmodifiable map of TypeSelector paths to order numbers
-	 */
-	public Map<PathExpression, Integer> getTypedPathOrders() {
-		return typedPathOrders;
-	}
-
-	/**
 	 * Returns the trace context for collecting assembly debugging information.
 	 * Never returns null - uses NoOp pattern when tracing is disabled.
 	 *
@@ -317,91 +134,14 @@ public final class AssembleContext {
 	}
 
 	/**
-	 * Returns the order of values by path.
-	 * <p>
-	 * Used to determine priority when wildcard and specific paths conflict.
-	 * Higher order values take precedence over lower order values.
-	 *
-	 * @return unmodifiable map of value orders by path
-	 */
-	public Map<PathExpression, Integer> getValueOrderByPath() {
-		return valueOrderByPath;
-	}
-
-	/**
-	 * Returns the customizers by path for customizeProperty operations.
-	 *
-	 * @return unmodifiable map of customizers by path
-	 */
-	public Map<PathExpression, List<AnalysisResult.PropertyCustomizer>> getCustomizersByPath() {
-		return customizersByPath;
-	}
-
-	/**
-	 * Returns the type-specific introspectors from instantiate() calls.
-	 *
-	 * @return unmodifiable map of introspectors by type
-	 */
-	public Map<Class<?>, ArbitraryIntrospector> getIntrospectorsByType() {
-		return introspectorsByType;
-	}
-
-	/**
-	 * Returns the {@link RuntimeTreeFactory} used for building runtime-resolved trees during assembly.
-	 *
-	 * @return the runtime tree factory, or null if not set
-	 */
-	public @Nullable RuntimeTreeFactory getRuntimeTreeFactory() {
-		return runtimeTreeFactory;
-	}
-
-	/**
-	 * Returns the {@link PathResolverContext} produced during planning. Passed to
-	 * {@link RuntimeTreeFactory#createAnonymousNodeTree} during assembly so anonymous-tree
-	 * construction sees the same resolution decisions as the planned tree.
-	 *
-	 * @return the path resolver context, or null if not set
-	 */
-	public @Nullable PathResolverContext getPathResolverContext() {
-		return pathResolverContext;
-	}
-
-	/**
-	 * Returns the cross-call assembly node metadata cache.
-	 *
-	 * @return the metadata cache, or null if not set
-	 */
-	public @Nullable ConcurrentHashMap<?, ?> getNodeMetadataCache() {
-		return nodeMetadataCache;
-	}
-
-	/**
-	 * Returns the {@link InlinedValueResolver} applied while decomposing a set value into child
-	 * field values.
-	 *
-	 * @return the declared field resolver
-	 */
-	public InlinedValueResolver getInlinedValueResolver() {
-		return inlinedValueResolver;
-	}
-
-	/**
-	 * Returns the set of paths where the user has explicitly set container sizes.
-	 *
-	 * @return the user container size paths
-	 */
-	public Set<PathExpression> getUserContainerSizePaths() {
-		return userContainerSizePaths;
-	}
-
-	/**
 	 * Creates a new builder for AssembleContext.
 	 *
 	 * @param monkeyContext the MonkeyContext to use
+	 * @param plan          the plan to assemble
 	 * @return a new Builder instance
 	 */
-	public static Builder builder(MonkeyContext monkeyContext) {
-		return new Builder(monkeyContext);
+	public static Builder builder(MonkeyContext monkeyContext, AssemblyPlan plan) {
+		return new Builder(monkeyContext, plan);
 	}
 
 	/**
@@ -410,27 +150,13 @@ public final class AssembleContext {
 	public static final class Builder {
 
 		private final MonkeyContext monkeyContext;
+		private final AssemblyPlan plan;
 		private TreeRootProperty rootProperty;
-		private Set<PathExpression> justPaths = Collections.emptySet();
-		private Set<PathExpression> notNullPaths = Collections.emptySet();
-		private Map<PathExpression, List<AnalysisResult.PostConditionFilter>> filtersByPath = Collections.emptyMap();
-		private Map<PathExpression, Integer> limitsByPath = Collections.emptyMap();
-		private InterfaceSelectionStrategy interfaceSelectionStrategy = InterfaceSelectionStrategy.RANDOM;
 		private TraceContext traceContext;
-		private Map<PathExpression, Integer> valueOrderByPath = Collections.emptyMap();
-		private Map<PathExpression, List<AnalysisResult.PropertyCustomizer>> customizersByPath =
-			Collections.emptyMap();
-		private Map<Class<?>, ArbitraryIntrospector> introspectorsByType = Collections.emptyMap();
-		private @Nullable RuntimeTreeFactory runtimeTreeFactory;
-		private @Nullable PathResolverContext pathResolverContext;
-		private @Nullable ConcurrentHashMap<?, ?> nodeMetadataCache;
-		private InlinedValueResolver inlinedValueResolver = InlinedValueResolver.noOp();
-		private Set<PathExpression> userContainerSizePaths = Collections.emptySet();
-		private Map<PathExpression, @Nullable Object> typedPathValues = Collections.emptyMap();
-		private Map<PathExpression, Integer> typedPathOrders = Collections.emptyMap();
 
-		private Builder(MonkeyContext monkeyContext) {
+		private Builder(MonkeyContext monkeyContext, AssemblyPlan plan) {
 			this.monkeyContext = monkeyContext;
+			this.plan = plan;
 		}
 
 		/**
@@ -445,65 +171,6 @@ public final class AssembleContext {
 		}
 
 		/**
-		 * Sets the just paths (paths set via Values.just() which are truly immutable).
-		 * <p>
-		 * These are the ONLY paths where child path values are ignored.
-		 * All other path resolution follows "more specific path wins" rule.
-		 *
-		 * @param justPaths the just paths
-		 * @return this builder
-		 */
-		public Builder justPaths(Set<PathExpression> justPaths) {
-			this.justPaths = justPaths;
-			return this;
-		}
-
-		/**
-		 * Sets the not-null paths (paths set via setNotNull() which require null injection = 0).
-		 *
-		 * @param notNullPaths the not-null paths
-		 * @return this builder
-		 */
-		public Builder notNullPaths(Set<PathExpression> notNullPaths) {
-			this.notNullPaths = notNullPaths;
-			return this;
-		}
-
-		/**
-		 * Sets the filters by path.
-		 *
-		 * @param filtersByPath the filters by path
-		 * @return this builder
-		 */
-		public Builder filtersByPath(Map<PathExpression, List<AnalysisResult.PostConditionFilter>> filtersByPath) {
-			this.filtersByPath = filtersByPath;
-			return this;
-		}
-
-		/**
-		 * Sets the limits by path.
-		 *
-		 * @param limitsByPath the limits by path
-		 * @return this builder
-		 */
-		public Builder limitsByPath(Map<PathExpression, Integer> limitsByPath) {
-			this.limitsByPath = limitsByPath;
-			return this;
-		}
-
-		/**
-		 * Sets the interface selection strategy for selecting implementations
-		 * of interface or abstract types.
-		 *
-		 * @param strategy the interface selection strategy
-		 * @return this builder
-		 */
-		public Builder interfaceSelectionStrategy(InterfaceSelectionStrategy strategy) {
-			this.interfaceSelectionStrategy = strategy;
-			return this;
-		}
-
-		/**
 		 * Sets the trace context for collecting assembly debugging information.
 		 *
 		 * @param traceContext the trace context (null will use NoOp)
@@ -511,123 +178,6 @@ public final class AssembleContext {
 		 */
 		public Builder traceContext(TraceContext traceContext) {
 			this.traceContext = traceContext;
-			return this;
-		}
-
-		/**
-		 * Sets the value order by path.
-		 * <p>
-		 * Used to determine priority when wildcard and specific paths conflict.
-		 * Higher order values take precedence over lower order values.
-		 *
-		 * @param valueOrderByPath the value order map
-		 * @return this builder
-		 */
-		public Builder valueOrderByPath(Map<PathExpression, Integer> valueOrderByPath) {
-			this.valueOrderByPath = valueOrderByPath;
-			return this;
-		}
-
-		/**
-		 * Sets the customizers by path for customizeProperty operations.
-		 *
-		 * @param customizersByPath the customizers map
-		 * @return this builder
-		 */
-		public Builder customizersByPath(
-			Map<PathExpression, List<AnalysisResult.PropertyCustomizer>> customizersByPath
-		) {
-			this.customizersByPath = customizersByPath;
-			return this;
-		}
-
-		/**
-		 * Sets the type-specific introspectors from instantiate() calls.
-		 *
-		 * @param introspectorsByType the introspectors map
-		 * @return this builder
-		 */
-		public Builder introspectorsByType(Map<Class<?>, ArbitraryIntrospector> introspectorsByType) {
-			this.introspectorsByType = introspectorsByType;
-			return this;
-		}
-
-		/**
-		 * Sets the {@link RuntimeTreeFactory} used for building runtime-resolved trees during assembly.
-		 *
-		 * @param runtimeTreeFactory the runtime tree factory
-		 * @return this builder
-		 */
-		public Builder runtimeTreeFactory(@Nullable RuntimeTreeFactory runtimeTreeFactory) {
-			this.runtimeTreeFactory = runtimeTreeFactory;
-			return this;
-		}
-
-		/**
-		 * Sets the {@link PathResolverContext} produced during planning, passed through to
-		 * {@link RuntimeTreeFactory#createAnonymousNodeTree} during assembly.
-		 *
-		 * @param pathResolverContext the path resolver context
-		 * @return this builder
-		 */
-		public Builder pathResolverContext(@Nullable PathResolverContext pathResolverContext) {
-			this.pathResolverContext = pathResolverContext;
-			return this;
-		}
-
-		/**
-		 * Sets the cross-call assembly node metadata cache.
-		 *
-		 * @param nodeMetadataCache the metadata cache
-		 * @return this builder
-		 */
-		public Builder nodeMetadataCache(@Nullable ConcurrentHashMap<?, ?> nodeMetadataCache) {
-			this.nodeMetadataCache = nodeMetadataCache;
-			return this;
-		}
-
-		/**
-		 * Sets the {@link InlinedValueResolver} applied while decomposing a set value into child
-		 * field values.
-		 *
-		 * @param inlinedValueResolver the declared field resolver
-		 * @return this builder
-		 */
-		public Builder inlinedValueResolver(InlinedValueResolver inlinedValueResolver) {
-			this.inlinedValueResolver = inlinedValueResolver;
-			return this;
-		}
-
-		/**
-		 * Sets the user container size paths.
-		 *
-		 * @param userContainerSizePaths paths where user called size()
-		 * @return this builder
-		 */
-		public Builder userContainerSizePaths(Set<PathExpression> userContainerSizePaths) {
-			this.userContainerSizePaths = userContainerSizePaths;
-			return this;
-		}
-
-		/**
-		 * Sets the TypeSelector-based path values converted from typedValues.
-		 *
-		 * @param typedPathValues the converted path values
-		 * @return this builder
-		 */
-		public Builder typedPathValues(Map<PathExpression, @Nullable Object> typedPathValues) {
-			this.typedPathValues = typedPathValues;
-			return this;
-		}
-
-		/**
-		 * Sets the order numbers for typedPathValues entries.
-		 *
-		 * @param typedPathOrders the order numbers
-		 * @return this builder
-		 */
-		public Builder typedPathOrders(Map<PathExpression, Integer> typedPathOrders) {
-			this.typedPathOrders = typedPathOrders;
 			return this;
 		}
 

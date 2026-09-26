@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot;
@@ -24,7 +23,10 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,16 +35,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkeyBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
+import com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -54,9 +64,23 @@ import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.ContainerObject
 import com.navercorp.fixturemonkey.tests.java.specs.MutableSpecs.JavaTypeObject;
 
 class CustomizationTest {
-
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		.defaultNotNull(true)
+		.build();
+
+	private static final FixtureMonkey CUSTOMIZER_ORDER_SUT = base().build();
+
+	private static final Function<CombinableArbitrary<? extends String>, CombinableArbitrary<? extends String>> BANG =
+		arbitrary -> arbitrary.map(it -> it + "!");
+
+	private static final FixtureMonkey JUST_VALUE_SUT = FixtureMonkey.builder()
+		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+		.defaultNotNull(true)
+		.build();
+
+	private static final FixtureMonkey ROOT_SCOPE_ORDER_SUT = FixtureMonkey.builder()
+		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
 		.build();
 
@@ -1621,9 +1645,534 @@ class CustomizationTest {
 		then(actual.getList()).hasSize(4);
 	}
 
+	@RepeatedTest(10)
+	void customizerAfterSetAppliesToSetValue() {
+		// when
+		String actual = CUSTOMIZER_ORDER_SUT.giveMeBuilder(Child.class)
+			.set("name", "v")
+			.customizeProperty(TypedExpressionGenerator.typedString("name"), BANG)
+			.sample()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("v!");
+	}
+
+	@RepeatedTest(10)
+	void setAfterCustomizerReplacesIt() {
+		// when
+		String actual = customizeName(CUSTOMIZER_ORDER_SUT.giveMeBuilder(Child.class)).set("name", "v")
+			.sample()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("v");
+	}
+
+	@RepeatedTest(10)
+	void customizerWithoutSetAppliesToGeneratedValue() {
+		// when
+		String actual = customizeName(CUSTOMIZER_ORDER_SUT.giveMeBuilder(Child.class)).sample().getName();
+
+		// then
+		then(actual).endsWith("!");
+	}
+
+	@RepeatedTest(10)
+	void laterSetReplacesValueCustomizedAfterEarlierSet() {
+		// when
+		String actual = customizeName(CUSTOMIZER_ORDER_SUT.giveMeBuilder(Child.class).set("name", "v")).set("name", "w")
+			.sample()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("w");
+	}
+
+	@RepeatedTest(10)
+	void setNullAfterCustomizerLeavesNull() {
+		// when
+		String actual = customizeName(CUSTOMIZER_ORDER_SUT.giveMeBuilder(Child.class)).setNull("name")
+			.sample()
+			.getName();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(10)
+	void setLazyAfterCustomizerReplacesIt() {
+		// when
+		String actual = customizeName(CUSTOMIZER_ORDER_SUT.giveMeBuilder(Child.class)).setLazy("name", () -> "lz")
+			.sample()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("lz");
+	}
+
+	@RepeatedTest(10)
+	void customizerAfterSetLazyAppliesToLazyValue() {
+		// when
+		String actual = customizeName(CUSTOMIZER_ORDER_SUT.giveMeBuilder(Child.class).setLazy("name", () -> "lz"))
+			.sample()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("lz!");
+	}
+
+	@RepeatedTest(10)
+	void setOfParentReplacesEarlierChildCustomizer() {
+		// when
+		String actual = CUSTOMIZER_ORDER_SUT.giveMeBuilder(Parent.class)
+			.customizeProperty(TypedExpressionGenerator.typedString("child.name"), BANG)
+			.set("child", new Child("obj"))
+			.sample()
+			.getChild()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("obj");
+	}
+
+	@RepeatedTest(10)
+	void childCustomizerAfterParentSetAppliesInsideParentValue() {
+		// when
+		String actual = CUSTOMIZER_ORDER_SUT.giveMeBuilder(Parent.class)
+			.set("child", new Child("obj"))
+			.customizeProperty(TypedExpressionGenerator.typedString("child.name"), BANG)
+			.sample()
+			.getChild()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("obj!");
+	}
+
+	@RepeatedTest(10)
+	void wildcardCustomizerBeforeElementSetSkipsOnlyThatElement() {
+		// when
+		List<String> actual = CUSTOMIZER_ORDER_SUT.giveMeBuilder(Holder.class)
+			.size("values", 2)
+			.customizeProperty(TypedExpressionGenerator.typedString("values[*]"), BANG)
+			.set("values[0]", "v")
+			.sample()
+			.getValues();
+
+		// then
+		then(actual.get(0)).isEqualTo("v");
+		then(actual.get(1)).endsWith("!");
+	}
+
+	@RepeatedTest(10)
+	void wildcardCustomizerAfterElementSetAppliesToEveryElement() {
+		// when
+		List<String> actual = CUSTOMIZER_ORDER_SUT.giveMeBuilder(Holder.class)
+			.size("values", 2)
+			.set("values[0]", "v")
+			.customizeProperty(TypedExpressionGenerator.typedString("values[*]"), BANG)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual.get(0)).isEqualTo("v!");
+		then(actual.get(1)).endsWith("!");
+	}
+
+	@RepeatedTest(10)
+	void registeredCustomizerAfterSetAppliesToSetValue() {
+		// given
+		FixtureMonkey sut = registeringChild(builder -> customizeName(builder.set("name", "v")));
+
+		// when
+		String actual = sut.giveMeOne(Parent.class).getChild().getName();
+
+		// then
+		then(actual).isEqualTo("v!");
+	}
+
+	@RepeatedTest(10)
+	void registeredSetAfterCustomizerReplacesIt() {
+		// given
+		FixtureMonkey sut = registeringChild(builder -> customizeName(builder).set("name", "v"));
+
+		// when
+		String actual = sut.giveMeOne(Parent.class).getChild().getName();
+
+		// then
+		then(actual).isEqualTo("v");
+	}
+
+	@RepeatedTest(10)
+	void registeredFieldCustomizerAfterWholeValueAppliesInsideIt() {
+		// given
+		FixtureMonkey sut = registeringChild(builder -> customizeName(builder.set("$", new Child("whole"))));
+
+		// when
+		String actual = sut.giveMeOne(Parent.class).getChild().getName();
+
+		// then
+		then(actual).isEqualTo("whole!");
+	}
+
+	@RepeatedTest(10)
+	void registeredWholeValueReplacesEarlierFieldCustomizer() {
+		// given
+		FixtureMonkey sut = registeringChild(builder -> customizeName(builder).set("$", new Child("whole")));
+
+		// when
+		String actual = sut.giveMeOne(Parent.class).getChild().getName();
+
+		// then
+		then(actual).isEqualTo("whole");
+	}
+
+	@RepeatedTest(10)
+	void registeredParentValueReplacesEarlierChildCustomizer() {
+		// given
+		FixtureMonkey sut = base()
+			.register(
+				Parent.class,
+				fm -> fm.giveMeBuilder(Parent.class)
+					.customizeProperty(TypedExpressionGenerator.typedString("child.name"), BANG)
+					.set("child", new Child("obj"))
+			)
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(Wrapper.class).getParent().getChild().getName();
+
+		// then
+		then(actual).isEqualTo("obj");
+	}
+
+	@RepeatedTest(10)
+	void registeredCustomizerDoesNotApplyToUserValue() {
+		// given
+		FixtureMonkey sut = registeringChild(CustomizationTest::customizeName);
+
+		// when
+		String actual = sut.giveMeBuilder(Parent.class).set("child.name", "u").sample().getChild().getName();
+
+		// then
+		then(actual).isEqualTo("u");
+	}
+
+	@RepeatedTest(10)
+	void innerRegisteredCustomizerDoesNotApplyToWholeValueOfOuterRegisteredScope() {
+		// given
+		FixtureMonkey sut = base()
+			.register(Parent.class, fm -> fm.giveMeBuilder(Parent.class).set("child", new Child("whole")))
+			.register(Child.class, fm -> customizeName(fm.giveMeBuilder(Child.class)))
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(Wrapper.class).getParent().getChild().getName();
+
+		// then
+		then(actual).isEqualTo("whole");
+	}
+
+	@RepeatedTest(10)
+	void innerRegisteredCustomizerDoesNotApplyToFieldValueOfOuterRegisteredScope() {
+		// given
+		FixtureMonkey sut = base()
+			.register(Parent.class, fm -> fm.giveMeBuilder(Parent.class).set("child.name", "outer"))
+			.register(Child.class, fm -> customizeName(fm.giveMeBuilder(Child.class)))
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(Wrapper.class).getParent().getChild().getName();
+
+		// then
+		then(actual).isEqualTo("outer");
+	}
+
+	private static <T> ArbitraryBuilder<T> customizeName(ArbitraryBuilder<T> builder) {
+		return builder.customizeProperty(TypedExpressionGenerator.typedString("name"), BANG);
+	}
+
+	private static FixtureMonkey registeringChild(Function<ArbitraryBuilder<Child>, ArbitraryBuilder<Child>> declare) {
+		return base().register(Child.class, fm -> declare.apply(fm.giveMeBuilder(Child.class))).build();
+	}
+
+	private static FixtureMonkeyBuilder base() {
+		return FixtureMonkey.builder()
+			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true);
+	}
+
+	@RepeatedTest(10)
+	void justValueIgnoresEarlierSize() {
+		// when
+		List<String> actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.size("values", 3)
+			.set("values", Values.just(Arrays.asList("a")))
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("a");
+	}
+
+	@RepeatedTest(10)
+	void justValueIgnoresLaterSize() {
+		// when
+		List<String> actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("values", Values.just(Arrays.asList("a")))
+			.size("values", 3)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("a");
+	}
+
+	@Test
+	void justElementSetAfterContainerWins() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true)
+			.build();
+		for (int i = 0; i < 10; i++) {
+			sut.giveMeBuilder(JustValueHolder.class).set("values", Arrays.asList("x")).sample();
+		}
+
+		// when
+		List<String> actual = sut.giveMeBuilder(JustValueHolder.class)
+			.set("values", Arrays.asList("a", "b"))
+			.set("values[0]", Values.just("z"))
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("z", "b");
+	}
+
+	@RepeatedTest(10)
+	void containerSetAfterJustIsIgnored() {
+		// when
+		List<String> actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("values", Values.just(Arrays.asList("a")))
+			.set("values", Arrays.asList("b", "c"))
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("a");
+	}
+
+	@RepeatedTest(10)
+	void containerLazyAfterJustIsIgnored() {
+		// when
+		List<String> actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("values", Values.just(Arrays.asList("a")))
+			.setLazy("values", () -> Arrays.asList("b", "c"))
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("a");
+	}
+
+	@RepeatedTest(10)
+	void containerSetAfterEmptyJustIsIgnored() {
+		// when
+		List<String> actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("values", Values.just(Collections.emptyList()))
+			.set("values", Arrays.asList("b"))
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@RepeatedTest(10)
+	void objectSetAfterJustIsIgnored() {
+		// when
+		Inner actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("inner", Values.just(new Inner("a")))
+			.set("inner", new Inner("b"))
+			.sample()
+			.getInner();
+
+		// then
+		then(actual.getValue()).isEqualTo("a");
+	}
+
+	@RepeatedTest(10)
+	void leafSetAfterJustWins() {
+		// when
+		String actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("value", Values.just("a"))
+			.set("value", "b")
+			.sample()
+			.getValue();
+
+		// then
+		then(actual).isEqualTo("b");
+	}
+
+	@RepeatedTest(10)
+	void setNullAfterJustWins() {
+		// when
+		List<String> actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("values", Values.just(Arrays.asList("a")))
+			.setNull("values")
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(10)
+	void justAfterJustWins() {
+		// when
+		List<String> actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("values", Values.just(Arrays.asList("a")))
+			.set("values", Values.just(Arrays.asList("j")))
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("j");
+	}
+
+	@RepeatedTest(10)
+	void justValueIgnoresLaterChildValue() {
+		// given
+		Inner just = new Inner("just");
+
+		// when
+		Inner actual = JUST_VALUE_SUT.giveMeBuilder(JustValueHolder.class)
+			.set("inner", Values.just(just))
+			.set("inner.value", "child")
+			.sample()
+			.getInner();
+
+		// then
+		then(actual).isSameAs(just);
+		then(actual.getValue()).isEqualTo("just");
+	}
+
+	@RepeatedTest(10)
+	void wildcardSizeDeclaredAfterExactSizeWinsAtTheSamePath() {
+		// when
+		Outer actual = ROOT_SCOPE_ORDER_SUT.giveMeBuilder(Outer.class)
+			.size("holders", 2)
+			.size("holders[0].first", 1)
+			.size("holders[*].first", 3)
+			.sample();
+
+		// then
+		then(actual.getHolders().get(0).getFirst()).hasSize(3);
+		then(actual.getHolders().get(1).getFirst()).hasSize(3);
+	}
+
+	@RepeatedTest(10)
+	void exactSizeDeclaredAfterWildcardSizeWinsOnlyAtItsPath() {
+		// when
+		Outer actual = ROOT_SCOPE_ORDER_SUT.giveMeBuilder(Outer.class)
+			.size("holders", 2)
+			.size("holders[*].first", 3)
+			.size("holders[0].first", 1)
+			.sample();
+
+		// then
+		then(actual.getHolders().get(0).getFirst()).hasSize(1);
+		then(actual.getHolders().get(1).getFirst()).hasSize(3);
+	}
+
+	@RepeatedTest(10)
+	void sizeDeclaredAfterValueOfInterfaceTypedContainerWins() {
+		// given
+		Collection<String> value = new ArrayList<>(Arrays.asList("a", "b"));
+
+		// when
+		Collection<String> actual = ROOT_SCOPE_ORDER_SUT.giveMeBuilder(CollectionHolder.class)
+			.set("values", value)
+			.size("values", 4)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(4);
+	}
+
+	@RepeatedTest(10)
+	void valueDeclaredAfterSizeOfInterfaceTypedContainerWins() {
+		// given
+		Collection<String> value = new ArrayList<>(Arrays.asList("a", "b"));
+
+		// when
+		Collection<String> actual = ROOT_SCOPE_ORDER_SUT.giveMeBuilder(CollectionHolder.class)
+			.size("values", 4)
+			.set("values", value)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("a", "b");
+	}
+
 	@lombok.Data
 	static class NestedListObject {
 
 		private List<List<String>> nestedList;
+	}
+
+	@Data
+	public static class Holder {
+		private List<String> values;
+	}
+
+	@Data
+	public static class Wrapper {
+		private Parent parent;
+	}
+
+	@Data
+	public static class Parent {
+		private Child child;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Child {
+		private String name;
+	}
+
+	@Data
+	public static class JustValueHolder {
+		private List<String> values;
+		private String value;
+		private Inner inner;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Inner {
+		private String value;
+	}
+
+	@Data
+	public static class Outer {
+		private List<RootScopeOrderHolder> holders;
+	}
+
+	@Data
+	public static class RootScopeOrderHolder {
+		private List<String> first;
+	}
+
+	@Data
+	public static class CollectionHolder {
+		private Collection<String> values;
 	}
 }

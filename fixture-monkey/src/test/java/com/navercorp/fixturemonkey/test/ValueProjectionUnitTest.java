@@ -333,36 +333,36 @@ class ValueProjectionUnitTest {
 	}
 
 	@Test
-	void fromStringPathMap() {
+	void fromPathExpressionMap() {
 		// given
 		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 		JvmNode valueNode = tree.resolve("$.value");
 
-		Map<String, Object> valuesByPath = new HashMap<>();
-		valuesByPath.put("$.name", "FromStringMap");
-		valuesByPath.put("$.value", 888);
+		Map<PathExpression, Object> valuesByPath = new HashMap<>();
+		valuesByPath.put(PathExpression.of("$.name"), "FromPathExpressionMap");
+		valuesByPath.put(PathExpression.of("$.value"), 888);
 
 		// when
-		ValueProjection projection = ValueProjection.of(tree, valuesByPath);
+		ValueProjection projection = ValueProjection.fromPathExpressionMap(tree, valuesByPath);
 
 		// then
-		then(projection.get(nameNode)).isEqualTo("FromStringMap");
+		then(projection.get(nameNode)).isEqualTo("FromPathExpressionMap");
 		then(projection.get(valueNode)).isEqualTo(888);
 	}
 
 	@Test
-	void fromStringPathMapKeepsUnresolvablePaths() {
+	void fromPathExpressionMapKeepsUnresolvablePaths() {
 		// given
 		JvmNodeTree tree = createTree(new ReflectiveJvmType(SimpleObject.class));
 		JvmNode nameNode = tree.resolve("$.name");
 
-		Map<String, Object> valuesByPath = new HashMap<>();
-		valuesByPath.put("$.name", "Valid");
-		valuesByPath.put("$.invalid", "Invalid");
+		Map<PathExpression, Object> valuesByPath = new HashMap<>();
+		valuesByPath.put(PathExpression.of("$.name"), "Valid");
+		valuesByPath.put(PathExpression.of("$.invalid"), "Invalid");
 
 		// when
-		ValueProjection projection = ValueProjection.of(tree, valuesByPath);
+		ValueProjection projection = ValueProjection.fromPathExpressionMap(tree, valuesByPath);
 
 		// then
 		then(projection.size()).isEqualTo(2);

@@ -15,22 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedString;
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
 
+import lombok.Data;
+
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkeyBuilder;
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.ChildBuilderGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.ConcreteIntValue;
@@ -47,6 +62,40 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapperList
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapperPair;
 
 class RegisterTest {
+	private static final FixtureMonkey CONTAINER_SUT = FixtureMonkey.builder()
+		.defaultNotNull(true)
+		.register(
+			new MatcherOperator<>(
+				it -> it.getJvmType().getRawType().equals(Set.class),
+				fixture -> fixture.giveMeBuilder(new TypeReference<Set<String>>() {
+					})
+					.size("$", 3)
+			)
+		)
+		.register(
+			new MatcherOperator<>(
+				it -> it.getJvmType().getRawType().equals(Map.class),
+				fixture -> fixture.giveMeBuilder(new TypeReference<Map<String, String>>() {
+					})
+					.size("$", 2)
+			)
+		)
+		.build();
+
+	private static final FixtureMonkey LIST_SUT = FixtureMonkey.builder()
+		.defaultNotNull(true)
+		.register(
+			new MatcherOperator<>(
+				it -> it.getJvmType().getRawType().equals(List.class)
+					&& it.getJvmType().getTypeVariables().size() == 1
+					&& it.getJvmType().getTypeVariables().get(0).getRawType().equals(String.class),
+				fixture -> fixture.giveMeBuilder(new TypeReference<List<String>>() {
+					})
+					.size("$", 2)
+					.set("$[0]", "x")
+			)
+		)
+		.build();
 
 	@Test
 	void registerInstance() {
@@ -64,7 +113,7 @@ class RegisterTest {
 	}
 
 	@Test
-	void registerSizeLessThanThree() {
+	void registerSizeWithCustomMatcher() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -74,7 +123,7 @@ class RegisterTest {
 						&& it.getJvmType().getTypeVariables().size() == 1
 						&& it.getJvmType().getTypeVariables().get(0).getRawType().equals(String.class),
 					fixture -> fixture.giveMeBuilder(new TypeReference<List<String>>() {
-					}).maxSize("$", 2)
+					}).size("$", 5)
 				)
 			)
 			.build();
@@ -84,7 +133,7 @@ class RegisterTest {
 		});
 
 		// then
-		then(actual).hasSizeLessThan(3);
+		then(actual).hasSize(5);
 	}
 
 	@Test
@@ -229,10 +278,7 @@ class RegisterTest {
 			.collect(Collectors.toList());
 
 		// then
-		then(samples).allMatch(it -> {
-			int size = it.getValues().size();
-			return size >= 2 && size <= 4;
-		});
+		then(samples).allMatch(it -> it.getValues().size() <= 4);
 	}
 
 	@Test
@@ -380,7 +426,7 @@ class RegisterTest {
 	}
 
 	@Test
-	void registerOverlappingTypesSetInnerTypeHasPriority() {
+	void registerOverlappingTypesSetOuterTypeHasPriority() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -399,11 +445,11 @@ class RegisterTest {
 		NestedStringListWrapper actual = sut.giveMeOne(NestedStringListWrapper.class);
 
 		// then
-		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromInner"));
+		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromOuter"));
 	}
 
 	@Test
-	void registerOverlappingTypesSetInnerTypeHasPriorityRegardlessOfOrder() {
+	void registerOverlappingTypesSetOuterTypeHasPriorityRegardlessOfOrder() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -422,7 +468,7 @@ class RegisterTest {
 		NestedStringListWrapper actual = sut.giveMeOne(NestedStringListWrapper.class);
 
 		// then
-		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromInner"));
+		then(actual.getValues()).allMatch(it -> it.getValues().get(0).equals("fromOuter"));
 	}
 
 	@Test
@@ -906,4 +952,295 @@ class RegisterTest {
 		then(actual).isNull();
 	}
 
+	@RepeatedTest(10)
+	void customMatcherSeesDeclaredTypeOfSampledRoot() {
+		// when
+		List<String> actual = LIST_SUT.giveMeOne(new TypeReference<List<String>>() {
+		});
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0)).isEqualTo("x");
+	}
+
+	@RepeatedTest(10)
+	void customMatcherSeesDeclaredTypeOfField() {
+		// when
+		List<String> actual = LIST_SUT.giveMeOne(ListHolder.class).getNames();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0)).isEqualTo("x");
+	}
+
+	@RepeatedTest(10)
+	void customMatcherSeesDeclaredTypeOfContainerElement() {
+		// when
+		List<List<String>> actual = LIST_SUT.giveMeBuilder(ListHolder.class).size("nested", 2).sample().getNested();
+
+		// then
+		then(actual).hasSize(2).allSatisfy(it -> {
+			then(it).hasSize(2);
+			then(it.get(0)).isEqualTo("x");
+		});
+	}
+
+	@RepeatedTest(10)
+	void customMatcherSeesDeclaredSetTypeOfField() {
+		// when
+		Set<String> actual = CONTAINER_SUT.giveMeOne(ContainerHolder.class).getSet();
+
+		// then
+		then(actual).hasSize(3);
+	}
+
+	@RepeatedTest(10)
+	void customMatcherSeesDeclaredMapTypeOfField() {
+		// when
+		Map<String, String> actual = CONTAINER_SUT.giveMeOne(ContainerHolder.class).getMap();
+
+		// then
+		then(actual).hasSize(2);
+	}
+
+	@RepeatedTest(10)
+	void customMatcherSeesDeclaredMapTypeOfSampledRoot() {
+		// when
+		Map<String, String> actual = CONTAINER_SUT.giveMeOne(new TypeReference<Map<String, String>>() {
+		});
+
+		// then
+		then(actual).hasSize(2);
+	}
+
+	@RepeatedTest(10)
+	void customMatcherSeesDeclaredInterfaceTypeOfField() {
+		// given
+		FixtureMonkey sut = interfaceFixtureMonkey()
+			.register(
+				new MatcherOperator<>(
+					it -> it.getJvmType().getRawType().equals(Named.class),
+					fixture -> fixture.giveMeBuilder(NamedImpl.class).set("name", "fixed")
+				)
+			)
+			.build();
+
+		// when
+		Named actual = sut.giveMeOne(InterfaceHolder.class).getNamed();
+
+		// then
+		then(actual.getName()).isEqualTo("fixed");
+	}
+
+	@RepeatedTest(10)
+	void exactTypeRegisterOfInterfaceAppliesToInterfaceField() {
+		// given
+		FixtureMonkey sut = interfaceFixtureMonkey()
+			.registerExactType(Named.class, fixture -> fixture.giveMeBuilder(NamedImpl.class).set("name", "fixed"))
+			.build();
+
+		// when
+		Named actual = sut.giveMeOne(InterfaceHolder.class).getNamed();
+
+		// then
+		then(actual.getName()).isEqualTo("fixed");
+	}
+
+	@RepeatedTest(10)
+	void exactTypeRegisterOfInterfaceAppliesToInterfaceElements() {
+		// given
+		FixtureMonkey sut = interfaceFixtureMonkey()
+			.registerExactType(Named.class, fixture -> fixture.giveMeBuilder(NamedImpl.class).set("name", "fixed"))
+			.build();
+
+		// when
+		List<Named> actual = sut.giveMeBuilder(InterfaceHolder.class).size("names", 2).sample().getNames();
+
+		// then
+		then(actual).hasSize(2).allSatisfy(it -> then(it.getName()).isEqualTo("fixed"));
+	}
+
+	@RepeatedTest(10)
+	void exactTypeRegisterOfImplementationAppliesToInterfaceField() {
+		// given
+		FixtureMonkey sut = interfaceFixtureMonkey()
+			.registerExactType(NamedImpl.class, fixture -> fixture.giveMeBuilder(NamedImpl.class).set("name", "fixed"))
+			.build();
+
+		// when
+		Named actual = sut.giveMeOne(InterfaceHolder.class).getNamed();
+
+		// then
+		then(actual.getName()).isEqualTo("fixed");
+	}
+
+	private static FixtureMonkeyBuilder interfaceFixtureMonkey() {
+		return FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.plugin(new InterfacePlugin().interfaceImplements(Named.class, Collections.singletonList(NamedImpl.class)));
+	}
+
+	@RepeatedTest(10)
+	void laterRegisterOfSameTypeWins() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "first").size("tags", 1))
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "second").size("tags", 2))
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(Customer.class).getOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("second");
+		then(actual.getTags()).hasSize(2);
+	}
+
+	@RepeatedTest(10)
+	void laterAnnotationMatcherRegisterWinsOverTypeRegister() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "type").size("tags", 3))
+			.register(vipRegister())
+			.build();
+
+		// when
+		Customer actual = sut.giveMeOne(Customer.class);
+
+		// then
+		then(actual.getVipOrder().getName()).isEqualTo("vip");
+		then(actual.getVipOrder().getTags()).hasSize(1);
+		then(actual.getOrder().getName()).isEqualTo("type");
+		then(actual.getOrder().getTags()).hasSize(3);
+	}
+
+	@RepeatedTest(10)
+	void laterTypeRegisterWinsOverAnnotationMatcherRegister() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(vipRegister())
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "type").size("tags", 3))
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(Customer.class).getVipOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("type");
+		then(actual.getTags()).hasSize(3);
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityRegisterWinsRegardlessOfDeclarationOrder() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "prior").size("tags", 1), 1)
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "later").size("tags", 2))
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(Customer.class).getOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("prior");
+		then(actual.getTags()).hasSize(1);
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityValueSkipsLowerPriorityCustomizer() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "prior"), 1)
+			.register(
+				Order.class,
+				fm -> fm.giveMeBuilder(Order.class)
+					.<String>customizeProperty(typedString("name"), it -> it.map(name -> name + "!")),
+				2
+			)
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(Customer.class).getOrder().getName();
+
+		// then
+		then(actual).isEqualTo("prior");
+	}
+
+	@RepeatedTest(10)
+	void lowerPriorityValueTakesHigherPriorityCustomizer() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(
+				Order.class,
+				fm -> fm.giveMeBuilder(Order.class)
+					.<String>customizeProperty(typedString("name"), it -> it.map(name -> name + "!")),
+				1
+			)
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "later"), 2)
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(Customer.class).getOrder().getName();
+
+		// then
+		then(actual).isEqualTo("later!");
+	}
+
+	private static FixtureMonkeyBuilder fixtureMonkey() {
+		return FixtureMonkey.builder()
+			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true);
+	}
+
+	private static MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> vipRegister() {
+		return new MatcherOperator<>(
+			property -> property.getAnnotation(Vip.class).isPresent(),
+			fm -> fm.giveMeBuilder(Order.class).set("name", "vip").size("tags", 1)
+		);
+	}
+
+	@Data
+	public static class ListHolder {
+		private List<String> names;
+		private List<List<String>> nested;
+	}
+
+	@Data
+	public static class ContainerHolder {
+		private Set<String> set;
+		private Map<String, String> map;
+	}
+
+	@Data
+	public static class InterfaceHolder {
+		private Named named;
+		private List<Named> names;
+	}
+
+	public interface Named {
+		String getName();
+	}
+
+	@Data
+	public static class NamedImpl implements Named {
+		private String name;
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public @interface Vip {
+	}
+
+	@Data
+	public static class Customer {
+		@Vip
+		private Order vipOrder;
+		private Order order;
+	}
+
+	@Data
+	public static class Order {
+		private String name;
+		private List<String> tags;
+	}
 }

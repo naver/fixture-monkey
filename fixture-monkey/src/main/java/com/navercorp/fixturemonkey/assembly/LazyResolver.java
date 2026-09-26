@@ -20,20 +20,24 @@ package com.navercorp.fixturemonkey.assembly;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
+import com.navercorp.fixturemonkey.customizer.ScopeChain;
+import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.objectfarm.api.expression.IndexSelector;
 import com.navercorp.objectfarm.api.expression.NameSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.expression.Selector;
-import com.navercorp.objectfarm.api.expression.TypeSelector;
-import com.navercorp.objectfarm.api.node.JvmNode;
 
 /**
  * Helpers around {@link LazyValueHolder} resolution and thenApply ancestor lookup.
@@ -43,48 +47,57 @@ import com.navercorp.objectfarm.api.node.JvmNode;
  * responsibility.</p>
  */
 final class LazyResolver {
+	/**
+	 * Sentinel value returned when recursion guard blocks evaluation.
+	 * Callers must check for this value to distinguish "recursion blocked" from
+	 * "supplier intentionally returned null".
+	 */
+	static final Object RECURSION_BLOCKED = new Object();
+
+	/**
+	 * Thread-local set to track which scopes are currently being lazily evaluated.
+	 * Only the same scope's nested evaluation is skipped to prevent infinite recursion,
+	 * while different scopes can be resolved even during lazy evaluation.
+	 */
+	private static final ThreadLocal<@Nullable Set<Object>> EVALUATING_LAZY_SCOPES =
+		ThreadLocal.withInitial(HashSet::new);
+
 	private LazyResolver() {
 	}
 
-	static @Nullable Object resolveLazyValue(@Nullable Object value, boolean isFromRegister, AssemblyState state) {
+	static @Nullable Object resolveLazyValue(@Nullable Object value, DirectivePrecedence order, AssemblyState state) {
 		if (!(value instanceof LazyValueHolder)) {
 			return value;
 		}
-		// Register lazy: evaluate fresh each time (thenApply wraps entire object).
-		// User lazy: cached within one sample for consistency (e.g., setLazy with Arbitraries.of()).
-		return isFromRegister
-			? ((LazyValueHolder)value).getValue()
-			: resolveLazyWithCache((LazyValueHolder)value, state);
+		return order.isRootScope()
+			? resolveLazyWithCache((LazyValueHolder)value, state)
+			: evaluate((LazyValueHolder)value);
+	}
+
+	static @Nullable Object resolveLazyValueWithCache(@Nullable Object value, AssemblyState state) {
+		return value instanceof LazyValueHolder ? resolveLazyWithCache((LazyValueHolder)value, state) : value;
 	}
 
 	static @Nullable Object resolveLazyWithCache(LazyValueHolder holder, AssemblyState state) {
 		if (state.resolvedLazyCache.containsKey(holder)) {
 			return state.resolvedLazyCache.get(holder);
 		}
-		Object resolved = holder.getValue();
-		if (resolved != null && resolved != LazyValueHolder.RECURSION_BLOCKED) {
+		Object resolved = evaluate(holder);
+		if (resolved != null && resolved != RECURSION_BLOCKED) {
 			state.resolvedLazyCache.put(holder, resolved);
 		}
 		return resolved;
 	}
 
-	static @Nullable Object resolveThenApplyAncestorValue(
-		JvmNode node,
-		PathExpression currentPath,
-		AssemblyState state
-	) {
-		if (state.rootTypeSelectors.isEmpty()) {
-			return null;
-		}
-
-		for (Map.Entry<PathExpression, ValueCandidate> entry : state.rootTypeSelectors) {
-			TypeSelector typeSelector = (TypeSelector)entry.getKey().getSegments().get(0).getFirstSelector();
-
-			if (node.getConcreteType() != null && typeSelector.matchesType(node.getConcreteType().getRawType())) {
+	static @Nullable Object resolveThenApplyAncestorValue(PathExpression currentPath, AssemblyState state) {
+		ScopeChain chain = state.chainOf(currentPath);
+		for (Map.Entry<ScopedPath, ValueCandidate> entry : state.scopes.getDefinedScopeRootValues()) {
+			ScopeSelector scope = entry.getKey().getScope();
+			if (chain.selects(scope, chain.depth())) {
 				Object value = entry.getValue().value;
 				if (value instanceof LazyValueHolder) {
 					Object resolved = resolveLazyWithCache((LazyValueHolder)value, state);
-					if (resolved == LazyValueHolder.RECURSION_BLOCKED) {
+					if (resolved == RECURSION_BLOCKED) {
 						return null;
 					}
 					return resolved;
@@ -96,16 +109,12 @@ final class LazyResolver {
 			// Walk ancestors nearest-first (deepest path prefix down to the root) so the closest
 			// enclosing type-matched ancestor wins when several ancestors match the same selector.
 			for (int pos = pathSegments.size() - 1; pos >= 0; pos--) {
-				PathExpression ancestorPath = PathMatcher.buildPathUpTo(currentPath, pos - 1);
-				JvmNode ancestorNode = PathMatcher.findNodeForPath(ancestorPath, state);
-				if (ancestorNode != null
-					&& ancestorNode.getConcreteType() != null
-					&& typeSelector.matchesType(ancestorNode.getConcreteType().getRawType())) {
+				if (chain.selects(scope, pos)) {
 					Object value = entry.getValue().value;
 					Object resolved;
 					if (value instanceof LazyValueHolder) {
 						resolved = resolveLazyWithCache((LazyValueHolder)value, state);
-						if (resolved == LazyValueHolder.RECURSION_BLOCKED || resolved == null) {
+						if (resolved == RECURSION_BLOCKED || resolved == null) {
 							return null;
 						}
 					} else {
@@ -162,5 +171,47 @@ final class LazyResolver {
 			return null;
 		}
 		return null;
+	}
+
+	/**
+	 * Gets the lazy value with recursion protection (root-level only).
+	 * Always clears the shared LazyArbitrary before evaluation to ensure a fresh value,
+	 * preventing stale cached values from leaking across sample() calls or nested evaluations.
+	 * <p>
+	 * Field-level lazies (e.g., setLazy("field", ...)) are evaluated directly without
+	 * recursion guard, because they are simple value suppliers. Only root-level lazies
+	 * (e.g., thenApply which internally calls sample()) need recursion protection.
+	 *
+	 * @return the evaluated value (may be null if supplier returns null),
+	 *         or {@link #RECURSION_BLOCKED} if evaluation would cause recursion for the same scope
+	 */
+	static @Nullable Object evaluate(LazyValueHolder holder) {
+		LazyArbitrary<?> lazyArbitrary = holder.getLazyArbitrary();
+		if (!holder.isRootLevel()) {
+			return evaluateFresh(lazyArbitrary);
+		}
+		return evaluateWithRecursionGuard(holder.getScope(), () -> evaluateFresh(lazyArbitrary));
+	}
+
+	private static @Nullable Object evaluateFresh(LazyArbitrary<?> lazyArbitrary) {
+		lazyArbitrary.clear();
+		Object value = lazyArbitrary.getValue();
+		lazyArbitrary.clear();
+		return value;
+	}
+
+	private static @Nullable Object evaluateWithRecursionGuard(Object scope, Supplier<@Nullable Object> action) {
+		Set<Object> evaluatingScopes = EVALUATING_LAZY_SCOPES.get();
+
+		if (evaluatingScopes == null || evaluatingScopes.contains(scope)) {
+			return RECURSION_BLOCKED;
+		}
+
+		try {
+			evaluatingScopes.add(scope);
+			return action.get();
+		} finally {
+			evaluatingScopes.remove(scope);
+		}
 	}
 }

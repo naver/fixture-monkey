@@ -18,16 +18,17 @@
 
 package com.navercorp.fixturemonkey.planner;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.tracing.ResolutionTrace;
 import com.navercorp.objectfarm.api.expression.PathExpression;
@@ -54,12 +55,13 @@ public final class AnalysisResult {
 	private final Map<PathExpression, Integer> containerSizeSequenceByPath;
 	private final Map<PathExpression, SizeDirective> latestSizeDirectiveByPath;
 	private final List<PathExpression> justPaths;
-	private final Set<PathExpression> notNullPaths;
 	private final Map<PathExpression, @Nullable Object> valuesByPath;
-	private final Map<PathExpression, List<PostConditionFilter>> filtersByPath;
-	private final Map<PathExpression, Integer> limitsByPath;
 	private final Map<PathExpression, Integer> valueOrderByPath;
-	private final Map<PathExpression, List<PropertyCustomizer>> customizersByPath;
+	/**
+	 * What the root scope declared that does not depend on expanding its values: not-null paths, filters,
+	 * customizers and limits.
+	 */
+	private final AnalyzedScope analyzedRootScope;
 	private final List<ResolutionTrace.NodeCollision> nodeCollisions;
 	private final boolean strictMode;
 
@@ -70,12 +72,9 @@ public final class AnalysisResult {
 		Map<PathExpression, Integer> containerSizeSequenceByPath,
 		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath,
 		List<PathExpression> justPaths,
-		Set<PathExpression> notNullPaths,
 		Map<PathExpression, @Nullable Object> valuesByPath,
-		Map<PathExpression, List<PostConditionFilter>> filtersByPath,
-		Map<PathExpression, Integer> limitsByPath,
 		Map<PathExpression, Integer> valueOrderByPath,
-		Map<PathExpression, List<PropertyCustomizer>> customizersByPath,
+		AnalyzedScope analyzedRootScope,
 		List<ResolutionTrace.NodeCollision> nodeCollisions,
 		boolean strictMode
 	) {
@@ -85,12 +84,9 @@ public final class AnalysisResult {
 		this.containerSizeSequenceByPath = Collections.unmodifiableMap(containerSizeSequenceByPath);
 		this.latestSizeDirectiveByPath = Collections.unmodifiableMap(latestSizeDirectiveByPath);
 		this.justPaths = Collections.unmodifiableList(justPaths);
-		this.notNullPaths = Collections.unmodifiableSet(notNullPaths);
 		this.valuesByPath = Collections.unmodifiableMap(valuesByPath);
-		this.filtersByPath = Collections.unmodifiableMap(filtersByPath);
-		this.limitsByPath = Collections.unmodifiableMap(limitsByPath);
 		this.valueOrderByPath = Collections.unmodifiableMap(valueOrderByPath);
-		this.customizersByPath = Collections.unmodifiableMap(customizersByPath);
+		this.analyzedRootScope = analyzedRootScope;
 		this.nodeCollisions = Collections.unmodifiableList(nodeCollisions);
 		this.strictMode = strictMode;
 	}
@@ -119,9 +115,9 @@ public final class AnalysisResult {
 
 	/**
 	 * Returns the highest-sequence explicit {@link SizeDirective} per path. Decomposed-value
-	 * size resolvers are intentionally excluded — only directives the user emitted via
+	 * size resolvers are intentionally excluded — only directives the root scope emitted via
 	 * {@code size()} are tracked here. Used by build-time pruning to truncate or expand
-	 * user-provided container values.
+	 * container values the root scope set.
 	 */
 	public Map<PathExpression, SizeDirective> getLatestSizeDirectiveByPath() {
 		return latestSizeDirectiveByPath;
@@ -146,20 +142,9 @@ public final class AnalysisResult {
 	 * When a path is in this set, the assembly process will override the null injection
 	 * probability to 0 for that path, ensuring a non-null value is generated.
 	 */
-	public Set<PathExpression> getNotNullPaths() {
-		return notNullPaths;
-	}
 
 	public Map<PathExpression, @Nullable Object> getValuesByPath() {
 		return valuesByPath;
-	}
-
-	public Map<PathExpression, List<PostConditionFilter>> getFiltersByPath() {
-		return filtersByPath;
-	}
-
-	public Map<PathExpression, Integer> getLimitsByPath() {
-		return limitsByPath;
 	}
 
 	/**
@@ -174,14 +159,21 @@ public final class AnalysisResult {
 	 * Returns customizers by path for customizeProperty operations.
 	 * These are applied during assembly to transform the generated CombinableArbitrary.
 	 */
-	public Map<PathExpression, List<PropertyCustomizer>> getCustomizersByPath() {
-		return customizersByPath;
-	}
 
 	/**
 	 * Returns value collisions detected during analysis.
 	 * A collision occurs when the same path gets overwritten by a later set() call.
 	 */
+	/**
+	 * Returns what the root scope declared that does not depend on expanding its values: not-null paths, filters,
+	 * customizers and limits, by path from the node a sample starts from.
+	 *
+	 * @return the root scope's declarations
+	 */
+	public AnalyzedScope getAnalyzedRootScope() {
+		return analyzedRootScope;
+	}
+
 	public List<ResolutionTrace.NodeCollision> getNodeCollisions() {
 		return nodeCollisions;
 	}
@@ -224,34 +216,36 @@ public final class AnalysisResult {
 	public static final class PropertyCustomizer {
 
 		private final Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer;
-		private final int sequence;
-		private final boolean afterSet;
+		private final List<PathExpression> overriddenPaths = new ArrayList<>();
 
-		public PropertyCustomizer(
-			Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer,
-			int sequence,
-			boolean afterSet
-		) {
+		public PropertyCustomizer(Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer) {
 			this.customizer = customizer;
-			this.sequence = sequence;
-			this.afterSet = afterSet;
 		}
 
 		public Function<CombinableArbitrary<?>, CombinableArbitrary<?>> getCustomizer() {
 			return customizer;
 		}
 
-		public int getSequence() {
-			return sequence;
+		void overriddenAt(PathExpression path) {
+			overriddenPaths.add(path);
 		}
 
 		/**
-		 * Returns true if this customizer was registered after a set() call for the same path.
-		 * In this case, the customizer should always be applied (matching non-adapter path behavior
-		 * where NodeCustomizerManipulator applies directly when getArbitrary() != null).
+		 * Returns whether a value declared after this customizer replaced the node at the end of {@code chain}: the
+		 * customizer applies to the value current when it was declared, and a later value at the node or around it
+		 * replaces that value together with its customization.
+		 *
+		 * @param chain      the chain of the node
+		 * @param scopeDepth the depth of the node on the chain the customizer's paths are relative to
+		 * @return true when a later value replaced the node
 		 */
-		public boolean isAfterSet() {
-			return afterSet;
+		public boolean isOverriddenAt(ScopeChain chain, int scopeDepth) {
+			for (PathExpression path : overriddenPaths) {
+				if (chain.coversFrom(scopeDepth, path)) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

@@ -138,7 +138,7 @@ public interface TraceContext {
 	void recordTiming(String phase, long nanos);
 
 	/**
-	 * Mark a path as populated via value decomposition (not directly user-set).
+	 * Mark a path as populated via value decomposition (not set directly by the root scope).
 	 *
 	 * @param path the decomposed path expression string
 	 */
@@ -170,13 +170,6 @@ public interface TraceContext {
 	 * @param count the number of nodes
 	 */
 	void setNodeCount(int count);
-
-	/**
-	 * Set the cache hit status.
-	 *
-	 * @param cacheHit true if cache was hit
-	 */
-	void setCacheHit(boolean cacheHit);
 
 	/**
 	 * Set the manipulator count.

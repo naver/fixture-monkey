@@ -50,7 +50,8 @@ final class ContainerValuePruner {
 	Map<PathExpression, @Nullable Object> pruneValuesExceedingContainerSize(
 		Map<PathExpression, @Nullable Object> valuesByPath,
 		Map<PathExpression, SizeDirective> latestSizeDirectiveByPath,
-		Map<PathExpression, Integer> valueOrderByPath
+		Map<PathExpression, Integer> valueOrderByPath,
+		Collection<PathExpression> justPaths
 	) {
 		if (valuesByPath.isEmpty() || latestSizeDirectiveByPath.isEmpty()) {
 			return new HashMap<>(valuesByPath);
@@ -70,6 +71,9 @@ final class ContainerValuePruner {
 		List<PathExpression> keysToRemove = new ArrayList<>();
 
 		for (PathExpression path : valuesByPath.keySet()) {
+			if (justPaths.contains(path)) {
+				continue;
+			}
 			@Nullable Object value = valuesByPath.get(path);
 			ContainerSizeConstraint sizeConstraint =
 				resolveEffectiveConstraint(path, sizeConstraintByPath.get(path), wildcardSizeEntries);

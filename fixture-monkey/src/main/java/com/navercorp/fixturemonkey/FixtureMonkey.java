@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +35,7 @@ import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -52,12 +51,15 @@ import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.MonkeyDirectiveFactory;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
+import com.navercorp.fixturemonkey.customizer.Scope;
+import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FixtureMonkey {
@@ -71,20 +73,20 @@ public final class FixtureMonkey {
 
 	private final AssemblyTracer tracer;
 	private final Map<Class<?>, Set<Property>> inferredPropertiesCache = new ConcurrentHashMap<>();
+	private final Map<JvmType, List<Scope>> definedScopesByRootType = new ConcurrentHashMap<>();
+	private volatile List<Scope> registeredScopes = Collections.emptyList();
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
-		MonkeyDirectiveFactory monkeyManipulatorFactory,
-		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers
+		MonkeyDirectiveFactory monkeyManipulatorFactory
 	) {
 		this(
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
 			registeredBuilders,
 			monkeyManipulatorFactory,
-			namedMatchers,
 			null,
 			AssemblyTracer.noOp()
 		);
@@ -95,7 +97,6 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
 		MonkeyDirectiveFactory monkeyManipulatorFactory,
-		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers,
 		@Nullable AssemblyPlanner assemblyPlanner
 	) {
 		this(
@@ -103,7 +104,6 @@ public final class FixtureMonkey {
 			manipulatorOptimizer,
 			registeredBuilders,
 			monkeyManipulatorFactory,
-			namedMatchers,
 			assemblyPlanner,
 			AssemblyTracer.noOp()
 		);
@@ -114,7 +114,6 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders,
 		MonkeyDirectiveFactory monkeyManipulatorFactory,
-		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> namedMatchers,
 		@Nullable AssemblyPlanner assemblyPlanner,
 		AssemblyTracer tracer
 	) {
@@ -126,8 +125,7 @@ public final class FixtureMonkey {
 			? assemblyPlanner
 			: new AssemblyPlanner(System.nanoTime());
 		this.tracer = tracer;
-		initializeRegisteredArbitraryBuilders(registeredBuilders);
-		initializeNamedArbitraryBuilderMap(namedMatchers);
+		this.registeredScopes = registeredScopesOf(registeredBuilders);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -149,19 +147,6 @@ public final class FixtureMonkey {
 			new TypeParameterProperty(type.getJvmType())
 		);
 
-		List<PriorityMatcherOperator<ArbitraryBuilderContext>> standByContexts = monkeyContext
-			.getRegisteredArbitraryBuilders()
-			.stream()
-			.filter(it -> it.match(rootProperty))
-			.map(it ->
-				new PriorityMatcherOperator<>(
-					it.getMatcher(),
-					((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext(),
-					it.getPriority()
-				)
-			)
-			.collect(toList());
-
 		ArbitraryBuilderContext newActiveBuilderContext = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
 		return new DefaultArbitraryBuilder<>(
@@ -170,11 +155,12 @@ public final class FixtureMonkey {
 				monkeyContext,
 				assemblyPlanner,
 				tracer,
-				inferredPropertiesCache
+				inferredPropertiesCache,
+				() -> registeredScopes,
+				definedScopesByRootType
 			),
 			monkeyManipulatorFactory,
 			newActiveBuilderContext,
-			standByContexts,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
@@ -197,11 +183,12 @@ public final class FixtureMonkey {
 				monkeyContext,
 				assemblyPlanner,
 				tracer,
-				inferredPropertiesCache
+				inferredPropertiesCache,
+				() -> registeredScopes,
+				definedScopesByRootType
 			),
 			monkeyManipulatorFactory,
 			newActiveBuilderContext,
-			Collections.emptyList(),
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
@@ -259,39 +246,16 @@ public final class FixtureMonkey {
 		return this.giveMeBuilder(typeReference).build();
 	}
 
-	private void initializeRegisteredArbitraryBuilders(
-		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> arbitraryBuilders
+	private List<Scope> registeredScopesOf(
+		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders
 	) {
-		List<? extends PriorityMatcherOperator<? extends ObjectBuilder<?>>> generatedRegisteredArbitraryBuilder =
-			arbitraryBuilders
-				.stream()
-				.map(it ->
-					new PriorityMatcherOperator<>(
-						it.getMatcher(),
-						(ObjectBuilder<?>)it.getOperator().apply(this),
-						it.getPriority()
-					)
-				)
-				.collect(toList());
-
-		for (int i = generatedRegisteredArbitraryBuilder.size() - 1; i >= 0; i--) {
-			monkeyContext.getRegisteredArbitraryBuilders().add(generatedRegisteredArbitraryBuilder.get(i));
+		List<Scope> scopes = new ArrayList<>();
+		for (PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registered
+			: registeredBuilders) {
+			ArbitraryBuilderContext context =
+				((ArbitraryBuilderContextProvider)registered.getOperator().apply(this)).getActiveContext();
+			scopes.add(context.toScope(ScopeSelector.of(registered.getMatcher()), registered.getPriority()));
 		}
-	}
-
-	private void initializeNamedArbitraryBuilderMap(
-		Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> matchersByName
-	) {
-		matchersByName.forEach((registeredName, matcherOperator) -> {
-			monkeyContext
-				.getRegisteredArbitraryBuilders()
-				.add(
-					new PriorityMatcherOperator<>(
-						new NamedMatcher(matcherOperator.getMatcher(), registeredName),
-						(ObjectBuilder<?>)matcherOperator.getOperator().apply(this),
-						matcherOperator.getPriority()
-					)
-				);
-		});
+		return Collections.unmodifiableList(scopes);
 	}
 }
