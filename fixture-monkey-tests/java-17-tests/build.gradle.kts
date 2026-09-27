@@ -8,4 +8,5 @@ java {
 
 dependencies {
     testImplementation(projects.fixtureMonkeyJackson)
+    testImplementation(libs.jspecify)
 }
