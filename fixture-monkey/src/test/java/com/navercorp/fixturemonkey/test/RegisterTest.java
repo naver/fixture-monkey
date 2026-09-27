@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1184,6 +1185,111 @@ class RegisterTest {
 
 		// then
 		then(actual).isEqualTo("later!");
+	}
+
+	@RepeatedTest(10)
+	void rootSizeInsideRegisteredThenApplyValueIsSameForSameSeed() {
+		// given
+		long seed = 777L;
+
+		// when
+		List<List<String>> first = rootSizedValuesOfRegisteredThenApply(seed);
+		List<List<String>> second = rootSizedValuesOfRegisteredThenApply(seed);
+
+		// then
+		then(first).allSatisfy(values -> then(values).hasSize(2));
+		then(second).isEqualTo(first);
+	}
+
+	@RepeatedTest(10)
+	void rootSizeKeepsElementsOfRegisteredThenApplyValue() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.register(
+				StringListWrapper.class,
+				fm -> fm.giveMeBuilder(StringListWrapper.class)
+					.thenApply((it, builder) -> builder.set("values", Collections.singletonList("registered")))
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(StringListWrapper.class)
+			.size("values", 2)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0)).isEqualTo("registered");
+	}
+
+	@RepeatedTest(10)
+	void rootSizeKeepsElementsOfRegisteredLazyWholeValue() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.register(
+				StringListWrapper.class,
+				fm -> fm.giveMeBuilder(StringListWrapper.class)
+					.setLazy("$", () -> {
+						StringListWrapper registered = new StringListWrapper();
+						registered.setValues(Collections.singletonList("registered"));
+						return registered;
+					})
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(StringListWrapper.class)
+			.size("values", 2)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0)).isEqualTo("registered");
+	}
+
+	@Test
+	void registeredThenApplyRunsOncePerSampleUnderRootSize() {
+		// given
+		AtomicInteger thenApplyCount = new AtomicInteger();
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				StringListWrapper.class,
+				fm -> fm.giveMeBuilder(StringListWrapper.class)
+					.thenApply((it, builder) -> builder.size("values", 1))
+					.thenApply((it, builder) -> thenApplyCount.incrementAndGet())
+			)
+			.build();
+
+		// when
+		sut.giveMeBuilder(StringListWrapper.class)
+			.size("values", 2)
+			.sampleList(100);
+
+		// then
+		then(thenApplyCount).hasValue(100);
+	}
+
+	private static List<List<String>> rootSizedValuesOfRegisteredThenApply(long seed) {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.seed(seed)
+			.register(
+				StringListWrapper.class,
+				fm -> fm.giveMeBuilder(StringListWrapper.class)
+					.size("values", 1)
+					.thenApply((it, builder) -> {
+					})
+			)
+			.build();
+		return sut.giveMeBuilder(StringListWrapper.class)
+			.size("values", 2)
+			.sampleList(20)
+			.stream()
+			.map(StringListWrapper::getValues)
+			.collect(Collectors.toList());
 	}
 
 	private static FixtureMonkeyBuilder fixtureMonkey() {
