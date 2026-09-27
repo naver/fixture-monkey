@@ -1132,6 +1132,234 @@ class RegisterTest {
 	}
 
 	@RepeatedTest(10)
+	void annotationMatcherRegisterAndTypeRegisterBothApplyOnDifferentPaths() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(
+				new MatcherOperator<>(
+					property -> property.getAnnotation(Vip.class).isPresent(),
+					fm -> fm.giveMeBuilder(Order.class).set("name", "vip")
+				)
+			)
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).size("tags", 3))
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(Customer.class).getVipOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("vip");
+		then(actual.getTags()).hasSize(3);
+	}
+
+	@RepeatedTest(10)
+	void outerTypeRegisterPropertyWinsOverLaterAnnotationMatcherRegister() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).set("vipOrder.name", "outer"))
+			.register(vipRegister())
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(Customer.class).getVipOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("outer");
+		then(actual.getTags()).hasSize(1);
+	}
+
+	@RepeatedTest(10)
+	void outerTypeRegisterPropertyWinsOverAnnotationMatcherRegisterWhenOuterIsNotSampleRoot() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).set("vipOrder.name", "outer"))
+			.register(vipRegister())
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getVipOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("outer");
+		then(actual.getTags()).hasSize(1);
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityAnnotationMatcherRegisterWinsOverOuterTypeRegisterProperty() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(vipRegister(), 1)
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).set("vipOrder.name", "outer"), 2)
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(Customer.class).getVipOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("vip");
+		then(actual.getTags()).hasSize(1);
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityOuterRegisterSizeWinsOverInnerRegisterSize() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).size("order.tags", 1), 1)
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).size("tags", 2))
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder().getTags();
+
+		// then
+		then(actual).hasSize(1);
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityInnerRegisterPropertyWinsOverOuterRegisterSetNull() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).setNull("order"))
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "inner"), 1)
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder();
+
+		// then
+		then(actual).isNotNull();
+		then(actual.getName()).isEqualTo("inner");
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityInnerRegisterPropertyWinsInsideOuterRegisterWholeValue() {
+		// given
+		Customer outer = outerCustomer();
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).set("$", outer), 2)
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "inner"), 1)
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder().getName();
+
+		// then
+		then(actual).isEqualTo("inner");
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityInnerRegisterThenApplyWinsInsideOuterRegisterThenApply() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(
+				Customer.class,
+				fm -> fm.giveMeBuilder(Customer.class).thenApply((it, builder) -> builder.set("order.name", "outer")),
+				2
+			)
+			.register(
+				Order.class,
+				fm -> fm.giveMeBuilder(Order.class).thenApply((it, builder) -> builder.set("name", "inner")),
+				1
+			)
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder().getName();
+
+		// then
+		then(actual).isEqualTo("inner");
+	}
+
+	@RepeatedTest(10)
+	void samePriorityOuterRegisterWholeValueWinsOverInnerRegisterProperty() {
+		// given
+		Customer outer = outerCustomer();
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).set("$", outer))
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "inner"))
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder().getName();
+
+		// then
+		then(actual).isEqualTo("outer");
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityInnerRegisterSizeWinsInsideOuterRegisterWholeValue() {
+		// given
+		Customer outer = outerCustomer();
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).set("$", outer), 2)
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).size("tags", 3), 1)
+			.build();
+
+		// when
+		Order actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder();
+
+		// then
+		then(actual.getName()).isEqualTo("outer");
+		then(actual.getTags()).hasSize(3);
+		then(actual.getTags().get(0)).isEqualTo("outer");
+	}
+
+	@RepeatedTest(10)
+	void higherPriorityInnerRegisterSizeWinsInsideOuterRegisterThenApply() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(
+				Customer.class,
+				fm -> fm.giveMeBuilder(Customer.class)
+					.thenApply((it, builder) -> builder.set("order.tags", Collections.singletonList("outer"))),
+				2
+			)
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).size("tags", 3), 1)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder().getTags();
+
+		// then
+		then(actual).hasSize(3);
+		then(actual.get(0)).isEqualTo("outer");
+	}
+
+	@RepeatedTest(10)
+	void samePriorityOuterRegisterWholeValueWinsOverInnerRegisterSize() {
+		// given
+		Customer outer = outerCustomer();
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Customer.class, fm -> fm.giveMeBuilder(Customer.class).set("$", outer))
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).size("tags", 3))
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeOne(CustomerHolder.class).getCustomer().getOrder().getTags();
+
+		// then
+		then(actual).containsExactly("outer");
+	}
+
+	@RepeatedTest(10)
+	void rootScopeValueWinsOverHighestPriorityRegister() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "registered"), 0)
+			.build();
+
+		// when
+		String actual = sut.giveMeBuilder(Customer.class)
+			.set("order.name", "user")
+			.sample()
+			.getOrder()
+			.getName();
+
+		// then
+		then(actual).isEqualTo("user");
+	}
+
+	@RepeatedTest(10)
 	void higherPriorityRegisterWinsRegardlessOfDeclarationOrder() {
 		// given
 		FixtureMonkey sut = fixtureMonkey()
@@ -1298,6 +1526,15 @@ class RegisterTest {
 			.defaultNotNull(true);
 	}
 
+	private static Customer outerCustomer() {
+		Order order = new Order();
+		order.setName("outer");
+		order.setTags(Collections.singletonList("outer"));
+		Customer customer = new Customer();
+		customer.setOrder(order);
+		return customer;
+	}
+
 	private static MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> vipRegister() {
 		return new MatcherOperator<>(
 			property -> property.getAnnotation(Vip.class).isPresent(),
@@ -1342,6 +1579,11 @@ class RegisterTest {
 		@Vip
 		private Order vipOrder;
 		private Order order;
+	}
+
+	@Data
+	public static class CustomerHolder {
+		private Customer customer;
 	}
 
 	@Data

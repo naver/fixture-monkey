@@ -44,7 +44,6 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
-import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.plugin.LeafTypeRegistry;
@@ -232,7 +231,7 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 
 		List<AnalyzedScope> analyzedDefinedScopes =
 			ManipulatorAnalyzer.analyze(scopeSet.getDefinedScopes());
-		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes =
+		List<Map.Entry<AnalyzedScope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes =
 			pathResolverContextFactory.resolveContainerSizes(analyzedDefinedScopes);
 
 		Map<Class<?>, InstantiatorProcessResult> instantiators = scopeSet.getGlobalInstantiators();
