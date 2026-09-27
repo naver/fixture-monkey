@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.tree;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -56,71 +57,62 @@ public final class ContainerSizeResolverFactory {
 	 * Creates a ContainerSizeResolver that sizes containers within the bounds of a declared size.
 	 *
 	 * @param containerInfo the declared size bounds
-	 * @return a resolver drawing sizes from the seed within the bounds
+	 * @return a resolver drawing sizes within the bounds from the scope of the container's node
 	 */
 	public ContainerSizeResolver createContainerSizeResolver(ArbitraryContainerInfo containerInfo) {
-		int minSize = containerInfo.getElementMinSize();
-		int maxSize = containerInfo.getElementMaxSize();
-		return containerType -> {
-			if (minSize == maxSize) {
-				return minSize;
-			}
-			int range = maxSize - minSize + 1;
-			return minSize + nextRandomForType(containerType).nextInt(range);
-		};
+		return drawnWithin(containerType -> containerInfo);
 	}
 
 	/**
 	 * Creates a ContainerSizeResolver based on the given options.
 	 *
-	 * <p>Sizes come from the next {@link SeedState#snapshot()} combined with the container
-	 * type's hash. Each resolve advances the seed sequence, so consecutive calls produce
-	 * varied sizes; two adapters created with the same seed see the same sequence and
-	 * therefore the same sizes for the same call pattern.
+	 * <p>Sizes are drawn from the scope of the container's node, so the same container in the same sample gets the
+	 * same size however the tree was built.
 	 */
 	public ContainerSizeResolver createContainerSizeResolver(@Nullable FixtureMonkeyOptions options) {
-		if (options != null) {
-			return containerType -> {
-				Property property = JvmNodePropertyFactory.fromType(containerType);
-				ArbitraryContainerInfoGenerator generator = options.getArbitraryContainerInfoGenerator(property);
+		if (options == null) {
+			return drawnWithin(
+				containerType -> new ArbitraryContainerInfo(DEFAULT_MIN_CONTAINER_SIZE, DEFAULT_MAX_CONTAINER_SIZE)
+			);
+		}
+		return drawnWithin(containerType -> {
+			Property property = JvmNodePropertyFactory.fromType(containerType);
+			ArbitraryContainerInfoGenerator generator = options.getArbitraryContainerInfoGenerator(property);
+			ArbitraryContainerInfo containerInfo = new ContainerPropertyGeneratorContext(property, null, generator)
+				.getContainerInfo();
 
-				ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
-					property,
-					null,
-					generator
-				);
-				ArbitraryContainerInfo containerInfo = context.getContainerInfo();
+			int minSize = containerInfo.getElementMinSize();
+			int maxSize = containerInfo.getElementMaxSize();
 
-				int minSize = containerInfo.getElementMinSize();
-				int maxSize = containerInfo.getElementMaxSize();
+			// Cap size for enum-based containers (EnumMap, EnumSet, Map<Enum,?>, Set<Enum>)
+			Integer enumLimit = getEnumSizeLimit(containerType);
+			if (enumLimit != null) {
+				maxSize = Math.min(maxSize, enumLimit);
+				minSize = Math.min(minSize, maxSize);
+			}
+			return new ArbitraryContainerInfo(minSize, maxSize);
+		});
+	}
 
-				// Cap size for enum-based containers (EnumMap, EnumSet, Map<Enum,?>, Set<Enum>)
-				Integer enumLimit = getEnumSizeLimit(containerType);
-				if (enumLimit != null) {
-					maxSize = Math.min(maxSize, enumLimit);
-					minSize = Math.min(minSize, maxSize);
-				}
+	private ContainerSizeResolver drawnWithin(Function<JvmType, ArbitraryContainerInfo> boundsOf) {
+		return new ContainerSizeResolver() {
+			@Override
+			public int resolveContainerSize(JvmType containerType) {
+				return resolveContainerSize(containerType, seedState.snapshotAt(0));
+			}
 
+			@Override
+			public int resolveContainerSize(JvmType containerType, SeedSnapshot scope) {
+				ArbitraryContainerInfo bounds = boundsOf.apply(containerType);
+				int minSize = bounds.getElementMinSize();
+				int maxSize = bounds.getElementMaxSize();
 				if (minSize == maxSize) {
 					return minSize;
 				}
-				return minSize + nextRandomForType(containerType).nextInt(maxSize - minSize + 1);
-			};
-		}
-
-		return containerType -> {
-			int range = DEFAULT_MAX_CONTAINER_SIZE - DEFAULT_MIN_CONTAINER_SIZE + 1;
-			return DEFAULT_MIN_CONTAINER_SIZE + nextRandomForType(containerType).nextInt(range);
+				Random random = SeedPurpose.SIZE.randomFor(scope, stableTypeHash(containerType));
+				return minSize + random.nextInt(maxSize - minSize + 1);
+			}
 		};
-	}
-
-	private Random nextRandomForType(JvmType containerType) {
-		// Use the dedicated container-size counter on SeedState so cache hit/miss in other
-		// snapshot() consumers does not perturb the size sequence. Combining the snapshot
-		// with the type hash (via SeedSnapshot.seedFor) gives per-call variation plus
-		// per-type spread. Class.hashCode() is identityHashCode and varies across JVM runs,
-		// so we hash the fully-qualified class name instead to keep seeds reproducible.
-		return seedState.containerSizeSnapshot().randomFor(stableTypeHash(containerType));
 	}
 
 	private static int stableTypeHash(JvmType containerType) {

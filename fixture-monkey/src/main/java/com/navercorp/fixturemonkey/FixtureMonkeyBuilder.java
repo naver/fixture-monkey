@@ -333,7 +333,8 @@ public final class FixtureMonkeyBuilder {
 	/**
 	 * Registers an ArbitraryBuilder with a specified priority.
 	 * <p>
-	 * If multiple ArbitraryBuilders with the same priority apply, the one registered last wins.
+	 * If multiple ArbitraryBuilders with the same priority apply to the same node, one of them is picked at random for
+	 * that node, so the same seed picks the same one.
 	 *
 	 * @param type                       the type the ArbitraryBuilder is registered for, including its subtypes
 	 * @param registeredArbitraryBuilder the function creating the ArbitraryBuilder to be registered

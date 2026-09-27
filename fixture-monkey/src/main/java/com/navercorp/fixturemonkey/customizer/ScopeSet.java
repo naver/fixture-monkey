@@ -114,7 +114,8 @@ public final class ScopeSet {
 	/**
 	 * Returns the instantiators an instance of {@code type} builds with when a defined scope selecting a node on its
 	 * chain declared one for it: the outermost scope node wins, and at the same node the scope with the highest
-	 * precedence. The same declaration always gives the same instance.
+	 * precedence; of the scopes of the same priority selecting the same node, only the one picked there applies. The
+	 * same declaration always gives the same instance.
 	 *
 	 * @param type  the type of the instance
 	 * @param chain the nodes from the outermost ancestor down to the instance's own node

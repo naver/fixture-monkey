@@ -18,18 +18,24 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.objectfarm.api.expression.IndexSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 
 /**
  * The nodes from the outermost one down to a node, where the scopes that apply to the node are looked up. A scope
@@ -41,9 +47,12 @@ import com.navercorp.objectfarm.api.node.JvmNode;
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public abstract class ScopeChain {
 	private final Function<JvmNode, Property> propertyOf;
+	private final ScopeTies ties;
+	private @Nullable Map<Long, Optional<ScopeSelector>> pickedByDepthAndPriority;
 
-	private ScopeChain(Function<JvmNode, Property> propertyOf) {
+	private ScopeChain(Function<JvmNode, Property> propertyOf, ScopeTies ties) {
 		this.propertyOf = propertyOf;
+		this.ties = ties;
 	}
 
 	/**
@@ -51,14 +60,16 @@ public abstract class ScopeChain {
 	 *
 	 * @param nodes      the nodes from the outermost one down to the node
 	 * @param propertyOf the property of a node, for scopes not named by a type
+	 * @param ties       the ties among the scopes looked up on the chain
 	 * @return the chain
 	 */
-	public static ScopeChain ofNodes(List<JvmNode> nodes, Function<JvmNode, Property> propertyOf) {
-		return new NodeScopeChain(nodes, propertyOf);
+	public static ScopeChain ofNodes(List<JvmNode> nodes, Function<JvmNode, Property> propertyOf, ScopeTies ties) {
+		return new NodeScopeChain(nodes, propertyOf, ties);
 	}
 
 	/**
-	 * Returns the chain of the nodes {@code path} passes through, found by their paths.
+	 * Returns the chain of the nodes {@code path} passes through, found by their paths, where no two scopes are
+	 * tied.
 	 *
 	 * @param path       the path of the node from the outermost one
 	 * @param nodeAt     the node at a path, null when none is placed there
@@ -70,7 +81,25 @@ public abstract class ScopeChain {
 		Function<PathExpression, @Nullable JvmNode> nodeAt,
 		Function<JvmNode, Property> propertyOf
 	) {
-		return new PathScopeChain(path, nodeAt, propertyOf);
+		return ofPath(path, nodeAt, propertyOf, ScopeTies.none());
+	}
+
+	/**
+	 * Returns the chain of the nodes {@code path} passes through, found by their paths.
+	 *
+	 * @param path       the path of the node from the outermost one
+	 * @param nodeAt     the node at a path, null when none is placed there
+	 * @param propertyOf the property of a node, for scopes not named by a type
+	 * @param ties       the ties among the scopes looked up on the chain
+	 * @return the chain
+	 */
+	public static ScopeChain ofPath(
+		PathExpression path,
+		Function<PathExpression, @Nullable JvmNode> nodeAt,
+		Function<JvmNode, Property> propertyOf,
+		ScopeTies ties
+	) {
+		return new PathScopeChain(path, nodeAt, propertyOf, ties);
 	}
 
 	/**
@@ -109,15 +138,63 @@ public abstract class ScopeChain {
 	public abstract @Nullable Segment segmentAt(int depth);
 
 	/**
-	 * Returns whether {@code scope} selects the node at {@code depth}.
+	 * Returns whether {@code scope} selects the node at {@code depth}. Where scopes of the same priority select the
+	 * node, only the one picked among them does.
 	 *
 	 * @param scope the scope
 	 * @param depth the depth of the candidate scope node
 	 * @return true when the node there is selected
 	 */
 	public boolean selects(ScopeSelector scope, int depth) {
+		return selectsRegardlessOfTies(scope, depth) && ties.picks(scope, depth, this);
+	}
+
+	boolean selectsRegardlessOfTies(ScopeSelector scope, int depth) {
 		JvmNode node = nodeAt(depth);
 		return node != null && scope.selects(node, depth, propertyOf);
+	}
+
+	/**
+	 * Returns the scope picked at {@code depth} among the scopes of {@code priority} selecting the node there, picking
+	 * it with {@code pick} the first time it is asked for.
+	 */
+	@Nullable ScopeSelector pickedAt(int depth, int priority, Supplier<@Nullable ScopeSelector> pick) {
+		Map<Long, Optional<ScopeSelector>> picked = pickedByDepthAndPriority;
+		if (picked == null) {
+			picked = new HashMap<>();
+			pickedByDepthAndPriority = picked;
+		}
+		long key = ((long)depth << 32) | (priority & 0xFFFFFFFFL);
+		Optional<ScopeSelector> scope = picked.get(key);
+		if (scope == null) {
+			scope = Optional.ofNullable(pick.get());
+			picked.put(key, scope);
+		}
+		return scope.orElse(null);
+	}
+
+	/**
+	 * Returns the seed scope of the node at {@code depth}, nested by each segment from the outermost node down to it.
+	 * A node reached without a segment of its own, like the value inside an {@code Optional}, adds none, and a map's
+	 * key or value is nested by the same key whether its segment is a key or value selector or the name of the node,
+	 * so a chain of nodes and a chain of a path give the same scope.
+	 */
+	SeedSnapshot seedScopeAt(SeedSnapshot sampleScope, int depth) {
+		SeedSnapshot scope = sampleScope;
+		for (int i = 0; i < depth; i++) {
+			Segment segment = segmentAt(i);
+			if (segment != null) {
+				scope = scope.scope(positionKey(segment));
+			}
+		}
+		return scope;
+	}
+
+	private static long positionKey(Segment segment) {
+		if (!segment.isSingleSelector() || segment.getFirstSelector() instanceof IndexSelector) {
+			return segment.toExpression().hashCode();
+		}
+		return segment.getFirstSelector().toExpression().hashCode();
 	}
 
 	/**
@@ -224,8 +301,8 @@ public abstract class ScopeChain {
 	private static final class NodeScopeChain extends ScopeChain {
 		private final List<JvmNode> nodes;
 
-		private NodeScopeChain(List<JvmNode> nodes, Function<JvmNode, Property> propertyOf) {
-			super(propertyOf);
+		private NodeScopeChain(List<JvmNode> nodes, Function<JvmNode, Property> propertyOf, ScopeTies ties) {
+			super(propertyOf, ties);
 			this.nodes = nodes;
 		}
 
@@ -259,9 +336,10 @@ public abstract class ScopeChain {
 		private PathScopeChain(
 			PathExpression path,
 			Function<PathExpression, @Nullable JvmNode> nodeAt,
-			Function<JvmNode, Property> propertyOf
+			Function<JvmNode, Property> propertyOf,
+			ScopeTies ties
 		) {
-			super(propertyOf);
+			super(propertyOf, ties);
 			this.path = path;
 			this.segments = path.getSegments();
 			this.nodeAt = nodeAt;

@@ -44,7 +44,6 @@ import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.offsetDateTime
 import io.kotest.property.arbitrary.period
 import io.kotest.property.arbitrary.short
-import io.kotest.property.arbitrary.single
 import io.kotest.property.arbitrary.yearMonth
 import io.kotest.property.arbitrary.zoneId
 import io.kotest.property.arbitrary.zoneOffset
@@ -113,9 +112,9 @@ class KotestJavaArbitraryGeneratorSet(
                 val min = integerConstraint.min?.toShort() ?: Short.MIN_VALUE
                 val max = integerConstraint.max?.toShort() ?: Short.MAX_VALUE
 
-                Arb.short(min = min, max = max).single()
+                Arb.short(min = min, max = max).sampleInScope()
             } else {
-                Arb.short().single()
+                Arb.short().sampleInScope()
             }
         }
     }
@@ -128,9 +127,9 @@ class KotestJavaArbitraryGeneratorSet(
                 val min = integerConstraint.min?.toByte() ?: Byte.MIN_VALUE
                 val max = integerConstraint.max?.toByte() ?: Byte.MAX_VALUE
 
-                Arb.byte(min = min, max = max).single()
+                Arb.byte(min = min, max = max).sampleInScope()
             } else {
-                Arb.byte().single()
+                Arb.byte().sampleInScope()
             }
         }
     }
@@ -161,9 +160,9 @@ class KotestJavaArbitraryGeneratorSet(
 
                     Arb.double(min = min, max = max)
                 }.map { if (scale != null) it.ofScale(scale) else it }
-                    .single()
+                    .sampleInScope()
             } else {
-                Arb.double().single()
+                Arb.double().sampleInScope()
             }
         }
     }
@@ -194,9 +193,9 @@ class KotestJavaArbitraryGeneratorSet(
 
                     Arb.float(min = min, max = max)
                 }.map { if (scale != null) it.ofScale(scale) else it }
-                    .single()
+                    .sampleInScope()
             } else {
-                Arb.float().single()
+                Arb.float().sampleInScope()
             }
         }
     }
@@ -237,9 +236,9 @@ class KotestJavaArbitraryGeneratorSet(
                 val min = integerConstraint.min?.toInt() ?: Int.MIN_VALUE
                 val max = integerConstraint.max?.toInt() ?: Int.MAX_VALUE
 
-                Arb.bigInt(min..max).single()
+                Arb.bigInt(min..max).sampleInScope()
             } else {
-                Arb.bigInt(maxNumBits = 21).single()
+                Arb.bigInt(maxNumBits = 21).sampleInScope()
             }
         }
     }
@@ -270,9 +269,9 @@ class KotestJavaArbitraryGeneratorSet(
 
                     Arb.bigDecimal(min = min, max = max)
                 }.map { if (scale != null) it.setScale(scale, RoundingMode.DOWN) else it }
-                    .single()
+                    .sampleInScope()
             } else {
-                Arb.bigDecimal().single()
+                Arb.bigDecimal().sampleInScope()
             }
         }
     }
@@ -292,7 +291,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
             } else {
                 Arb.zonedDateTime()
             }
-                .map { zonedDateTime -> GregorianCalendar.from(zonedDateTime) }.single()
+                .map { zonedDateTime -> GregorianCalendar.from(zonedDateTime) }.sampleInScope()
         }
     }
 
@@ -310,7 +309,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                     maxValue = Instant.now().plus(Duration.ofDays(365)),
                 )
             }
-                .map { instant -> Date.from(instant) }.single()
+                .map { instant -> Date.from(instant) }.sampleInScope()
         }
     }
 
@@ -324,7 +323,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.instant(minValue = minValue, maxValue = maxValue)
             } else {
                 Arb.instant()
-            }.single()
+            }.sampleInScope()
         }
     }
 
@@ -338,7 +337,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.localDate(minDate = minValue, maxDate = maxValue)
             } else {
                 Arb.localDate()
-            }.single()
+            }.sampleInScope()
         }
     }
 
@@ -352,7 +351,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.localDateTime(minLocalDateTime = minValue, maxLocalDateTime = maxValue)
             } else {
                 Arb.localDateTime()
-            }.single()
+            }.sampleInScope()
         }
     }
 
@@ -366,7 +365,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.localTime().filter { it in minValue..maxValue }
             } else {
                 Arb.localTime()
-            }.single()
+            }.sampleInScope()
         }
     }
 
@@ -380,7 +379,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.zonedDateTime(minValue = minValue, maxValue = maxValue)
             } else {
                 Arb.zonedDateTime()
-            }.single()
+            }.sampleInScope()
         }
     }
 
@@ -394,7 +393,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.zonedDateTime(minValue = minValue, maxValue = maxValue)
             } else {
                 Arb.zonedDateTime()
-            }.map { zonedDateTime -> MonthDay.from(zonedDateTime) }.single()
+            }.map { zonedDateTime -> MonthDay.from(zonedDateTime) }.sampleInScope()
         }
     }
 
@@ -408,7 +407,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.offsetDateTime(minValue = minValue, maxValue = maxValue)
             } else {
                 Arb.offsetDateTime()
-            }.single()
+            }.sampleInScope()
         }
     }
 
@@ -422,15 +421,15 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.offsetDateTime(minValue = minValue, maxValue = maxValue)
             } else {
                 Arb.offsetDateTime()
-            }.map { offsetDateTime -> offsetDateTime.toOffsetTime() }.single()
+            }.map { offsetDateTime -> offsetDateTime.toOffsetTime() }.sampleInScope()
         }
     }
 
     override fun periods(context: ArbitraryGeneratorContext): CombinableArbitrary<Period> =
-        CombinableArbitrary.from { Arb.period().single() }
+        CombinableArbitrary.from { Arb.period().sampleInScope() }
 
     override fun durations(context: ArbitraryGeneratorContext): CombinableArbitrary<Duration> =
-        CombinableArbitrary.from { Arb.duration().map { it.toJavaDuration() }.single() }
+        CombinableArbitrary.from { Arb.duration().map { it.toJavaDuration() }.sampleInScope() }
 
     override fun years(context: ArbitraryGeneratorContext): CombinableArbitrary<Year> {
         val dateTimeConstraint = constraintGenerator.generateDateTimeConstraint(context)
@@ -444,7 +443,7 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.yearMonth(minYearMonth = minValue, maxYearMonth = maxValue)
             } else {
                 Arb.yearMonth()
-            }.map { yearMonth -> Year.of(yearMonth.year) }.single()
+            }.map { yearMonth -> Year.of(yearMonth.year) }.sampleInScope()
         }
     }
 
@@ -460,15 +459,15 @@ class KotestJavaTimeArbitraryGeneratorSet(
                 Arb.yearMonth(minYearMonth = minValue, maxYearMonth = maxValue)
             } else {
                 Arb.yearMonth()
-            }.single()
+            }.sampleInScope()
         }
     }
 
     override fun zoneOffsets(context: ArbitraryGeneratorContext): CombinableArbitrary<ZoneOffset> =
-        CombinableArbitrary.from { Arb.zoneOffset().single() }
+        CombinableArbitrary.from { Arb.zoneOffset().sampleInScope() }
 
     override fun zoneIds(context: ArbitraryGeneratorContext?): CombinableArbitrary<ZoneId> =
-        CombinableArbitrary.from { Arb.zoneId().single() }
+        CombinableArbitrary.from { Arb.zoneId().sampleInScope() }
 
     companion object {
         val DEFAULT_ZONE_OFFSET: ZoneOffset = OffsetTime.now().offset
