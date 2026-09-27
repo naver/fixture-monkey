@@ -315,23 +315,6 @@ public final class ValueProjectionAssembler {
 				}
 			}
 
-			if (!isValueSet && !hasChildValues) {
-				Object typedValue = LazyResolver.resolveThenApplyAncestorValue(currentPath, state);
-				if (typedValue != null) {
-					return traceAndReturnValue(
-						typedValue,
-						"REGISTER",
-						currentPath,
-						currentRawType,
-						isCurrentTypeContainer,
-						parentContext,
-						currentType,
-						state,
-						null
-					);
-				}
-			}
-
 			if (node instanceof JvmMapNode) {
 				return assembleMapNode((JvmMapNode)node, state, parentContext, parentPath, currentPath, visitedTypes);
 			}
