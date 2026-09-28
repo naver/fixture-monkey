@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
@@ -128,15 +129,8 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 
 		Optional<DecimalMin> decimalMinAnnotation = context.findAnnotation(DecimalMin.class);
 		if (decimalMinAnnotation.isPresent()) {
-			BigInteger decimalMin = new BigInteger(
-				decimalMinAnnotation
-					.get()
-					.value()
-			);
-
-			if (!decimalMinAnnotation.map(DecimalMin::inclusive).get()) {
-				decimalMin = decimalMin.add(BigInteger.ONE);
-			}
+			DecimalMin annotation = decimalMinAnnotation.get();
+			BigInteger decimalMin = toIntegerMin(new BigDecimal(annotation.value()), annotation.inclusive());
 
 			if (min == null || decimalMin.compareTo(min) > 0) {
 				min = decimalMin;
@@ -150,15 +144,8 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 
 		Optional<DecimalMax> decimalMaxAnnotation = context.findAnnotation(DecimalMax.class);
 		if (decimalMaxAnnotation.isPresent()) {
-			BigInteger decimalMax = new BigInteger(
-				decimalMaxAnnotation
-					.get()
-					.value()
-			);
-
-			if (!decimalMaxAnnotation.map(DecimalMax::inclusive).get()) {
-				decimalMax = decimalMax.subtract(BigInteger.ONE);
-			}
+			DecimalMax annotation = decimalMaxAnnotation.get();
+			BigInteger decimalMax = toIntegerMax(new BigDecimal(annotation.value()), annotation.inclusive());
 
 			if (max == null || decimalMax.compareTo(max) < 0) {
 				max = decimalMax;
@@ -407,5 +394,17 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 		}
 
 		return new JavaDateTimeConstraint(min, max);
+	}
+
+	private static BigInteger toIntegerMin(BigDecimal value, boolean inclusive) {
+		return inclusive
+			? value.setScale(0, RoundingMode.CEILING).toBigInteger()
+			: value.setScale(0, RoundingMode.FLOOR).toBigInteger().add(BigInteger.ONE);
+	}
+
+	private static BigInteger toIntegerMax(BigDecimal value, boolean inclusive) {
+		return inclusive
+			? value.setScale(0, RoundingMode.FLOOR).toBigInteger()
+			: value.setScale(0, RoundingMode.CEILING).toBigInteger().subtract(BigInteger.ONE);
 	}
 }

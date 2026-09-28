@@ -53,6 +53,7 @@ import com.navercorp.fixturemonkey.javax.validation.spec.CharacterIntrospectorSp
 import com.navercorp.fixturemonkey.javax.validation.spec.ContainerAnnotationIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.DoubleIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.FloatIntrospectorSpec;
+import com.navercorp.fixturemonkey.javax.validation.spec.FractionalDecimalIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.IntIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.LongIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.NullAnnotationIntrospectorSpec;
@@ -92,6 +93,19 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getNegativeOrZero()).isLessThanOrEqualTo(BigDecimal.ZERO);
 		then(actual.getPositive()).isPositive();
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(BigDecimal.ZERO);
+	}
+
+	@Test
+	void sampleFractionalDecimalMinMax() {
+		FractionalDecimalIntrospectorSpec actual = SUT.giveMeOne(FractionalDecimalIntrospectorSpec.class);
+
+		then(actual.getLongMin()).isEqualTo(11);
+		then(actual.getLongMax()).isEqualTo(10);
+		then(actual.getLongMinExclusive()).isEqualTo(11);
+		then(actual.getLongMaxExclusive()).isEqualTo(10);
+		then(actual.getIntMin()).isEqualTo(1000);
+		then(actual.getIntMaxExponent()).isEqualTo(100);
+		then(actual.getShortMax()).isEqualTo((short)-11);
 	}
 
 	@Test
