@@ -305,6 +305,10 @@ public final class ValueProjectionAssembler {
 							earlyValue, currentPath, parentPrecedence, state
 						);
 					}
+					if (earlyValue instanceof List && currentRawType.isAssignableFrom(ArrayList.class)) {
+						List<?> list = (List<?>)earlyValue;
+						earlyValue = CombinableArbitrary.from(() -> new ArrayList<>(list));
+					}
 
 					return wrapValueWithFiltersAndCustomizers(
 						earlyValue,
