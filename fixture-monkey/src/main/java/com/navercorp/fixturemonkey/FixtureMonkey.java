@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,8 @@ import org.jspecify.annotations.Nullable;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -250,11 +253,30 @@ public final class FixtureMonkey {
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders
 	) {
 		List<Scope> scopes = new ArrayList<>();
+		Set<String> names = new HashSet<>();
 		for (PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registered
 			: registeredBuilders) {
+			Matcher matcher = registered.getMatcher();
+			String name = null;
+			int weight = NamedMatcher.DEFAULT_WEIGHT;
+			if (matcher instanceof NamedMatcher) {
+				NamedMatcher namedMatcher = (NamedMatcher)matcher;
+				name = namedMatcher.getRegisteredName();
+				weight = namedMatcher.getWeight();
+				matcher = namedMatcher.getMatcher();
+				if (!names.add(name)) {
+					throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + name);
+				}
+			}
 			ArbitraryBuilderContext context =
 				((ArbitraryBuilderContextProvider)registered.getOperator().apply(this)).getActiveContext();
-			scopes.add(context.toScope(ScopeSelector.of(registered.getMatcher()), registered.getPriority()));
+			if (!context.getSelectedNames().isEmpty()) {
+				throw new IllegalArgumentException(
+					"selectName is not supported in a registered ArbitraryBuilder. names: "
+						+ context.getSelectedNames()
+				);
+			}
+			scopes.add(context.toScope(ScopeSelector.of(matcher), registered.getPriority(), name, weight));
 		}
 		return Collections.unmodifiableList(scopes);
 	}

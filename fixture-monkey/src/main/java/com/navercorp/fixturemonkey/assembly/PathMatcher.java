@@ -47,11 +47,23 @@ final class PathMatcher {
 		boolean anyNotNull = notNullRequired || definedScopeNotNullDepth != Integer.MAX_VALUE;
 
 		ValueCandidate exactCandidate = state.candidates.at(path);
-		if (exactCandidate != null && !isDefinedScopeNull(exactCandidate, anyNotNull)) {
-			bestPath = ScopedPath.root(path);
-			best = exactCandidate;
-			bestDepth = valueScopeDepth(path, state);
-			bestScopeNode = chain.scopeNodeAt(bestDepth);
+		if (exactCandidate != null) {
+			int exactDepth = valueScopeDepth(path, state);
+			boolean exactYieldsToNotNull = notNullRequired
+				|| (definedScopeNotNullDepth != Integer.MAX_VALUE
+				&& (exactCandidate.precedence.rank() == 0
+				|| state.scopes.yieldsToDefinedScopeNotNull(
+				exactCandidate,
+				exactDepth,
+				definedScopeNotNullDepth,
+				chain
+			)));
+			if (!isDefinedScopeNull(exactCandidate, exactYieldsToNotNull)) {
+				bestPath = ScopedPath.root(path);
+				best = exactCandidate;
+				bestDepth = exactDepth;
+				bestScopeNode = chain.scopeNodeAt(bestDepth);
+			}
 		}
 
 		for (Map.Entry<PathExpression, ValueCandidate> entry : state.candidates.getRootWildcardEntries()) {
@@ -79,11 +91,13 @@ final class PathMatcher {
 					continue;
 				}
 				boolean yieldsToNotNull = notNullRequired
-					|| state.scopes.yieldsToDefinedScopeNotNull(candidate, depth, definedScopeNotNullDepth, chain);
+					|| (definedScopeNotNullDepth != Integer.MAX_VALUE
+					&& state.scopes.yieldsToDefinedScopeNotNull(candidate, depth, definedScopeNotNullDepth, chain));
 				if (isDefinedScopeNull(candidate, yieldsToNotNull)) {
 					continue;
 				}
-				if (candidate.value == null && state.scopes.hasDefinedScopeDirectiveBelow(chain, depth - 1)) {
+				if (candidate.value == null
+					&& state.scopes.hasDefinedScopeDirectiveBelow(chain, candidate.precedence, depth - 1)) {
 					continue;
 				}
 				JvmNode scopeNode = chain.scopeNodeAt(depth);

@@ -27,6 +27,7 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.Matcher
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
@@ -124,6 +125,14 @@ inline fun <reified T> FixtureMonkeyBuilder.registerExactType(
 inline fun <reified T> FixtureMonkeyBuilder.registerAssignableType(
     noinline arbitraryBuilderGenerator: (fixtureMonkey: FixtureMonkey) -> ArbitraryBuilder<out T>
 ): FixtureMonkeyBuilder = this.registerAssignableType(T::class.java, arbitraryBuilderGenerator)
+
+inline fun <reified T> FixtureMonkeyBuilder.registerByName(
+    registeredName: String,
+    priority: Int = Int.MAX_VALUE,
+    weight: Int = NamedMatcher.DEFAULT_WEIGHT,
+    noinline arbitraryBuilderGenerator: (fixtureMonkey: FixtureMonkey) -> ArbitraryBuilder<out T>
+): FixtureMonkeyBuilder =
+    this.registerByName(registeredName, T::class.java, arbitraryBuilderGenerator, priority, weight)
 
 fun FixtureMonkeyBuilder.registerGroup(
     vararg kClasses: KClass<*>

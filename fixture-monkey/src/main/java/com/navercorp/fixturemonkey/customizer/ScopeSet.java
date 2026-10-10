@@ -45,31 +45,39 @@ public final class ScopeSet {
 	private final Scope rootScope;
 
 	/**
-	 * The defined scopes that apply, the one with the lowest precedence first: a higher priority number first, and
-	 * the earlier declared one first at the same priority.
+	 * The defined scopes that apply, the one with the lowest precedence first: the ones not selected by name first,
+	 * then the selected ones in the order they were selected; among the ones not selected, a higher priority number
+	 * first, and the earlier declared one first at the same priority.
 	 */
 	private final List<Scope> definedScopes;
 	private final Map<Class<?>, InstantiatorProcessResult> globalInstantiators;
 	private final List<Scope> scopesDeclaringAtNodes;
+	private final List<Scope> selectedScopesDeclaring;
 	private final Map<Scope, Map<Class<?>, Map<Class<?>, InstantiatorProcessResult>>> scopedInstantiatorsByScope =
 		new IdentityHashMap<>();
 
 	public ScopeSet(Scope rootScope, List<Scope> definedScopes) {
 		this.rootScope = rootScope;
 		List<Scope> lowestPrecedenceFirst = new ArrayList<>(definedScopes);
-		lowestPrecedenceFirst.sort(Comparator.comparingInt(Scope::getPriority).reversed());
+		lowestPrecedenceFirst.sort(
+			Comparator.comparingInt(Scope::getSelectionOrder)
+				.thenComparing(Comparator.comparingInt(Scope::getPriority).reversed())
+		);
 		this.definedScopes = lowestPrecedenceFirst;
 
 		Map<Class<?>, InstantiatorProcessResult> global = new HashMap<>();
 		List<Scope> declaringAtNodes = new ArrayList<>();
+		List<Scope> selectedDeclaring = new ArrayList<>();
 		for (Scope scope : lowestPrecedenceFirst) {
 			ScopeSelector selector = scope.getSelector();
 			boolean declaresAtNodes = false;
+			boolean declares = false;
 			for (Map.Entry<Class<?>, InstantiatorProcessResult> declared : scope.getInstantiators().entrySet()) {
 				Class<?> type = declared.getKey();
 				if (declaredByRoot(type)) {
 					continue;
 				}
+				declares = true;
 				if (selector.selectsEveryNodeOf(type)) {
 					global.put(type, declared.getValue());
 				} else {
@@ -79,10 +87,14 @@ public final class ScopeSet {
 			if (declaresAtNodes) {
 				declaringAtNodes.add(0, scope);
 			}
+			if (declares && scope.isSelected()) {
+				selectedDeclaring.add(0, scope);
+			}
 		}
 		global.putAll(rootScope.getInstantiators());
 		this.globalInstantiators = Collections.unmodifiableMap(global);
 		this.scopesDeclaringAtNodes = Collections.unmodifiableList(declaringAtNodes);
+		this.selectedScopesDeclaring = Collections.unmodifiableList(selectedDeclaring);
 	}
 
 	public Scope getRootScope() {
@@ -113,14 +125,28 @@ public final class ScopeSet {
 
 	/**
 	 * Returns the instantiators an instance of {@code type} builds with when a defined scope selecting a node on its
-	 * chain declared one for it: the outermost scope node wins, and at the same node the scope with the highest
-	 * precedence. The same declaration always gives the same instance.
+	 * chain declared one for it: a scope the sampled builder selected by name wins first, the one selected later
+	 * first, then the outermost scope node wins, and at the same node the scope with the highest precedence. The same
+	 * declaration always gives the same instance.
 	 *
 	 * @param type  the type of the instance
 	 * @param chain the nodes from the outermost ancestor down to the instance's own node
 	 * @return the declaring scope's instantiators over the global ones, or null when the global instantiators apply
 	 */
 	public @Nullable Map<Class<?>, InstantiatorProcessResult> scopedInstantiatorsAt(Class<?> type, ScopeChain chain) {
+		for (Scope scope : selectedScopesDeclaring) {
+			if (!scope.getInstantiators().containsKey(type) || declaredByRoot(type)) {
+				continue;
+			}
+			if (scope.getSelector().selectsEveryNodeOf(type)) {
+				return null;
+			}
+			for (int depth = 0; depth <= chain.depth(); depth++) {
+				if (chain.selects(scope.getSelector(), depth)) {
+					return scopedInstantiatorsOf(scope, type);
+				}
+			}
+		}
 		for (int depth = 0; depth <= chain.depth(); depth++) {
 			for (Scope scope : scopesDeclaringAtNodes) {
 				if (declaresAtNodes(scope, type) && chain.selects(scope.getSelector(), depth)) {
