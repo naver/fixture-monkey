@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
+import com.navercorp.fixturemonkey.kotlin.into
 import com.navercorp.fixturemonkey.kotlin.registerByName
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
@@ -84,6 +85,50 @@ class RegisterByNameTest {
 		then(actual.memo).isEqualTo("memo")
 	}
 
+	@Test
+	fun laterSelectedOuterTypeWinsInDataClass() {
+		// when
+		val actual = NESTED_SUT.giveMeKotlinBuilder<Outer>()
+			.selectName("string", "outer")
+			.sample()
+
+		// then
+		then(actual.inner.str).isEqualTo("outer")
+	}
+
+	@Test
+	fun laterSelectedPropertyTypeWinsInDataClass() {
+		// when
+		val actual = NESTED_SUT.giveMeKotlinBuilder<Outer>()
+			.selectName("outer", "string")
+			.sample()
+
+		// then
+		then(actual.inner.str).isEqualTo("string")
+	}
+
+	@Test
+	fun laterSelectedPropertyTypeWinsInsideWholeValueOfDataClass() {
+		// when
+		val actual = NESTED_SUT.giveMeKotlinBuilder<Outer>()
+			.selectName("wholeInner", "string")
+			.sample()
+
+		// then
+		then(actual.inner).isEqualTo(Inner("string", "string"))
+	}
+
+	@Test
+	fun laterSelectedWholeValueOfDataClassWinsOverSelectedPropertyType() {
+		// when
+		val actual = NESTED_SUT.giveMeKotlinBuilder<Outer>()
+			.selectName("string", "wholeInner")
+			.sample()
+
+		// then
+		then(actual.inner).isEqualTo(Inner("whole", "whole"))
+	}
+
 	companion object {
 		private const val DELIVERED = "DELIVERED"
 		private const val CANCELLED = "CANCELLED"
@@ -94,7 +139,20 @@ class RegisterByNameTest {
 			.registerByName<Order>("delivered") { it.giveMeKotlinBuilder<Order>().setExp(Order::status, DELIVERED) }
 			.registerByName<Order>("cancelled") { it.giveMeKotlinBuilder<Order>().setExp(Order::status, CANCELLED) }
 			.build()
+
+		private val NESTED_SUT = FixtureMonkey.builder()
+			.plugin(KotlinPlugin())
+			.registerByName<Outer>("outer") {
+				it.giveMeKotlinBuilder<Outer>().setExp(Outer::inner into Inner::str, "outer")
+			}
+			.registerByName<Inner>("wholeInner") { it.giveMeKotlinBuilder(Inner("whole", "whole")) }
+			.registerByName<String>("string") { it.giveMeKotlinBuilder("string") }
+			.build()
 	}
 
 	data class Order(val status: String, val memo: String)
+
+	data class Outer(val inner: Inner, val other: String)
+
+	data class Inner(val str: String, val memo: String)
 }
