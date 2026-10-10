@@ -18,13 +18,14 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedString;
+import static com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator.typedString;
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.beans.ConstructorProperties;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,9 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 
 class RegisterByNameTest {
@@ -988,6 +991,116 @@ class RegisterByNameTest {
 	}
 
 	@Test
+	void sameAlternativeAppliesToEveryPropertyOfItsTypeInOneSample() {
+		// given
+		FixtureMonkey sut = withOrderVariants().build();
+
+		// when
+		List<Set<String>> actual = IntStream.range(0, SAMPLE_COUNT)
+			.mapToObj(it -> sut.giveMeBuilder(Customer.class).size("orders", 6).sample())
+			.map(customer -> {
+				Set<String> statuses = customer.getOrders().stream().map(Order::getStatus).collect(Collectors.toSet());
+				statuses.add(customer.getOrder().getStatus());
+				return statuses;
+			})
+			.collect(Collectors.toList());
+
+		// then
+		then(actual).allSatisfy(statuses -> then(statuses).hasSize(1));
+	}
+
+	@Test
+	void postConditionOfSelectedNameApplies() {
+		// given
+		FixtureMonkey sut = builder()
+			.registerByName(
+				"short",
+				Order.class,
+				fm -> fm.giveMeBuilder(Order.class).setPostCondition("status", String.class, it -> it.length() < 3)
+			)
+			.build();
+
+		// when
+		Set<String> actual = statusesOf(
+			() -> sut.giveMeExperimentalBuilder(Customer.class).selectName("short").sample().getOrder()
+		);
+
+		// then
+		then(actual).allSatisfy(it -> then(it).hasSizeLessThan(3));
+	}
+
+	@Test
+	void selectedNameAppliesToMapValues() {
+		// given
+		FixtureMonkey sut = withOrderVariants().build();
+
+		// when
+		Map<String, Order> actual = sut.giveMeExperimentalBuilder(OrderBook.class)
+			.selectName("cancelled")
+			.size("orders", 3)
+			.sample()
+			.getOrders();
+
+		// then
+		then(actual.values()).allSatisfy(it -> then(it.getStatus()).isEqualTo(CANCELLED));
+	}
+
+	@Test
+	void selectedNameAppliesToNestedNodesOfRecursiveType() {
+		// given
+		FixtureMonkey sut = builder()
+			.registerByName("named", Node.class, fm -> fm.giveMeBuilder(Node.class).set("name", "named"))
+			.build();
+
+		// when
+		Node actual = sut.giveMeExperimentalBuilder(Node.class)
+			.selectName("named")
+			.sample();
+
+		// then
+		then(actual.getName()).isEqualTo("named");
+		then(actual.getChild().getName()).isEqualTo("named");
+	}
+
+	@Test
+	void selectedNameOfImplementationAppliesWhenItIsChosenForInterfaceProperty() {
+		// given
+		FixtureMonkey sut = builder()
+			.plugin(new InterfacePlugin().interfaceImplements(Shape.class, Arrays.asList(Circle.class, Square.class)))
+			.registerByName("circle", Circle.class, fm -> fm.giveMeBuilder(Circle.class).set("name", "circle"))
+			.build();
+
+		// when
+		List<Shape> actual = IntStream.range(0, SAMPLE_COUNT)
+			.mapToObj(it -> sut.giveMeExperimentalBuilder(Drawing.class).selectName("circle").sample().getShape())
+			.collect(Collectors.toList());
+
+		// then
+		then(actual).hasAtLeastOneElementOfType(Circle.class);
+		then(actual).filteredOn(Circle.class::isInstance)
+			.allSatisfy(it -> then(((Circle)it).getName()).isEqualTo("circle"));
+	}
+
+	@Test
+	void justValueOfSelectedNameIsUsedAsItIs() {
+		// given
+		List<String> tags = Collections.singletonList("just");
+		FixtureMonkey sut = builder()
+			.registerByName("justTags", Order.class, fm -> fm.giveMeBuilder(Order.class).set("tags", Values.just(tags)))
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeExperimentalBuilder(Customer.class)
+			.selectName("justTags")
+			.sample()
+			.getOrder()
+			.getTags();
+
+		// then
+		then(actual).isSameAs(tags);
+	}
+
+	@Test
 	void selectingNameAfterSettingWholeObjectNullThrows() {
 		// given
 		FixtureMonkey sut = withOrderVariants().build();
@@ -1122,6 +1235,35 @@ class RegisterByNameTest {
 	public static class Basket {
 		private SimpleObject simpleObject;
 		private Order order;
+	}
+
+	@Data
+	public static class OrderBook {
+		private Map<String, Order> orders;
+	}
+
+	@Data
+	public static class Node {
+		private String name;
+		private Node child;
+	}
+
+	public interface Shape {
+	}
+
+	@Data
+	public static class Circle implements Shape {
+		private String name;
+	}
+
+	@Data
+	public static class Square implements Shape {
+		private String name;
+	}
+
+	@Data
+	public static class Drawing {
+		private Shape shape;
 	}
 
 	public static class Labeled {
