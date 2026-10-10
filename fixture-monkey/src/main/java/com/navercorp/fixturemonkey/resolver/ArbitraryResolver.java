@@ -69,6 +69,7 @@ public final class ArbitraryResolver {
 	private final Map<Class<?>, Set<Property>> inferredPropertiesCache;
 	private final Supplier<List<Scope>> registeredScopes;
 	private final Map<JvmType, List<Scope>> definedScopesByRootType;
+	private volatile @Nullable Set<String> registeredNames;
 
 	public ArbitraryResolver(
 		MonkeyContext monkeyContext,
@@ -106,7 +107,10 @@ public final class ArbitraryResolver {
 	) {
 		long prepStart = System.nanoTime();
 		applyValidOnlyOption(rootProperty, activeContext, options);
-		ScopeSet scopeSet = new ScopeSet(activeContext.toRootScope(), definedScopesOf(rootProperty));
+		ScopeSet scopeSet = new ScopeSet(
+			activeContext.toRootScope(),
+			assemblyPlanner.resolveDefinedScopes(definedScopesOf(rootProperty), activeContext.getSelectedNames())
+		);
 		long prepNanos = System.nanoTime() - prepStart;
 
 		return assemble(rootProperty, activeContext, options, scopeSet, prepNanos);
@@ -131,6 +135,40 @@ public final class ArbitraryResolver {
 			.findFirst()
 			.map(TreeMatcherOperator::getOperator)
 			.ifPresent(it -> activeContext.setOptionValidOnly(it.isValidOnly()));
+	}
+
+	/**
+	 * Checks that every name a builder selected is registered by {@code registerByName}.
+	 *
+	 * @param selectedNames the names the builder selected
+	 * @throws IllegalArgumentException when a name is not registered
+	 */
+	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	public void requireRegisteredNames(List<String> selectedNames) {
+		if (selectedNames.isEmpty()) {
+			return;
+		}
+		Set<String> names = registeredNames();
+		for (String selectedName : selectedNames) {
+			if (!names.contains(selectedName)) {
+				throw new IllegalArgumentException("Given name is not registered. name: " + selectedName);
+			}
+		}
+	}
+
+	private Set<String> registeredNames() {
+		Set<String> names = registeredNames;
+		if (names == null) {
+			names = new HashSet<>();
+			for (Scope scope : registeredScopes.get()) {
+				String name = scope.getName();
+				if (name != null) {
+					names.add(name);
+				}
+			}
+			registeredNames = names;
+		}
+		return names;
 	}
 
 	/**

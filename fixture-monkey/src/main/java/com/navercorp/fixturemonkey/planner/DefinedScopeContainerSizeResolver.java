@@ -57,7 +57,7 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 				int sequence = sequenceBase + 1 + scope.getContainerSizeSequence(path);
 				scopedSizes.add(new ScopedSize(
 					scope.getSelector(),
-					DirectivePrecedence.definedScope(scope.getPriority(), sequence),
+					DirectivePrecedence.definedScope(scope.getSelectionOrder(), scope.getPriority(), sequence),
 					path,
 					size.getValue()
 				));

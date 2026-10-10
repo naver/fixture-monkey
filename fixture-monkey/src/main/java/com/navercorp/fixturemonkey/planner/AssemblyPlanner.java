@@ -43,6 +43,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
+import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
@@ -125,6 +126,7 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 	private final ContainerSizeResolverFactory containerSizeResolverFactory;
 	private final ContainerValuePruner containerValuePruner;
 	private final AbstractTypeResolver abstractTypeResolver;
+	private final NamedScopeResolver namedScopeResolver;
 	private final PathResolverContextFactory pathResolverContextFactory;
 
 	/**
@@ -173,6 +175,7 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 		);
 		this.treeCache = new TreeContextCache(new JvmNodeCandidateTreeContext(), nodeContextFactory);
 		this.abstractTypeResolver = new AbstractTypeResolver(seedState);
+		this.namedScopeResolver = new NamedScopeResolver(seedState);
 		this.pathResolverContextFactory = new PathResolverContextFactory(containerSizeResolverFactory);
 	}
 
@@ -187,6 +190,24 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 
 		resetSeedStateIfRandomChanged();
 		return buildAssemblyPlan(rootType, scopeSet, fixed, options, resolutionListener);
+	}
+
+	/**
+	 * Returns the defined scopes that apply to one sample: the ones without a name, and of the named ones with the
+	 * same selector, the ones the sampled builder selected or one chosen from the seed.
+	 *
+	 * @param definedScopes the defined scopes that may apply to the sample, in declared order
+	 * @param selectedNames the names the sampled builder selected, the one selected last at the end
+	 * @return the defined scopes that apply, in declared order
+	 */
+	public List<Scope> resolveDefinedScopes(List<Scope> definedScopes, List<String> selectedNames) {
+		for (Scope scope : definedScopes) {
+			if (scope.getName() != null) {
+				resetSeedStateIfRandomChanged();
+				return namedScopeResolver.resolve(definedScopes, selectedNames);
+			}
+		}
+		return definedScopes;
 	}
 
 	private synchronized void resetSeedStateIfRandomChanged() {

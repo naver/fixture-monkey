@@ -27,8 +27,10 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -67,8 +69,12 @@ import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
+import com.navercorp.fixturemonkey.customizer.JustDirective;
+import com.navercorp.fixturemonkey.customizer.LazyDirective;
 import com.navercorp.fixturemonkey.customizer.MonkeyDirectiveFactory;
+import com.navercorp.fixturemonkey.customizer.NullityDirective;
 import com.navercorp.fixturemonkey.customizer.PathDirective;
+import com.navercorp.fixturemonkey.customizer.SetDirective;
 import com.navercorp.fixturemonkey.customizer.SizeDirective;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
@@ -240,6 +246,34 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				"No matching results for given container expression. Invalid path: " + path.toExpression()
 			);
 		}
+	}
+
+	@Override
+	public ExperimentalArbitraryBuilder<T> selectName(String... names) {
+		if (declaresWholeValue()) {
+			throw new IllegalStateException(
+				"selectName has no effect once a value is set to the whole object, "
+					+ "such as by set(\"$\", value), a sampled fixed() or thenApply()"
+			);
+		}
+		for (String name : names) {
+			Objects.requireNonNull(name, "name must not be null");
+		}
+		this.activeContext.selectNames(Arrays.asList(names));
+		return this;
+	}
+
+	private boolean declaresWholeValue() {
+		for (PathDirective directive : activeContext.getDirectives()) {
+			boolean value = directive instanceof SetDirective
+				|| directive instanceof LazyDirective
+				|| directive instanceof JustDirective
+				|| directive instanceof NullityDirective && ((NullityDirective)directive).toNull();
+			if (value && directive.path().isRoot()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -516,6 +550,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext activeContext) {
+		resolver.requireRegisteredNames(activeContext.getSelectedNames());
 		if (activeContext.isFixed()) {
 			if (activeContext.getFixedCombinableArbitrary() == null || activeContext.fixedExpired()) {
 				Object fixed = resolver.resolve(rootProperty, activeContext).combined();

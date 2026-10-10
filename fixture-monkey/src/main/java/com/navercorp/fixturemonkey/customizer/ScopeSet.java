@@ -45,8 +45,9 @@ public final class ScopeSet {
 	private final Scope rootScope;
 
 	/**
-	 * The defined scopes that apply, the one with the lowest precedence first: a higher priority number first, and
-	 * the earlier declared one first at the same priority.
+	 * The defined scopes that apply, the one with the lowest precedence first: the ones not selected by name first,
+	 * then the selected ones in the order they were selected; among the ones not selected, a higher priority number
+	 * first, and the earlier declared one first at the same priority.
 	 */
 	private final List<Scope> definedScopes;
 	private final Map<Class<?>, InstantiatorProcessResult> globalInstantiators;
@@ -59,15 +60,21 @@ public final class ScopeSet {
 	public ScopeSet(Scope rootScope, List<Scope> definedScopes) {
 		this.rootScope = rootScope;
 		List<Scope> lowestPrecedenceFirst = new ArrayList<>(definedScopes);
-		lowestPrecedenceFirst.sort(Comparator.comparingInt(Scope::getPriority).reversed());
+		lowestPrecedenceFirst.sort(
+			Comparator.comparingInt(Scope::getSelectionOrder)
+				.thenComparing(Comparator.comparingInt(Scope::getPriority).reversed())
+		);
 		this.definedScopes = lowestPrecedenceFirst;
 
 		Map<Class<?>, InstantiatorProcessResult> global = new HashMap<>();
 		Map<Class<?>, DirectivePrecedence> globalPrecedenceByType = new HashMap<>();
 		List<Scope> declaringAtNodes = new ArrayList<>();
 		for (Scope scope : lowestPrecedenceFirst) {
-			DirectivePrecedence precedence =
-				DirectivePrecedence.definedScope(scope.getPriority(), precedenceByScope.size());
+			DirectivePrecedence precedence = DirectivePrecedence.definedScope(
+				scope.getSelectionOrder(),
+				scope.getPriority(),
+				precedenceByScope.size()
+			);
 			precedenceByScope.put(scope, precedence);
 			ScopeSelector selector = scope.getSelector();
 			boolean declaresAtNodes = false;

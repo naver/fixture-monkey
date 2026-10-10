@@ -232,17 +232,16 @@ public final class ValueProjectionAssembler {
 					&& state.scopes.isNotNullRequired(currentPath));
 
 				int outerLimit = winner.isScopeRoot() ? scopeDepth : scopeDepth - 1;
-				int priority = bestCandidate.precedence.priority();
 				boolean usedAsIs = state.scopes.isDefinedScopeJust(winner.declaredPath);
 				boolean outrankedInside = winner.isFromDefinedScope()
 					&& (hasChildValues
 					|| !usedAsIs
 					&& (state.scopes.hasOutrankingDirectiveBelow(chain, bestCandidate.precedence, scopeDepth)
-					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit, priority)
+					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit, bestCandidate.precedence)
 					|| (isCurrentTypeContainer
 					&& RESIZABLE_CONTAINER_DETECTOR.isContainer(setValue)
 					&& state.scopes.hasOutrankingSizeAt(chain, bestCandidate.precedence, scopeDepth))
-					|| mayHaveHigherPriorityDefinedScopeBelow(node, priority, state)));
+					|| mayHaveOutrankingDefinedScopeBelow(node, bestCandidate.precedence, state)));
 
 				if (!unusable && setValue != null && outrankedInside) {
 					state.candidates.replaceWithDefinedScopeValue(
@@ -1539,8 +1538,12 @@ public final class ValueProjectionAssembler {
 		}
 	}
 
-	private static boolean mayHaveHigherPriorityDefinedScopeBelow(JvmNode node, int priority, AssemblyState state) {
-		List<ScopeSelector> scopes = state.scopes.higherPriorityDefinedScopesDeclaringInside(priority);
+	private static boolean mayHaveOutrankingDefinedScopeBelow(
+		JvmNode node,
+		DirectivePrecedence precedence,
+		AssemblyState state
+	) {
+		List<ScopeSelector> scopes = state.scopes.outrankingDefinedScopesDeclaringInside(precedence);
 		if (scopes.isEmpty() || state.assemblyTree.childrenOf(node).isEmpty()) {
 			return false;
 		}

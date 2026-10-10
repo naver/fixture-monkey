@@ -50,6 +50,7 @@ public final class SeedState {
 	private volatile long initialSeed;
 	private final AtomicLong counter;
 	private final AtomicLong containerSizeCounter;
+	private final AtomicLong alternativeCounter;
 
 	/**
 	 * Creates a new SeedState with the specified initial seed.
@@ -60,6 +61,7 @@ public final class SeedState {
 		this.initialSeed = initialSeed;
 		this.counter = new AtomicLong(0);
 		this.containerSizeCounter = new AtomicLong(0);
+		this.alternativeCounter = new AtomicLong(0);
 	}
 
 	/**
@@ -77,6 +79,7 @@ public final class SeedState {
 		this.initialSeed = newSeed;
 		this.counter.set(0);
 		this.containerSizeCounter.set(0);
+		this.alternativeCounter.set(0);
 	}
 
 	/**
@@ -103,6 +106,19 @@ public final class SeedState {
 	 */
 	public SeedSnapshot containerSizeSnapshot() {
 		return new SeedSnapshot(initialSeed, containerSizeCounter.getAndIncrement());
+	}
+
+	/**
+	 * Creates an immutable snapshot from a counter dedicated to choosing one of the alternatives registered for the
+	 * same type.
+	 *
+	 * <p>Like {@link #containerSizeSnapshot()}, this counter is independent from {@link #snapshot()}, so registering
+	 * alternatives does not perturb the other random choices made for the same seed.</p>
+	 *
+	 * @return a new immutable SeedSnapshot whose sequence is the next alternative-choice value
+	 */
+	public SeedSnapshot alternativeSnapshot() {
+		return new SeedSnapshot(initialSeed, alternativeCounter.getAndIncrement());
 	}
 
 	/**
