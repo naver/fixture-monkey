@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.planner;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,7 +34,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.tree.ContainerSizeResolverFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
@@ -70,7 +72,7 @@ final class PathResolverContextFactory {
 	 */
 	public PathResolverContext build(
 		AnalysisResult analysisResult,
-		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes,
+		List<Map.Entry<Scope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes,
 		ResolutionListener resolutionListener,
 		boolean isFixed,
 		@Nullable FixtureMonkeyOptions options,
@@ -106,7 +108,11 @@ final class PathResolverContextFactory {
 			builder.addGenericTypeResolver(resolver);
 		}
 
-		addDefinedScopeContainerSizeResolver(builder, definedScopeContainerSizes);
+		addDefinedScopeContainerSizeResolver(
+			builder,
+			definedScopeContainerSizes,
+			wildcardPaths(analysisResult.getLatestSizeDirectiveByPath().keySet())
+		);
 
 		if (isFixed) {
 			builder.defaultContainerSizeResolver(
@@ -117,10 +123,10 @@ final class PathResolverContextFactory {
 		return builder.build();
 	}
 
-	public List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> resolveContainerSizes(
+	public List<Map.Entry<Scope, Map<PathExpression, ArbitraryContainerInfo>>> resolveContainerSizes(
 		List<AnalyzedScope> analyzedDefinedScopes
 	) {
-		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> sizes = new ArrayList<>();
+		List<Map.Entry<Scope, Map<PathExpression, ArbitraryContainerInfo>>> sizes = new ArrayList<>();
 		for (AnalyzedScope directives : analyzedDefinedScopes) {
 			Map<PathExpression, ArbitraryContainerInfo> containerSizes =
 				new HashMap<>(directives.getContainerSizesByPath());
@@ -132,7 +138,7 @@ final class PathResolverContextFactory {
 				}
 			}
 			if (!containerSizes.isEmpty()) {
-				sizes.add(new AbstractMap.SimpleImmutableEntry<>(directives.getSelector(), containerSizes));
+				sizes.add(new AbstractMap.SimpleImmutableEntry<>(directives.getScope(), containerSizes));
 			}
 		}
 		return sizes;
@@ -181,23 +187,36 @@ final class PathResolverContextFactory {
 
 	private void addDefinedScopeContainerSizeResolver(
 		PathResolverContext.Builder builder,
-		List<Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes
+		List<Map.Entry<Scope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes,
+		List<PathExpression> rootWildcardSizePaths
 	) {
 		if (definedScopeContainerSizes.isEmpty()) {
 			return;
 		}
-		List<Map.Entry<ScopeSelector, Map<PathExpression, ContainerSizeResolver>>> resolversByScope = new ArrayList<>();
-		for (Map.Entry<ScopeSelector, Map<PathExpression, ArbitraryContainerInfo>> entry : definedScopeContainerSizes) {
+		List<Map.Entry<Scope, Map<PathExpression, ContainerSizeResolver>>> resolversByScope = new ArrayList<>();
+		for (Map.Entry<Scope, Map<PathExpression, ArbitraryContainerInfo>> entry : definedScopeContainerSizes) {
 			Map<PathExpression, ContainerSizeResolver> resolversByField = new LinkedHashMap<>();
 			entry.getValue().forEach((field, info) ->
 				resolversByField.put(field, containerSizeResolverFactory.createContainerSizeResolver(info))
 			);
 			resolversByScope.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), resolversByField));
 		}
-		builder.preWildcardContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope, false));
-		builder.postWildcardContainerSizeResolver(
-			new DefinedScopeContainerSizeResolver(resolversByScope, true)
+		builder.preWildcardContainerSizeResolver(
+			new DefinedScopeContainerSizeResolver(resolversByScope, rootWildcardSizePaths, false)
 		);
+		builder.postWildcardContainerSizeResolver(
+			new DefinedScopeContainerSizeResolver(resolversByScope, Collections.emptyList(), true)
+		);
+	}
+
+	private static List<PathExpression> wildcardPaths(Collection<? extends PathExpression> paths) {
+		List<PathExpression> wildcardPaths = new ArrayList<>();
+		for (PathExpression path : paths) {
+			if (path.hasWildcard()) {
+				wildcardPaths.add(path);
+			}
+		}
+		return wildcardPaths;
 	}
 
 	private static @Nullable PathExpression extractResolverPath(PathResolver<ContainerSizeResolver> resolver) {

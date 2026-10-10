@@ -76,6 +76,14 @@ public final class AnalyzedScope {
 		return scope.getPriority();
 	}
 
+	/**
+	 * The position of the scope among the ones the sampled builder selected, from 1 for the one selected first, or 0
+	 * when it is not selected.
+	 */
+	public int getSelectionOrder() {
+		return scope.getSelectionOrder();
+	}
+
 	void putValue(PathExpression path, @Nullable Object value) {
 		values.put(path, value);
 	}

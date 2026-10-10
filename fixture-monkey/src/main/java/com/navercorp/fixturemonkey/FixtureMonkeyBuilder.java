@@ -31,6 +31,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.annotation.Order;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -44,6 +45,7 @@ import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
@@ -339,7 +341,6 @@ public final class FixtureMonkeyBuilder {
 	 * @param registeredArbitraryBuilder the function creating the ArbitraryBuilder to be registered
 	 * @param priority                   the priority of the ArbitraryBuilder; higher values indicate lower priority
 	 * @return the current instance of FixtureMonkeyBuilder for method chaining
-	 * @throws IllegalArgumentException if the priority is less than 0
 	 */
 	public FixtureMonkeyBuilder register(
 		Class<?> type,
@@ -381,6 +382,84 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	/**
+	 * Registers an ArbitraryBuilder by name with the DEFAULT priority (Integer.MAX_VALUE) and the default weight.
+	 *
+	 * @see #registerByName(String, Class, Function, int, int)
+	 */
+	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	public FixtureMonkeyBuilder registerByName(
+		String registeredName,
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
+	) {
+		return this.registerByName(registeredName, type, registeredArbitraryBuilder, DEFAULT_PRIORITY);
+	}
+
+	/**
+	 * Registers an ArbitraryBuilder by name with a specified priority and the default weight.
+	 *
+	 * @see #registerByName(String, Class, Function, int, int)
+	 */
+	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	public FixtureMonkeyBuilder registerByName(
+		String registeredName,
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder,
+		int priority
+	) {
+		return this.registerByName(
+			registeredName,
+			type,
+			registeredArbitraryBuilder,
+			priority,
+			NamedMatcher.DEFAULT_WEIGHT
+		);
+	}
+
+	/**
+	 * Registers an ArbitraryBuilder by name with a specified priority and weight.
+	 * <p>
+	 * ArbitraryBuilders registered by name for the same type are alternatives. A sample applies the ones its builder
+	 * selects with {@code ExperimentalArbitraryBuilder#selectName}. When it selects none of them, one of those with
+	 * the lowest priority number is chosen for each sample, with a chance of its weight over the sum of their weights,
+	 * and it applies like a builder registered by {@link #register(Class, Function, int)}.
+	 *
+	 * @param registeredName             the name to select the ArbitraryBuilder with, unique across registrations
+	 * @param type                       the type the ArbitraryBuilder is registered for, including its subtypes
+	 * @param registeredArbitraryBuilder the function creating the ArbitraryBuilder to be registered
+	 * @param priority                   the priority of the ArbitraryBuilder; higher values indicate lower priority
+	 * @param weight                     how likely the ArbitraryBuilder is chosen among its alternatives, a positive
+	 *                                   number; {@link NamedMatcher#DEFAULT_WEIGHT} by default
+	 * @return the current instance of FixtureMonkeyBuilder for method chaining
+	 * @throws IllegalArgumentException when the weight is not positive, or from {@link #build()} when the name is
+	 *                                  registered more than once
+	 */
+	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	public FixtureMonkeyBuilder registerByName(
+		String registeredName,
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder,
+		int priority,
+		int weight
+	) {
+		return this.register(
+			new MatcherOperator<>(
+				new NamedMatcher(new AssignableTypeMatcher(type), registeredName, weight),
+				registeredArbitraryBuilder
+			),
+			priority
+		);
+	}
+
+	/**
+	 * Registers the ArbitraryBuilders that the public methods of each class return: a method taking a
+	 * {@link FixtureMonkey} and returning an {@link ArbitraryBuilder} registers it for the type it builds. The
+	 * {@link Order} of a class is the priority of its ArbitraryBuilders.
+	 *
+	 * @param arbitraryBuilderGroups the classes with a constructor taking no arguments
+	 * @return the current instance of FixtureMonkeyBuilder for method chaining
+	 */
 	public FixtureMonkeyBuilder registerGroup(Class<?>... arbitraryBuilderGroups) {
 		for (Class<?> arbitraryBuilderGroup : arbitraryBuilderGroups) {
 			Method[] methods = arbitraryBuilderGroup.getMethods();
@@ -411,13 +490,7 @@ public final class FixtureMonkeyBuilder {
 							}
 						};
 
-					// TODO: Support Order annotation
-					// if (arbitraryBuilderGroup.isAnnotationPresent(Order.class)) {
-					// 	Order order = arbitraryBuilderGroup.getAnnotation(Order.class);
-					// 	this.register(actualType, registerArbitraryBuilder, order.value());
-					// 	continue;
-					// }
-					this.register(actualType, registerArbitraryBuilder);
+					this.register(actualType, registerArbitraryBuilder, priorityOf(arbitraryBuilderGroup));
 				} catch (Exception ex) {
 					// ignored
 				}
@@ -426,20 +499,33 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	/**
+	 * Registers the ArbitraryBuilders each group generates. The {@link Order} of a group's class is the priority of its
+	 * ArbitraryBuilders.
+	 *
+	 * @param arbitraryBuilderGroups the groups
+	 * @return the current instance of FixtureMonkeyBuilder for method chaining
+	 */
 	public FixtureMonkeyBuilder registerGroup(ArbitraryBuilderGroup... arbitraryBuilderGroups) {
 		for (ArbitraryBuilderGroup arbitraryBuilderGroup : arbitraryBuilderGroups) {
 			List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.generateCandidateList()
 				.getCandidates();
+			int priority = priorityOf(arbitraryBuilderGroup.getClass());
 
 			for (ArbitraryBuilderCandidate<?> candidate : candidates) {
 				this.register(
 					candidate.getClassType(),
 					candidate.getArbitraryBuilderRegisterer(),
-					DEFAULT_PRIORITY
+					priority
 				);
 			}
 		}
 		return this;
+	}
+
+	private static int priorityOf(Class<?> arbitraryBuilderGroup) {
+		Order order = arbitraryBuilderGroup.getAnnotation(Order.class);
+		return order != null ? order.value() : DEFAULT_PRIORITY;
 	}
 
 	public FixtureMonkeyBuilder plugin(Plugin plugin) {

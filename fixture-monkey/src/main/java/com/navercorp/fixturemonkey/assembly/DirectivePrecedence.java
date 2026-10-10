@@ -24,35 +24,45 @@ import com.navercorp.fixturemonkey.customizer.Scope;
  * The precedence of a directive among the directives that reach the same node: the one whose scope node sits outer
  * wins, then the one whose scope has the lower priority number, then the one declared later.
  * <p>
- * The root scope's node is the node a sample starts from and its priority is {@link Scope#ROOT_PRIORITY}, so it
- * wins over every defined scope by the same rule.
+ * The rank of the scope comes before all of them: the root scope ranks above every defined scope, and a scope the
+ * sampled builder selected by name ranks above every defined scope not selected, the one selected later higher. So
+ * the root scope wins over every defined scope, and a selected scope wins over the scopes ranking below it wherever
+ * their scope nodes sit.
  */
 final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
+	static final int ROOT_RANK = Integer.MAX_VALUE;
+
+	private final int rank;
 	private final int priority;
 	private final int sequence;
 
-	private DirectivePrecedence(int priority, int sequence) {
+	private DirectivePrecedence(int rank, int priority, int sequence) {
+		this.rank = rank;
 		this.priority = priority;
 		this.sequence = sequence;
 	}
 
 	static DirectivePrecedence rootScope(int sequence) {
-		return new DirectivePrecedence(Scope.ROOT_PRIORITY, sequence);
+		return new DirectivePrecedence(ROOT_RANK, Scope.ROOT_PRIORITY, sequence);
 	}
 
-	static DirectivePrecedence definedScope(int priority, int sequence) {
-		return new DirectivePrecedence(priority, sequence);
+	static DirectivePrecedence definedScope(int selectionOrder, int priority, int sequence) {
+		return new DirectivePrecedence(selectionOrder, priority, sequence);
 	}
 
 	/**
 	 * Returns whether the directive was declared in the root scope, whose lazy values are evaluated once per sample.
 	 */
 	boolean isRootScope() {
-		return priority == Scope.ROOT_PRIORITY;
+		return rank == ROOT_RANK;
 	}
 
 	int sequence() {
 		return sequence;
+	}
+
+	int rank() {
+		return rank;
 	}
 
 	/**
@@ -60,6 +70,9 @@ final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
 	 * {@code other} whose scope node sits {@code otherScopeDepth} deep.
 	 */
 	boolean outranks(int scopeDepth, DirectivePrecedence other, int otherScopeDepth) {
+		if (rank != other.rank) {
+			return rank > other.rank;
+		}
 		if (scopeDepth != otherScopeDepth) {
 			return scopeDepth < otherScopeDepth;
 		}
@@ -68,9 +81,13 @@ final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
 
 	/**
 	 * Returns whether this directive's scope, with its node {@code scopeDepth} deep, outranks a scope of
-	 * {@code otherPriority} with its node {@code otherScopeDepth} deep, whatever the order they were declared in.
+	 * {@code otherRank} and {@code otherPriority} with its node {@code otherScopeDepth} deep, whatever the order they
+	 * were declared in.
 	 */
-	boolean scopeOutranks(int scopeDepth, int otherPriority, int otherScopeDepth) {
+	boolean scopeOutranks(int scopeDepth, int otherRank, int otherPriority, int otherScopeDepth) {
+		if (rank != otherRank) {
+			return rank > otherRank;
+		}
 		if (scopeDepth != otherScopeDepth) {
 			return scopeDepth < otherScopeDepth;
 		}
@@ -82,6 +99,9 @@ final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
 	 */
 	@Override
 	public int compareTo(DirectivePrecedence other) {
+		if (rank != other.rank) {
+			return Integer.compare(rank, other.rank);
+		}
 		if (priority != other.priority) {
 			return priority < other.priority ? 1 : -1;
 		}

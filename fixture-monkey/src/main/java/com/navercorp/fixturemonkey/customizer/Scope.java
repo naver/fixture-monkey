@@ -23,8 +23,10 @@ import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 
 /**
  * Directives and instantiators declared for the nodes a {@link ScopeSelector} selects, with paths relative to a
@@ -35,6 +37,12 @@ import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
  * declares one, the matcher it is registered with becomes the selector, and what its builder declared becomes the
  * directives and instantiators of the scope. Where defined scopes conflict at the same node, a scope with a lower
  * priority number takes precedence, and otherwise the later declared one.
+ * <p>
+ * {@code registerByName(...)} declares a named scope. Named scopes with the same selector are alternatives: a sample
+ * applies only the ones the sampled builder selected by name, or one of them when it selected none, chosen by weight
+ * among the ones with the lowest priority number. A selected scope keeps its priority and takes a selection order
+ * instead: it outranks every defined scope not selected wherever their nodes sit, and among selected scopes the one
+ * selected later wins.
  */
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public final class Scope {
@@ -48,6 +56,9 @@ public final class Scope {
 	private final int priority;
 	private final List<PathDirective> directives;
 	private final Map<Class<?>, InstantiatorProcessResult> instantiators;
+	private final @Nullable String name;
+	private final int weight;
+	private final int selectionOrder;
 
 	/**
 	 * Returns the root scope of what the sampled builder itself declared.
@@ -66,10 +77,53 @@ public final class Scope {
 		List<PathDirective> directives,
 		Map<Class<?>, InstantiatorProcessResult> instantiators
 	) {
+		this(selector, priority, directives, instantiators, null, NamedMatcher.DEFAULT_WEIGHT);
+	}
+
+	public Scope(
+		ScopeSelector selector,
+		int priority,
+		List<PathDirective> directives,
+		Map<Class<?>, InstantiatorProcessResult> instantiators,
+		@Nullable String name,
+		int weight
+	) {
+		this(selector, priority, directives, instantiators, name, weight, 0);
+		if (weight <= 0) {
+			throw new IllegalArgumentException("weight must be positive. weight: " + weight);
+		}
+	}
+
+	private Scope(
+		ScopeSelector selector,
+		int priority,
+		List<PathDirective> directives,
+		Map<Class<?>, InstantiatorProcessResult> instantiators,
+		@Nullable String name,
+		int weight,
+		int selectionOrder
+	) {
 		this.selector = selector;
 		this.priority = priority;
 		this.directives = directives;
 		this.instantiators = instantiators;
+		this.name = name;
+		this.weight = weight;
+		this.selectionOrder = selectionOrder;
+	}
+
+	/**
+	 * Returns this named scope as selected by the sampled builder, so it takes precedence over every scope that is not
+	 * selected and over the ones selected before it.
+	 *
+	 * @param selectionOrder the position of the selection, from 1 for the one selected first
+	 * @return the selected scope
+	 */
+	public Scope selected(int selectionOrder) {
+		if (selectionOrder <= 0) {
+			throw new IllegalArgumentException("selectionOrder must be positive. selectionOrder: " + selectionOrder);
+		}
+		return new Scope(selector, priority, directives, instantiators, name, weight, selectionOrder);
 	}
 
 	/**
@@ -92,5 +146,34 @@ public final class Scope {
 
 	public Map<Class<?>, InstantiatorProcessResult> getInstantiators() {
 		return instantiators;
+	}
+
+	/**
+	 * The name this scope is registered with, or null when it is registered without one.
+	 */
+	public @Nullable String getName() {
+		return name;
+	}
+
+	/**
+	 * How likely this named scope is chosen among its alternatives when the sampled builder selected none of them.
+	 */
+	public int getWeight() {
+		return weight;
+	}
+
+	/**
+	 * Whether the sampled builder selected this scope by its name.
+	 */
+	public boolean isSelected() {
+		return selectionOrder > 0;
+	}
+
+	/**
+	 * The position of this scope among the ones the sampled builder selected, from 1 for the one selected first, or 0
+	 * when it is not selected.
+	 */
+	public int getSelectionOrder() {
+		return selectionOrder;
 	}
 }

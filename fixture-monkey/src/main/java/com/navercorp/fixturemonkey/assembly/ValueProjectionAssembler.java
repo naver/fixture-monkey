@@ -200,11 +200,12 @@ public final class ValueProjectionAssembler {
 			WinningValueCandidate winner = !hasChildValues || !isValueSet
 				? PathMatcher.findWinningCandidate(currentPath, state)
 				: null;
+			boolean sizedByOutranking = false;
 			ScopeChain chain = state.chainOf(currentPath);
 			if (!hasChildValues
 				&& winner == null
 				&& (state.scopes.definedScopeNotNullDepth(chain) != Integer.MAX_VALUE
-				|| state.scopes.hasDefinedScopeDirectiveBelow(chain, Integer.MAX_VALUE))) {
+				|| state.scopes.hasDefinedScopeDirectiveBelow(chain, null, Integer.MAX_VALUE))) {
 				state.scopes.markNotNullRequired(currentPath);
 				if (isCurrentTypeContainer) {
 					int requiredElementCount = state.scopes.definedScopeRequiredElementCount(chain);
@@ -229,23 +230,35 @@ public final class ValueProjectionAssembler {
 					&& state.scopes.isNotNullRequired(currentPath));
 
 				int outerLimit = winner.isScopeRoot() ? scopeDepth : scopeDepth - 1;
-				boolean outrankedInside = winner.isFromDefinedScope()
-					&& (hasChildValues
-					|| state.scopes.hasDefinedScopeDirectiveBelow(chain, outerLimit)
-					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit)
-					|| state.scopes.hasDefinedScopeCustomizerBelow(chain, outerLimit));
-
-				if (!unusable && setValue != null && outrankedInside) {
-					state.candidates.replaceWithDefinedScopeValue(
-						currentPath,
-						bestCandidate.withValue(setValue),
-						scopeDepth
-					);
-					if (isCurrentTypeContainer) {
-						resizeChildrenToValue(node, currentPath, setValue, state);
+				DirectivePrecedence winnerPrecedence = bestCandidate.precedence;
+				boolean outrankedInside = false;
+				if (!unusable && setValue != null && winner.isFromDefinedScope()) {
+					sizedByOutranking = isCurrentTypeContainer
+						&& state.scopes.isContainerSizedByScopeOutranking(chain, winnerPrecedence);
+					outrankedInside = hasChildValues
+						|| sizedByOutranking
+						|| state.scopes.hasDefinedScopeDirectiveBelow(chain, winnerPrecedence, outerLimit)
+						|| state.scopes.hasDefinedScopeFilterBelow(chain, winnerPrecedence, outerLimit)
+						|| state.scopes.hasDefinedScopeCustomizerBelow(chain, winnerPrecedence, outerLimit)
+						|| state.scopes.hasSelectedScopeOutrankingInside(
+							winnerPrecedence,
+							chain,
+							node,
+							state.assemblyTree::childrenOf
+						);
+					if (outrankedInside) {
+						state.candidates.replaceWithDefinedScopeValue(
+							currentPath,
+							bestCandidate.withValue(setValue),
+							scopeDepth
+						);
+						if (isCurrentTypeContainer && !sizedByOutranking) {
+							resizeChildrenToValue(node, currentPath, setValue, state);
+						}
+						isValueSet = true;
 					}
-					isValueSet = true;
-				} else if (!hasChildValues) {
+				}
+				if (!outrankedInside && !hasChildValues) {
 					if (unusable) {
 						return assembleNodeDefault(node, state, parentContext, parentPath, currentPath, visitedTypes);
 					}
@@ -284,6 +297,7 @@ public final class ValueProjectionAssembler {
 				boolean underDefinedScopeValue = state.candidates.decomposedScopeDepthAt(currentPath) >= 0;
 				if (underDefinedScopeValue
 					&& isCurrentTypeContainer
+					&& !sizedByOutranking
 					&& currentCandidate != null
 					&& currentCandidate.value != null) {
 					resizeChildrenToValue(node, currentPath, currentCandidate.value, state);

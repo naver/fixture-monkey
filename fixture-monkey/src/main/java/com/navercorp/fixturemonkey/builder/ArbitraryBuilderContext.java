@@ -53,6 +53,7 @@ import com.navercorp.fixturemonkey.customizer.SizeDirective;
 public final class ArbitraryBuilderContext {
 	private final List<PathDirective> directives;
 	private final Map<Class<?>, InstantiatorProcessResult> instantiatorsByType;
+	private final List<String> selectedNames;
 	private final MonkeyContext monkeyContext;
 
 	private @Nullable Boolean optionValidOnly;
@@ -65,12 +66,14 @@ public final class ArbitraryBuilderContext {
 	private ArbitraryBuilderContext(
 		List<PathDirective> directives,
 		Map<Class<?>, InstantiatorProcessResult> instantiatorsByType,
+		List<String> selectedNames,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
 		MonkeyContext monkeyContext
 	) {
 		this.directives = directives;
 		this.instantiatorsByType = instantiatorsByType;
+		this.selectedNames = selectedNames;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 		this.monkeyContext = monkeyContext;
@@ -85,6 +88,7 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(),
 			new HashMap<>(),
+			new ArrayList<>(),
 			null, null,
 			monkeyContext
 		);
@@ -96,6 +100,7 @@ public final class ArbitraryBuilderContext {
 		ArbitraryBuilderContext copiedContext = new ArbitraryBuilderContext(
 			copiedDirectives,
 			new HashMap<>(instantiatorsByType),
+			new ArrayList<>(selectedNames),
 			fixedState,
 			fixedCombinableArbitrary,
 			monkeyContext
@@ -151,6 +156,23 @@ public final class ArbitraryBuilderContext {
 	}
 
 	/**
+	 * Selects builders registered by name, after the ones selected so far. A name selected again moves to the end.
+	 */
+	public void selectNames(List<String> names) {
+		for (String name : names) {
+			this.selectedNames.remove(name);
+			this.selectedNames.add(name);
+		}
+	}
+
+	/**
+	 * Returns the names of the builders registered by name that are selected, the one selected last at the end.
+	 */
+	public List<String> getSelectedNames() {
+		return Collections.unmodifiableList(selectedNames);
+	}
+
+	/**
 	 * Returns what this context declared as the root scope, for the builder being sampled.
 	 */
 	public Scope toRootScope() {
@@ -162,10 +184,11 @@ public final class ArbitraryBuilderContext {
 	 *
 	 * @param selector the nodes the scope applies to
 	 * @param priority the priority of the scope; a lower number takes precedence
+	 * @param name     the name the builder is registered with, or null when it is registered without one
 	 * @return the scope
 	 */
-	public Scope toScope(ScopeSelector selector, int priority) {
-		return new Scope(selector, priority, new ArrayList<>(directives), getInstantiators());
+	public Scope toScope(ScopeSelector selector, int priority, @Nullable String name, int weight) {
+		return new Scope(selector, priority, new ArrayList<>(directives), getInstantiators(), name, weight);
 	}
 
 	public Map<Class<?>, InstantiatorProcessResult> getInstantiators() {

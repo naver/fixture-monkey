@@ -27,9 +27,19 @@ import java.lang.annotation.Target;
 
 import org.apiguardian.api.API;
 
+/**
+ * The priority of the ArbitraryBuilders a group registers with {@code FixtureMonkeyBuilder#registerGroup}; higher
+ * values indicate lower priority, as the priority of {@code FixtureMonkeyBuilder#register} does. A group without it
+ * registers them with {@link Integer#MAX_VALUE}, the default priority.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @API(since = "1.1.15", status = EXPERIMENTAL)
-@interface Order {
+public @interface Order {
+	/**
+	 * Returns the priority of the group's ArbitraryBuilders.
+	 *
+	 * @return the priority
+	 */
 	int value() default Integer.MAX_VALUE;
 }
