@@ -91,14 +91,30 @@ final class CandidateLookup {
 		return rootWildcardEntries;
 	}
 
-	boolean hasRootWildcards() {
-		return !rootWildcardEntries.isEmpty();
+	/**
+	 * Returns whether a root scope's wildcard candidate that outranks {@code precedence} reaches a node below
+	 * {@code path}.
+	 */
+	boolean hasOutrankingRootWildcardBelow(PathExpression path, DirectivePrecedence precedence) {
+		for (Map.Entry<PathExpression, ValueCandidate> entry : rootWildcardEntries) {
+			PathExpression pattern = entry.getKey();
+			if (pattern.depth() > path.depth()
+				&& pattern.truncateTo(path.depth()).matches(path)
+				&& entry.getValue().precedence.compareTo(precedence) > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
-	 * Returns whether a root scope's wildcard candidate reaches {@code path}.
+	 * Returns whether a candidate is at {@code path} or a root scope's wildcard candidate reaches it, so the node is
+	 * one a value was declared for even when a limit leaves it without one.
 	 */
-	boolean matchesRootWildcard(PathExpression path) {
+	boolean hasCandidateReaching(PathExpression path) {
+		if (contains(path)) {
+			return true;
+		}
 		for (Map.Entry<PathExpression, ValueCandidate> entry : rootWildcardEntries) {
 			if (entry.getKey().matches(path)) {
 				return true;

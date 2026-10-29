@@ -318,7 +318,9 @@ public final class ValueAnalyzer {
 		int size = containerSize.getAsInt();
 		PathExpression pattern = PathExpression.of(pathExpression);
 		ContainerSizeResolver sizeResolver = new FixedContainerSizeResolver(size);
-		containerSizeResolvers.add(new PathContainerSizeResolver(pattern, sizeResolver));
+		containerSizeResolvers.add(
+			new PathContainerSizeResolver(pattern, PathContainerSizeResolver.NO_SEQUENCE, sizeResolver)
+		);
 
 		// For nested containers, store values only if storeContainerElements is true
 		// This allows decomposed values to preserve container elements while letting container info override sizes

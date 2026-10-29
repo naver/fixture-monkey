@@ -397,8 +397,8 @@ public final class JvmNodeTreeTransformer {
 	/**
 	 * Resolves container size using 4-level priority:
 	 * <ol>
-	 *   <li>Exact path match (the root container size given to transform, then a builder that set this path)</li>
-	 *   <li>Wildcard path match (a builder with wildcard pattern)</li>
+	 *   <li>The root container size given to transform</li>
+	 *   <li>The path size declared latest, exact or wildcard, the exact one first among the same declaration</li>
 	 *   <li>Ancestor-aware match after wildcards (registered builder for the enclosing node)</li>
 	 *   <li>Default resolver</li>
 	 * </ol>
@@ -412,16 +412,13 @@ public final class JvmNodeTreeTransformer {
 			return new SizeResolution(new FixedContainerSizeResolver(ctx.rootContainerSize), "EXACT_PATH");
 		}
 
-		Optional<ContainerSizeResolver> exactResolver = resolverContext.findExactContainerSizeResolver(currentPath);
-		if (exactResolver.isPresent()) {
-			return new SizeResolution(exactResolver.get(), "EXACT_PATH");
-		}
-
-		Optional<ContainerSizeResolver> wildcardResolver = resolverContext.findWildcardContainerSizeResolver(
-			currentPath
-		);
-		if (wildcardResolver.isPresent()) {
-			return new SizeResolution(wildcardResolver.get(), "WILDCARD");
+		Optional<PathResolver<ContainerSizeResolver>> pathResolver =
+			resolverContext.findContainerSizePathResolver(currentPath);
+		if (pathResolver.isPresent()) {
+			PathResolver<ContainerSizeResolver> resolver = pathResolver.get();
+			boolean exact = resolver instanceof PathContainerSizeResolver
+				&& ((PathContainerSizeResolver)resolver).getPattern().equals(currentPath);
+			return new SizeResolution(resolver.getCustomizer(), exact ? "EXACT_PATH" : "WILDCARD");
 		}
 
 		Optional<ContainerSizeResolver> ancestorAwareResolver = resolverContext

@@ -38,7 +38,6 @@ import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
-import com.navercorp.objectfarm.api.tree.PathContainerSizeResolver;
 import com.navercorp.objectfarm.api.tree.PathInterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
@@ -84,7 +83,7 @@ final class PathResolverContextFactory {
 			// but size("values", 1, 10) comes later, the concrete type should not be locked.
 			if (resolver instanceof PathInterfaceResolver) {
 				PathExpression resolverPath = ((PathInterfaceResolver)resolver).getPattern();
-				Integer sizeSeq = sizeSequenceByPath.get(resolverPath);
+				Integer sizeSeq = latestRootSizeSequenceAt(sizeSequenceByPath, resolverPath);
 				Integer valueSeq = valueOrderByPath.get(resolverPath);
 				if (sizeSeq != null && valueSeq != null && sizeSeq > valueSeq) {
 					continue;
@@ -125,41 +124,28 @@ final class PathResolverContextFactory {
 		PathResolverContext.Builder builder,
 		AnalysisResult analysisResult
 	) {
-		Map<PathExpression, Integer> sequenceByPath = analysisResult.getContainerSizeSequenceByPath();
-		List<Map.Entry<PathExpression, Integer>> wildcardSizeSequences = new ArrayList<>();
-		for (Map.Entry<PathExpression, Integer> entry : sequenceByPath.entrySet()) {
-			if (entry.getKey().hasWildcard()) {
-				wildcardSizeSequences.add(entry);
-			}
-		}
 		for (PathResolver<ContainerSizeResolver> resolver : analysisResult.getContainerSizeResolvers()) {
-			PathExpression resolverPath = extractResolverPath(resolver);
-			if (resolverPath == null) {
-				builder.addContainerSizeResolver(resolver);
-				continue;
-			}
-
-			// Sequence wins: a wildcard resolver with higher sequence shadows any exact-path
-			// resolver at a matching path. Build-time pruning is what enables this — the runtime
-			// EXACT-over-WILDCARD precedence in JvmNodeTreeTransformer would otherwise prevent
-			// the wildcard from taking effect at the shadowed exact path.
-			if (!resolverPath.hasWildcard() && !wildcardSizeSequences.isEmpty()) {
-				Integer ownSequence = sequenceByPath.get(resolverPath);
-				boolean overriddenByWildcard = false;
-				for (Map.Entry<PathExpression, Integer> wildcardEntry : wildcardSizeSequences) {
-					if (wildcardEntry.getKey().matches(resolverPath)
-						&& (ownSequence == null || wildcardEntry.getValue() > ownSequence)) {
-						overriddenByWildcard = true;
-						break;
-					}
-				}
-				if (overriddenByWildcard) {
-					continue;
-				}
-			}
-
 			builder.addContainerSizeResolver(resolver);
 		}
+	}
+
+	/**
+	 * Returns the sequence of the latest size the root scope declared for the container at {@code path}, at that path
+	 * or through a wildcard reaching it, or null when it declared none.
+	 */
+	private static @Nullable Integer latestRootSizeSequenceAt(
+		Map<PathExpression, Integer> sizeSequenceByPath,
+		PathExpression path
+	) {
+		Integer latest = null;
+		for (Map.Entry<PathExpression, Integer> entry : sizeSequenceByPath.entrySet()) {
+			PathExpression sizePath = entry.getKey();
+			boolean reaches = sizePath.equals(path) || sizePath.hasWildcard() && sizePath.matches(path);
+			if (reaches && (latest == null || entry.getValue() > latest)) {
+				latest = entry.getValue();
+			}
+		}
+		return latest;
 	}
 
 	private void addDefinedScopeContainerSizeResolver(
@@ -178,13 +164,5 @@ final class PathResolverContextFactory {
 			resolversByScope.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), resolversByField));
 		}
 		builder.ancestorAwareContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope));
-	}
-
-	private static @Nullable PathExpression extractResolverPath(PathResolver<ContainerSizeResolver> resolver) {
-		if (resolver instanceof PathContainerSizeResolver) {
-			PathContainerSizeResolver sizeResolver = (PathContainerSizeResolver) resolver;
-			return sizeResolver.getPattern();
-		}
-		return null;
 	}
 }

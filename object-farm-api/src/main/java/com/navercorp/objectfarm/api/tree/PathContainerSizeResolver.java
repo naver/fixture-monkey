@@ -34,28 +34,38 @@ import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
  * // Set size to 3 for "$.items" container
  * PathContainerSizeResolver resolver = new PathContainerSizeResolver(
  *     PathExpression.of("$.items"),
+ *     PathContainerSizeResolver.NO_SEQUENCE,
  *     containerType -&gt; 3
  * );
  *
  * // Set size to 5 for all elements in "$.items[*]" (nested containers)
  * PathContainerSizeResolver nestedResolver = new PathContainerSizeResolver(
  *     PathExpression.of("$.items[*]"),
+ *     PathContainerSizeResolver.NO_SEQUENCE,
  *     containerType -&gt; 5
  * );
  * </pre>
  */
 public final class PathContainerSizeResolver implements PathResolver<ContainerSizeResolver> {
+	/**
+	 * The sequence of a size that has no declaration order of its own, such as one taken from a value.
+	 */
+	public static final int NO_SEQUENCE = 0;
+
 	private final PathExpression pattern;
+	private final int sequence;
 	private final ContainerSizeResolver customizer;
 
 	/**
 	 * Creates a new PathContainerSizeResolver.
 	 *
 	 * @param pattern    the pattern to match
+	 * @param sequence   the declaration order of the size, a later one higher, or {@link #NO_SEQUENCE}
 	 * @param customizer the container size resolver to use for matching paths
 	 */
-	public PathContainerSizeResolver(PathExpression pattern, ContainerSizeResolver customizer) {
+	public PathContainerSizeResolver(PathExpression pattern, int sequence, ContainerSizeResolver customizer) {
 		this.pattern = Objects.requireNonNull(pattern, "pattern must not be null");
+		this.sequence = sequence;
 		this.customizer = Objects.requireNonNull(customizer, "customizer must not be null");
 	}
 
@@ -76,5 +86,14 @@ public final class PathContainerSizeResolver implements PathResolver<ContainerSi
 	 */
 	public PathExpression getPattern() {
 		return pattern;
+	}
+
+	/**
+	 * Returns the declaration order of the size, a later one higher.
+	 *
+	 * @return the sequence
+	 */
+	public int getSequence() {
+		return sequence;
 	}
 }

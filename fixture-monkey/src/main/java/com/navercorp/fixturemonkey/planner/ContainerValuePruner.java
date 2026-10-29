@@ -108,24 +108,6 @@ final class ContainerValuePruner {
 				continue;
 			}
 
-			// Case 2: Wildcard match for container values without exact match
-			if (sizeConstraint == null && containerDetector.isContainer(value) && !wildcardSizeEntries.isEmpty()) {
-				Integer setOrder = valueOrderByPath.get(path);
-				if (setOrder != null) {
-					ContainerSizeConstraint wildcardSizeConstraint =
-						findWildcardSizeConstraint(path, setOrder, wildcardSizeEntries);
-					if (wildcardSizeConstraint != null) {
-						if (applyContainerSizeConstraint(
-							result, path, value, wildcardSizeConstraint, valueOrderByPath, setOrder)) {
-							keysToRemove.add(path);
-						}
-					}
-				}
-				if (keysToRemove.contains(path)) {
-					continue;
-				}
-			}
-
 			// Case 3: Container without exact/wildcard match — check child size directives
 			if (containerDetector.isContainer(value) && !keysToRemove.contains(path)) {
 				int effectiveOrder = valueOrderByPath.getOrDefault(path, Integer.MIN_VALUE);
@@ -194,33 +176,16 @@ final class ContainerValuePruner {
 		return false;
 	}
 
-	private static @Nullable ContainerSizeConstraint findWildcardSizeConstraint(
-		PathExpression path,
-		int setOrder,
-		List<Map.Entry<PathExpression, ContainerSizeConstraint>> wildcardSizeEntries
-	) {
-		for (Map.Entry<PathExpression, ContainerSizeConstraint> wildcardEntry : wildcardSizeEntries) {
-			if (wildcardEntry.getKey().matches(path) && wildcardEntry.getValue().sequence > setOrder) {
-				return wildcardEntry.getValue();
-			}
-		}
-		return null;
-	}
-
 	/**
-	 * Mirrors the runtime precedence applied in {@code PathResolverContextFactory}: a wildcard
-	 * size directive with a strictly higher sequence shadows the exact-path constraint at any
-	 * matching path. Pruning must use the same effective constraint, otherwise a value can be
-	 * truncated based on a constraint the assembler will later ignore.
+	 * Returns the latest size reaching {@code path}, at that path or through a wildcard, as the root container size
+	 * lookup picks it at runtime. Pruning must use the same constraint, otherwise a value can be truncated based on a
+	 * constraint the assembler will later ignore.
 	 */
 	private static @Nullable ContainerSizeConstraint resolveEffectiveConstraint(
 		PathExpression path,
 		@Nullable ContainerSizeConstraint exact,
 		List<Map.Entry<PathExpression, ContainerSizeConstraint>> wildcardSizeEntries
 	) {
-		if (path.hasWildcard() || wildcardSizeEntries.isEmpty()) {
-			return exact;
-		}
 		ContainerSizeConstraint effective = exact;
 		for (Map.Entry<PathExpression, ContainerSizeConstraint> wildcardEntry : wildcardSizeEntries) {
 			if (!wildcardEntry.getKey().matches(path)) {
