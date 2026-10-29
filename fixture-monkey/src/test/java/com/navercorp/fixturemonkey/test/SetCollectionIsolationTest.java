@@ -191,6 +191,7 @@ class SetCollectionIsolationTest {
 	@Test
 	void listWildcardTypeKeepsTheSuppliedValues() {
 		List<? extends Number> supplied = Arrays.asList(1, 2, 1);
+		List<Number> expected = new ArrayList<>(supplied);
 		ArbitraryBuilder<List<? extends Number>> builder = FIXTURE_MONKEY
 			.giveMeBuilder(new TypeReference<List<? extends Number>>() { })
 			.set("$", supplied);
@@ -198,9 +199,9 @@ class SetCollectionIsolationTest {
 		List<? extends Number> second = builder.sample();
 
 		assertThat(first).isNotSameAs(supplied).isNotSameAs(second);
-		assertThat(first).containsExactlyElementsOf(supplied);
+		assertThat(new ArrayList<Number>(first)).containsExactlyElementsOf(expected);
 		first.remove(0);
-		assertThat(second).containsExactlyElementsOf(supplied);
+		assertThat(new ArrayList<Number>(second)).containsExactlyElementsOf(expected);
 	}
 
 	@Test
