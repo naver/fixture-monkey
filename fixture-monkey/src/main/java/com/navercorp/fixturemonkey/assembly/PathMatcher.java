@@ -43,8 +43,7 @@ final class PathMatcher {
 
 		boolean notNullRequired = state.scopes.isNotNullRequired(path);
 		ScopeChain chain = state.chainOf(path);
-		int definedScopeNotNullDepth = state.scopes.definedScopeNotNullDepth(chain);
-		boolean anyNotNull = notNullRequired || definedScopeNotNullDepth != Integer.MAX_VALUE;
+		boolean anyNotNull = notNullRequired || state.scopes.hasDefinedScopeNotNullAt(chain);
 
 		ValueCandidate exactCandidate = state.candidates.at(path);
 		if (exactCandidate != null && !isDefinedScopeNull(exactCandidate, anyNotNull)) {
@@ -79,11 +78,13 @@ final class PathMatcher {
 					continue;
 				}
 				boolean yieldsToNotNull = notNullRequired
-					|| state.scopes.yieldsToDefinedScopeNotNull(candidate, depth, definedScopeNotNullDepth, chain);
+					|| state.scopes.yieldsToDefinedScopeNotNull(candidate, depth, chain);
 				if (isDefinedScopeNull(candidate, yieldsToNotNull)) {
 					continue;
 				}
-				if (candidate.value == null && state.scopes.hasDefinedScopeDirectiveBelow(chain, depth - 1)) {
+				int priority = candidate.precedence.priority();
+				if (candidate.value == null
+					&& state.scopes.hasOutrankingDefinedScopeDirectiveBelow(chain, priority, depth)) {
 					continue;
 				}
 				JvmNode scopeNode = chain.scopeNodeAt(depth);

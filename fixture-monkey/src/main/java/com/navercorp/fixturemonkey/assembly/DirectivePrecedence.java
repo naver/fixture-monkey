@@ -21,11 +21,10 @@ package com.navercorp.fixturemonkey.assembly;
 import com.navercorp.fixturemonkey.customizer.Scope;
 
 /**
- * The precedence of a directive among the directives that reach the same node: the one whose scope node sits outer
- * wins, then the one whose scope has the lower priority number, then the one declared later.
+ * The precedence of a directive among the directives that reach the same node: the one whose scope has the lower
+ * priority number wins, then the one whose scope node sits outer, then the one declared later.
  * <p>
- * The root scope's node is the node a sample starts from and its priority is {@link Scope#ROOT_PRIORITY}, so it
- * wins over every defined scope by the same rule.
+ * The root scope's priority is {@link Scope#ROOT_PRIORITY}, so it wins over every defined scope by the same rule.
  */
 final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
 	private final int priority;
@@ -51,6 +50,10 @@ final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
 		return priority == Scope.ROOT_PRIORITY;
 	}
 
+	int priority() {
+		return priority;
+	}
+
 	int sequence() {
 		return sequence;
 	}
@@ -60,10 +63,13 @@ final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
 	 * {@code other} whose scope node sits {@code otherScopeDepth} deep.
 	 */
 	boolean outranks(int scopeDepth, DirectivePrecedence other, int otherScopeDepth) {
+		if (priority != other.priority) {
+			return priority < other.priority;
+		}
 		if (scopeDepth != otherScopeDepth) {
 			return scopeDepth < otherScopeDepth;
 		}
-		return compareTo(other) > 0;
+		return sequence > other.sequence;
 	}
 
 	/**
@@ -71,10 +77,10 @@ final class DirectivePrecedence implements Comparable<DirectivePrecedence> {
 	 * {@code otherPriority} with its node {@code otherScopeDepth} deep, whatever the order they were declared in.
 	 */
 	boolean scopeOutranks(int scopeDepth, int otherPriority, int otherScopeDepth) {
-		if (scopeDepth != otherScopeDepth) {
-			return scopeDepth < otherScopeDepth;
+		if (priority != otherPriority) {
+			return priority < otherPriority;
 		}
-		return priority < otherPriority;
+		return scopeDepth < otherScopeDepth;
 	}
 
 	/**

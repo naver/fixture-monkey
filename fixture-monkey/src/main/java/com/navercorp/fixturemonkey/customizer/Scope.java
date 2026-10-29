@@ -33,8 +33,9 @@ import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
  * What the sampled builder itself declared is the root scope: it applies at the node a sample starts from and wins
  * over every other scope. Any other scope is a defined scope, whose nodes the user defines: {@code register(...)}
  * declares one, the matcher it is registered with becomes the selector, and what its builder declared becomes the
- * directives and instantiators of the scope. Where defined scopes conflict at the same node, a scope with a lower
- * priority number takes precedence, and otherwise the later declared one.
+ * directives and instantiators of the scope. Where defined scopes conflict, a scope with a lower priority number
+ * takes precedence wherever its node sits, then the one with the outer node (the inner node for a container size),
+ * and otherwise the later declared one.
  */
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public final class Scope {

@@ -20,10 +20,13 @@ package com.navercorp.fixturemonkey.assembly;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +61,9 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
+import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
@@ -203,8 +208,8 @@ public final class ValueProjectionAssembler {
 			ScopeChain chain = state.chainOf(currentPath);
 			if (!hasChildValues
 				&& winner == null
-				&& (state.scopes.definedScopeNotNullDepth(chain) != Integer.MAX_VALUE
-				|| state.scopes.hasDefinedScopeDirectiveBelow(chain, Integer.MAX_VALUE))) {
+				&& (state.scopes.hasDefinedScopeNotNullAt(chain)
+				|| state.scopes.hasDefinedScopeDirectiveBelow(chain, Integer.MAX_VALUE, Scope.ROOT_PRIORITY))) {
 				state.scopes.markNotNullRequired(currentPath);
 				if (isCurrentTypeContainer) {
 					int requiredElementCount = state.scopes.definedScopeRequiredElementCount(chain);
@@ -229,11 +234,15 @@ public final class ValueProjectionAssembler {
 					&& state.scopes.isNotNullRequired(currentPath));
 
 				int outerLimit = winner.isScopeRoot() ? scopeDepth : scopeDepth - 1;
+				int priority = bestCandidate.precedence.priority();
 				boolean outrankedInside = winner.isFromDefinedScope()
 					&& (hasChildValues
-					|| state.scopes.hasDefinedScopeDirectiveBelow(chain, outerLimit)
-					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit)
-					|| state.scopes.hasDefinedScopeCustomizerBelow(chain, outerLimit));
+					|| state.scopes.hasDefinedScopeDirectiveBelow(chain, outerLimit, priority)
+					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit, priority)
+					|| state.scopes.hasDefinedScopeCustomizerBelow(chain, outerLimit, priority)
+					|| state.scopes.hasHigherPriorityDefinedScopeSizeBelow(chain, priority)
+					|| (isCurrentTypeContainer && state.scopes.hasHigherPriorityDefinedScopeSizeAt(chain, priority))
+					|| mayHaveHigherPriorityDefinedScopeBelow(node, priority, state));
 
 				if (!unusable && setValue != null && outrankedInside) {
 					state.candidates.replaceWithDefinedScopeValue(
@@ -242,7 +251,7 @@ public final class ValueProjectionAssembler {
 						scopeDepth
 					);
 					if (isCurrentTypeContainer) {
-						resizeChildrenToValue(node, currentPath, setValue, state);
+						resizeChildrenToValue(node, currentPath, setValue, priority, state);
 					}
 					isValueSet = true;
 				} else if (!hasChildValues) {
@@ -286,7 +295,13 @@ public final class ValueProjectionAssembler {
 					&& isCurrentTypeContainer
 					&& currentCandidate != null
 					&& currentCandidate.value != null) {
-					resizeChildrenToValue(node, currentPath, currentCandidate.value, state);
+					resizeChildrenToValue(
+						node,
+						currentPath,
+						currentCandidate.value,
+						currentCandidate.precedence.priority(),
+						state
+					);
 				}
 				DecomposeResult decomposeResult = state.valueDecomposer.decompose(
 					currentPath,
@@ -1520,12 +1535,41 @@ public final class ValueProjectionAssembler {
 		JvmNode containerNode,
 		PathExpression containerPath,
 		Object containerValue,
+		int valuePriority,
 		AssemblyState state
 	) {
+		if (state.scopes.hasHigherPriorityDefinedScopeSizeAt(state.chainOf(containerPath), valuePriority)) {
+			return;
+		}
 		int valueSize = state.valueDecomposer.containerSize(containerValue);
 		if (valueSize >= 0) {
 			resizeChildren(containerNode, containerPath, valueSize, state);
 		}
+	}
+
+	private static boolean mayHaveHigherPriorityDefinedScopeBelow(JvmNode node, int priority, AssemblyState state) {
+		List<ScopeSelector> scopes = state.scopes.higherPriorityDefinedScopesDeclaringInside(priority);
+		if (scopes.isEmpty() || state.assemblyTree.childrenOf(node).isEmpty()) {
+			return false;
+		}
+		Set<Class<?>> types = typesBelow(node, state);
+		return scopes.stream().anyMatch(scope -> scope.mayAppearAmong(types));
+	}
+
+	private static Set<Class<?>> typesBelow(JvmNode node, AssemblyState state) {
+		Set<Class<?>> types = new HashSet<>();
+		Deque<JvmNode> pending = new ArrayDeque<>(state.assemblyTree.childrenOf(node));
+		Set<JvmNode> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+		while (!pending.isEmpty()) {
+			JvmNode below = pending.pop();
+			if (!visited.add(below)) {
+				continue;
+			}
+			types.add(below.getConcreteType().getRawType());
+			types.add(below.getDeclaredType().getRawType());
+			pending.addAll(state.assemblyTree.childrenOf(below));
+		}
+		return types;
 	}
 
 	private static @Nullable ArbitraryIntrospector introspectorFor(

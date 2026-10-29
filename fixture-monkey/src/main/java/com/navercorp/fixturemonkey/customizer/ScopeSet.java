@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -50,7 +52,8 @@ public final class ScopeSet {
 	 */
 	private final List<Scope> definedScopes;
 	private final Map<Class<?>, InstantiatorProcessResult> globalInstantiators;
-	private final List<Scope> scopesDeclaringAtNodes;
+	// Sorted by priority, so the scopes of the lowest priority number are looked up first
+	private final SortedMap<Integer, List<Scope>> scopesDeclaringAtNodesByPriority;
 	private final Map<Scope, Map<Class<?>, Map<Class<?>, InstantiatorProcessResult>>> scopedInstantiatorsByScope =
 		new IdentityHashMap<>();
 
@@ -82,7 +85,11 @@ public final class ScopeSet {
 		}
 		global.putAll(rootScope.getInstantiators());
 		this.globalInstantiators = Collections.unmodifiableMap(global);
-		this.scopesDeclaringAtNodes = Collections.unmodifiableList(declaringAtNodes);
+		SortedMap<Integer, List<Scope>> byPriority = new TreeMap<>();
+		for (Scope scope : declaringAtNodes) {
+			byPriority.computeIfAbsent(scope.getPriority(), it -> new ArrayList<>()).add(scope);
+		}
+		this.scopesDeclaringAtNodesByPriority = Collections.unmodifiableSortedMap(byPriority);
 	}
 
 	public Scope getRootScope() {
@@ -108,23 +115,25 @@ public final class ScopeSet {
 	 * Returns whether a defined scope declared an instantiator that applies only inside the nodes it selects.
 	 */
 	public boolean hasScopedInstantiators() {
-		return !scopesDeclaringAtNodes.isEmpty();
+		return !scopesDeclaringAtNodesByPriority.isEmpty();
 	}
 
 	/**
 	 * Returns the instantiators an instance of {@code type} builds with when a defined scope selecting a node on its
-	 * chain declared one for it: the outermost scope node wins, and at the same node the scope with the highest
-	 * precedence. The same declaration always gives the same instance.
+	 * chain declared one for it: the scope with the lowest priority number wins, then the one with the outermost
+	 * scope node, then the later declared one. The same declaration always gives the same instance.
 	 *
 	 * @param type  the type of the instance
 	 * @param chain the nodes from the outermost ancestor down to the instance's own node
 	 * @return the declaring scope's instantiators over the global ones, or null when the global instantiators apply
 	 */
 	public @Nullable Map<Class<?>, InstantiatorProcessResult> scopedInstantiatorsAt(Class<?> type, ScopeChain chain) {
-		for (int depth = 0; depth <= chain.depth(); depth++) {
-			for (Scope scope : scopesDeclaringAtNodes) {
-				if (declaresAtNodes(scope, type) && chain.selects(scope.getSelector(), depth)) {
-					return scopedInstantiatorsOf(scope, type);
+		for (List<Scope> samePriority : scopesDeclaringAtNodesByPriority.values()) {
+			for (int depth = 0; depth <= chain.depth(); depth++) {
+				for (Scope scope : samePriority) {
+					if (declaresAtNodes(scope, type) && chain.selects(scope.getSelector(), depth)) {
+						return scopedInstantiatorsOf(scope, type);
+					}
 				}
 			}
 		}
