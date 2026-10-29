@@ -141,62 +141,55 @@ public final class PathResolverContext {
 	}
 
 	/**
-	 * Finds a ContainerSizeResolver that matches the given path.
-	 * When multiple resolvers match the same path, the last one added wins (highest priority).
+	 * Finds the ContainerSizeResolver for the given path: of the resolvers matching it, the one declared latest, then
+	 * the one whose pattern is the path itself over a wildcard pattern, then the one added last.
 	 *
 	 * @param path the path to match
 	 * @return an Optional containing the matching resolver, or empty if none match
 	 */
 	public Optional<ContainerSizeResolver> findContainerSizeResolver(PathExpression path) {
-		ContainerSizeResolver last = null;
-		for (PathResolver<ContainerSizeResolver> r : containerSizeResolvers) {
-			if (r.matches(path)) {
-				last = r.getCustomizer();
-			}
-		}
-		return Optional.ofNullable(last);
+		return findContainerSizePathResolver(path).map(PathResolver::getCustomizer);
 	}
 
 	/**
-	 * Finds a ContainerSizeResolver that exactly matches the given path (no wildcard matching).
-	 * This is used to prioritize explicitly set paths over pattern-based matches.
-	 * When multiple resolvers match the same path, the last one added wins (highest priority).
-	 *
-	 * @param path the path to match exactly
-	 * @return an Optional containing the matching resolver, or empty if none match
-	 */
-	public Optional<ContainerSizeResolver> findExactContainerSizeResolver(PathExpression path) {
-		ContainerSizeResolver last = null;
-		for (PathResolver<ContainerSizeResolver> r : containerSizeResolvers) {
-			if (r instanceof PathContainerSizeResolver) {
-				PathContainerSizeResolver pcsr = (PathContainerSizeResolver)r;
-				if (pcsr.getPattern().equals(path)) {
-					last = pcsr.getCustomizer();
-				}
-			}
-		}
-		return Optional.ofNullable(last);
-	}
-
-	/**
-	 * Finds a ContainerSizeResolver that matches the given path using wildcard patterns.
-	 * This excludes exact matches which should be handled separately.
-	 * When multiple resolvers match the same path, the last one added wins (highest priority).
+	 * Finds the path resolver whose ContainerSizeResolver applies to the given path, chosen as in
+	 * {@link #findContainerSizeResolver(PathExpression)}.
 	 *
 	 * @param path the path to match
-	 * @return an Optional containing the matching resolver, or empty if none match
+	 * @return an Optional containing the matching path resolver, or empty if none match
 	 */
-	public Optional<ContainerSizeResolver> findWildcardContainerSizeResolver(PathExpression path) {
-		ContainerSizeResolver last = null;
-		for (PathResolver<ContainerSizeResolver> r : containerSizeResolvers) {
-			if (r instanceof PathContainerSizeResolver) {
-				PathContainerSizeResolver pcsr = (PathContainerSizeResolver)r;
-				if (!pcsr.getPattern().equals(path) && pcsr.matches(path)) {
-					last = pcsr.getCustomizer();
-				}
+	public Optional<PathResolver<ContainerSizeResolver>> findContainerSizePathResolver(PathExpression path) {
+		PathResolver<ContainerSizeResolver> best = null;
+		for (PathResolver<ContainerSizeResolver> resolver : containerSizeResolvers) {
+			if (resolver.matches(path) && (best == null || !outranksSize(best, resolver, path))) {
+				best = resolver;
 			}
 		}
-		return Optional.ofNullable(last);
+		return Optional.ofNullable(best);
+	}
+
+	private static boolean outranksSize(
+		PathResolver<ContainerSizeResolver> resolver,
+		PathResolver<ContainerSizeResolver> other,
+		PathExpression path
+	) {
+		int sequence = sequenceOf(resolver);
+		int otherSequence = sequenceOf(other);
+		if (sequence != otherSequence) {
+			return sequence > otherSequence;
+		}
+		return isExactFor(resolver, path) && !isExactFor(other, path);
+	}
+
+	private static int sequenceOf(PathResolver<ContainerSizeResolver> resolver) {
+		return resolver instanceof PathContainerSizeResolver
+			? ((PathContainerSizeResolver)resolver).getSequence()
+			: PathContainerSizeResolver.NO_SEQUENCE;
+	}
+
+	private static boolean isExactFor(PathResolver<ContainerSizeResolver> resolver, PathExpression path) {
+		return resolver instanceof PathContainerSizeResolver
+			&& ((PathContainerSizeResolver)resolver).getPattern().equals(path);
 	}
 
 	/**
@@ -338,7 +331,10 @@ public final class PathResolverContext {
 		 * @return this builder
 		 */
 		public Builder addContainerSizeResolver(String pattern, ContainerSizeResolver resolver) {
-			containerSizeResolvers.add(new PathContainerSizeResolver(PathExpression.of(pattern), resolver));
+			PathExpression path = PathExpression.of(pattern);
+			containerSizeResolvers.add(
+				new PathContainerSizeResolver(path, PathContainerSizeResolver.NO_SEQUENCE, resolver)
+			);
 			return this;
 		}
 

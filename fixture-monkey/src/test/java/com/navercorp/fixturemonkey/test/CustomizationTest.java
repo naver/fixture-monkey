@@ -48,6 +48,8 @@ import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
 
+import lombok.Data;
+
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -57,6 +59,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DeepObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceHolder;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceImplementation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringListWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringListWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringPair;
@@ -1462,5 +1465,206 @@ class CustomizationTest {
 		then(values).hasSize(2);
 		then(values.get(0)).isEqualTo("override");
 		then(values.get(1)).isEqualTo("b");
+	}
+
+	@RepeatedTest(10)
+	void wildcardValueDeclaredAfterExactValueWinsAtTheSameElement() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(StringListWrapper.class)
+			.size("values", 2)
+			.set("values[0]", "exact")
+			.set("values[*]", "wildcard")
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("wildcard", "wildcard");
+	}
+
+	@RepeatedTest(10)
+	void exactValueDeclaredAfterWildcardValueWinsOnlyAtItsElement() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(StringListWrapper.class)
+			.size("values", 2)
+			.set("values[*]", "wildcard")
+			.set("values[0]", "exact")
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly("exact", "wildcard");
+	}
+
+	@RepeatedTest(10)
+	void exactElementDeclaredAfterWildcardWinsInsideContainerValue() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 1)
+			.set("values[0].values", Arrays.asList("a", "b"))
+			.set("values[*].values[*]", "wildcard")
+			.set("values[0].values[1]", "exact")
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues();
+
+		// then
+		then(actual).containsExactly("wildcard", "exact");
+	}
+
+	@RepeatedTest(10)
+	void wildcardSizeDeclaredAfterWildcardContainerValueWins() {
+		// when
+		List<StringListWrapper> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 2)
+			.set("values[*].values", Collections.singletonList("a"))
+			.size("values[*].values", 3)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).allSatisfy(it -> {
+			then(it.getValues()).hasSize(3);
+			then(it.getValues().get(0)).isEqualTo("a");
+		});
+	}
+
+	@RepeatedTest(10)
+	void wildcardSizeDeclaredAfterSingletonListUnlocksItsType() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 1)
+			.set("values[0].values", Collections.singletonList("a"))
+			.size("values[*].values", 3)
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues();
+
+		// then
+		then(actual).hasSize(3);
+		then(actual.get(0)).isEqualTo("a");
+	}
+
+	@RepeatedTest(10)
+	void wildcardElementDeclaredAfterSetValueAppliesInsideIt() {
+		// when
+		List<Set<String>> actual = SUT.giveMeBuilder(StringSetList.class)
+			.size("values", 1)
+			.set("values[0]", new HashSet<>(Collections.singletonList("a")))
+			.set("values[*][*]", "wildcard")
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).containsExactly(Collections.singleton("wildcard"));
+	}
+
+	@RepeatedTest(10)
+	void wildcardContainerValueDeclaredAfterExactSizeWinsAtTheSameContainer() {
+		// when
+		List<StringListWrapper> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 2)
+			.size("values[0].values", 3)
+			.set("values[*].values", Collections.singletonList("a"))
+			.sample()
+			.getValues();
+
+		// then
+		then(actual).allSatisfy(it -> then(it.getValues()).containsExactly("a"));
+	}
+
+	@RepeatedTest(10)
+	void exactSizeDeclaredAfterWildcardContainerValueWinsOnlyAtItsContainer() {
+		// when
+		List<StringListWrapper> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 2)
+			.set("values[*].values", Collections.singletonList("a"))
+			.size("values[0].values", 3)
+			.sample()
+			.getValues();
+
+		// then
+		then(actual.get(0).getValues()).hasSize(3);
+		then(actual.get(0).getValues().get(0)).isEqualTo("a");
+		then(actual.get(1).getValues()).containsExactly("a");
+	}
+
+	@RepeatedTest(10)
+	void singletonListDeclaredAfterWildcardSizeKeepsItsElements() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 1)
+			.size("values[*].values", 3)
+			.set("values[0].values", Collections.singletonList("a"))
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues();
+
+		// then
+		then(actual).containsExactly("a");
+	}
+
+	@RepeatedTest(10)
+	void containerValueDeclaredAfterWildcardElementKeepsItsElements() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 1)
+			.set("values[*].values[*]", "wildcard")
+			.set("values[0].values", Arrays.asList("a", "b"))
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues();
+
+		// then
+		then(actual).containsExactly("a", "b");
+	}
+
+	@RepeatedTest(10)
+	void limitedWildcardElementDeclaredAfterContainerValueAppliesUpToItsLimit() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(NestedStringListWrapper.class)
+			.size("values", 1)
+			.set("values[0].values", Arrays.asList("a", "b"))
+			.set("values[*].values[*]", "wildcard", 1)
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues();
+
+		// then
+		then(actual).containsExactly("wildcard", "b");
+	}
+
+	@RepeatedTest(10)
+	void rootWildcardElementAppliesInsideRegisterContainerValue() {
+		// given
+		StringListWrapper element = new StringListWrapper();
+		element.setValues(Arrays.asList("a", "b"));
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.register(
+				NestedStringListWrapper.class,
+				fm -> fm.giveMeBuilder(NestedStringListWrapper.class).set("values", Collections.singletonList(element))
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(NestedStringListWrapper.class)
+			.set("values[*].values[*]", "wildcard")
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues();
+
+		// then
+		then(actual).containsExactly("wildcard", "wildcard");
+	}
+
+	@Data
+	public static class StringSetList {
+		private List<Set<String>> values;
 	}
 }

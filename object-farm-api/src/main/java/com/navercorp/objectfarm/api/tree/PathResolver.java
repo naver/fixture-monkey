@@ -34,6 +34,7 @@ import com.navercorp.objectfarm.api.node.NodeCustomizer;
  * PathResolver&lt;ContainerSizeResolver&gt; resolver =
  *     new PathContainerSizeResolver(
  *         PathExpression.of("$.items[*]"),
+ *         PathContainerSizeResolver.NO_SEQUENCE,
  *         containerType -&gt; 5
  *     );
  *

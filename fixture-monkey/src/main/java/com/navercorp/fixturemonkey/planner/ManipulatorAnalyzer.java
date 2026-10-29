@@ -487,7 +487,18 @@ public final class ManipulatorAnalyzer {
 			return constants != null ? Math.min(fixedSize, constants.length) : fixedSize;
 		};
 
-		return new PathContainerSizeResolver(directive.path(), sizeResolver);
+		return new PathContainerSizeResolver(directive.path(), directive.sequence(), sizeResolver);
+	}
+
+	private static PathResolver<ContainerSizeResolver> declaredAt(
+		PathResolver<ContainerSizeResolver> resolver,
+		int sequence
+	) {
+		if (!(resolver instanceof PathContainerSizeResolver)) {
+			return resolver;
+		}
+		PathContainerSizeResolver pathResolver = (PathContainerSizeResolver)resolver;
+		return new PathContainerSizeResolver(pathResolver.getPattern(), sequence, pathResolver.getCustomizer());
 	}
 
 	private static void analyzeSetDirective(
@@ -552,7 +563,7 @@ public final class ManipulatorAnalyzer {
 				}
 				containerSizeSequenceByPath.put(resolverPath, factorySequence);
 			}
-			containerSizeResolvers.add(csr);
+			containerSizeResolvers.add(declaredAt(csr, factorySequence));
 		}
 
 		// Only add values if they have higher sequence than existing values
@@ -706,7 +717,7 @@ public final class ManipulatorAnalyzer {
 				}
 				containerSizeSequenceByPath.put(resolverPath, factorySequence);
 			}
-			containerSizeResolvers.add(csr);
+			containerSizeResolvers.add(declaredAt(csr, factorySequence));
 		}
 
 		// Only add values if they have higher sequence than existing values

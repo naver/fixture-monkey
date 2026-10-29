@@ -137,7 +137,9 @@ final class ValueDecomposer {
 
 		// For container types, check if all child values are within the container's elements.
 		// If so, return the value directly to preserve the container's size.
-		if (!overriddenInside && allChildValuesWithinContainer(baseValue, currentPath)) {
+		if (!overriddenInside
+			&& allChildValuesWithinContainer(baseValue, currentPath)
+			&& !candidates.hasOutrankingRootWildcardBelow(currentPath, candidate.precedence)) {
 			return DecomposeResult.earlyReturn(baseValue);
 		}
 

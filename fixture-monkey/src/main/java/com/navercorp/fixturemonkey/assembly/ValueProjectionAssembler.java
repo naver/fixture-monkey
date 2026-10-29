@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.assembly;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -314,17 +313,8 @@ public final class ValueProjectionAssembler {
 				);
 				applyDecomposeResult(decomposeResult, state);
 				if (decomposeResult.hasEarlyReturn()) {
-					Object earlyValue = decomposeResult.getEarlyReturnValue();
-
-					// Apply wildcard overrides to container elements when a wildcard has higher order
-					if (isCurrentTypeContainer && earlyValue != null && state.candidates.hasRootWildcards()) {
-						earlyValue = applyWildcardOverridesToContainer(
-							earlyValue, currentPath, parentPrecedence, state
-						);
-					}
-
 					return wrapValueWithFiltersAndCustomizers(
-						earlyValue,
+						decomposeResult.getEarlyReturnValue(),
 						currentPath,
 						currentRawType,
 						state
@@ -450,7 +440,7 @@ public final class ValueProjectionAssembler {
 				nullInject = 0.0;
 			}
 
-			if (nullInject > 0 && state.candidates.matchesRootWildcard(currentPath)) {
+			if (nullInject > 0 && state.candidates.hasCandidateReaching(currentPath)) {
 				nullInject = 0.0;
 			}
 
@@ -543,12 +533,11 @@ public final class ValueProjectionAssembler {
 
 				if (childNullInject > 0) {
 					if (
-						state.candidates.contains(childPath)
+						state.candidates.hasCandidateReaching(childPath)
 							|| state.pathIndex.hasChildPaths(childPath)
 							|| state.scopes.isNotNullRequired(childPath)
 							|| state.scopes.hasCustomizerAt(state.chainOf(childPath), childPath)
 							|| !filtersFor(childPath, state).isEmpty()
-							|| state.candidates.matchesRootWildcard(childPath)
 					) {
 						childNullInject = 0.0;
 					}
@@ -1409,7 +1398,7 @@ public final class ValueProjectionAssembler {
 
 			// A path matched by a wildcard candidate (e.g. $.list[*]) but exhausted by limit
 			// still belongs to the root scope's targeted set; injecting null contradicts the intent.
-			if (nullInject > 0 && state.candidates.matchesRootWildcard(currentPath)) {
+			if (nullInject > 0 && state.candidates.hasCandidateReaching(currentPath)) {
 				nullInject = 0.0;
 			}
 
@@ -1816,66 +1805,6 @@ public final class ValueProjectionAssembler {
 		if (limitPath != null) {
 			state.limits.limitChildren(limitPath, result.getLimitValue());
 		}
-	}
-
-	/**
-	 * Applies wildcard overrides to container elements when a wildcard has a higher order
-	 * than the container's own value. This handles the case where a container value is
-	 * returned via earlyReturn (all decomposed elements match), but a wildcard like
-	 * {@code $.values[*].values[*]} should override individual elements.
-	 */
-	private Object applyWildcardOverridesToContainer(
-		Object container,
-		PathExpression containerPath,
-		DirectivePrecedence containerPrecedence,
-		AssemblyState state
-	) {
-		if (container instanceof List) {
-			List<?> list = (List<?>)container;
-			List<@Nullable Object> result = null;
-			for (int i = 0; i < list.size(); i++) {
-				PathExpression elementPath = containerPath.index(i);
-				for (Map.Entry<PathExpression, ValueCandidate> entry : state.candidates.getRootWildcardEntries()) {
-					if (entry.getKey().matches(elementPath)
-						&& entry.getValue().precedence.compareTo(containerPrecedence) > 0) {
-						if (result == null) {
-							result = new ArrayList<>(list);
-						}
-						result.set(i, LazyResolver.resolveLazyValueWithCache(entry.getValue().value, state));
-						break;
-					}
-				}
-			}
-			return result != null ? result : container;
-		} else if (container.getClass().isArray()) {
-			int length = Array.getLength(container);
-			boolean modified = false;
-			for (int i = 0; i < length; i++) {
-				PathExpression elementPath = containerPath.index(i);
-				for (Map.Entry<PathExpression, ValueCandidate> entry : state.candidates.getRootWildcardEntries()) {
-					if (entry.getKey().matches(elementPath)
-						&& entry.getValue().precedence.compareTo(containerPrecedence) > 0) {
-						if (!modified) {
-							Class<?> componentType = container.getClass().getComponentType();
-							if (componentType == null) {
-								break;
-							}
-							Object copy = Array.newInstance(componentType, length);
-							//noinspection SuspiciousSystemArraycopy
-							System.arraycopy(container, 0, copy, 0, length);
-							container = copy;
-							modified = true;
-						}
-						Object resolved = LazyResolver.resolveLazyValueWithCache(entry.getValue().value, state);
-						if (resolved != null) {
-							Array.set(container, i, resolved);
-						}
-						break;
-					}
-				}
-			}
-		}
-		return container;
 	}
 
 	private CombinableArbitrary<?> traceAndReturnValue(
