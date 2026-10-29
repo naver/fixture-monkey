@@ -535,7 +535,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {
-		ArbitraryBuilderContext context = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
+		ArbitraryBuilderContext context =
+			ArbitraryBuilderContext.newBuilderContext(monkeyContext, activeContext.nextChildScope());
 
 		PathExpression rootPathExpression = PathExpression.root();
 		PathDirective directive =

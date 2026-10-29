@@ -40,7 +40,7 @@ public final class JqwikLongCombinableArbitrary implements LongCombinableArbitra
 
 	@Override
 	public Long combined() {
-		return this.longArbitrary.sample();
+		return ArbitraryUtils.sample(this.longArbitrary);
 	}
 
 	@Override

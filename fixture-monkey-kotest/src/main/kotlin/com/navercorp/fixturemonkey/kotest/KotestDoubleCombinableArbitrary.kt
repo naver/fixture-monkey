@@ -25,7 +25,6 @@ import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.choice
 import io.kotest.property.arbitrary.filter
-import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.math.BigDecimal
@@ -36,9 +35,9 @@ class KotestDoubleCombinableArbitrary(
     private val doubleArb: Arb<Double> = Arb.double()
 ) : DoubleCombinableArbitrary {
 
-    override fun combined(): Double = doubleArb.single()
+    override fun combined(): Double = doubleArb.sampleInScope()
 
-    override fun rawValue(): Double = doubleArb.single()
+    override fun rawValue(): Double = doubleArb.sampleInScope()
 
     override fun withRange(min: Double, max: Double): DoubleCombinableArbitrary {
         return KotestDoubleCombinableArbitrary(Arb.double(min, max))

@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -37,6 +38,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.CustomizerDirective;
@@ -52,6 +54,8 @@ import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.decompose.DecomposedContainerDetector;
 import com.navercorp.fixturemonkey.decompose.PropertyFieldExtractor;
 import com.navercorp.fixturemonkey.tracing.ResolutionTrace;
+import com.navercorp.fixturemonkey.tree.SeedPurpose;
+import com.navercorp.fixturemonkey.tree.SeedScopeKey;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.FieldExtractor;
@@ -61,8 +65,10 @@ import com.navercorp.objectfarm.api.input.ValueAnalyzer;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.tree.PathContainerSizeResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
+import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
  * Analyzes {@link PathDirective} instances to extract topology-affecting information.
@@ -91,14 +97,17 @@ public final class ManipulatorAnalyzer {
 	 * @param nameResolver            per-property name resolver applied to decomposed child paths
 	 * @param inlinedValueResolver    reconstructs value types a JVM language inlined into the
 	 *                                decomposed object's fields
+	 * @param sampleScope             the seed scope of the sample; each lazy value is evaluated in a scope nested in
+	 *                                it by its path, which the builders it creates are nested in too
 	 */
 	public static AnalysisResult analyze(
 		Scope rootScope,
 		@Nullable Function<Property, String> nameResolver,
-		InlinedValueResolver inlinedValueResolver
+		InlinedValueResolver inlinedValueResolver,
+		SeedSnapshot sampleScope
 	) {
 		AnalyzedScope declared = new AnalyzedScope(rootScope);
-		PlanningValueStore values = new PlanningValueStore(nameResolver, inlinedValueResolver);
+		PlanningValueStore values = new PlanningValueStore(nameResolver, inlinedValueResolver, sampleScope);
 		boolean strictMode = false;
 		for (PathDirective directive : rootScope.getDirectives()) {
 			if (!strictMode && directive.strict()) {
@@ -274,13 +283,17 @@ public final class ManipulatorAnalyzer {
 		private final Map<PathExpression, @Nullable Object> valuesByPath = new HashMap<>();
 		private final Map<PathExpression, Integer> valueOrderByPath = new HashMap<>();
 		private final List<ResolutionTrace.NodeCollision> nodeCollisions = new ArrayList<>();
+		private final SeedSnapshot sampleScope;
+		private final Map<PathExpression, Integer> lazyEvaluationsByPath = new HashMap<>();
 
 		private PlanningValueStore(
 			@Nullable Function<Property, String> nameResolver,
-			InlinedValueResolver inlinedValueResolver
+			InlinedValueResolver inlinedValueResolver,
+			SeedSnapshot sampleScope
 		) {
 			this.nameResolver = nameResolver;
 			this.inlinedValueResolver = inlinedValueResolver;
+			this.sampleScope = sampleScope;
 		}
 
 		@Override
@@ -373,6 +386,22 @@ public final class ManipulatorAnalyzer {
 
 		@Override
 		public void lazy(LazyDirective directive) {
+			AssemblyPlanner.<@Nullable Void>evaluateInScope(nextLazyScope(directive.path()), () -> {
+				evaluateLazy(directive);
+				return null;
+			});
+		}
+
+		private SeedSnapshot nextLazyScope(PathExpression path) {
+			Integer evaluated = lazyEvaluationsByPath.get(path);
+			int evaluation = evaluated != null ? evaluated : 0;
+			lazyEvaluationsByPath.put(path, evaluation + 1);
+			return SeedPurpose.VALUE.scopeIn(sampleScope.scopeOf(path))
+				.scope(SeedScopeKey.LAZY.key())
+				.scope(evaluation);
+		}
+
+		private void evaluateLazy(LazyDirective directive) {
 			if (justPaths.contains(directive.path())) {
 				Object value = directive.lazyArbitrary().getValue();
 				if (!(value instanceof Values.Just)
@@ -447,36 +476,53 @@ public final class ManipulatorAnalyzer {
 
 	private static PathResolver<ContainerSizeResolver> buildExplicitSizeResolver(SizeDirective directive) {
 		ArbitraryContainerInfo containerInfo = directive.containerInfo();
-		int fixedSize = containerInfo.getRandomSize();
+		int minSize = containerInfo.getElementMinSize();
+		int maxSize = containerInfo.getElementMaxSize();
 
-		ContainerSizeResolver sizeResolver = containerType -> {
-			if (containerType == null) {
-				return fixedSize;
+		ContainerSizeResolver sizeResolver = new ContainerSizeResolver() {
+			@Override
+			public int resolveContainerSize(JvmType containerType) {
+				return capToEnumConstants(containerType, containerInfo.getRandomSize());
 			}
-			Class<?> rawType = containerType.getRawType();
-			List<? extends com.navercorp.objectfarm.api.type.JvmType> typeVariables = containerType.getTypeVariables();
-			Class<?> enumType = null;
-			if (!typeVariables.isEmpty()) {
-				if (java.util.Set.class.isAssignableFrom(rawType)) {
-					Class<?> elementType = typeVariables.get(0).getRawType();
-					if (elementType.isEnum()) {
-						enumType = elementType;
-					}
-				} else if (Map.class.isAssignableFrom(rawType)) {
-					Class<?> keyType = typeVariables.get(0).getRawType();
-					if (keyType.isEnum()) {
-						enumType = keyType;
-					}
+
+			@Override
+			public int resolveContainerSize(JvmType containerType, SeedSnapshot scope) {
+				if (minSize == maxSize) {
+					return capToEnumConstants(containerType, minSize);
 				}
+				Random random = SeedPurpose.SIZE.randomFor(scope, containerType.hashCode());
+				return capToEnumConstants(containerType, minSize + random.nextInt(maxSize - minSize + 1));
 			}
-			if (enumType == null) {
-				return fixedSize;
-			}
-			Object[] constants = enumType.getEnumConstants();
-			return constants != null ? Math.min(fixedSize, constants.length) : fixedSize;
 		};
 
 		return new PathContainerSizeResolver(directive.path(), sizeResolver);
+	}
+
+	private static int capToEnumConstants(@Nullable JvmType containerType, int size) {
+		if (containerType == null) {
+			return size;
+		}
+		Class<?> rawType = containerType.getRawType();
+		List<? extends JvmType> typeVariables = containerType.getTypeVariables();
+		Class<?> enumType = null;
+		if (!typeVariables.isEmpty()) {
+			if (java.util.Set.class.isAssignableFrom(rawType)) {
+				Class<?> elementType = typeVariables.get(0).getRawType();
+				if (elementType.isEnum()) {
+					enumType = elementType;
+				}
+			} else if (Map.class.isAssignableFrom(rawType)) {
+				Class<?> keyType = typeVariables.get(0).getRawType();
+				if (keyType.isEnum()) {
+					enumType = keyType;
+				}
+			}
+		}
+		if (enumType == null) {
+			return size;
+		}
+		Object[] constants = enumType.getEnumConstants();
+		return constants != null ? Math.min(size, constants.length) : size;
 	}
 
 	private static void analyzeSetDirective(
@@ -622,7 +668,7 @@ public final class ManipulatorAnalyzer {
 
 		// Unwrap Arbitrary - sample it to get the actual value
 		if (value instanceof Arbitrary) {
-			value = ((Arbitrary<?>)value).sample();
+			value = ArbitraryUtils.sample((Arbitrary<?>)value);
 			if (value == null) {
 				recordCollisionIfExists(
 					pathExpression,
