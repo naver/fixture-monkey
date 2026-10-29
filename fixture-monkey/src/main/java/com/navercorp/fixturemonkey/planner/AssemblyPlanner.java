@@ -173,10 +173,7 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 		);
 		this.treeCache = new TreeContextCache(new JvmNodeCandidateTreeContext(), nodeContextFactory);
 		this.abstractTypeResolver = new AbstractTypeResolver(seedState);
-		this.pathResolverContextFactory = new PathResolverContextFactory(
-			containerSizeResolverFactory,
-			CONTAINER_DETECTOR
-		);
+		this.pathResolverContextFactory = new PathResolverContextFactory(containerSizeResolverFactory);
 	}
 
 	public AssemblyPlan plan(

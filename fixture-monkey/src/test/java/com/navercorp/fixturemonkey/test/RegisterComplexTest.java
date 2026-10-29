@@ -2172,7 +2172,7 @@ class RegisterComplexTest {
 	}
 
 	@Test
-	void typeBasedRegisterSizeOverridesWildcardSize() {
+	void rootWildcardSizeOverridesTypeBasedRegisterSize() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -2190,8 +2190,8 @@ class RegisterComplexTest {
 
 		// then
 		then(actual.getValues()).hasSize(2);
-		then(actual.getValues().get(0).getValues()).hasSize(4);
-		then(actual.getValues().get(1).getValues()).hasSize(4);
+		then(actual.getValues().get(0).getValues()).hasSize(2);
+		then(actual.getValues().get(1).getValues()).hasSize(2);
 	}
 
 	@Test

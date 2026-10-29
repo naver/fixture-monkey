@@ -20,11 +20,9 @@ package com.navercorp.fixturemonkey.planner;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -35,7 +33,6 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.tree.ContainerSizeResolverFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
-import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
@@ -54,14 +51,9 @@ import com.navercorp.objectfarm.api.tree.ResolutionListener;
 @API(since = "1.2.0", status = Status.EXPERIMENTAL)
 final class PathResolverContextFactory {
 	private final ContainerSizeResolverFactory containerSizeResolverFactory;
-	private final ContainerDetector containerDetector;
 
-	public PathResolverContextFactory(
-		ContainerSizeResolverFactory containerSizeResolverFactory,
-		ContainerDetector containerDetector
-	) {
+	public PathResolverContextFactory(ContainerSizeResolverFactory containerSizeResolverFactory) {
 		this.containerSizeResolverFactory = containerSizeResolverFactory;
-		this.containerDetector = containerDetector;
 	}
 
 	/**
@@ -121,15 +113,7 @@ final class PathResolverContextFactory {
 	) {
 		List<Map.Entry<AnalyzedScope, Map<PathExpression, ArbitraryContainerInfo>>> sizes = new ArrayList<>();
 		for (AnalyzedScope directives : analyzedDefinedScopes) {
-			Map<PathExpression, ArbitraryContainerInfo> containerSizes =
-				new HashMap<>(directives.getContainerSizesByPath());
-			for (Map.Entry<PathExpression, @Nullable Object> valueEntry : directives.getValuesByPath().entrySet()) {
-				OptionalInt containerSize = containerDetector.getContainerSize(valueEntry.getValue());
-				if (containerSize.isPresent()) {
-					int size = containerSize.getAsInt();
-					containerSizes.putIfAbsent(valueEntry.getKey(), new ArbitraryContainerInfo(size, size));
-				}
-			}
+			Map<PathExpression, ArbitraryContainerInfo> containerSizes = directives.getContainerSizesByPath();
 			if (!containerSizes.isEmpty()) {
 				sizes.add(new AbstractMap.SimpleImmutableEntry<>(directives, containerSizes));
 			}
@@ -193,10 +177,7 @@ final class PathResolverContextFactory {
 			);
 			resolversByScope.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), resolversByField));
 		}
-		builder.preWildcardContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope, false));
-		builder.postWildcardContainerSizeResolver(
-			new DefinedScopeContainerSizeResolver(resolversByScope, true)
-		);
+		builder.ancestorAwareContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope));
 	}
 
 	private static @Nullable PathExpression extractResolverPath(PathResolver<ContainerSizeResolver> resolver) {

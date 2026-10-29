@@ -45,6 +45,11 @@ public final class Scope {
 	 */
 	public static final int ROOT_PRIORITY = Integer.MIN_VALUE;
 
+	/**
+	 * The depth of the root scope's node: the node a sample starts from, with no segment leading to it.
+	 */
+	public static final int ROOT_DEPTH = 0;
+
 	private final ScopeSelector selector;
 	private final int priority;
 	private final List<PathDirective> directives;

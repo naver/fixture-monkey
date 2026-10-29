@@ -2,6 +2,8 @@ package com.navercorp.fixturemonkey.assembly;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
+
 /**
  * Unified value metadata for a single path in the assembly state.
  * <p>

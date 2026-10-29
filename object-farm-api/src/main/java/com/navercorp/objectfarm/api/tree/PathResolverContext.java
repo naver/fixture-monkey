@@ -79,7 +79,6 @@ public final class PathResolverContext {
 		ResolutionListener.noOp(),
 		null,
 		null,
-		null,
 		null
 	);
 
@@ -103,9 +102,7 @@ public final class PathResolverContext {
 
 	private final @Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver;
 
-	private final @Nullable AncestorAwareResolver<ContainerSizeResolver> preWildcardContainerSizeResolver;
-
-	private final @Nullable AncestorAwareResolver<ContainerSizeResolver> postWildcardContainerSizeResolver;
+	private final @Nullable AncestorAwareResolver<ContainerSizeResolver> ancestorAwareContainerSizeResolver;
 
 	private PathResolverContext(
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
@@ -114,8 +111,7 @@ public final class PathResolverContext {
 		ResolutionListener resolutionListener,
 		@Nullable ContainerSizeResolver defaultContainerSizeResolver,
 		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver,
-		@Nullable AncestorAwareResolver<ContainerSizeResolver> preWildcardContainerSizeResolver,
-		@Nullable AncestorAwareResolver<ContainerSizeResolver> postWildcardContainerSizeResolver
+		@Nullable AncestorAwareResolver<ContainerSizeResolver> ancestorAwareContainerSizeResolver
 	) {
 		this.containerSizeResolvers = containerSizeResolvers;
 		this.interfaceResolvers = interfaceResolvers;
@@ -123,8 +119,7 @@ public final class PathResolverContext {
 		this.resolutionListener = resolutionListener;
 		this.defaultContainerSizeResolver = defaultContainerSizeResolver;
 		this.ancestorAwareChildCandidateResolver = ancestorAwareChildCandidateResolver;
-		this.preWildcardContainerSizeResolver = preWildcardContainerSizeResolver;
-		this.postWildcardContainerSizeResolver = postWildcardContainerSizeResolver;
+		this.ancestorAwareContainerSizeResolver = ancestorAwareContainerSizeResolver;
 	}
 
 	/**
@@ -251,24 +246,6 @@ public final class PathResolverContext {
 	}
 
 	/**
-	 * Finds the size resolver for a container node chosen from its ancestors, consulted before the path wildcard
-	 * resolvers.
-	 *
-	 * @param containerNode the container node
-	 * @param ancestors     its ancestor nodes, outermost first
-	 * @return the size resolver, or empty when no ancestor-aware resolver sizes the container
-	 */
-	public Optional<ContainerSizeResolver> findPreWildcardContainerSizeResolver(
-		JvmNode containerNode,
-		List<JvmNode> ancestors
-	) {
-		if (preWildcardContainerSizeResolver == null) {
-			return Optional.empty();
-		}
-		return Optional.ofNullable(preWildcardContainerSizeResolver.resolve(containerNode, ancestors));
-	}
-
-	/**
 	 * Finds the size resolver for a container node chosen from its ancestors, consulted after the path wildcard
 	 * resolvers: it sizes a container only when no path resolver does.
 	 *
@@ -276,20 +253,19 @@ public final class PathResolverContext {
 	 * @param ancestors     its ancestor nodes, outermost first
 	 * @return the size resolver, or empty when no ancestor-aware resolver sizes the container
 	 */
-	public Optional<ContainerSizeResolver> findPostWildcardContainerSizeResolver(
+	public Optional<ContainerSizeResolver> findAncestorAwareContainerSizeResolver(
 		JvmNode containerNode,
 		List<JvmNode> ancestors
 	) {
-		if (postWildcardContainerSizeResolver == null) {
+		if (ancestorAwareContainerSizeResolver == null) {
 			return Optional.empty();
 		}
-		return Optional.ofNullable(postWildcardContainerSizeResolver.resolve(containerNode, ancestors));
+		return Optional.ofNullable(ancestorAwareContainerSizeResolver.resolve(containerNode, ancestors));
 	}
 
 	public boolean hasAncestorAwareResolvers() {
 		return ancestorAwareChildCandidateResolver != null
-			|| preWildcardContainerSizeResolver != null
-			|| postWildcardContainerSizeResolver != null;
+			|| ancestorAwareContainerSizeResolver != null;
 	}
 
 	/**
@@ -323,10 +299,8 @@ public final class PathResolverContext {
 		return !interfaceResolvers.isEmpty()
 			|| !genericTypeResolvers.isEmpty()
 			|| (ancestorAwareChildCandidateResolver != null && ancestorAwareChildCandidateResolver.dependsOnAncestors())
-			|| (preWildcardContainerSizeResolver != null
-			&& preWildcardContainerSizeResolver.dependsOnAncestors())
-			|| (postWildcardContainerSizeResolver != null
-			&& postWildcardContainerSizeResolver.dependsOnAncestors());
+			|| (ancestorAwareContainerSizeResolver != null
+			&& ancestorAwareContainerSizeResolver.dependsOnAncestors());
 	}
 
 	/**
@@ -340,8 +314,7 @@ public final class PathResolverContext {
 		private ResolutionListener resolutionListener = ResolutionListener.noOp();
 		private ContainerSizeResolver defaultContainerSizeResolver;
 		private AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver;
-		private AncestorAwareResolver<ContainerSizeResolver> preWildcardContainerSizeResolver;
-		private AncestorAwareResolver<ContainerSizeResolver> postWildcardContainerSizeResolver;
+		private AncestorAwareResolver<ContainerSizeResolver> ancestorAwareContainerSizeResolver;
 
 		private Builder() {
 		}
@@ -462,28 +435,16 @@ public final class PathResolverContext {
 		}
 
 		/**
-		 * Sets the resolver that sizes a container node from its ancestors, consulted before the path wildcard
-		 * resolvers.
-		 *
-		 * @param resolver the resolver (null to size containers without looking at their ancestors)
-		 * @return this builder
-		 */
-		public Builder preWildcardContainerSizeResolver(AncestorAwareResolver<ContainerSizeResolver> resolver) {
-			this.preWildcardContainerSizeResolver = resolver;
-			return this;
-		}
-
-		/**
 		 * Sets the resolver that sizes a container node from its ancestors when no path resolver, exact or
 		 * wildcard, sizes it.
 		 *
 		 * @param resolver the resolver (null for none)
 		 * @return this builder
 		 */
-		public Builder postWildcardContainerSizeResolver(
+		public Builder ancestorAwareContainerSizeResolver(
 			AncestorAwareResolver<ContainerSizeResolver> resolver
 		) {
-			this.postWildcardContainerSizeResolver = resolver;
+			this.ancestorAwareContainerSizeResolver = resolver;
 			return this;
 		}
 
@@ -500,8 +461,7 @@ public final class PathResolverContext {
 				&& resolutionListener == ResolutionListener.noOp()
 				&& defaultContainerSizeResolver == null
 				&& ancestorAwareChildCandidateResolver == null
-				&& preWildcardContainerSizeResolver == null
-				&& postWildcardContainerSizeResolver == null) {
+				&& ancestorAwareContainerSizeResolver == null) {
 				return EMPTY;
 			}
 			return new PathResolverContext(
@@ -511,8 +471,7 @@ public final class PathResolverContext {
 				resolutionListener,
 				defaultContainerSizeResolver,
 				ancestorAwareChildCandidateResolver,
-				preWildcardContainerSizeResolver,
-				postWildcardContainerSizeResolver
+				ancestorAwareContainerSizeResolver
 			);
 		}
 	}

@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 
 /**
