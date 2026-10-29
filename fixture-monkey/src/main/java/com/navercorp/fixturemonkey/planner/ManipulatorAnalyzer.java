@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -168,7 +169,7 @@ public final class ManipulatorAnalyzer {
 				declared.unmarkNotNull(path);
 			} else {
 				values.clearNull(path);
-				declared.markNotNull(path);
+				declared.markNotNull(path, directive.sequence());
 			}
 		} else if (directive instanceof LazyDirective) {
 			declared.overrideCustomizersAt(path);
@@ -225,17 +226,26 @@ public final class ManipulatorAnalyzer {
 
 		@Override
 		public void set(SetDirective directive) {
-			declared.putValue(directive.path(), directive.value());
+			PathExpression path = directive.path();
+			declared.putValue(path, directive.sequence(), directive.value());
+			ContainerDetector containerDetector =
+				new DecomposedContainerDetector(directive.decomposedContainerValueFactory());
+			OptionalInt containerSize = containerDetector.getContainerSize(directive.value());
+			if (containerSize.isPresent()) {
+				int size = containerSize.getAsInt();
+				declared.putValueContainerSize(path, directive.sequence(), new ArbitraryContainerInfo(size, size));
+			}
 		}
 
 		@Override
 		public void just(JustDirective directive) {
-			declared.putValue(directive.path(), directive.value());
+			declared.putValue(directive.path(), directive.sequence(), directive.value());
+			declared.markJust(directive.path());
 		}
 
 		@Override
 		public void setNull(NullityDirective directive) {
-			declared.putValue(directive.path(), null);
+			declared.putValue(directive.path(), directive.sequence(), null);
 		}
 
 		@Override
@@ -251,13 +261,14 @@ public final class ManipulatorAnalyzer {
 			}
 			declared.putValue(
 				directive.path(),
+				directive.sequence(),
 				new LazyValueHolder(directive.lazyArbitrary(), declared.getSelector(), rootLevel)
 			);
 		}
 
 		@Override
 		public void size(SizeDirective directive) {
-			declared.putContainerSize(directive.path(), directive.containerInfo());
+			declared.putContainerSize(directive.path(), directive.sequence(), directive.containerInfo());
 		}
 
 	}
@@ -476,7 +487,18 @@ public final class ManipulatorAnalyzer {
 			return constants != null ? Math.min(fixedSize, constants.length) : fixedSize;
 		};
 
-		return new PathContainerSizeResolver(directive.path(), sizeResolver);
+		return new PathContainerSizeResolver(directive.path(), directive.sequence(), sizeResolver);
+	}
+
+	private static PathResolver<ContainerSizeResolver> declaredAt(
+		PathResolver<ContainerSizeResolver> resolver,
+		int sequence
+	) {
+		if (!(resolver instanceof PathContainerSizeResolver)) {
+			return resolver;
+		}
+		PathContainerSizeResolver pathResolver = (PathContainerSizeResolver)resolver;
+		return new PathContainerSizeResolver(pathResolver.getPattern(), sequence, pathResolver.getCustomizer());
 	}
 
 	private static void analyzeSetDirective(
@@ -541,7 +563,7 @@ public final class ManipulatorAnalyzer {
 				}
 				containerSizeSequenceByPath.put(resolverPath, factorySequence);
 			}
-			containerSizeResolvers.add(csr);
+			containerSizeResolvers.add(declaredAt(csr, factorySequence));
 		}
 
 		// Only add values if they have higher sequence than existing values
@@ -695,7 +717,7 @@ public final class ManipulatorAnalyzer {
 				}
 				containerSizeSequenceByPath.put(resolverPath, factorySequence);
 			}
-			containerSizeResolvers.add(csr);
+			containerSizeResolvers.add(declaredAt(csr, factorySequence));
 		}
 
 		// Only add values if they have higher sequence than existing values

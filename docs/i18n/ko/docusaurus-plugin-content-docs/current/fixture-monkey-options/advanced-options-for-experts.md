@@ -199,6 +199,47 @@ fixtureMonkey.registerAssignableType(
 
 참고: 동일한 타입에 `registerExactType`과 `registerAssignableType`을 모두 적용한 경우, 마지막에 추가된 설정이 우선 적용됩니다.
 
+### 등록한 빌더가 겹칠 때
+
+바깥 타입에 등록한 빌더가 안쪽 타입의 프로퍼티를 설정하는데 그 안쪽 타입에도 등록한 빌더가 있거나, 같은 노드에 빌더를 여러 개 등록하면 빌더가 겹칩니다. 프로퍼티마다 따로 아래 순서로 정해집니다.
+
+1. 샘플링하는 빌더에 직접 선언한 것은 등록한 어떤 빌더보다도 우선합니다.
+2. priority 숫자가 작은 빌더가 등록된 노드의 위치와 관계없이 우선합니다. priority 없이 호출한 `register(...)`는 가장 낮은 우선순위(`Integer.MAX_VALUE`)입니다.
+3. priority가 같으면 바깥 노드에 등록한 빌더가 우선합니다. 단, 컨테이너 크기는 안쪽 노드에 등록한 빌더가 우선합니다.
+4. priority와 노드가 모두 같으면 마지막에 등록한 빌더가 우선합니다.
+
+한 빌더만 설정한 프로퍼티는 그 빌더의 값이 유지됩니다.
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .register(Customer.class, fm -> fm.giveMeBuilder(Customer.class)
+        .set("order.name", "from-customer"))
+    .register(Order.class, fm -> fm.giveMeBuilder(Order.class)
+        .set("name", "from-order")
+        .set("memo", "memo"))
+    .build();
+
+Order order = fixtureMonkey.giveMeOne(Customer.class).getOrder();
+// order.name은 "from-customer": priority가 같고 Customer가 바깥 노드
+// order.memo는 "memo": Order 빌더만 설정
+```
+
+안쪽 빌더가 우선하게 하려면 더 작은 priority 숫자를 지정합니다.
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .register(Customer.class, fm -> fm.giveMeBuilder(Customer.class)
+        .set("order.name", "from-customer"), 2)
+    .register(Order.class, fm -> fm.giveMeBuilder(Order.class)
+        .set("name", "from-order"), 1)
+    .build();
+
+Order order = fixtureMonkey.giveMeOne(Customer.class).getOrder();
+// order.name은 "from-order": priority 1이 priority 2보다 우선
+```
+
+바깥 빌더가 `set("$", value)`나 `thenApply`로 객체 전체를 설정해도 마찬가지로, 그 안에서 priority 숫자가 더 작은 등록 빌더가 설정한 프로퍼티와 컨테이너 크기가 우선합니다. 그 크기만큼 객체에 없는 원소는 새로 생성됩니다.
+
 ## 프로퍼티 커스터마이징
 
 ### Matcher 기반 프로퍼티 생성기 추가하기

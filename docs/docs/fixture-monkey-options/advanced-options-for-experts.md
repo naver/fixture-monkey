@@ -176,6 +176,47 @@ fixtureMonkey.registerAssignableType(
 
 Note: When both `registerExactType` and `registerAssignableType` are applied to the same type, the option added last takes precedence.
 
+### When Registered Builders Overlap
+
+Registered builders overlap when one is registered for an outer type and sets a property of an inner type that has its own registered builder, or when several are registered for the same node. Each property is decided on its own, in this order:
+
+1. What the sampled builder itself declares always wins over every registered builder.
+2. The registered builder with the lower priority number wins, wherever the node it is registered for sits. `register(...)` without a priority has the lowest priority (`Integer.MAX_VALUE`).
+3. Among the same priority, the builder registered for the outer node wins. Container sizes are the exception: the builder registered for the inner node wins.
+4. Among the same priority and the same node, the builder registered last wins.
+
+A property only one of the builders sets keeps that builder's value.
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .register(Customer.class, fm -> fm.giveMeBuilder(Customer.class)
+        .set("order.name", "from-customer"))
+    .register(Order.class, fm -> fm.giveMeBuilder(Order.class)
+        .set("name", "from-order")
+        .set("memo", "memo"))
+    .build();
+
+Order order = fixtureMonkey.giveMeOne(Customer.class).getOrder();
+// order.name is "from-customer": the same priority, and Customer is the outer node
+// order.memo is "memo": only the Order builder sets it
+```
+
+To let the inner builder win, give it a lower priority number:
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .register(Customer.class, fm -> fm.giveMeBuilder(Customer.class)
+        .set("order.name", "from-customer"), 2)
+    .register(Order.class, fm -> fm.giveMeBuilder(Order.class)
+        .set("name", "from-order"), 1)
+    .build();
+
+Order order = fixtureMonkey.giveMeOne(Customer.class).getOrder();
+// order.name is "from-order": priority 1 wins over priority 2
+```
+
+The same applies when the outer builder sets the whole object, such as with `set("$", value)` or `thenApply`: a property or a container size set by a registered builder of a lower priority number still wins inside it. Elements the whole object lacks for that size are generated.
+
 ### Default Arbitrary Generator
 
 **When to use**: When you want to customize how default values are generated across all types, such as ensuring uniqueness or applying custom formatting.

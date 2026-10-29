@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
@@ -34,38 +35,36 @@ import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 
 /**
  * Sizes a container a defined scope reaches: the path from a node the scope selects down to the container matches
- * the path the size was declared at. Unlike values, an inner scope wins over an outer one; at the same node the
- * scope with the highest precedence wins.
+ * the path the size was declared at, and the size of the highest {@link DirectivePrecedence} wins.
  * <p>
- * One instance looks at the scope nodes below the node a sample starts from, the other only at that node. The root
- * scope sits at that node too and wins there, so a defined scope selecting it sizes a container only when no size
- * the root scope declared does.
+ * It is looked up after every size the root scope declared, so a container is sized here only when the root scope
+ * declared no size reaching it.
  */
 final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<ContainerSizeResolver> {
-	private final List<ScopedSize> highestPrecedenceFirst;
-	private final int[] pathLengthsShortestFirst;
+	private final List<ScopedSize> scopedSizes;
 	private final boolean dependsOnAncestors;
-	private final boolean atSampleRoot;
 
 	DefinedScopeContainerSizeResolver(
-		List<Map.Entry<ScopeSelector, Map<PathExpression, ContainerSizeResolver>>> resolversLowestPrecedenceFirst,
-		boolean atSampleRoot
+		List<Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>>> resolversLowestPrecedenceFirst
 	) {
-		this.atSampleRoot = atSampleRoot;
-		this.highestPrecedenceFirst = new ArrayList<>();
-		for (Map.Entry<ScopeSelector, Map<PathExpression, ContainerSizeResolver>> entry
+		this.scopedSizes = new ArrayList<>();
+		int sequenceBase = 0;
+		for (Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>> entry
 			: resolversLowestPrecedenceFirst) {
-			entry.getValue().forEach((path, resolver) ->
-				highestPrecedenceFirst.add(0, new ScopedSize(entry.getKey(), path, resolver))
-			);
+			AnalyzedScope scope = entry.getKey();
+			for (Map.Entry<PathExpression, ContainerSizeResolver> size : entry.getValue().entrySet()) {
+				PathExpression path = size.getKey();
+				int sequence = sequenceBase + 1 + scope.getContainerSizeSequence(path);
+				scopedSizes.add(new ScopedSize(
+					scope.getSelector(),
+					DirectivePrecedence.definedScope(scope.getPriority(), sequence),
+					path,
+					size.getValue()
+				));
+			}
+			sequenceBase += 2 + scope.getLatestSequence();
 		}
-		this.pathLengthsShortestFirst = highestPrecedenceFirst
-			.stream()
-			.mapToInt(it -> it.path.getSegments().size())
-			.distinct()
-			.sorted()
-			.toArray();
-		this.dependsOnAncestors = highestPrecedenceFirst
+		this.dependsOnAncestors = scopedSizes
 			.stream()
 			.anyMatch(it -> it.scope.dependsOnAncestors() || it.path.getSegments().size() > 1);
 	}
@@ -75,18 +74,22 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 		List<JvmNode> nodes = new ArrayList<>(ancestors);
 		nodes.add(containerNode);
 		ScopeChain chain = ScopeChain.ofNodes(nodes, JvmNodePropertyFactory.ofChain(nodes));
-		for (int pathLength : pathLengthsShortestFirst) {
-			int scopeDepth = chain.depth() - pathLength;
-			if (atSampleRoot ? scopeDepth != 0 : scopeDepth < 1) {
+		ScopedSize best = null;
+		int bestDepth = -1;
+		for (ScopedSize scopedSize : scopedSizes) {
+			int scopeDepth = chain.depth() - scopedSize.path.getSegments().size();
+			if (scopeDepth < 0) {
 				continue;
 			}
-			for (ScopedSize scopedSize : highestPrecedenceFirst) {
-				if (chain.matchesBelow(scopeDepth, scopedSize.path) && chain.selects(scopedSize.scope, scopeDepth)) {
-					return scopedSize.resolver;
-				}
+			if (best != null && !scopedSize.precedence.outranksSize(scopeDepth, best.precedence, bestDepth)) {
+				continue;
+			}
+			if (chain.matchesBelow(scopeDepth, scopedSize.path) && chain.selects(scopedSize.scope, scopeDepth)) {
+				best = scopedSize;
+				bestDepth = scopeDepth;
 			}
 		}
-		return null;
+		return best != null ? best.resolver : null;
 	}
 
 	@Override
@@ -96,11 +99,18 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 
 	private static final class ScopedSize {
 		private final ScopeSelector scope;
+		private final DirectivePrecedence precedence;
 		private final PathExpression path;
 		private final ContainerSizeResolver resolver;
 
-		private ScopedSize(ScopeSelector scope, PathExpression path, ContainerSizeResolver resolver) {
+		private ScopedSize(
+			ScopeSelector scope,
+			DirectivePrecedence precedence,
+			PathExpression path,
+			ContainerSizeResolver resolver
+		) {
 			this.scope = scope;
+			this.precedence = precedence;
 			this.path = path;
 			this.resolver = resolver;
 		}

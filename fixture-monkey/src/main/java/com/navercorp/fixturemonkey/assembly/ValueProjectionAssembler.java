@@ -18,14 +18,16 @@
 
 package com.navercorp.fixturemonkey.assembly;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,9 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
+import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
@@ -71,6 +75,7 @@ import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JvmMapEntryNode;
 import com.navercorp.objectfarm.api.node.JvmMapNode;
@@ -88,6 +93,8 @@ import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
  */
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public final class ValueProjectionAssembler {
+	private static final ContainerDetector RESIZABLE_CONTAINER_DETECTOR = ContainerDetector.standard();
+
 	private final AssembleContext context;
 
 	private ValueProjectionAssembler(AssembleContext context) {
@@ -208,13 +215,9 @@ public final class ValueProjectionAssembler {
 			ScopeChain chain = state.chainOf(currentPath);
 			if (!hasChildValues
 				&& winner == null
-				&& (state.scopes.definedScopeNotNullDepth(chain) != Integer.MAX_VALUE
-				|| state.scopes.hasDefinedScopeDirectiveBelow(chain, Integer.MAX_VALUE))) {
+				&& (state.scopes.hasDefinedScopeNotNullAt(chain)
+				|| state.scopes.hasDefinedScopeDirectiveBelow(chain))) {
 				state.scopes.markNotNullRequired(currentPath);
-				if (isCurrentTypeContainer) {
-					int requiredElementCount = state.scopes.definedScopeRequiredElementCount(chain);
-					growChildrenTo(node, currentPath, requiredElementCount, state);
-				}
 			}
 			if (winner != null && (!hasChildValues || winner.isFromDefinedScope())) {
 				ValueCandidate bestCandidate = winner.candidate;
@@ -234,11 +237,17 @@ public final class ValueProjectionAssembler {
 					&& state.scopes.isNotNullRequired(currentPath));
 
 				int outerLimit = winner.isScopeRoot() ? scopeDepth : scopeDepth - 1;
+				int priority = bestCandidate.precedence.priority();
+				boolean usedAsIs = state.scopes.isDefinedScopeJust(winner.declaredPath);
 				boolean outrankedInside = winner.isFromDefinedScope()
 					&& (hasChildValues
-					|| state.scopes.hasDefinedScopeDirectiveBelow(chain, outerLimit)
-					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit)
-					|| state.scopes.hasDefinedScopeCustomizerBelow(chain, outerLimit));
+					|| !usedAsIs
+					&& (state.scopes.hasOutrankingDirectiveBelow(chain, bestCandidate.precedence, scopeDepth)
+					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit, priority)
+					|| (isCurrentTypeContainer
+					&& RESIZABLE_CONTAINER_DETECTOR.isContainer(setValue)
+					&& state.scopes.hasOutrankingSizeAt(chain, bestCandidate.precedence, scopeDepth))
+					|| mayHaveHigherPriorityDefinedScopeBelow(node, priority, state)));
 
 				if (!unusable && setValue != null && outrankedInside) {
 					state.candidates.replaceWithDefinedScopeValue(
@@ -247,7 +256,7 @@ public final class ValueProjectionAssembler {
 						scopeDepth
 					);
 					if (isCurrentTypeContainer) {
-						resizeChildrenToValue(node, currentPath, setValue, state);
+						resizeChildrenToValue(node, currentPath, setValue, bestCandidate.precedence, scopeDepth, state);
 					}
 					isValueSet = true;
 				} else if (!hasChildValues) {
@@ -294,7 +303,14 @@ public final class ValueProjectionAssembler {
 					&& isCurrentTypeContainer
 					&& currentCandidate != null
 					&& currentCandidate.value != null) {
-					resizeChildrenToValue(node, currentPath, currentCandidate.value, state);
+					resizeChildrenToValue(
+						node,
+						currentPath,
+						currentCandidate.value,
+						currentCandidate.precedence,
+						state.candidates.decomposedScopeDepthAt(currentPath),
+						state
+					);
 				}
 				DecomposeResult decomposeResult = state.valueDecomposer.decompose(
 					currentPath,
@@ -309,13 +325,6 @@ public final class ValueProjectionAssembler {
 					Constructor<?> copyConstructor = collectionCopyConstructor(
 						earlyValue, currentRawType, node.getDeclaredType().getRawType()
 					);
-
-					// Apply wildcard overrides to container elements when a wildcard has higher order
-					if (isCurrentTypeContainer && earlyValue != null && state.candidates.hasRootWildcards()) {
-						earlyValue = applyWildcardOverridesToContainer(
-							earlyValue, currentPath, parentPrecedence, state
-						);
-					}
 
 					return wrapValueWithFiltersAndCustomizers(
 						copyCollectionForSample(earlyValue, copyConstructor),
@@ -444,7 +453,7 @@ public final class ValueProjectionAssembler {
 				nullInject = 0.0;
 			}
 
-			if (nullInject > 0 && state.candidates.matchesRootWildcard(currentPath)) {
+			if (nullInject > 0 && state.candidates.hasCandidateReaching(currentPath)) {
 				nullInject = 0.0;
 			}
 
@@ -537,12 +546,11 @@ public final class ValueProjectionAssembler {
 
 				if (childNullInject > 0) {
 					if (
-						state.candidates.contains(childPath)
+						state.candidates.hasCandidateReaching(childPath)
 							|| state.pathIndex.hasChildPaths(childPath)
 							|| state.scopes.isNotNullRequired(childPath)
 							|| state.scopes.hasCustomizerAt(state.chainOf(childPath), childPath)
 							|| !filtersFor(childPath, state).isEmpty()
-							|| state.candidates.matchesRootWildcard(childPath)
 					) {
 						childNullInject = 0.0;
 					}
@@ -1403,7 +1411,7 @@ public final class ValueProjectionAssembler {
 
 			// A path matched by a wildcard candidate (e.g. $.list[*]) but exhausted by limit
 			// still belongs to the root scope's targeted set; injecting null contradicts the intent.
-			if (nullInject > 0 && state.candidates.matchesRootWildcard(currentPath)) {
+			if (nullInject > 0 && state.candidates.hasCandidateReaching(currentPath)) {
 				nullInject = 0.0;
 			}
 
@@ -1531,12 +1539,42 @@ public final class ValueProjectionAssembler {
 		JvmNode containerNode,
 		PathExpression containerPath,
 		Object containerValue,
+		DirectivePrecedence valuePrecedence,
+		int valueScopeDepth,
 		AssemblyState state
 	) {
+		if (state.scopes.hasOutrankingSizeAt(state.chainOf(containerPath), valuePrecedence, valueScopeDepth)) {
+			return;
+		}
 		int valueSize = state.valueDecomposer.containerSize(containerValue);
 		if (valueSize >= 0) {
 			resizeChildren(containerNode, containerPath, valueSize, state);
 		}
+	}
+
+	private static boolean mayHaveHigherPriorityDefinedScopeBelow(JvmNode node, int priority, AssemblyState state) {
+		List<ScopeSelector> scopes = state.scopes.higherPriorityDefinedScopesDeclaringInside(priority);
+		if (scopes.isEmpty() || state.assemblyTree.childrenOf(node).isEmpty()) {
+			return false;
+		}
+		Set<Class<?>> types = typesBelow(node, state);
+		return scopes.stream().anyMatch(scope -> scope.mayAppearAmong(types));
+	}
+
+	private static Set<Class<?>> typesBelow(JvmNode node, AssemblyState state) {
+		Set<Class<?>> types = new HashSet<>();
+		Deque<JvmNode> pending = new ArrayDeque<>(state.assemblyTree.childrenOf(node));
+		Set<JvmNode> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+		while (!pending.isEmpty()) {
+			JvmNode below = pending.pop();
+			if (!visited.add(below)) {
+				continue;
+			}
+			types.add(below.getConcreteType().getRawType());
+			types.add(below.getDeclaredType().getRawType());
+			pending.addAll(state.assemblyTree.childrenOf(below));
+		}
+		return types;
 	}
 
 	private static @Nullable ArbitraryIntrospector introspectorFor(
@@ -1557,17 +1595,6 @@ public final class ValueProjectionAssembler {
 		}
 		InstantiatorProcessResult instantiator = instantiators.get(type);
 		return instantiator != null ? instantiator.getIntrospector() : null;
-	}
-
-	private void growChildrenTo(
-		JvmNode containerNode,
-		PathExpression containerPath,
-		int elementCount,
-		AssemblyState state
-	) {
-		if (elementCount > state.assemblyTree.childrenOf(containerNode).size()) {
-			resizeChildren(containerNode, containerPath, elementCount, state);
-		}
 	}
 
 	private void resizeChildren(
@@ -1770,7 +1797,7 @@ public final class ValueProjectionAssembler {
 			return arbitrary;
 		}
 		ValueCandidate value = winner != null ? winner.candidate : state.candidates.at(path);
-		int valueScopeDepth = winner != null ? winner.scopeDepth : PathMatcher.valueScopeDepth(path, state);
+		int valueScopeDepth = winner != null ? winner.scopeDepth : PathMatcher.valueScopeDepthAt(path, value, state);
 
 		CombinableArbitrary<?> result = arbitrary;
 		for (PropertyCustomizer customizer
@@ -1842,66 +1869,6 @@ public final class ValueProjectionAssembler {
 		if (limitPath != null) {
 			state.limits.limitChildren(limitPath, result.getLimitValue());
 		}
-	}
-
-	/**
-	 * Applies wildcard overrides to container elements when a wildcard has a higher order
-	 * than the container's own value. This handles the case where a container value is
-	 * returned via earlyReturn (all decomposed elements match), but a wildcard like
-	 * {@code $.values[*].values[*]} should override individual elements.
-	 */
-	private Object applyWildcardOverridesToContainer(
-		Object container,
-		PathExpression containerPath,
-		DirectivePrecedence containerPrecedence,
-		AssemblyState state
-	) {
-		if (container instanceof List) {
-			List<?> list = (List<?>)container;
-			List<@Nullable Object> result = null;
-			for (int i = 0; i < list.size(); i++) {
-				PathExpression elementPath = containerPath.index(i);
-				for (Map.Entry<PathExpression, ValueCandidate> entry : state.candidates.getRootWildcardEntries()) {
-					if (entry.getKey().matches(elementPath)
-						&& entry.getValue().precedence.compareTo(containerPrecedence) > 0) {
-						if (result == null) {
-							result = new ArrayList<>(list);
-						}
-						result.set(i, LazyResolver.resolveLazyValueWithCache(entry.getValue().value, state));
-						break;
-					}
-				}
-			}
-			return result != null ? result : container;
-		} else if (container.getClass().isArray()) {
-			int length = Array.getLength(container);
-			boolean modified = false;
-			for (int i = 0; i < length; i++) {
-				PathExpression elementPath = containerPath.index(i);
-				for (Map.Entry<PathExpression, ValueCandidate> entry : state.candidates.getRootWildcardEntries()) {
-					if (entry.getKey().matches(elementPath)
-						&& entry.getValue().precedence.compareTo(containerPrecedence) > 0) {
-						if (!modified) {
-							Class<?> componentType = container.getClass().getComponentType();
-							if (componentType == null) {
-								break;
-							}
-							Object copy = Array.newInstance(componentType, length);
-							//noinspection SuspiciousSystemArraycopy
-							System.arraycopy(container, 0, copy, 0, length);
-							container = copy;
-							modified = true;
-						}
-						Object resolved = LazyResolver.resolveLazyValueWithCache(entry.getValue().value, state);
-						if (resolved != null) {
-							Array.set(container, i, resolved);
-						}
-						break;
-					}
-				}
-			}
-		}
-		return container;
 	}
 
 	private CombinableArbitrary<?> traceAndReturnValue(
