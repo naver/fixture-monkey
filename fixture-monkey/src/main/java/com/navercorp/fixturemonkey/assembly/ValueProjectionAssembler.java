@@ -19,8 +19,10 @@
 package com.navercorp.fixturemonkey.assembly;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -57,6 +60,8 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
@@ -250,7 +255,10 @@ public final class ValueProjectionAssembler {
 						return assembleNodeDefault(node, state, parentContext, parentPath, currentPath, visitedTypes);
 					}
 					return traceAndReturnValue(
-						setValue,
+						copyCollectionForSample(
+							setValue,
+							collectionCopyConstructor(setValue, currentRawType, node.getDeclaredType().getRawType())
+						),
 						bestCandidate.sourceLabel(),
 						currentPath,
 						currentRawType,
@@ -298,6 +306,9 @@ public final class ValueProjectionAssembler {
 				applyDecomposeResult(decomposeResult, state);
 				if (decomposeResult.hasEarlyReturn()) {
 					Object earlyValue = decomposeResult.getEarlyReturnValue();
+					Constructor<?> copyConstructor = collectionCopyConstructor(
+						earlyValue, currentRawType, node.getDeclaredType().getRawType()
+					);
 
 					// Apply wildcard overrides to container elements when a wildcard has higher order
 					if (isCurrentTypeContainer && earlyValue != null && state.candidates.hasRootWildcards()) {
@@ -305,13 +316,9 @@ public final class ValueProjectionAssembler {
 							earlyValue, currentPath, parentPrecedence, state
 						);
 					}
-					if (earlyValue instanceof List && currentRawType.isAssignableFrom(ArrayList.class)) {
-						List<?> list = (List<?>)earlyValue;
-						earlyValue = CombinableArbitrary.from(() -> new ArrayList<>(list));
-					}
 
 					return wrapValueWithFiltersAndCustomizers(
-						earlyValue,
+						copyCollectionForSample(earlyValue, copyConstructor),
 						currentPath,
 						currentRawType,
 						state
@@ -1771,6 +1778,57 @@ public final class ValueProjectionAssembler {
 			result = customizer.getCustomizer().apply(result);
 		}
 		return result;
+	}
+
+	private static @Nullable Object copyCollectionForSample(
+		@Nullable Object value,
+		@Nullable Constructor<?> constructor
+	) {
+		if (!(value instanceof Collection) || constructor == null) {
+			return value;
+		}
+		Collection<?> collection = (Collection<?>)value;
+		return CombinableArbitrary.from(() -> Reflections.newInstance(constructor, collection));
+	}
+
+	private static @Nullable Constructor<?> collectionCopyConstructor(
+		@Nullable Object value,
+		Class<?> resolvedType,
+		Class<?> declaredType
+	) {
+		if (!(value instanceof Collection)
+			|| !declaredType.isAssignableFrom(resolvedType)
+			|| !Collection.class.isAssignableFrom(resolvedType)) {
+			return null;
+		}
+		// Prefer the supplied implementation when it satisfies the resolved type.
+		Class<?> copyType = resolvedType.isInstance(value) ? value.getClass() : resolvedType;
+		Constructor<?> constructor = findCollectionCopyConstructor(copyType, value instanceof SortedSet);
+		return constructor != null || copyType == resolvedType
+			? constructor
+			: findCollectionCopyConstructor(resolvedType, value instanceof SortedSet);
+	}
+
+	private static @Nullable Constructor<?> findCollectionCopyConstructor(Class<?> type, boolean sorted) {
+		if (!Modifier.isPublic(type.getModifiers())) {
+			return null;
+		}
+		Constructor<?> collectionConstructor = null;
+		for (Constructor<?> constructor : TypeCache.getDeclaredConstructors(type)) {
+			Class<?>[] parameters = constructor.getParameterTypes();
+			if (!Modifier.isPublic(constructor.getModifiers()) || parameters.length != 1) {
+				continue;
+			}
+			// TreeSet(Collection) would discard a supplied comparator.
+			if (sorted && parameters[0] == SortedSet.class) {
+				return constructor;
+			}
+			if (parameters[0] == Collection.class) {
+				collectionConstructor = constructor;
+			}
+		}
+		// Types without a public copy constructor keep their existing generation path.
+		return collectionConstructor;
 	}
 
 	private static void applyDecomposeResult(DecomposeResult result, AssemblyState state) {
