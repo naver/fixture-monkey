@@ -29,6 +29,7 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.objectfarm.api.expression.IndexSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;

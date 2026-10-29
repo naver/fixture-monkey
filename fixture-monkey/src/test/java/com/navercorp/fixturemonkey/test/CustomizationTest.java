@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
@@ -61,6 +62,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringListWrapper
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringPair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapperList;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWrapperPair;
 
 class CustomizationTest {
 
@@ -95,6 +97,34 @@ class CustomizationTest {
 
 		// then
 		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(10)
+	void setNotNullDeclaredAfterObjectWinsOverItsNullField() {
+		// when
+		String actual = SUT.giveMeBuilder(StringWrapperPair.class)
+			.set("value1", new StringWrapper())
+			.setNotNull("value1.value")
+			.sample()
+			.getValue1()
+			.getValue();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(10)
+	void objectDeclaredAfterSetNotNullKeepsItsNullField() {
+		// when
+		String actual = SUT.giveMeBuilder(StringWrapperPair.class)
+			.setNotNull("value1.value")
+			.set("value1", new StringWrapper())
+			.sample()
+			.getValue1()
+			.getValue();
+
+		// then
+		then(actual).isNull();
 	}
 
 	@Test

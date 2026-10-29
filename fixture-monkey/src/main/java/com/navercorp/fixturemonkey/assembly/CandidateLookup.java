@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 
 /**

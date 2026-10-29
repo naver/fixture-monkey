@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -52,8 +50,9 @@ public final class ScopeSet {
 	 */
 	private final List<Scope> definedScopes;
 	private final Map<Class<?>, InstantiatorProcessResult> globalInstantiators;
-	// Sorted by priority, so the scopes of the lowest priority number are looked up first
-	private final SortedMap<Integer, List<Scope>> scopesDeclaringAtNodesByPriority;
+	private final Map<Class<?>, DirectivePrecedence> globalInstantiatorPrecedenceByType;
+	private final List<Scope> scopesDeclaringAtNodes;
+	private final Map<Scope, DirectivePrecedence> precedenceByScope = new IdentityHashMap<>();
 	private final Map<Scope, Map<Class<?>, Map<Class<?>, InstantiatorProcessResult>>> scopedInstantiatorsByScope =
 		new IdentityHashMap<>();
 
@@ -64,8 +63,12 @@ public final class ScopeSet {
 		this.definedScopes = lowestPrecedenceFirst;
 
 		Map<Class<?>, InstantiatorProcessResult> global = new HashMap<>();
+		Map<Class<?>, DirectivePrecedence> globalPrecedenceByType = new HashMap<>();
 		List<Scope> declaringAtNodes = new ArrayList<>();
 		for (Scope scope : lowestPrecedenceFirst) {
+			DirectivePrecedence precedence =
+				DirectivePrecedence.definedScope(scope.getPriority(), precedenceByScope.size());
+			precedenceByScope.put(scope, precedence);
 			ScopeSelector selector = scope.getSelector();
 			boolean declaresAtNodes = false;
 			for (Map.Entry<Class<?>, InstantiatorProcessResult> declared : scope.getInstantiators().entrySet()) {
@@ -75,21 +78,19 @@ public final class ScopeSet {
 				}
 				if (selector.selectsEveryNodeOf(type)) {
 					global.put(type, declared.getValue());
+					globalPrecedenceByType.put(type, precedence);
 				} else {
 					declaresAtNodes = true;
 				}
 			}
 			if (declaresAtNodes) {
-				declaringAtNodes.add(0, scope);
+				declaringAtNodes.add(scope);
 			}
 		}
 		global.putAll(rootScope.getInstantiators());
 		this.globalInstantiators = Collections.unmodifiableMap(global);
-		SortedMap<Integer, List<Scope>> byPriority = new TreeMap<>();
-		for (Scope scope : declaringAtNodes) {
-			byPriority.computeIfAbsent(scope.getPriority(), it -> new ArrayList<>()).add(scope);
-		}
-		this.scopesDeclaringAtNodesByPriority = Collections.unmodifiableSortedMap(byPriority);
+		this.globalInstantiatorPrecedenceByType = globalPrecedenceByType;
+		this.scopesDeclaringAtNodes = Collections.unmodifiableList(declaringAtNodes);
 	}
 
 	public Scope getRootScope() {
@@ -115,29 +116,45 @@ public final class ScopeSet {
 	 * Returns whether a defined scope declared an instantiator that applies only inside the nodes it selects.
 	 */
 	public boolean hasScopedInstantiators() {
-		return !scopesDeclaringAtNodesByPriority.isEmpty();
+		return !scopesDeclaringAtNodes.isEmpty();
 	}
 
 	/**
 	 * Returns the instantiators an instance of {@code type} builds with when a defined scope selecting a node on its
-	 * chain declared one for it: the scope with the lowest priority number wins, then the one with the outermost
-	 * scope node, then the later declared one. The same declaration always gives the same instance.
+	 * chain declared one for it and outranks the others by {@link DirectivePrecedence}. A scope declaring one for
+	 * every node of {@code type} competes from the instance's own node. The same declaration always gives the same
+	 * instance.
 	 *
 	 * @param type  the type of the instance
 	 * @param chain the nodes from the outermost ancestor down to the instance's own node
 	 * @return the declaring scope's instantiators over the global ones, or null when the global instantiators apply
 	 */
 	public @Nullable Map<Class<?>, InstantiatorProcessResult> scopedInstantiatorsAt(Class<?> type, ScopeChain chain) {
-		for (List<Scope> samePriority : scopesDeclaringAtNodesByPriority.values()) {
+		Scope best = null;
+		DirectivePrecedence bestPrecedence = globalInstantiatorPrecedenceByType.get(type);
+		int bestDepth = chain.depth();
+		for (Scope scope : scopesDeclaringAtNodes) {
+			if (!declaresAtNodes(scope, type)) {
+				continue;
+			}
+			DirectivePrecedence precedence = precedenceByScope.get(scope);
+			if (precedence == null) {
+				throw new IllegalStateException(
+					"No precedence for a defined scope declaring an instantiator: " + scope.getSelector().toExpression()
+				);
+			}
 			for (int depth = 0; depth <= chain.depth(); depth++) {
-				for (Scope scope : samePriority) {
-					if (declaresAtNodes(scope, type) && chain.selects(scope.getSelector(), depth)) {
-						return scopedInstantiatorsOf(scope, type);
+				if (chain.selects(scope.getSelector(), depth)) {
+					if (bestPrecedence == null || precedence.outranks(depth, bestPrecedence, bestDepth)) {
+						best = scope;
+						bestPrecedence = precedence;
+						bestDepth = depth;
 					}
+					break;
 				}
 			}
 		}
-		return null;
+		return best != null ? scopedInstantiatorsOf(best, type) : null;
 	}
 
 	/**

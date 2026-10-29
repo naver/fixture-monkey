@@ -27,20 +27,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiPredicate;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
+import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
 import com.navercorp.fixturemonkey.planner.AnalyzedScope;
-import com.navercorp.objectfarm.api.expression.IndexSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
-import com.navercorp.objectfarm.api.expression.Segment;
-import com.navercorp.objectfarm.api.expression.Selector;
 
 /**
  * Looks up the directives of each {@link AnalyzedScope} along the chain of a node during one assembly. A node gets a
@@ -56,10 +54,12 @@ import com.navercorp.objectfarm.api.expression.Selector;
  * alone.
  */
 final class ScopeLookup {
+	private static final int ANY_SCOPE_DEPTH = Integer.MAX_VALUE;
+
 	private final RootEntry root;
 	private final List<DefinedScopeEntry> definedScopes;
 	private final List<Map.Entry<ScopedPath, ValueCandidate>> definedScopeValues = new ArrayList<>();
-	private final List<Map.Entry<ScopedPath, ValueCandidate>> definedScopeRootValues = new ArrayList<>();
+	private final Set<ScopedPath> definedScopeJustPaths = new HashSet<>();
 	private final boolean hasDefinedScopeNotNull;
 	private final boolean hasFilters;
 	private final boolean hasCustomizers;
@@ -74,7 +74,7 @@ final class ScopeLookup {
 		boolean filters = !root.analyzed.getFiltersByPath().isEmpty();
 		boolean customizers = !root.analyzed.getCustomizersByPath().isEmpty();
 		for (DefinedScopeEntry entry : definedScopes) {
-			entry.collectValues(definedScopeValues, definedScopeRootValues);
+			entry.collectValues(definedScopeValues, definedScopeJustPaths);
 			notNull |= !entry.analyzed.getNotNullPaths().isEmpty();
 			filters |= !entry.analyzed.getFiltersByPath().isEmpty();
 			customizers |= !entry.analyzed.getCustomizersByPath().isEmpty();
@@ -86,8 +86,9 @@ final class ScopeLookup {
 
 	/**
 	 * Lays out the directives of each scope. Directives are numbered in declaration order across the defined scopes,
-	 * the one with the lowest precedence first, and within a defined scope its whole-object value comes before its
-	 * field values, so its own field value outranks its whole-object one.
+	 * the one with the lowest precedence first. Within a defined scope, what it declared for its whole scope, such as
+	 * its customizers, comes first, then its values, not-null paths and container sizes in the order it declared
+	 * them.
 	 *
 	 * @param analysisResult        what the root scope declared and what planning expanded it into, by path from the
 	 *                              node a sample starts from
@@ -103,7 +104,7 @@ final class ScopeLookup {
 		int sequenceBase = 0;
 		for (AnalyzedScope analyzed : analyzedDefinedScopes) {
 			entries.add(new DefinedScopeEntry(analyzed, sequenceBase));
-			sequenceBase += analyzed.getValuesByPath().size() + analyzed.getNotNullPaths().size();
+			sequenceBase += 2 + analyzed.getLatestSequence();
 		}
 		return new ScopeLookup(root, entries);
 	}
@@ -116,10 +117,10 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * The whole-object value each defined scope declared.
+	 * Returns whether a defined scope set a {@code Values.just} value at {@code path}, used as it is.
 	 */
-	List<Map.Entry<ScopedPath, ValueCandidate>> getDefinedScopeRootValues() {
-		return definedScopeRootValues;
+	boolean isDefinedScopeJust(ScopedPath path) {
+		return definedScopeJustPaths.contains(path);
 	}
 
 	/**
@@ -230,16 +231,32 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns whether a defined scope's value at {@code scopeDepth} yields to a defined scope's not-null path that
-	 * outranks it.
+	 * Returns whether a not-null reaching the node at the end of {@code chain} outranks a directive of
+	 * {@code precedence} whose scope node sits {@code scopeDepth} deep: one the root scope or a defined scope declared,
+	 * compared by {@link DirectivePrecedence}, or one assembly recorded with {@link #markNotNullRequired}, which
+	 * outranks any defined scope's directive.
 	 */
-	boolean yieldsToDefinedScopeNotNull(ValueCandidate candidate, int scopeDepth, ScopeChain chain) {
+	boolean hasOutrankingNotNullAt(
+		ScopeChain chain,
+		PathExpression path,
+		DirectivePrecedence precedence,
+		int scopeDepth
+	) {
+		if (!precedence.isRootScope() && notNullRequiredPaths.contains(path)) {
+			return true;
+		}
+		for (PathExpression notNullPath : root.analyzed.getNotNullPaths()) {
+			DirectivePrecedence notNull = DirectivePrecedence.rootScope(root.analyzed.getNotNullSequence(notNullPath));
+			if (RootEntry.reachesFrom(notNullPath, path)
+				&& notNull.outranks(Scope.ROOT_DEPTH, precedence, scopeDepth)) {
+				return true;
+			}
+		}
 		for (DefinedScopeEntry entry : definedScopes) {
-			int sequence = entry.notNullSequenceBase();
 			for (PathExpression notNullPath : entry.analyzed.getNotNullPaths()) {
-				DirectivePrecedence notNull = entry.precedence(sequence++);
 				int notNullDepth = chain.scopeDepthOf(entry.selector(), notNullPath);
-				if (notNullDepth >= 0 && notNull.outranks(notNullDepth, candidate.precedence, scopeDepth)) {
+				if (notNullDepth >= 0
+					&& entry.notNullPrecedence(notNullPath).outranks(notNullDepth, precedence, scopeDepth)) {
 					return true;
 				}
 			}
@@ -248,36 +265,12 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns whether a defined scope's value or not-null path reaches below the node at the end of {@code chain}
-	 * from a scope node at most {@code scopeDepthLimit} deep, or from any scope node for a scope of a lower priority
-	 * number than {@code priority}.
+	 * Returns whether a defined scope's value or not-null path reaches below the node at the end of {@code chain}, so
+	 * the node must exist for it to apply.
 	 */
-	boolean hasDefinedScopeDirectiveBelow(ScopeChain chain, int scopeDepthLimit, int priority) {
-		return hasDirectiveBelow(chain, scopeDepthLimit, priority, true);
-	}
-
-	/**
-	 * Returns whether a defined scope's value or not-null path reaches below the node at the end of {@code chain}
-	 * from a scope that outranks a scope of {@code priority} whose node sits {@code scopeDepth} deep: one of a lower
-	 * priority number from any scope node, or one of the same priority from an outer scope node.
-	 */
-	boolean hasOutrankingDefinedScopeDirectiveBelow(ScopeChain chain, int priority, int scopeDepth) {
-		return hasDirectiveBelow(chain, scopeDepth - 1, priority, false);
-	}
-
-	private boolean hasDirectiveBelow(
-		ScopeChain chain,
-		int scopeDepthLimit,
-		int priority,
-		boolean withLowerPriority
-	) {
+	boolean hasDefinedScopeDirectiveBelow(ScopeChain chain) {
 		for (Map.Entry<ScopedPath, ValueCandidate> value : definedScopeValues) {
-			int declaredPriority = value.getValue().precedence.priority();
-			int limit = scopeDepthLimitByPriority(declaredPriority, priority, scopeDepthLimit, withLowerPriority);
-			if (limit < 0) {
-				continue;
-			}
-			if (value.getKey().segmentBelow(chain, limit) != null) {
+			if (value.getKey().segmentBelow(chain, ANY_SCOPE_DEPTH) != null) {
 				return true;
 			}
 		}
@@ -285,13 +278,8 @@ final class ScopeLookup {
 			return false;
 		}
 		for (DefinedScopeEntry entry : definedScopes) {
-			int declaredPriority = entry.analyzed.getPriority();
-			int limit = scopeDepthLimitByPriority(declaredPriority, priority, scopeDepthLimit, withLowerPriority);
-			if (limit < 0) {
-				continue;
-			}
 			for (PathExpression notNullPath : entry.analyzed.getNotNullPaths()) {
-				if (chain.segmentBelow(entry.selector(), notNullPath, limit) != null) {
+				if (chain.segmentBelow(entry.selector(), notNullPath, ANY_SCOPE_DEPTH) != null) {
 					return true;
 				}
 			}
@@ -299,19 +287,86 @@ final class ScopeLookup {
 		return false;
 	}
 
-	private static int scopeDepthLimitByPriority(
-		int declaredPriority,
-		int priority,
-		int scopeDepthLimit,
-		boolean withLowerPriority
-	) {
-		if (declaredPriority < priority) {
-			return Integer.MAX_VALUE;
+	/**
+	 * Returns whether a defined scope's value or not-null path reaching below the node at the end of {@code chain}
+	 * outranks a directive of {@code precedence} whose scope node sits {@code scopeDepth} deep.
+	 */
+	boolean hasOutrankingValueBelow(ScopeChain chain, DirectivePrecedence precedence, int scopeDepth) {
+		for (Map.Entry<ScopedPath, ValueCandidate> value : definedScopeValues) {
+			int valueDepth = value.getKey().scopeDepthBelow(chain, ANY_SCOPE_DEPTH);
+			if (valueDepth >= 0 && value.getValue().precedence.outranks(valueDepth, precedence, scopeDepth)) {
+				return true;
+			}
 		}
-		if (declaredPriority > priority && !withLowerPriority) {
-			return -1;
+		if (!hasDefinedScopeNotNull) {
+			return false;
 		}
-		return scopeDepthLimit;
+		for (DefinedScopeEntry entry : definedScopes) {
+			for (PathExpression notNullPath : entry.analyzed.getNotNullPaths()) {
+				DirectivePrecedence notNull = entry.notNullPrecedence(notNullPath);
+				int notNullDepth = chain.scopeDepthBelow(entry.selector(), notNullPath, ANY_SCOPE_DEPTH);
+				if (notNullDepth >= 0 && notNull.outranks(notNullDepth, precedence, scopeDepth)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns whether a defined scope's directive reaching below the node at the end of {@code chain} outranks a value
+	 * of {@code precedence} whose scope node sits {@code scopeDepth} deep, so the value is taken apart for the
+	 * directive to apply: a value or not-null path, a container size, or a customizer no later value of its scope
+	 * replaced.
+	 */
+	boolean hasOutrankingDirectiveBelow(ScopeChain chain, DirectivePrecedence precedence, int scopeDepth) {
+		if (hasOutrankingValueBelow(chain, precedence, scopeDepth)) {
+			return true;
+		}
+		for (DefinedScopeEntry entry : definedScopes) {
+			DirectivePrecedence scopePrecedence = entry.scopePrecedence();
+			for (PathExpression sizePath : entry.analyzed.getContainerSizesByPath().keySet()) {
+				int sizeDepth = chain.scopeDepthBelow(entry.selector(), sizePath, ANY_SCOPE_DEPTH);
+				if (sizeDepth >= 0 && entry.sizePrecedence(sizePath).outranks(sizeDepth, precedence, scopeDepth)) {
+					return true;
+				}
+			}
+			if (!hasCustomizers) {
+				continue;
+			}
+			for (Map.Entry<PathExpression, List<PropertyCustomizer>> declared
+				: entry.analyzed.getCustomizersByPath().entrySet()) {
+				int customizerDepth = chain.scopeDepthBelow(entry.selector(), declared.getKey(), ANY_SCOPE_DEPTH);
+				if (customizerDepth < 0
+					|| !entry.declared(precedence)
+					&& !scopePrecedence.outranks(customizerDepth, precedence, scopeDepth)) {
+					continue;
+				}
+				for (PropertyCustomizer customizer : declared.getValue()) {
+					if (!customizer.isOverriddenAt(chain, customizerDepth)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns whether a defined scope's size of the container at the end of {@code chain} outranks a value of
+	 * {@code precedence} whose scope node sits {@code scopeDepth} deep, so the container keeps that size over the
+	 * element count of the value.
+	 */
+	boolean hasOutrankingSizeAt(ScopeChain chain, DirectivePrecedence precedence, int scopeDepth) {
+		for (DefinedScopeEntry entry : definedScopes) {
+			for (PathExpression sizePath : entry.analyzed.getContainerSizesByPath().keySet()) {
+				int sizeDepth = chain.scopeDepthOf(entry.selector(), sizePath);
+				if (sizeDepth >= 0 && entry.sizePrecedence(sizePath).outranks(sizeDepth, precedence, scopeDepth)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -340,75 +395,6 @@ final class ScopeLookup {
 			|| !analyzed.getNotNullPaths().isEmpty()
 			|| !analyzed.getFiltersByPath().isEmpty()
 			|| !analyzed.getCustomizersByPath().isEmpty();
-	}
-
-	/**
-	 * Returns whether a defined scope of a lower priority number than {@code priority} declared the size of the
-	 * container at the end of {@code chain}, so the container keeps that size over the element count of a value of a
-	 * scope of {@code priority}.
-	 */
-	boolean hasHigherPriorityDefinedScopeSizeAt(ScopeChain chain, int priority) {
-		return hasHigherPriorityDefinedScopeSize(
-			priority,
-			(selector, sizePath) -> chain.scopeDepthOf(selector, sizePath) >= 0
-		);
-	}
-
-	/**
-	 * Returns whether a defined scope of a lower priority number than {@code priority} declared the size of a
-	 * container below the node at the end of {@code chain}, from any scope node on the chain.
-	 */
-	boolean hasHigherPriorityDefinedScopeSizeBelow(ScopeChain chain, int priority) {
-		return hasHigherPriorityDefinedScopeSize(
-			priority,
-			(selector, sizePath) -> chain.segmentBelow(selector, sizePath, Integer.MAX_VALUE) != null
-		);
-	}
-
-	private boolean hasHigherPriorityDefinedScopeSize(
-		int priority,
-		BiPredicate<ScopeSelector, PathExpression> reaches
-	) {
-		for (DefinedScopeEntry entry : definedScopes) {
-			if (entry.analyzed.getPriority() >= priority) {
-				continue;
-			}
-			for (PathExpression sizePath : entry.analyzed.getContainerSizesByPath().keySet()) {
-				if (reaches.test(entry.selector(), sizePath)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Returns how many elements a container needs so that every element a defined scope's value or not-null path
-	 * names by index exists.
-	 */
-	int definedScopeRequiredElementCount(ScopeChain chain) {
-		int required = 0;
-		for (Map.Entry<ScopedPath, ValueCandidate> value : definedScopeValues) {
-			required = Math.max(required, indexOf(value.getKey().segmentBelow(chain, Integer.MAX_VALUE)) + 1);
-		}
-		if (!hasDefinedScopeNotNull) {
-			return required;
-		}
-		for (DefinedScopeEntry entry : definedScopes) {
-			for (PathExpression notNullPath : entry.analyzed.getNotNullPaths()) {
-				Segment segment = chain.segmentBelow(entry.selector(), notNullPath, Integer.MAX_VALUE);
-				required = Math.max(required, indexOf(segment) + 1);
-			}
-		}
-		return required;
-	}
-
-	private static int indexOf(@Nullable Segment segment) {
-		if (segment == null || !segment.isSingleSelector()) {
-			return -1;
-		}
-		Selector selector = segment.getFirstSelector();
-		return selector instanceof IndexSelector ? ((IndexSelector)selector).getIndex() : -1;
 	}
 
 	boolean hasFilters() {
@@ -458,8 +444,8 @@ final class ScopeLookup {
 
 	/**
 	 * Returns the customizers that apply to the node at the end of {@code chain}, defined scopes' first: a customizer
-	 * applies unless a value declared after it in its scope replaced the node, or the node's value comes from a scope
-	 * that outranks the customizer's.
+	 * applies unless a value declared after it in its scope replaced the node, or the node's value comes from another
+	 * scope and outranks the customizer.
 	 *
 	 * @param value           the value decided for the node, or null when the node is generated
 	 * @param valueScopeDepth the depth of the scope node the value came from, 0 for the root scope
@@ -475,32 +461,40 @@ final class ScopeLookup {
 			for (Map.Entry<PathExpression, List<PropertyCustomizer>> declared
 				: entry.analyzed.getCustomizersByPath().entrySet()) {
 				int scopeDepth = chain.scopeDepthOf(entry.selector(), declared.getKey());
-				if (scopeDepth >= 0) {
-					addApplied(applied, declared.getValue(), chain, scopeDepth, entry.analyzed, value, valueScopeDepth);
+				if (scopeDepth >= 0 && !outranksScopeDirective(value, valueScopeDepth, entry, scopeDepth)) {
+					addNotOverridden(applied, declared.getValue(), chain, scopeDepth);
 				}
 			}
 		}
 		for (List<PropertyCustomizer> declared
 			: root.at(root.analyzed.getCustomizersByPath(), root.customizersHavePatterns, path)) {
-			addApplied(applied, declared, chain, 0, root.analyzed, value, valueScopeDepth);
+			addNotOverridden(applied, declared, chain, Scope.ROOT_DEPTH);
 		}
 		return applied;
 	}
 
-	private static void addApplied(
+	/**
+	 * Returns whether {@code value}, decided for a node, outranks what {@code entry} declared for its whole scope at a
+	 * scope node {@code scopeDepth} deep, such as a customizer, so that directive does not apply to the value. A value
+	 * of the same scope never does: the order inside the scope decides there.
+	 */
+	private static boolean outranksScopeDirective(
+		@Nullable ValueCandidate value,
+		int valueScopeDepth,
+		DefinedScopeEntry entry,
+		int scopeDepth
+	) {
+		return value != null
+			&& !entry.declared(value.precedence)
+			&& value.precedence.outranks(valueScopeDepth, entry.scopePrecedence(), scopeDepth);
+	}
+
+	private static void addNotOverridden(
 		List<PropertyCustomizer> applied,
 		List<PropertyCustomizer> declared,
 		ScopeChain chain,
-		int scopeDepth,
-		AnalyzedScope scope,
-		@Nullable ValueCandidate value,
-		int valueScopeDepth
+		int scopeDepth
 	) {
-		boolean outranked = value != null
-			&& value.precedence.scopeOutranks(valueScopeDepth, scope.getPriority(), scopeDepth);
-		if (outranked) {
-			return;
-		}
 		for (PropertyCustomizer customizer : declared) {
 			if (!customizer.isOverriddenAt(chain, scopeDepth)) {
 				applied.add(customizer);
@@ -519,40 +513,10 @@ final class ScopeLookup {
 			return false;
 		}
 		for (DefinedScopeEntry entry : definedScopes) {
-			int declaredPriority = entry.analyzed.getPriority();
-			int limit = scopeDepthLimitByPriority(declaredPriority, priority, scopeDepthLimit, true);
+			int limit = entry.analyzed.getPriority() < priority ? ANY_SCOPE_DEPTH : scopeDepthLimit;
 			for (PathExpression filterPath : entry.analyzed.getFiltersByPath().keySet()) {
 				if (chain.scopeDepthBelow(entry.selector(), filterPath, limit) >= 0) {
 					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Returns whether a defined scope's customizer reaches below the node at the end of {@code chain} from a scope
-	 * node at most {@code scopeDepthLimit} deep, or from any scope node for a scope of a lower priority number than
-	 * {@code priority}, with no value declared after it replacing the node. The root scope's customizers are found
-	 * through {@link #getRootCustomizerFilterNotNullPaths()}.
-	 */
-	boolean hasDefinedScopeCustomizerBelow(ScopeChain chain, int scopeDepthLimit, int priority) {
-		if (!hasCustomizers) {
-			return false;
-		}
-		for (DefinedScopeEntry entry : definedScopes) {
-			int declaredPriority = entry.analyzed.getPriority();
-			int limit = scopeDepthLimitByPriority(declaredPriority, priority, scopeDepthLimit, true);
-			for (Map.Entry<PathExpression, List<PropertyCustomizer>> declared
-				: entry.analyzed.getCustomizersByPath().entrySet()) {
-				int scopeDepth = chain.scopeDepthBelow(entry.selector(), declared.getKey(), limit);
-				if (scopeDepth < 0) {
-					continue;
-				}
-				for (PropertyCustomizer customizer : declared.getValue()) {
-					if (!customizer.isOverriddenAt(chain, scopeDepth)) {
-						return true;
-					}
 				}
 			}
 		}
@@ -636,40 +600,50 @@ final class ScopeLookup {
 			return DirectivePrecedence.definedScope(analyzed.getPriority(), sequence);
 		}
 
-		private int notNullSequenceBase() {
-			return sequenceBase + analyzed.getValuesByPath().size();
+		/**
+		 * The precedence of what the scope declared for its whole scope rather than in order: its customizers, which
+		 * come before its other directives.
+		 */
+		private DirectivePrecedence scopePrecedence() {
+			return precedence(sequenceBase);
 		}
 
-		private void collectValues(
-			List<Map.Entry<ScopedPath, ValueCandidate>> values,
-			List<Map.Entry<ScopedPath, ValueCandidate>> rootValues
-		) {
-			Map<PathExpression, @Nullable Object> declared = analyzed.getValuesByPath();
-			int sequence = sequenceBase;
-			if (declared.containsKey(PathExpression.root())) {
-				Map.Entry<ScopedPath, ValueCandidate> rootValue = candidate(
-					PathExpression.root(),
-					declared.get(PathExpression.root()),
-					sequence++
-				);
-				values.add(rootValue);
-				rootValues.add(rootValue);
-			}
-			for (Map.Entry<PathExpression, @Nullable Object> value : declared.entrySet()) {
-				if (!value.getKey().isRoot()) {
-					values.add(candidate(value.getKey(), value.getValue(), sequence++));
+		private DirectivePrecedence valuePrecedence(PathExpression path) {
+			return precedence(sequenceBase + 1 + analyzed.getValueSequence(path));
+		}
+
+		private DirectivePrecedence notNullPrecedence(PathExpression path) {
+			return precedence(sequenceBase + 1 + analyzed.getNotNullSequence(path));
+		}
+
+		private DirectivePrecedence sizePrecedence(PathExpression path) {
+			return precedence(sequenceBase + 1 + analyzed.getContainerSizeSequence(path));
+		}
+
+		/**
+		 * Returns whether the directive of {@code precedence} was declared in this scope.
+		 */
+		private boolean declared(DirectivePrecedence precedence) {
+			int sequence = precedence.sequence();
+			return !precedence.isRootScope()
+				&& sequence >= sequenceBase
+				&& sequence <= sequenceBase + 1 + analyzed.getLatestSequence();
+		}
+
+		private void collectValues(List<Map.Entry<ScopedPath, ValueCandidate>> values, Set<ScopedPath> justPaths) {
+			for (Map.Entry<PathExpression, @Nullable Object> value : analyzed.getValuesByPath().entrySet()) {
+				Map.Entry<ScopedPath, ValueCandidate> candidate = candidate(value.getKey(), value.getValue());
+				values.add(candidate);
+				if (analyzed.isJust(value.getKey())) {
+					justPaths.add(candidate.getKey());
 				}
 			}
 		}
 
-		private Map.Entry<ScopedPath, ValueCandidate> candidate(
-			PathExpression relativePath,
-			@Nullable Object value,
-			int sequence
-		) {
+		private Map.Entry<ScopedPath, ValueCandidate> candidate(PathExpression relativePath, @Nullable Object value) {
 			return new AbstractMap.SimpleImmutableEntry<>(
 				new ScopedPath(selector(), relativePath),
-				new ValueCandidate(value, precedence(sequence))
+				new ValueCandidate(value, valuePrecedence(relativePath))
 			);
 		}
 	}

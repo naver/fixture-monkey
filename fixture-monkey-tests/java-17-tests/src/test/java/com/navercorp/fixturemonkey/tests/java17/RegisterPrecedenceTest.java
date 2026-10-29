@@ -1077,6 +1077,24 @@ class RegisterPrecedenceTest {
 
 		// then
 		then(actual.list().leaves()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void outerRegisterElementSetAppliesInsideOuterRegisterSizeOverInnerRegisterSetNullContainer() {
+		// given
+		FixtureMonkey sut = withLongRegistered()
+			.register(LeafList.class, fixture -> fixture.giveMeBuilder(LeafList.class).setNull("leaves"))
+			.register(
+				Holder.class,
+				fixture -> fixture.giveMeBuilder(Holder.class).size("list.leaves", 1).set("list.leaves[0].id", 9L)
+			)
+			.build();
+
+		// when
+		Holder actual = sut.giveMeOne(Holder.class);
+
+		// then
+		then(actual.list().leaves()).hasSize(1);
 		then(actual.list().leaves().get(0).id()).isEqualTo(9L);
 	}
 

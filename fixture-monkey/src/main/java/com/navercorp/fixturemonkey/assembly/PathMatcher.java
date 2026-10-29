@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
+import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
+import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JvmNode;
@@ -41,31 +43,34 @@ final class PathMatcher {
 		int bestDepth = -1;
 		JvmNode bestScopeNode = null;
 
-		boolean notNullRequired = state.scopes.isNotNullRequired(path);
 		ScopeChain chain = state.chainOf(path);
-		boolean anyNotNull = notNullRequired || state.scopes.hasDefinedScopeNotNullAt(chain);
+		boolean anyNotNull = state.scopes.isNotNullRequired(path) || state.scopes.hasDefinedScopeNotNullAt(chain);
 
 		ValueCandidate exactCandidate = state.candidates.at(path);
-		if (exactCandidate != null && !isDefinedScopeNull(exactCandidate, anyNotNull)) {
-			bestPath = ScopedPath.root(path);
-			best = exactCandidate;
-			bestDepth = valueScopeDepth(path, state);
-			bestScopeNode = chain.scopeNodeAt(bestDepth);
+		if (exactCandidate != null) {
+			int exactDepth = valueScopeDepthAt(path, exactCandidate, state);
+			if (!yieldsToNotNull(chain, path, exactCandidate, exactDepth, anyNotNull, state)) {
+				bestPath = ScopedPath.root(path);
+				best = exactCandidate;
+				bestDepth = exactDepth;
+				bestScopeNode = chain.scopeNodeAt(bestDepth);
+			}
 		}
 
 		for (Map.Entry<PathExpression, ValueCandidate> entry : state.candidates.getRootWildcardEntries()) {
 			PathExpression pattern = entry.getKey();
 			ValueCandidate candidate = entry.getValue();
-			if (!pattern.matches(path) || isDefinedScopeNull(candidate, anyNotNull)) {
+			if (!pattern.matches(path)
+				|| yieldsToNotNull(chain, path, candidate, Scope.ROOT_DEPTH, anyNotNull, state)) {
 				continue;
 			}
 			ScopedPath rootPattern = ScopedPath.root(pattern);
-			if (state.limits.hasRemaining(rootPattern, chain.scopeNodeAt(0))
-				&& outranks(candidate.precedence, 0, best, bestDepth)) {
+			if (state.limits.hasRemaining(rootPattern, chain.scopeNodeAt(Scope.ROOT_DEPTH))
+				&& outranks(candidate.precedence, Scope.ROOT_DEPTH, best, bestDepth)) {
 				bestPath = rootPattern;
 				best = candidate;
-				bestDepth = 0;
-				bestScopeNode = chain.scopeNodeAt(0);
+				bestDepth = Scope.ROOT_DEPTH;
+				bestScopeNode = chain.scopeNodeAt(Scope.ROOT_DEPTH);
 			}
 		}
 
@@ -77,14 +82,11 @@ final class PathMatcher {
 				if (depth < 0) {
 					continue;
 				}
-				boolean yieldsToNotNull = notNullRequired
-					|| state.scopes.yieldsToDefinedScopeNotNull(candidate, depth, chain);
-				if (isDefinedScopeNull(candidate, yieldsToNotNull)) {
+				if (yieldsToNotNull(chain, path, candidate, depth, anyNotNull, state)) {
 					continue;
 				}
-				int priority = candidate.precedence.priority();
 				if (candidate.value == null
-					&& state.scopes.hasOutrankingDefinedScopeDirectiveBelow(chain, priority, depth)) {
+					&& state.scopes.hasOutrankingValueBelow(chain, candidate.precedence, depth)) {
 					continue;
 				}
 				JvmNode scopeNode = chain.scopeNodeAt(depth);
@@ -106,8 +108,17 @@ final class PathMatcher {
 		return new WinningValueCandidate(bestPath, best, bestDepth, bestScopeNode);
 	}
 
-	private static boolean isDefinedScopeNull(ValueCandidate candidate, boolean suppressed) {
-		return suppressed && candidate.value == null && !candidate.precedence.isRootScope();
+	private static boolean yieldsToNotNull(
+		ScopeChain chain,
+		PathExpression path,
+		ValueCandidate candidate,
+		int scopeDepth,
+		boolean anyNotNull,
+		AssemblyState state
+	) {
+		return candidate.value == null
+			&& anyNotNull
+			&& state.scopes.hasOutrankingNotNullAt(chain, path, candidate.precedence, scopeDepth);
 	}
 
 	private static boolean outranks(
@@ -120,11 +131,14 @@ final class PathMatcher {
 	}
 
 	/**
-	 * Returns the depth of the scope node a candidate at {@code path} came from: the defined scope whose value was
-	 * decomposed into it, or 0 for the root scope.
+	 * Returns the depth of the scope node {@code candidate} at {@code path} came from: the defined scope whose value
+	 * was decomposed into it, or 0 for the root scope.
 	 */
-	static int valueScopeDepth(PathExpression path, AssemblyState state) {
-		return Math.max(state.candidates.decomposedScopeDepthAt(path), 0);
+	static int valueScopeDepthAt(PathExpression path, @Nullable ValueCandidate candidate, AssemblyState state) {
+		if (candidate == null || candidate.precedence.isRootScope()) {
+			return Scope.ROOT_DEPTH;
+		}
+		return Math.max(state.candidates.decomposedScopeDepthAt(path), Scope.ROOT_DEPTH);
 	}
 
 	static boolean isUnderExcludedPath(PathExpression path, Set<PathExpression> excludedPaths) {

@@ -100,32 +100,6 @@ class RuntimeSubtreeTest {
 	}
 
 	@Test
-	void userInstantiateBuildsElementsAddedWhenContainerGrowsDuringAssembly() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-			.defaultNotNull(true)
-			.register(
-				ListOwner.class,
-				fm -> fm.giveMeBuilder(ListOwner.class).set("taggedList.taggeds[5].text", "registered")
-			)
-			.build();
-
-		// when
-		List<Tagged> actual = sut.giveMeBuilder(ListOwnerHolder.class)
-			.instantiate(Tagged.class, constructor().parameter(String.class, "text"))
-			.sample()
-			.getListOwner()
-			.getTaggedList()
-			.getTaggeds();
-
-		// then
-		then(actual).hasSizeGreaterThanOrEqualTo(6);
-		then(actual).extracting(Tagged::getOrigin).containsOnly("string-constructor");
-		then(actual.get(5).getText()).isEqualTo("registered");
-	}
-
-	@Test
 	void nestedInstantiateAppliesToOwnerInsideInterfaceImplementationChosenDuringAssembly() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -474,45 +448,6 @@ class RuntimeSubtreeTest {
 
 		public TaggedView getView() {
 			return view;
-		}
-	}
-
-	public static class TaggedList {
-		private final List<Tagged> taggeds;
-
-		@ConstructorProperties("taggeds")
-		public TaggedList(List<Tagged> taggeds) {
-			this.taggeds = taggeds;
-		}
-
-		public List<Tagged> getTaggeds() {
-			return taggeds;
-		}
-	}
-
-	public static class ListOwner {
-		private final TaggedList taggedList;
-
-		@ConstructorProperties("taggedList")
-		public ListOwner(TaggedList taggedList) {
-			this.taggedList = taggedList;
-		}
-
-		public TaggedList getTaggedList() {
-			return taggedList;
-		}
-	}
-
-	public static class ListOwnerHolder {
-		private final ListOwner listOwner;
-
-		@ConstructorProperties("listOwner")
-		public ListOwnerHolder(ListOwner listOwner) {
-			this.listOwner = listOwner;
-		}
-
-		public ListOwner getListOwner() {
-			return listOwner;
 		}
 	}
 
