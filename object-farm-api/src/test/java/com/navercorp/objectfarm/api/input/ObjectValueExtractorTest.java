@@ -171,8 +171,37 @@ class ObjectValueExtractorTest {
 
 		// then
 		then(result).containsEntry(PathExpression.of("$[0]"), "a");
-		then(result).doesNotContainKey(PathExpression.of("$[1]"));
+		then(result).containsEntry(PathExpression.of("$[1]"), null);
 		then(result).containsEntry(PathExpression.of("$[2]"), "c");
+	}
+
+	@Test
+	void extractNestedCollectionWithNullElement() {
+		// given
+		List<List<String>> list = Arrays.asList(Arrays.asList("a", null), null);
+		PathExpression basePath = PathExpression.root();
+
+		// when
+		Map<PathExpression, Object> result = sut.extract(list, basePath);
+
+		// then
+		then(result).containsEntry(PathExpression.of("$[0][0]"), "a");
+		then(result).containsEntry(PathExpression.of("$[0][1]"), null);
+		then(result).containsEntry(PathExpression.of("$[1]"), null);
+	}
+
+	@Test
+	void extractArrayWithNullElement() {
+		// given
+		String[] array = new String[] {"a", null};
+		PathExpression basePath = PathExpression.root();
+
+		// when
+		Map<PathExpression, Object> result = sut.extract(array, basePath);
+
+		// then
+		then(result).containsEntry(PathExpression.of("$[0]"), "a");
+		then(result).containsEntry(PathExpression.of("$[1]"), null);
 	}
 
 	@Test

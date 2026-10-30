@@ -35,27 +35,23 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  */
 final class DecomposeResult {
 	private static final DecomposeResult NONE = new DecomposeResult(
-		null,
 		Collections.emptyMap(),
 		Collections.emptySet(),
 		null,
 		-1
 	);
 
-	private final @Nullable Object earlyReturnValue;
 	private final Map<PathExpression, ValueCandidate> valuesToPut;
 	private final Set<PathExpression> subtreesToRemove;
 	private final @Nullable PathExpression limitPath;
 	private final int limitValue;
 
 	private DecomposeResult(
-		@Nullable Object earlyReturnValue,
 		Map<PathExpression, ValueCandidate> valuesToPut,
 		Set<PathExpression> subtreesToRemove,
 		@Nullable PathExpression limitPath,
 		int limitValue
 	) {
-		this.earlyReturnValue = earlyReturnValue;
 		this.valuesToPut = valuesToPut;
 		this.subtreesToRemove = subtreesToRemove;
 		this.limitPath = limitPath;
@@ -66,26 +62,13 @@ final class DecomposeResult {
 		return NONE;
 	}
 
-	static DecomposeResult earlyReturn(Object value) {
-		return new DecomposeResult(value, Collections.emptyMap(), Collections.emptySet(), null, -1);
-	}
-
 	static DecomposeResult of(
 		Map<PathExpression, ValueCandidate> valuesToPut,
 		Set<PathExpression> subtreesToRemove,
 		@Nullable PathExpression limitPath,
 		int limitValue
 	) {
-		return new DecomposeResult(null, valuesToPut, subtreesToRemove, limitPath, limitValue);
-	}
-
-	boolean hasEarlyReturn() {
-		return earlyReturnValue != null;
-	}
-
-	@Nullable
-	Object getEarlyReturnValue() {
-		return earlyReturnValue;
+		return new DecomposeResult(valuesToPut, subtreesToRemove, limitPath, limitValue);
 	}
 
 	Map<PathExpression, ValueCandidate> getValuesToPut() {
