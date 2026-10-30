@@ -30,9 +30,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
-import com.navercorp.objectfarm.api.expression.IndexSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
-import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.ObjectValueExtractor;
 import com.navercorp.objectfarm.api.node.JvmNode;
@@ -135,14 +133,6 @@ final class ValueDecomposer {
 			}
 		}
 
-		// For container types, check if all child values are within the container's elements.
-		// If so, return the value directly to preserve the container's size.
-		if (!overriddenInside
-			&& allChildValuesWithinContainer(baseValue, currentPath)
-			&& !candidates.hasOutrankingRootWildcardBelow(currentPath, candidate.precedence)) {
-			return DecomposeResult.earlyReturn(baseValue);
-		}
-
 		// Otherwise, decompose element fields for external overrides.
 		// Also set the container's size as a limit to prevent extra elements from being generated.
 		int containerSize = containerDetector.getContainerSize(baseValue).orElse(0);
@@ -198,85 +188,6 @@ final class ValueDecomposer {
 
 			valuesToPut.put(fieldPath, new ValueCandidate(fieldValue, parentPrecedence));
 		}
-	}
-
-	/**
-	 * Checks if any container field of the given object has been expanded to a larger size
-	 * in the tree than the object's actual field value.
-	 */
-	boolean hasContainerFieldExpandedInTree(Object value, PathExpression basePath) {
-		Map<PathExpression, @Nullable Object> extracted = valueExtractor.extract(value, basePath);
-
-		for (Map.Entry<PathExpression, @Nullable Object> entry : extracted.entrySet()) {
-			Object fieldValue = entry.getValue();
-			if (fieldValue != null && containerDetector.isContainer(fieldValue)) {
-				JvmNode treeNode = assemblyTree.plannedNodeAt(entry.getKey());
-				if (treeNode != null) {
-					int generatedTreeChildCount = assemblyTree.childrenOf(treeNode).size();
-					int actualSize = containerDetector.getContainerSize(fieldValue).orElse(0);
-					if (generatedTreeChildCount > actualSize) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if all child values for a container path are ONLY direct element values
-	 * (not nested paths like $[0].field) and within the container's element indices.
-	 */
-	private boolean allChildValuesWithinContainer(Object container, PathExpression containerPath) {
-		int containerSize = containerDetector.getContainerSize(container).orElse(0);
-
-		for (PathExpression path : candidates.getPaths()) {
-			if (path.isChildOf(containerPath)) {
-				if (path.depth() != containerPath.depth() + 1) {
-					return false;
-				}
-				Segment lastSegment = path.getLastSegment();
-				if (lastSegment == null || !(lastSegment.getFirstSelector() instanceof IndexSelector)) {
-					return false;
-				}
-				int index = ((IndexSelector)lastSegment.getFirstSelector()).getIndex();
-				if (index >= containerSize) {
-					return false;
-				}
-				ValueCandidate childCandidate = candidates.at(path);
-				if (childCandidate != null) {
-					Object childValue = childCandidate.value;
-					Object containerElement = getContainerElement(container, index);
-					if (!java.util.Objects.equals(childValue, containerElement)) {
-						return false;
-					}
-					if (
-						childValue != null
-							&& !containerDetector.isContainer(childValue)
-							&& hasContainerFieldExpandedInTree(childValue, path)
-					) {
-						return false;
-					}
-				}
-			}
-		}
-
-		return true;
-	}
-
-	private @Nullable Object getContainerElement(Object container, int index) {
-		if (container instanceof List) {
-			List<?> list = (List<?>)container;
-			if (index < list.size()) {
-				return list.get(index);
-			}
-		} else if (container.getClass().isArray()) {
-			int length = java.lang.reflect.Array.getLength(container);
-			if (index < length) {
-				return java.lang.reflect.Array.get(container, index);
-			}
-		}
-		return null;
 	}
 
 	/**

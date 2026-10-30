@@ -141,11 +141,7 @@ public final class ObjectValueExtractor {
 	) {
 		int index = 0;
 		for (Object element : collection) {
-			if (element != null) {
-				PathExpression elementPath = basePath.index(index);
-				result.put(elementPath, element);
-				extractInternal(element, elementPath, result, visited);
-			}
+			extractElement(element, basePath.index(index), result, visited);
 			index++;
 		}
 	}
@@ -158,12 +154,19 @@ public final class ObjectValueExtractor {
 	) {
 		int length = Array.getLength(array);
 		for (int i = 0; i < length; i++) {
-			Object element = Array.get(array, i);
-			if (element != null) {
-				PathExpression elementPath = basePath.index(i);
-				result.put(elementPath, element);
-				extractInternal(element, elementPath, result, visited);
-			}
+			extractElement(Array.get(array, i), basePath.index(i), result, visited);
+		}
+	}
+
+	private void extractElement(
+		@Nullable Object element,
+		PathExpression elementPath,
+		Map<PathExpression, @Nullable Object> result,
+		Set<Object> visited
+	) {
+		result.put(elementPath, element);
+		if (element != null) {
+			extractInternal(element, elementPath, result, visited);
 		}
 	}
 
