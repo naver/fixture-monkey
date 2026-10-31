@@ -6,6 +6,8 @@ plugins {
 dependencies {
     api(projects.fixtureMonkey)
     api(projects.fixtureMonkeyJakartaValidation)
+    api(libs.hibernate.validator7)
+    api(libs.jakarta.el4)
 
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.engine)
