@@ -5,7 +5,6 @@ plugins {
 dependencies {
 	testImplementation(projects.fixtureMonkeyJavaxValidation)
 	testImplementation(projects.fixtureMonkeyJakartaValidation)
-	testImplementation(libs.jakarta.validation.api)
 	testImplementation(libs.hibernate.validator7)
 	testImplementation(libs.jakarta.el4)
 	testImplementation(projects.fixtureMonkeyJackson)

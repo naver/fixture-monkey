@@ -29,7 +29,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validatio
 </dependency>
 ```
 
-해당 플러그인은 Bean Validation 구현체를 포함하지 않습니다. 테스트 의존성에 `jakarta.validation-api`와 구현체(예: Hibernate Validator와 Expression Language 구현체)를 추가해야 합니다.
+해당 플러그인은 Jakarta Validation API를 포함하지만 Bean Validation 구현체는 포함하지 않습니다. `fixture-monkey-starter`를 사용하면 Hibernate Validator가 이미 포함되어 있습니다. `fixture-monkey-jakarta-validation`을 직접 추가하는 경우 테스트 의존성에 구현체(예: Hibernate Validator와 Expression Language 구현체)를 추가해야 합니다.
 
 ## Plugin
 

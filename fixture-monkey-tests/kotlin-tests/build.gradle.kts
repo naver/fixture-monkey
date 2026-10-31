@@ -10,7 +10,6 @@ dependencies {
     testImplementation(projects.fixtureMonkeyKotest)
     testImplementation(projects.fixtureMonkeyJavaxValidation)
     testImplementation(projects.fixtureMonkeyJakartaValidation)
-    testImplementation(libs.jakarta.validation.api)
     testImplementation(libs.hibernate.validator7)
     testImplementation(libs.jakarta.el4)
     testImplementation(libs.kotest.runner.junit5)
