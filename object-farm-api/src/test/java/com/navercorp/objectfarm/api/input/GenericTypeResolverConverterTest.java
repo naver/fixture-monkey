@@ -24,8 +24,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -108,5 +110,179 @@ class GenericTypeResolverConverterTest {
 		// then
 		Type inferred = actual.getTypeVariables().get(0).getRawType();
 		then(inferred).isEqualTo(Arrays.asList("a", "b").getClass());
+	}
+
+	@Test
+	void collectionOfSameClassResolvesToThatClass() {
+		// given
+		List<Shape> shapes = Arrays.asList(new Circle(), new Circle());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(shapes);
+
+		// then
+		then(actual).hasSize(1);
+		then(actual.get(0).getRawType()).isEqualTo(Circle.class);
+	}
+
+	@Test
+	void collectionOfDifferentSubclassesIsNotResolved() {
+		// given
+		List<Shape> shapes = Arrays.asList(new Circle(), new Square());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(shapes);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void collectionOfUnrelatedClassesIsNotResolved() {
+		// given
+		List<Object> values = Arrays.asList(1, "one");
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(values);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void collectionOfDifferentSubclassesWithNullsIsNotResolved() {
+		// given
+		List<Shape> shapes = Arrays.asList(null, new Circle(), null, new Square());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(shapes);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void collectionOfOnlyNullsIsNotResolved() {
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(
+			Collections.singletonList(null)
+		);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void mapOfDifferentSubclassValuesIsNotResolved() {
+		// given
+		Map<String, Shape> shapes = new LinkedHashMap<>();
+		shapes.put("circle", new Circle());
+		shapes.put("square", new Square());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractMapTypeArguments(shapes);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void collectionOfSameClassSkipsNullElements() {
+		// given
+		List<Shape> shapes = Arrays.asList(null, new Circle(), null, new Circle());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(shapes);
+
+		// then
+		then(actual).hasSize(1);
+		then(actual.get(0).getRawType()).isEqualTo(Circle.class);
+	}
+
+	@Test
+	void collectionOfSuperclassAndSubclassIsNotResolved() {
+		// given
+		List<Base> values = Arrays.asList(new Base(), new Dog());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(values);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void collectionOfSubclassAndSuperclassIsNotResolved() {
+		// given
+		List<Base> values = Arrays.asList(new Dog(), new Base());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(values);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void mixedImplementationsWithUnrelatedSuperclassDoNotCreateResolver() {
+		// given
+		List<Animal> animals = Arrays.asList(new Dog(), new Cat());
+
+		// when
+		PathResolver<GenericTypeResolver> actual = GenericTypeResolverConverter.fromValue("$.animals", animals);
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Test
+	void mapOfDifferentSubclassKeysIsNotResolved() {
+		// given
+		Map<Shape, String> shapes = new LinkedHashMap<>();
+		shapes.put(new Circle(), "circle");
+		shapes.put(new Square(), "square");
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractMapTypeArguments(shapes);
+
+		// then
+		then(actual).isEmpty();
+	}
+
+	@Test
+	void mapOfSameClassResolvesKeyAndValueTypes() {
+		// given
+		Map<String, Shape> shapes = new LinkedHashMap<>();
+		shapes.put("first", new Circle());
+		shapes.put("second", new Circle());
+
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractMapTypeArguments(shapes);
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0).getRawType()).isEqualTo(String.class);
+		then(actual.get(1).getRawType()).isEqualTo(Circle.class);
+	}
+
+	abstract static class Shape {
+	}
+
+	static class Circle extends Shape {
+	}
+
+	static class Square extends Shape {
+	}
+
+	interface Animal {
+	}
+
+	static class Base {
+	}
+
+	static class Dog extends Base implements Animal {
+	}
+
+	static class Cat extends Base implements Animal {
 	}
 }
