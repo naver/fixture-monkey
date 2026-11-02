@@ -39,7 +39,7 @@ jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datat
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 jackson3-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson3" }
-jakarta-el3 = "org.glassfish:jakarta.el:3.0.4"
+jakarta-el3 = "org.glassfish:jakarta.el:4.0.2"
 jakarta-el4 = "org.glassfish:jakarta.el:4.0.2"
 jakarta-validation-api = "jakarta.validation:jakarta.validation-api:3.0.2"
 javax-validation-api = "javax.validation:validation-api:2.0.1.Final"
