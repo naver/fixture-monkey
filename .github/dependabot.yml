@@ -72,6 +72,10 @@ updates:
       - dependency-name: "org.mockito:*"
         versions:
           - ">= 5"
+      # 1.13.12 onwards is built with Kotlin 2.0, which the Kotlin 1.8 baseline cannot read.
+      - dependency-name: "io.mockk:*"
+        versions:
+          - ">= 1.13.12"
       # 6.0.0 onwards is class 55 (Java 11); 5.9.1 is the last Java 8 release.
       - dependency-name: "io.kotest:*"
         versions:
