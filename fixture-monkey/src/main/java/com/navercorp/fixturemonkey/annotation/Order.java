@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.annotation;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -32,6 +33,7 @@ import org.apiguardian.api.API;
  * values indicate lower priority, as the priority of {@code FixtureMonkeyBuilder#register} does. A group without it
  * registers them with {@link Integer#MAX_VALUE}, the default priority.
  */
+@Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @API(since = "1.1.15", status = EXPERIMENTAL)

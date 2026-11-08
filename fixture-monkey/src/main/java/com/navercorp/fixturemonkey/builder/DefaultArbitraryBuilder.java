@@ -264,16 +264,23 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	private boolean declaresWholeValue() {
+		boolean wholeValue = false;
+		boolean wholeNull = false;
 		for (PathDirective directive : activeContext.getDirectives()) {
+			boolean toNull = directive instanceof NullityDirective && ((NullityDirective)directive).toNull();
 			boolean value = directive instanceof SetDirective
 				|| directive instanceof LazyDirective
-				|| directive instanceof JustDirective
-				|| directive instanceof NullityDirective && ((NullityDirective)directive).toNull();
-			if (value && directive.path().isRoot()) {
-				return true;
+				|| directive instanceof JustDirective;
+			if (!directive.path().isRoot()) {
+				wholeNull &= !value && !toNull;
+			} else if (value) {
+				wholeValue = true;
+				wholeNull = false;
+			} else if (directive instanceof NullityDirective) {
+				wholeNull = toNull;
 			}
 		}
-		return false;
+		return wholeValue || wholeNull;
 	}
 
 	@Override

@@ -73,6 +73,21 @@ class RegisterGroupOrderTest {
 	}
 
 	@Test
+	void registerGroupInstanceOfSubclassKeepsOrderOfItsSuperclass() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(new OrderedBuilderGroup() {
+			}, new PlainBuilderGroup())
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(String.class);
+
+		// then
+		then(actual).isEqualTo("ordered");
+	}
+
+	@Test
 	void registerGroupWithLowerOrderWinsOverBuilderRegisteredLaterWithDefaultPriority() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()

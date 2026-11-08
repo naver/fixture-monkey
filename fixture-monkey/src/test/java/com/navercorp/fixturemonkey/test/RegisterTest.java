@@ -1737,6 +1737,29 @@ class RegisterTest {
 		then(actual).isEqualTo(Order.class);
 	}
 
+	@Test
+	void wholeValueIsKeptWhenTypeRegisteredWithLowerPriorityNumberSitsOutsideIt() {
+		// given
+		Order order = new Order();
+		order.setName("registered");
+		OrderList registered = new OrderList();
+		registered.setOrders(Arrays.asList(order, order));
+		FixtureMonkey sut = fixtureMonkey()
+			.register(OrderList.class, fm -> fm.giveMeBuilder(registered))
+			.register(UUID.class, fm -> fm.giveMeBuilder(UUID.class).set("$", new UUID(0, 0)), 0)
+			.build();
+
+		// when
+		List<OrderList> actual = sut.giveMeBuilder(OrderListHolder.class)
+			.sampleList(50)
+			.stream()
+			.map(OrderListHolder::getOrderList)
+			.collect(Collectors.toList());
+
+		// then
+		then(actual).allSatisfy(it -> then(it).isSameAs(registered));
+	}
+
 	@RepeatedTest(10)
 	void registerElementContainerValueDeclaredAfterWildcardSizeWins() {
 		// given
@@ -2314,6 +2337,12 @@ class RegisterTest {
 	@Data
 	public static class TypeHolder {
 		private Class<Order> type;
+		private UUID id;
+	}
+
+	@Data
+	public static class OrderListHolder {
+		private OrderList orderList;
 		private UUID id;
 	}
 

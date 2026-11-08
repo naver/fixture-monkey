@@ -390,6 +390,18 @@ class RegisterByNameTest {
 	}
 
 	@Test
+	void selectedNameAppliesToSampleOfJavaTypeBuilder() {
+		// given
+		FixtureMonkey sut = withOrderVariants().build();
+
+		// when
+		Set<String> actual = statusesOf(() -> sut.giveMeJavaBuilder(Order.class).selectName("cancelled").sample());
+
+		// then
+		then(actual).containsExactly(CANCELLED);
+	}
+
+	@Test
 	void chainedSelectNameIsSameAsSelectingNamesTogether() {
 		// given
 		FixtureMonkey sut = withOrderVariants().build();
@@ -982,6 +994,46 @@ class RegisterByNameTest {
 	}
 
 	@Test
+	void wholeValueWithContainerOfJavaArraysIsKeptWhenSelectedTypeCannotAppearInsideIt() {
+		// given
+		BlobList registered = new BlobList();
+		registered.setBlobs(Arrays.asList(new byte[] {1}, new byte[] {2}));
+		FixtureMonkey sut = withOrderVariants()
+			.register(BlobList.class, fm -> fm.giveMeBuilder(registered))
+			.build();
+
+		// when
+		List<BlobList> actual = IntStream.range(0, SAMPLE_COUNT)
+			.mapToObj(it -> sut.giveMeExperimentalBuilder(BlobBasket.class).selectName("cancelled").sample())
+			.map(BlobBasket::getBlobList)
+			.collect(Collectors.toList());
+
+		// then
+		then(actual).allSatisfy(it -> then(it).isSameAs(registered));
+	}
+
+	@Test
+	void wholeValueWithContainerOfOtherTypeIsKeptWhenSelectedTypeCannotAppearInsideIt() {
+		// given
+		SimpleObjectList registered = new SimpleObjectList();
+		registered.setSimpleObjects(Arrays.asList(simpleObject("registered"), simpleObject("registered")));
+		FixtureMonkey sut = withOrderVariants()
+			.register(SimpleObjectList.class, fm -> fm.giveMeBuilder(registered))
+			.build();
+
+		// when
+		List<SimpleObjectList> actual = IntStream.range(0, SAMPLE_COUNT)
+			.mapToObj(
+				it -> sut.giveMeExperimentalBuilder(SimpleObjectListBasket.class).selectName("cancelled").sample()
+			)
+			.map(SimpleObjectListBasket::getSimpleObjectList)
+			.collect(Collectors.toList());
+
+		// then
+		then(actual).allSatisfy(it -> then(it).isSameAs(registered));
+	}
+
+	@Test
 	void selectedNullWinsOverNotNullOfRegisteredOuterType() {
 		// given
 		FixtureMonkey sut = builder()
@@ -1166,6 +1218,35 @@ class RegisterByNameTest {
 	}
 
 	@Test
+	void selectedNameAppliesWhenWholeObjectNullIsUndoneByNotNull() {
+		// given
+		FixtureMonkey sut = withOrderVariants().build();
+		ExperimentalArbitraryBuilder<Order> builder = sut.giveMeExperimentalBuilder(Order.class);
+		builder.setNull("$").setNotNull("$");
+
+		// when
+		String actual = builder.selectName("cancelled").sample().getStatus();
+
+		// then
+		then(actual).isEqualTo(CANCELLED);
+	}
+
+	@Test
+	void selectedNameAppliesWhenWholeObjectNullIsUndoneByValueOfProperty() {
+		// given
+		FixtureMonkey sut = withOrderVariants().build();
+		ExperimentalArbitraryBuilder<Order> builder = sut.giveMeExperimentalBuilder(Order.class);
+		builder.setNull("$").set("memo", "memo");
+
+		// when
+		Order actual = builder.selectName("cancelled").sample();
+
+		// then
+		then(actual.getStatus()).isEqualTo(CANCELLED);
+		then(actual.getMemo()).isEqualTo("memo");
+	}
+
+	@Test
 	void selectingNameInRegisteredBuilderThrows() {
 		thenThrownBy(() -> withOrderVariants()
 			.register(Customer.class, fm -> fm.giveMeExperimentalBuilder(Customer.class).selectName("cancelled"))
@@ -1281,6 +1362,28 @@ class RegisterByNameTest {
 	@Data
 	public static class OrderBook {
 		private Map<String, Order> orders;
+	}
+
+	@Data
+	public static class BlobList {
+		private List<byte[]> blobs;
+	}
+
+	@Data
+	public static class BlobBasket {
+		private BlobList blobList;
+		private Order order;
+	}
+
+	@Data
+	public static class SimpleObjectList {
+		private List<SimpleObject> simpleObjects;
+	}
+
+	@Data
+	public static class SimpleObjectListBasket {
+		private SimpleObjectList simpleObjectList;
+		private Order order;
 	}
 
 	@Data

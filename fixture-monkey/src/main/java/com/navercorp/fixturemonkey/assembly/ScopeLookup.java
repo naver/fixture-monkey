@@ -64,6 +64,7 @@ final class ScopeLookup {
 	private final boolean hasDefinedScopeNotNull;
 	private final boolean hasFilters;
 	private final boolean hasCustomizers;
+	private final int highestSelectionOrderDeclaringInside;
 	private final Set<PathExpression> notNullRequiredPaths = new HashSet<>();
 	private final Map<Integer, Map<Integer, List<ScopeSelector>>> outrankingDefinedScopesDeclaringInsideByRank =
 		new HashMap<>();
@@ -74,15 +75,20 @@ final class ScopeLookup {
 		boolean notNull = false;
 		boolean filters = !root.analyzed.getFiltersByPath().isEmpty();
 		boolean customizers = !root.analyzed.getCustomizersByPath().isEmpty();
+		int highestSelectionOrder = 0;
 		for (DefinedScopeEntry entry : definedScopes) {
 			entry.collectValues(definedScopeValues, definedScopeJustPaths);
 			notNull |= !entry.analyzed.getNotNullPaths().isEmpty();
 			filters |= !entry.analyzed.getFiltersByPath().isEmpty();
 			customizers |= !entry.analyzed.getCustomizersByPath().isEmpty();
+			if (declaresInside(entry.analyzed)) {
+				highestSelectionOrder = Math.max(highestSelectionOrder, entry.selectionOrder);
+			}
 		}
 		this.hasDefinedScopeNotNull = notNull;
 		this.hasFilters = filters;
 		this.hasCustomizers = customizers;
+		this.highestSelectionOrderDeclaringInside = highestSelectionOrder;
 	}
 
 	/**
@@ -386,15 +392,20 @@ final class ScopeLookup {
 			.computeIfAbsent(precedence.priority(), priority -> {
 				List<ScopeSelector> scopes = new ArrayList<>();
 				for (DefinedScopeEntry entry : definedScopes) {
-					AnalyzedScope analyzed = entry.analyzed;
-					boolean declaresInside =
-						declaresValueDirectives(analyzed) || !analyzed.getContainerSizesByPath().isEmpty();
-					if (entry.scopePrecedence().outranksAtAnyDepth(precedence) && declaresInside) {
+					if (entry.scopePrecedence().outranksAtAnyDepth(precedence) && declaresInside(entry.analyzed)) {
 						scopes.add(entry.selector());
 					}
 				}
 				return scopes.isEmpty() ? Collections.emptyList() : scopes;
 			});
+	}
+
+	boolean isOutrankedInsideBySelection(DirectivePrecedence precedence) {
+		return highestSelectionOrderDeclaringInside > precedence.selectionOrder();
+	}
+
+	private static boolean declaresInside(AnalyzedScope analyzed) {
+		return declaresValueDirectives(analyzed) || !analyzed.getContainerSizesByPath().isEmpty();
 	}
 
 	private static boolean declaresValueDirectives(AnalyzedScope analyzed) {

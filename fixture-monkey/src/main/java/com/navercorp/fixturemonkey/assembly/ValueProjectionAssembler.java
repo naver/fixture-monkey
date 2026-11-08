@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.assembly;
 
+import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
@@ -1547,47 +1550,97 @@ public final class ValueProjectionAssembler {
 		if (scopes.isEmpty()) {
 			return false;
 		}
-		if (state.assemblyTree.childrenOf(node).isEmpty()) {
-			return isContainerOfUserTypes(node, state);
-		}
-		Set<Class<?>> types = new HashSet<>();
-		if (collectTypesBelow(node, types, state)) {
+		Set<Class<?>> types = typesBelow(node, state.scopes.isOutrankedInsideBySelection(precedence), state);
+		if (types == null) {
 			return true;
 		}
-		return scopes.stream().anyMatch(scope -> scope.mayAppearAmong(types));
+		if (types.isEmpty()) {
+			return false;
+		}
+		for (ScopeSelector scope : scopes) {
+			if (scope.mayAppearAmong(types)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	private static boolean collectTypesBelow(JvmNode node, Set<Class<?>> types, AssemblyState state) {
-		Deque<JvmNode> pending = new ArrayDeque<>(state.assemblyTree.childrenOf(node));
+	private static @Nullable Set<Class<?>> typesBelow(
+		JvmNode node,
+		boolean looksInsideContainersWithoutChildren,
+		AssemblyState state
+	) {
+		Set<Class<?>> types = new HashSet<>();
+		Deque<JvmNode> pending = new ArrayDeque<>();
+		pending.push(node);
 		Set<JvmNode> visited = Collections.newSetFromMap(new IdentityHashMap<>());
 		while (!pending.isEmpty()) {
-			JvmNode below = pending.pop();
-			if (!visited.add(below)) {
+			JvmNode current = pending.pop();
+			if (!visited.add(current)) {
 				continue;
 			}
-			types.add(below.getConcreteType().getRawType());
-			types.add(below.getDeclaredType().getRawType());
-			List<JvmNode> children = state.assemblyTree.childrenOf(below);
-			if (children.isEmpty() && isContainerOfUserTypes(below, state)) {
-				return true;
+			List<JvmNode> children = state.assemblyTree.childrenOf(current);
+			if (children.isEmpty()
+				&& looksInsideContainersWithoutChildren
+				&& TypeMetadataResolver.isContainerType(current.getConcreteType(), state)) {
+				Set<Class<?>> inside = typesInsideElementsOf(current.getConcreteType(), state);
+				if (inside == null) {
+					return null;
+				}
+				types.addAll(inside);
 			}
-			pending.addAll(children);
+			for (JvmNode child : children) {
+				types.add(child.getConcreteType().getRawType());
+				types.add(child.getDeclaredType().getRawType());
+				pending.push(child);
+			}
 		}
-		return false;
+		return types;
 	}
 
-	private static boolean isContainerOfUserTypes(JvmNode node, AssemblyState state) {
-		JvmType type = node.getConcreteType();
-		return TypeMetadataResolver.isContainerType(type, state) && hasUserTypeArgument(type);
+	private static @Nullable Set<Class<?>> typesInsideElementsOf(JvmType containerType, AssemblyState state) {
+		Map<JvmType, @Nullable Set<Class<?>>> cache = state.typesInsideElementsByContainerType;
+		if (cache.containsKey(containerType)) {
+			return cache.get(containerType);
+		}
+		Set<Class<?>> types = collectTypesInsideElementsOf(containerType);
+		cache.put(containerType, types);
+		return types;
 	}
 
-	private static boolean hasUserTypeArgument(JvmType type) {
+	private static @Nullable Set<Class<?>> collectTypesInsideElementsOf(JvmType containerType) {
+		Set<Class<?>> types = new HashSet<>();
+		Set<Class<?>> expanded = new HashSet<>();
+		Deque<Property> pending = new ArrayDeque<>();
+		pushElementsOf(containerType, pending);
+		while (!pending.isEmpty()) {
+			Property property = pending.pop();
+			Class<?> rawType = property.getJvmType().getRawType();
+			types.add(rawType);
+			pushElementsOf(property.getJvmType(), pending);
+			if (rawType.isArray() || Types.isJavaType(rawType) || !expanded.add(rawType)) {
+				continue;
+			}
+			if (Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers())) {
+				return null;
+			}
+			pending.addAll(FIELD_PROPERTY_GENERATOR.generateChildProperties(property));
+		}
+		return types;
+	}
+
+	private static void pushElementsOf(JvmType type, Deque<Property> pending) {
+		Class<?> rawType = type.getRawType();
+		if (rawType.isArray()) {
+			JvmType componentType = type.getComponentType();
+			pending.push(new TypeParameterProperty(
+				componentType != null ? componentType : new ReflectiveJvmType(rawType.getComponentType())
+			));
+			return;
+		}
 		for (JvmType typeArgument : type.getTypeVariables()) {
-			if (!Types.isJavaType(typeArgument.getRawType()) || hasUserTypeArgument(typeArgument)) {
-				return true;
-			}
+			pending.push(new TypeParameterProperty(typeArgument));
 		}
-		return false;
 	}
 
 	private static @Nullable ArbitraryIntrospector introspectorFor(
