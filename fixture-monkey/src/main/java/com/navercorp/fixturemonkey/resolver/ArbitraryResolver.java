@@ -149,9 +149,6 @@ public final class ArbitraryResolver {
 	 */
 	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
 	public void requireRegisteredNames(List<String> selectedNames) {
-		if (selectedNames.isEmpty()) {
-			return;
-		}
 		for (String selectedName : selectedNames) {
 			if (!weightsByName.containsKey(selectedName)) {
 				throw new IllegalArgumentException("Given name is not registered. name: " + selectedName);

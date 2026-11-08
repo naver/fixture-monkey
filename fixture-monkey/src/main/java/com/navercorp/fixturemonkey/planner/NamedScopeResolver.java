@@ -34,24 +34,19 @@ import com.navercorp.objectfarm.api.node.SeedState;
 
 final class NamedScopeResolver {
 	private final SeedState seedState;
+	private final Map<List<Scope>, List<List<Scope>>> alternativesByDefinedScopes =
+		Collections.synchronizedMap(new IdentityHashMap<>());
 
 	NamedScopeResolver(SeedState seedState) {
 		this.seedState = seedState;
 	}
 
 	List<Scope> resolve(List<Scope> definedScopes, List<String> selectedNames, Map<String, Integer> weightsByName) {
-		Map<ScopeSelector, List<Scope>> alternativesBySelector = new LinkedHashMap<>();
-		for (Scope scope : definedScopes) {
-			if (scope.getName() != null) {
-				alternativesBySelector.computeIfAbsent(scope.getSelector(), it -> new ArrayList<>()).add(scope);
-			}
-		}
-		if (alternativesBySelector.isEmpty()) {
-			return definedScopes;
-		}
+		List<List<Scope>> alternativesBySelector =
+			alternativesByDefinedScopes.computeIfAbsent(definedScopes, NamedScopeResolver::alternativesOf);
 
 		Set<Scope> chosen = Collections.newSetFromMap(new IdentityHashMap<>());
-		for (List<Scope> alternatives : alternativesBySelector.values()) {
+		for (List<Scope> alternatives : alternativesBySelector) {
 			if (!anySelected(alternatives, selectedNames)) {
 				chosen.add(choose(alternatives, weightsByName));
 			}
@@ -65,6 +60,16 @@ final class NamedScopeResolver {
 			}
 		}
 		return resolved;
+	}
+
+	private static List<List<Scope>> alternativesOf(List<Scope> definedScopes) {
+		Map<ScopeSelector, List<Scope>> alternativesBySelector = new LinkedHashMap<>();
+		for (Scope scope : definedScopes) {
+			if (scope.getName() != null) {
+				alternativesBySelector.computeIfAbsent(scope.getSelector(), it -> new ArrayList<>()).add(scope);
+			}
+		}
+		return new ArrayList<>(alternativesBySelector.values());
 	}
 
 	private static boolean anySelected(List<Scope> alternatives, List<String> selectedNames) {

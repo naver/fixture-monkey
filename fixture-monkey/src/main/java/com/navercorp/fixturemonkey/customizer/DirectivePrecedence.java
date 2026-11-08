@@ -98,8 +98,9 @@ public final class DirectivePrecedence implements Comparable<DirectivePrecedence
 	 * @return true when this directive wins
 	 */
 	public boolean outranks(int scopeDepth, DirectivePrecedence other, int otherScopeDepth) {
-		if (outranksAtAnyDepth(other) || other.outranksAtAnyDepth(this)) {
-			return outranksAtAnyDepth(other);
+		int rank = compareRank(other);
+		if (rank != 0) {
+			return rank > 0;
 		}
 		if (scopeDepth != otherScopeDepth) {
 			return scopeDepth < otherScopeDepth;
@@ -118,8 +119,9 @@ public final class DirectivePrecedence implements Comparable<DirectivePrecedence
 	 * @return true when this size wins
 	 */
 	public boolean outranksSize(int scopeDepth, DirectivePrecedence other, int otherScopeDepth) {
-		if (outranksAtAnyDepth(other) || other.outranksAtAnyDepth(this)) {
-			return outranksAtAnyDepth(other);
+		int rank = compareRank(other);
+		if (rank != 0) {
+			return rank > 0;
 		}
 		if (scopeDepth != otherScopeDepth) {
 			return scopeDepth > otherScopeDepth;
@@ -132,13 +134,8 @@ public final class DirectivePrecedence implements Comparable<DirectivePrecedence
 	 */
 	@Override
 	public int compareTo(DirectivePrecedence other) {
-		if (outranksAtAnyDepth(other)) {
-			return 1;
-		}
-		if (other.outranksAtAnyDepth(this)) {
-			return -1;
-		}
-		return Integer.compare(sequence, other.sequence);
+		int rank = compareRank(other);
+		return rank != 0 ? rank : Integer.compare(sequence, other.sequence);
 	}
 
 	/**
@@ -150,10 +147,14 @@ public final class DirectivePrecedence implements Comparable<DirectivePrecedence
 	 * @return true when this directive wins at any depth
 	 */
 	public boolean outranksAtAnyDepth(DirectivePrecedence other) {
+		return compareRank(other) > 0;
+	}
+
+	private int compareRank(DirectivePrecedence other) {
 		if (selectionOrder != other.selectionOrder) {
-			return selectionOrder > other.selectionOrder;
+			return Integer.compare(selectionOrder, other.selectionOrder);
 		}
-		return priority < other.priority;
+		return Integer.compare(other.priority, priority);
 	}
 
 	/**
