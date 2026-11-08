@@ -1547,6 +1547,9 @@ public final class ValueProjectionAssembler {
 		if (scopes.isEmpty()) {
 			return false;
 		}
+		if (state.assemblyTree.childrenOf(node).isEmpty()) {
+			return isContainerOfUserTypes(node, state);
+		}
 		Set<Class<?>> types = new HashSet<>();
 		if (collectTypesBelow(node, types, state)) {
 			return true;
@@ -1555,36 +1558,32 @@ public final class ValueProjectionAssembler {
 	}
 
 	private static boolean collectTypesBelow(JvmNode node, Set<Class<?>> types, AssemblyState state) {
-		Deque<JvmNode> pending = new ArrayDeque<>();
-		pending.push(node);
+		Deque<JvmNode> pending = new ArrayDeque<>(state.assemblyTree.childrenOf(node));
 		Set<JvmNode> visited = Collections.newSetFromMap(new IdentityHashMap<>());
 		while (!pending.isEmpty()) {
-			JvmNode current = pending.pop();
-			if (!visited.add(current)) {
+			JvmNode below = pending.pop();
+			if (!visited.add(below)) {
 				continue;
 			}
-			List<JvmNode> children = state.assemblyTree.childrenOf(current);
-			if (children.isEmpty() && isOpenWithoutChildren(current.getConcreteType(), types)) {
+			types.add(below.getConcreteType().getRawType());
+			types.add(below.getDeclaredType().getRawType());
+			List<JvmNode> children = state.assemblyTree.childrenOf(below);
+			if (children.isEmpty() && isContainerOfUserTypes(below, state)) {
 				return true;
 			}
-			for (JvmNode child : children) {
-				types.add(child.getConcreteType().getRawType());
-				types.add(child.getDeclaredType().getRawType());
-				pending.push(child);
-			}
+			pending.addAll(children);
 		}
 		return false;
 	}
 
-	private static boolean isOpenWithoutChildren(JvmType type, Set<Class<?>> types) {
-		Class<?> rawType = type.getRawType();
-		if (!Types.isJavaType(rawType)
-			&& (Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers()))) {
-			return true;
-		}
+	private static boolean isContainerOfUserTypes(JvmNode node, AssemblyState state) {
+		JvmType type = node.getConcreteType();
+		return TypeMetadataResolver.isContainerType(type, state) && hasUserTypeArgument(type);
+	}
+
+	private static boolean hasUserTypeArgument(JvmType type) {
 		for (JvmType typeArgument : type.getTypeVariables()) {
-			types.add(typeArgument.getRawType());
-			if (!Types.isJavaType(typeArgument.getRawType()) || isOpenWithoutChildren(typeArgument, types)) {
+			if (!Types.isJavaType(typeArgument.getRawType()) || hasUserTypeArgument(typeArgument)) {
 				return true;
 			}
 		}

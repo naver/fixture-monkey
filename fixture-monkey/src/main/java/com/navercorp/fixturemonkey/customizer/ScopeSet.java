@@ -50,10 +50,6 @@ public final class ScopeSet {
 	 * first, and the earlier declared one first at the same priority.
 	 */
 	private final List<Scope> definedScopes;
-
-	/**
-	 * The position of each name the sampled builder selected, from 1 for the one selected first.
-	 */
 	private final Map<String, Integer> selectionOrderByName;
 	private final Map<Class<?>, InstantiatorProcessResult> globalInstantiators;
 	private final Map<Class<?>, DirectivePrecedence> globalInstantiatorPrecedenceByType;

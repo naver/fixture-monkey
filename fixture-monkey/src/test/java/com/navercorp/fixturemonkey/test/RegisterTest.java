@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -1701,6 +1702,42 @@ class RegisterTest {
 	}
 
 	@RepeatedTest(10)
+	void registeredValueIsKeptWhenMatcherWithLowerPriorityNumberIsRegistered() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "registered"))
+			.register(
+				new MatcherOperator<>(
+					property -> "price".equals(property.getName()),
+					fm -> fm.giveMeBuilder(Long.class).set("$", 5L)
+				),
+				0
+			)
+			.build();
+
+		// when
+		String actual = sut.giveMeOne(Order.class).getName();
+
+		// then
+		then(actual).isEqualTo("registered");
+	}
+
+	@RepeatedTest(10)
+	void registeredValueWithUserTypeArgumentIsKeptBesidePropertyRegisteredWithLowerPriorityNumber() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(TypeHolder.class, fm -> fm.giveMeBuilder(TypeHolder.class).set("type", Order.class))
+			.register(UUID.class, fm -> fm.giveMeBuilder(UUID.class).set("$", new UUID(0, 0)), 0)
+			.build();
+
+		// when
+		Class<Order> actual = sut.giveMeOne(TypeHolder.class).getType();
+
+		// then
+		then(actual).isEqualTo(Order.class);
+	}
+
+	@RepeatedTest(10)
 	void registerElementContainerValueDeclaredAfterWildcardSizeWins() {
 		// given
 		FixtureMonkey sut = fixtureMonkey()
@@ -2272,6 +2309,12 @@ class RegisterTest {
 	@Data
 	public static class OrderList {
 		private List<Order> orders;
+	}
+
+	@Data
+	public static class TypeHolder {
+		private Class<Order> type;
+		private UUID id;
 	}
 
 	@Data
