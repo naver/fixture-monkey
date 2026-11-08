@@ -78,7 +78,7 @@ public final class ScopeSet {
 		this.selectionOrderByName = selectionOrders;
 		List<Scope> lowestPrecedenceFirst = new ArrayList<>(definedScopes);
 		lowestPrecedenceFirst.sort(
-			Comparator.comparingInt(this::getSelectionOrder)
+			Comparator.comparingInt((Scope scope) -> getSelectionOrder(scope))
 				.thenComparing(Comparator.comparingInt(Scope::getPriority).reversed())
 		);
 		this.definedScopes = lowestPrecedenceFirst;

@@ -111,6 +111,9 @@ final class NamedScopeResolver {
 	}
 
 	private static int weightOf(Scope candidate, Map<String, Integer> weightsByName) {
-		return weightsByName.getOrDefault(candidate.getName(), NamedMatcher.DEFAULT_WEIGHT);
+		String name = candidate.getName();
+		return name != null
+			? weightsByName.getOrDefault(name, NamedMatcher.DEFAULT_WEIGHT)
+			: NamedMatcher.DEFAULT_WEIGHT;
 	}
 }
