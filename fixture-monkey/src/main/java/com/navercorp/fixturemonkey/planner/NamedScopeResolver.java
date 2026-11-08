@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.objectfarm.api.node.SeedState;
@@ -38,7 +39,7 @@ final class NamedScopeResolver {
 		this.seedState = seedState;
 	}
 
-	List<Scope> resolve(List<Scope> definedScopes, List<String> selectedNames) {
+	List<Scope> resolve(List<Scope> definedScopes, List<String> selectedNames, Map<String, Integer> weightsByName) {
 		Map<ScopeSelector, List<Scope>> alternativesBySelector = new LinkedHashMap<>();
 		for (Scope scope : definedScopes) {
 			if (scope.getName() != null) {
@@ -52,20 +53,15 @@ final class NamedScopeResolver {
 		Set<Scope> chosen = Collections.newSetFromMap(new IdentityHashMap<>());
 		for (List<Scope> alternatives : alternativesBySelector.values()) {
 			if (!anySelected(alternatives, selectedNames)) {
-				chosen.add(choose(alternatives));
+				chosen.add(choose(alternatives, weightsByName));
 			}
 		}
 
 		List<Scope> resolved = new ArrayList<>(definedScopes.size());
 		for (Scope scope : definedScopes) {
 			String name = scope.getName();
-			if (name == null || chosen.contains(scope)) {
+			if (name == null || chosen.contains(scope) || selectedNames.contains(name)) {
 				resolved.add(scope);
-				continue;
-			}
-			int selectedIndex = selectedNames.indexOf(name);
-			if (selectedIndex >= 0) {
-				resolved.add(scope.selected(selectedIndex + 1));
 			}
 		}
 		return resolved;
@@ -81,7 +77,7 @@ final class NamedScopeResolver {
 		return false;
 	}
 
-	private Scope choose(List<Scope> alternatives) {
+	private Scope choose(List<Scope> alternatives, Map<String, Integer> weightsByName) {
 		int lowestPriority = Integer.MAX_VALUE;
 		for (Scope alternative : alternatives) {
 			lowestPriority = Math.min(lowestPriority, alternative.getPriority());
@@ -96,21 +92,25 @@ final class NamedScopeResolver {
 			return candidates.get(0);
 		}
 		int selectorHash = candidates.get(0).getSelector().toExpression().hashCode();
-		return pickByWeight(candidates, seedState.alternativeSnapshot().randomFor(selectorHash));
+		return pickByWeight(candidates, weightsByName, seedState.alternativeSnapshot().randomFor(selectorHash));
 	}
 
-	static Scope pickByWeight(List<Scope> candidates, Random random) {
+	static Scope pickByWeight(List<Scope> candidates, Map<String, Integer> weightsByName, Random random) {
 		long totalWeight = 0;
 		for (Scope candidate : candidates) {
-			totalWeight += candidate.getWeight();
+			totalWeight += weightOf(candidate, weightsByName);
 		}
 		long point = Math.floorMod(random.nextLong(), totalWeight);
 		for (Scope candidate : candidates) {
-			point -= candidate.getWeight();
+			point -= weightOf(candidate, weightsByName);
 			if (point < 0) {
 				return candidate;
 			}
 		}
 		return candidates.get(candidates.size() - 1);
+	}
+
+	private static int weightOf(Scope candidate, Map<String, Integer> weightsByName) {
+		return weightsByName.getOrDefault(candidate.getName(), NamedMatcher.DEFAULT_WEIGHT);
 	}
 }

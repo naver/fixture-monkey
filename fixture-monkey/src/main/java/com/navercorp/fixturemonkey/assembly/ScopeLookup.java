@@ -34,6 +34,7 @@ import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
@@ -93,9 +94,14 @@ final class ScopeLookup {
 	 * @param analysisResult        what the root scope declared and what planning expanded it into, by path from the
 	 *                              node a sample starts from
 	 * @param analyzedDefinedScopes the defined scopes, the one with the lowest precedence first
+	 * @param scopeSet              the scopes of the sample, which tell the selection order of each defined scope
 	 * @return the lookup
 	 */
-	static ScopeLookup from(AnalysisResult analysisResult, List<AnalyzedScope> analyzedDefinedScopes) {
+	static ScopeLookup from(
+		AnalysisResult analysisResult,
+		List<AnalyzedScope> analyzedDefinedScopes,
+		ScopeSet scopeSet
+	) {
 		RootEntry root = new RootEntry(analysisResult);
 		if (analyzedDefinedScopes.isEmpty()) {
 			return new ScopeLookup(root, Collections.emptyList());
@@ -103,7 +109,7 @@ final class ScopeLookup {
 		List<DefinedScopeEntry> entries = new ArrayList<>(analyzedDefinedScopes.size());
 		int sequenceBase = 0;
 		for (AnalyzedScope analyzed : analyzedDefinedScopes) {
-			entries.add(new DefinedScopeEntry(analyzed, sequenceBase));
+			entries.add(new DefinedScopeEntry(analyzed, scopeSet.getSelectionOrder(analyzed.getScope()), sequenceBase));
 			sequenceBase += 2 + analyzed.getLatestSequence();
 		}
 		return new ScopeLookup(root, entries);
@@ -586,10 +592,12 @@ final class ScopeLookup {
 
 	private static final class DefinedScopeEntry {
 		private final AnalyzedScope analyzed;
+		private final int selectionOrder;
 		private final int sequenceBase;
 
-		private DefinedScopeEntry(AnalyzedScope analyzed, int sequenceBase) {
+		private DefinedScopeEntry(AnalyzedScope analyzed, int selectionOrder, int sequenceBase) {
 			this.analyzed = analyzed;
+			this.selectionOrder = selectionOrder;
 			this.sequenceBase = sequenceBase;
 		}
 
@@ -598,7 +606,7 @@ final class ScopeLookup {
 		}
 
 		private DirectivePrecedence precedence(int sequence) {
-			return DirectivePrecedence.definedScope(analyzed.getSelectionOrder(), analyzed.getPriority(), sequence);
+			return DirectivePrecedence.definedScope(selectionOrder, analyzed.getPriority(), sequence);
 		}
 
 		/**

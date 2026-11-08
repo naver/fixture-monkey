@@ -73,7 +73,8 @@ final class AssemblyState {
 	AssemblyState(AssembleContext context) {
 		this.context = context;
 		AssemblyPlan plan = context.getPlan();
-		this.scopes = ScopeLookup.from(plan.getAnalysisResult(), plan.getAnalyzedDefinedScopes());
+		this.scopes =
+			ScopeLookup.from(plan.getAnalysisResult(), plan.getAnalyzedDefinedScopes(), plan.getScopeSet());
 		this.candidates = CandidateLookup.from(plan.getValues().getValuesByPath(), scopes);
 		this.limits = new LimitCounter(plan.getAnalyzedRootScope(), plan.getAnalyzedDefinedScopes());
 		this.assemblySeed = ThreadLocalRandom.current().nextLong();

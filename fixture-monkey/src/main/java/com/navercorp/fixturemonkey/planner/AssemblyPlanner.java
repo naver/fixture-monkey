@@ -198,13 +198,18 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 	 *
 	 * @param definedScopes the defined scopes that may apply to the sample, in declared order
 	 * @param selectedNames the names the sampled builder selected, the one selected last at the end
+	 * @param weightsByName the weight each name is registered with
 	 * @return the defined scopes that apply, in declared order
 	 */
-	public List<Scope> resolveDefinedScopes(List<Scope> definedScopes, List<String> selectedNames) {
+	public List<Scope> resolveDefinedScopes(
+		List<Scope> definedScopes,
+		List<String> selectedNames,
+		Map<String, Integer> weightsByName
+	) {
 		for (Scope scope : definedScopes) {
 			if (scope.getName() != null) {
 				resetSeedStateIfRandomChanged();
-				return namedScopeResolver.resolve(definedScopes, selectedNames);
+				return namedScopeResolver.resolve(definedScopes, selectedNames, weightsByName);
 			}
 		}
 		return definedScopes;
@@ -257,6 +262,7 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 		PathResolverContext resolverContext = pathResolverContextFactory.build(
 			analysisResult,
 			definedScopeContainerSizes,
+			scopeSet,
 			resolutionListener,
 			fixed,
 			options,

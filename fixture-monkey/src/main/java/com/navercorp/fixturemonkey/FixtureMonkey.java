@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +77,7 @@ public final class FixtureMonkey {
 	private final AssemblyTracer tracer;
 	private final Map<Class<?>, Set<Property>> inferredPropertiesCache = new ConcurrentHashMap<>();
 	private final Map<JvmType, List<Scope>> definedScopesByRootType = new ConcurrentHashMap<>();
+	private final Map<String, Integer> weightsByName;
 	private volatile List<Scope> registeredScopes = Collections.emptyList();
 
 	public FixtureMonkey(
@@ -128,6 +129,7 @@ public final class FixtureMonkey {
 			? assemblyPlanner
 			: new AssemblyPlanner(System.nanoTime());
 		this.tracer = tracer;
+		this.weightsByName = weightsByNameOf(registeredBuilders);
 		this.registeredScopes = registeredScopesOf(registeredBuilders);
 	}
 
@@ -160,6 +162,7 @@ public final class FixtureMonkey {
 				tracer,
 				inferredPropertiesCache,
 				() -> registeredScopes,
+				weightsByName,
 				definedScopesByRootType
 			),
 			monkeyManipulatorFactory,
@@ -188,6 +191,7 @@ public final class FixtureMonkey {
 				tracer,
 				inferredPropertiesCache,
 				() -> registeredScopes,
+				weightsByName,
 				definedScopesByRootType
 			),
 			monkeyManipulatorFactory,
@@ -253,20 +257,14 @@ public final class FixtureMonkey {
 		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders
 	) {
 		List<Scope> scopes = new ArrayList<>();
-		Set<String> names = new HashSet<>();
 		for (PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registered
 			: registeredBuilders) {
 			Matcher matcher = registered.getMatcher();
 			String name = null;
-			int weight = NamedMatcher.DEFAULT_WEIGHT;
 			if (matcher instanceof NamedMatcher) {
 				NamedMatcher namedMatcher = (NamedMatcher)matcher;
 				name = namedMatcher.getRegisteredName();
-				weight = namedMatcher.getWeight();
 				matcher = namedMatcher.getMatcher();
-				if (!names.add(name)) {
-					throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + name);
-				}
 			}
 			ArbitraryBuilderContext context =
 				((ArbitraryBuilderContextProvider)registered.getOperator().apply(this)).getActiveContext();
@@ -276,8 +274,26 @@ public final class FixtureMonkey {
 						+ context.getSelectedNames()
 				);
 			}
-			scopes.add(context.toScope(ScopeSelector.of(matcher), registered.getPriority(), name, weight));
+			scopes.add(context.toScope(ScopeSelector.of(matcher), registered.getPriority(), name));
 		}
 		return Collections.unmodifiableList(scopes);
+	}
+
+	private static Map<String, Integer> weightsByNameOf(
+		List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredBuilders
+	) {
+		Map<String, Integer> weightsByName = new HashMap<>();
+		for (PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registered
+			: registeredBuilders) {
+			if (!(registered.getMatcher() instanceof NamedMatcher)) {
+				continue;
+			}
+			NamedMatcher namedMatcher = (NamedMatcher)registered.getMatcher();
+			String name = namedMatcher.getRegisteredName();
+			if (weightsByName.put(name, namedMatcher.getWeight()) != null) {
+				throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + name);
+			}
+		}
+		return Collections.unmodifiableMap(weightsByName);
 	}
 }

@@ -187,8 +187,8 @@ public final class ArbitraryBuilderContext {
 	 * @param name     the name the builder is registered with, or null when it is registered without one
 	 * @return the scope
 	 */
-	public Scope toScope(ScopeSelector selector, int priority, @Nullable String name, int weight) {
-		return new Scope(selector, priority, new ArrayList<>(directives), getInstantiators(), name, weight);
+	public Scope toScope(ScopeSelector selector, int priority, @Nullable String name) {
+		return new Scope(selector, priority, new ArrayList<>(directives), getInstantiators(), name);
 	}
 
 	public Map<Class<?>, InstantiatorProcessResult> getInstantiators() {

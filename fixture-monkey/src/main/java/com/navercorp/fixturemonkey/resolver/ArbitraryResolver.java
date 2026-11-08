@@ -68,8 +68,8 @@ public final class ArbitraryResolver {
 	private final AssemblyTracer tracer;
 	private final Map<Class<?>, Set<Property>> inferredPropertiesCache;
 	private final Supplier<List<Scope>> registeredScopes;
+	private final Map<String, Integer> weightsByName;
 	private final Map<JvmType, List<Scope>> definedScopesByRootType;
-	private volatile @Nullable Set<String> registeredNames;
 
 	public ArbitraryResolver(
 		MonkeyContext monkeyContext,
@@ -77,6 +77,7 @@ public final class ArbitraryResolver {
 		AssemblyTracer tracer,
 		@Nullable Map<Class<?>, Set<Property>> inferredPropertiesCache,
 		Supplier<List<Scope>> registeredScopes,
+		Map<String, Integer> weightsByName,
 		Map<JvmType, List<Scope>> definedScopesByRootType
 	) {
 		this.monkeyContext = monkeyContext;
@@ -85,6 +86,7 @@ public final class ArbitraryResolver {
 		this.inferredPropertiesCache =
 			inferredPropertiesCache != null ? inferredPropertiesCache : new ConcurrentHashMap<>();
 		this.registeredScopes = registeredScopes;
+		this.weightsByName = weightsByName;
 		this.definedScopesByRootType = definedScopesByRootType;
 	}
 
@@ -107,9 +109,11 @@ public final class ArbitraryResolver {
 	) {
 		long prepStart = System.nanoTime();
 		applyValidOnlyOption(rootProperty, activeContext, options);
+		List<String> selectedNames = activeContext.getSelectedNames();
 		ScopeSet scopeSet = new ScopeSet(
 			activeContext.toRootScope(),
-			assemblyPlanner.resolveDefinedScopes(definedScopesOf(rootProperty), activeContext.getSelectedNames())
+			assemblyPlanner.resolveDefinedScopes(definedScopesOf(rootProperty), selectedNames, weightsByName),
+			selectedNames
 		);
 		long prepNanos = System.nanoTime() - prepStart;
 
@@ -148,27 +152,11 @@ public final class ArbitraryResolver {
 		if (selectedNames.isEmpty()) {
 			return;
 		}
-		Set<String> names = registeredNames();
 		for (String selectedName : selectedNames) {
-			if (!names.contains(selectedName)) {
+			if (!weightsByName.containsKey(selectedName)) {
 				throw new IllegalArgumentException("Given name is not registered. name: " + selectedName);
 			}
 		}
-	}
-
-	private Set<String> registeredNames() {
-		Set<String> names = registeredNames;
-		if (names == null) {
-			names = new HashSet<>();
-			for (Scope scope : registeredScopes.get()) {
-				String name = scope.getName();
-				if (name != null) {
-					names.add(name);
-				}
-			}
-			registeredNames = names;
-		}
-		return names;
 	}
 
 	/**

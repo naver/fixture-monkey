@@ -30,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.tree.ContainerSizeResolverFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
@@ -61,6 +62,7 @@ final class PathResolverContextFactory {
 	public PathResolverContext build(
 		AnalysisResult analysisResult,
 		List<Map.Entry<AnalyzedScope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes,
+		ScopeSet scopeSet,
 		ResolutionListener resolutionListener,
 		boolean isFixed,
 		@Nullable FixtureMonkeyOptions options,
@@ -96,7 +98,7 @@ final class PathResolverContextFactory {
 			builder.addGenericTypeResolver(resolver);
 		}
 
-		addDefinedScopeContainerSizeResolver(builder, definedScopeContainerSizes);
+		addDefinedScopeContainerSizeResolver(builder, definedScopeContainerSizes, scopeSet);
 
 		if (isFixed) {
 			builder.defaultContainerSizeResolver(
@@ -150,7 +152,8 @@ final class PathResolverContextFactory {
 
 	private void addDefinedScopeContainerSizeResolver(
 		PathResolverContext.Builder builder,
-		List<Map.Entry<AnalyzedScope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes
+		List<Map.Entry<AnalyzedScope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes,
+		ScopeSet scopeSet
 	) {
 		if (definedScopeContainerSizes.isEmpty()) {
 			return;
@@ -163,6 +166,6 @@ final class PathResolverContextFactory {
 			);
 			resolversByScope.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), resolversByField));
 		}
-		builder.ancestorAwareContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope));
+		builder.ancestorAwareContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope, scopeSet));
 	}
 }

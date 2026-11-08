@@ -1544,27 +1544,51 @@ public final class ValueProjectionAssembler {
 		AssemblyState state
 	) {
 		List<ScopeSelector> scopes = state.scopes.outrankingDefinedScopesDeclaringInside(precedence);
-		if (scopes.isEmpty() || state.assemblyTree.childrenOf(node).isEmpty()) {
+		if (scopes.isEmpty()) {
 			return false;
 		}
-		Set<Class<?>> types = typesBelow(node, state);
+		Set<Class<?>> types = new HashSet<>();
+		if (collectTypesBelow(node, types, state)) {
+			return true;
+		}
 		return scopes.stream().anyMatch(scope -> scope.mayAppearAmong(types));
 	}
 
-	private static Set<Class<?>> typesBelow(JvmNode node, AssemblyState state) {
-		Set<Class<?>> types = new HashSet<>();
-		Deque<JvmNode> pending = new ArrayDeque<>(state.assemblyTree.childrenOf(node));
+	private static boolean collectTypesBelow(JvmNode node, Set<Class<?>> types, AssemblyState state) {
+		Deque<JvmNode> pending = new ArrayDeque<>();
+		pending.push(node);
 		Set<JvmNode> visited = Collections.newSetFromMap(new IdentityHashMap<>());
 		while (!pending.isEmpty()) {
-			JvmNode below = pending.pop();
-			if (!visited.add(below)) {
+			JvmNode current = pending.pop();
+			if (!visited.add(current)) {
 				continue;
 			}
-			types.add(below.getConcreteType().getRawType());
-			types.add(below.getDeclaredType().getRawType());
-			pending.addAll(state.assemblyTree.childrenOf(below));
+			List<JvmNode> children = state.assemblyTree.childrenOf(current);
+			if (children.isEmpty() && isOpenWithoutChildren(current.getConcreteType(), types)) {
+				return true;
+			}
+			for (JvmNode child : children) {
+				types.add(child.getConcreteType().getRawType());
+				types.add(child.getDeclaredType().getRawType());
+				pending.push(child);
+			}
 		}
-		return types;
+		return false;
+	}
+
+	private static boolean isOpenWithoutChildren(JvmType type, Set<Class<?>> types) {
+		Class<?> rawType = type.getRawType();
+		if (!Types.isJavaType(rawType)
+			&& (Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers()))) {
+			return true;
+		}
+		for (JvmType typeArgument : type.getTypeVariables()) {
+			types.add(typeArgument.getRawType());
+			if (!Types.isJavaType(typeArgument.getRawType()) || isOpenWithoutChildren(typeArgument, types)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static @Nullable ArbitraryIntrospector introspectorFor(

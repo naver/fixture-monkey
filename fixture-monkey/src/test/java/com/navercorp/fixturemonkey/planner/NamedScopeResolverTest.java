@@ -22,7 +22,9 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.objectfarm.api.node.SeedState;
 
 class NamedScopeResolverTest {
@@ -44,7 +47,11 @@ class NamedScopeResolverTest {
 		NamedScopeResolver sut = new NamedScopeResolver(seedState);
 
 		// when
-		sut.resolve(Arrays.asList(named("delivered"), named("cancelled")), Collections.emptyList());
+		sut.resolve(
+			Arrays.asList(named("delivered"), named("cancelled")),
+			Collections.emptyList(),
+			Collections.emptyMap()
+		);
 
 		// then
 		then(seedState.getCurrentSequence()).isZero();
@@ -69,15 +76,19 @@ class NamedScopeResolverTest {
 		// given
 		NamedScopeResolver sut = new NamedScopeResolver(new SeedState(0));
 
+		List<String> selectedNames = Arrays.asList("cancelled", "delivered");
+
 		// when
 		List<Scope> actual = sut.resolve(
 			Arrays.asList(named("delivered"), named("cancelled"), named("returned")),
-			Arrays.asList("cancelled", "delivered")
+			selectedNames,
+			Collections.emptyMap()
 		);
 
 		// then
+		ScopeSet scopeSet = scopeSetOf(actual, selectedNames);
 		then(actual).extracting(Scope::getName).containsExactly("delivered", "cancelled");
-		then(actual).extracting(Scope::getSelectionOrder).containsExactly(2, 1);
+		then(actual).extracting(scopeSet::getSelectionOrder).containsExactly(2, 1);
 	}
 
 	@Test
@@ -86,26 +97,33 @@ class NamedScopeResolverTest {
 		Scope registered = new Scope(ORDER, -100, Collections.emptyList(), Collections.emptyMap());
 		NamedScopeResolver sut = new NamedScopeResolver(new SeedState(0));
 
+		List<String> selectedNames = Collections.singletonList("delivered");
+
 		// when
 		List<Scope> actual = sut.resolve(
 			Arrays.asList(registered, named("delivered")),
-			Collections.singletonList("delivered")
+			selectedNames,
+			Collections.emptyMap()
 		);
 
 		// then
+		ScopeSet scopeSet = scopeSetOf(actual, selectedNames);
 		then(actual.get(1).getPriority()).isEqualTo(Integer.MAX_VALUE);
-		then(actual.get(1).getSelectionOrder()).isEqualTo(1);
-		then(actual.get(0).getSelectionOrder()).isZero();
+		then(scopeSet.getSelectionOrder(actual.get(1))).isEqualTo(1);
+		then(scopeSet.getSelectionOrder(actual.get(0))).isZero();
 	}
 
 	@Test
 	void alternativeIsPickedInProportionToItsWeight() {
 		// given
-		List<Scope> candidates = Arrays.asList(named("delivered", 1), named("cancelled", 3));
+		List<Scope> candidates = Arrays.asList(named("delivered"), named("cancelled"));
+		Map<String, Integer> weightsByName = new HashMap<>();
+		weightsByName.put("delivered", 1);
+		weightsByName.put("cancelled", 3);
 
 		// when
 		List<String> actual = LongStream.rangeClosed(-1, 4)
-			.mapToObj(point -> NamedScopeResolver.pickByWeight(candidates, randomOf(point)).getName())
+			.mapToObj(point -> NamedScopeResolver.pickByWeight(candidates, weightsByName, randomOf(point)).getName())
 			.collect(Collectors.toList());
 
 		// then
@@ -118,13 +136,15 @@ class NamedScopeResolverTest {
 		NamedScopeResolver sut = new NamedScopeResolver(new SeedState(0));
 		List<Scope> scopes = Arrays.asList(named("delivered"), named("cancelled"));
 
+		List<String> selectedNames = Collections.singletonList("cancelled");
+
 		// when
-		Scope selected = sut.resolve(scopes, Collections.singletonList("cancelled")).get(0);
-		Scope chosen = sut.resolve(scopes, Collections.emptyList()).get(0);
+		List<Scope> selected = sut.resolve(scopes, selectedNames, Collections.emptyMap());
+		List<Scope> chosen = sut.resolve(scopes, Collections.emptyList(), Collections.emptyMap());
 
 		// then
-		then(selected.isSelected()).isTrue();
-		then(chosen.isSelected()).isFalse();
+		then(scopeSetOf(selected, selectedNames).getSelectionOrder(selected.get(0))).isPositive();
+		then(scopeSetOf(chosen, Collections.emptyList()).getSelectionOrder(chosen.get(0))).isZero();
 	}
 
 	@Test
@@ -136,7 +156,8 @@ class NamedScopeResolverTest {
 		// when
 		List<Scope> actual = sut.resolve(
 			Arrays.asList(unnamed, named("delivered"), named("cancelled")),
-			Collections.singletonList("cancelled")
+			Collections.singletonList("cancelled"),
+			Collections.emptyMap()
 		);
 
 		// then
@@ -144,11 +165,11 @@ class NamedScopeResolverTest {
 	}
 
 	private static Scope named(String name) {
-		return named(name, 1);
+		return new Scope(ORDER, Integer.MAX_VALUE, Collections.emptyList(), Collections.emptyMap(), name);
 	}
 
-	private static Scope named(String name, int weight) {
-		return new Scope(ORDER, Integer.MAX_VALUE, Collections.emptyList(), Collections.emptyMap(), name, weight);
+	private static ScopeSet scopeSetOf(List<Scope> definedScopes, List<String> selectedNames) {
+		return new ScopeSet(Scope.root(Collections.emptyList(), Collections.emptyMap()), definedScopes, selectedNames);
 	}
 
 	private static Random randomOf(long value) {
@@ -162,7 +183,7 @@ class NamedScopeResolverTest {
 
 	private static List<String> chosenNames(NamedScopeResolver resolver, List<Scope> scopes) {
 		return Collections.nCopies(30, scopes).stream()
-			.map(it -> resolver.resolve(it, Collections.emptyList()).get(0).getName())
+			.map(it -> resolver.resolve(it, Collections.emptyList(), Collections.emptyMap()).get(0).getName())
 			.collect(Collectors.toList());
 	}
 

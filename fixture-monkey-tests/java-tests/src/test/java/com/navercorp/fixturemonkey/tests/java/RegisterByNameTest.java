@@ -960,6 +960,28 @@ class RegisterByNameTest {
 	}
 
 	@Test
+	void selectedTypeAppliesToElementsOfWholeValueOfRegisteredOuterType() {
+		// given
+		Order registeredOrder = new Order();
+		registeredOrder.setStatus("REGISTERED");
+		Customer registered = new Customer();
+		registered.setOrders(Arrays.asList(registeredOrder, registeredOrder));
+		FixtureMonkey sut = withOrderVariants()
+			.register(Customer.class, fm -> fm.giveMeBuilder(registered))
+			.build();
+
+		// when
+		Set<String> actual = IntStream.range(0, SAMPLE_COUNT)
+			.mapToObj(it -> sut.giveMeExperimentalBuilder(Customer.class).selectName("cancelled").sample())
+			.flatMap(it -> it.getOrders().stream())
+			.map(Order::getStatus)
+			.collect(Collectors.toSet());
+
+		// then
+		then(actual).containsExactly(CANCELLED);
+	}
+
+	@Test
 	void selectedNullWinsOverNotNullOfRegisteredOuterType() {
 		// given
 		FixtureMonkey sut = builder()

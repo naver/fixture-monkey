@@ -50,6 +50,11 @@ public final class ScopeSet {
 	 * first, and the earlier declared one first at the same priority.
 	 */
 	private final List<Scope> definedScopes;
+
+	/**
+	 * The position of each name the sampled builder selected, from 1 for the one selected first.
+	 */
+	private final Map<String, Integer> selectionOrderByName;
 	private final Map<Class<?>, InstantiatorProcessResult> globalInstantiators;
 	private final Map<Class<?>, DirectivePrecedence> globalInstantiatorPrecedenceByType;
 	private final List<Scope> scopesDeclaringAtNodes;
@@ -57,11 +62,23 @@ public final class ScopeSet {
 	private final Map<Scope, Map<Class<?>, Map<Class<?>, InstantiatorProcessResult>>> scopedInstantiatorsByScope =
 		new IdentityHashMap<>();
 
-	public ScopeSet(Scope rootScope, List<Scope> definedScopes) {
+	/**
+	 * Creates the scopes that apply to one sample.
+	 *
+	 * @param rootScope     what the sampled builder declared
+	 * @param definedScopes the defined scopes that apply, in declared order
+	 * @param selectedNames the names the sampled builder selected, the one selected last at the end
+	 */
+	public ScopeSet(Scope rootScope, List<Scope> definedScopes, List<String> selectedNames) {
 		this.rootScope = rootScope;
+		Map<String, Integer> selectionOrders = new HashMap<>();
+		for (String selectedName : selectedNames) {
+			selectionOrders.put(selectedName, selectionOrders.size() + 1);
+		}
+		this.selectionOrderByName = selectionOrders;
 		List<Scope> lowestPrecedenceFirst = new ArrayList<>(definedScopes);
 		lowestPrecedenceFirst.sort(
-			Comparator.comparingInt(Scope::getSelectionOrder)
+			Comparator.comparingInt(this::getSelectionOrder)
 				.thenComparing(Comparator.comparingInt(Scope::getPriority).reversed())
 		);
 		this.definedScopes = lowestPrecedenceFirst;
@@ -71,7 +88,7 @@ public final class ScopeSet {
 		List<Scope> declaringAtNodes = new ArrayList<>();
 		for (Scope scope : lowestPrecedenceFirst) {
 			DirectivePrecedence precedence = DirectivePrecedence.definedScope(
-				scope.getSelectionOrder(),
+				getSelectionOrder(scope),
 				scope.getPriority(),
 				precedenceByScope.size()
 			);
@@ -109,6 +126,18 @@ public final class ScopeSet {
 	 */
 	public List<Scope> getDefinedScopes() {
 		return definedScopes;
+	}
+
+	/**
+	 * Returns the position of {@code scope} among the scopes the sampled builder selected by name, from 1 for the one
+	 * selected first, or 0 when it is not selected.
+	 *
+	 * @param scope a defined scope of this set
+	 * @return the selection order
+	 */
+	public int getSelectionOrder(Scope scope) {
+		String name = scope.getName();
+		return name != null ? selectionOrderByName.getOrDefault(name, 0) : 0;
 	}
 
 	/**
