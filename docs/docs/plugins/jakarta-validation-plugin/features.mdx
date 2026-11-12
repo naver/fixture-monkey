@@ -29,7 +29,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validatio
 </dependency>
 ```
 
-The jakarta validation API and the Hibernate validator are already provided as part of the dependency.
+The plugin includes the Jakarta Validation API but not a Bean Validation provider. If you use `fixture-monkey-starter`, Hibernate Validator is already included. If you add `fixture-monkey-jakarta-validation` directly, add a provider, such as Hibernate Validator together with an Expression Language implementation, to your test dependencies.
 
 ## Plugin
 

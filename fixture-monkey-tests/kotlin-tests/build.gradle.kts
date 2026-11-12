@@ -10,6 +10,8 @@ dependencies {
     testImplementation(projects.fixtureMonkeyKotest)
     testImplementation(projects.fixtureMonkeyJavaxValidation)
     testImplementation(projects.fixtureMonkeyJakartaValidation)
+    testImplementation(libs.hibernate.validator7)
+    testImplementation(libs.jakarta.el4)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property.arbs)
