@@ -214,6 +214,7 @@ public final class ValueProjectionAssembler {
 				|| state.scopes.hasDefinedScopeDirectiveBelow(chain))) {
 				state.scopes.markNotNullRequired(currentPath);
 			}
+			boolean decomposingValue = hasChildValues;
 			if (winner != null && (!hasChildValues || winner.isFromDefinedScope())) {
 				ValueCandidate bestCandidate = winner.candidate;
 				int scopeDepth = winner.scopeDepth;
@@ -234,14 +235,19 @@ public final class ValueProjectionAssembler {
 				int outerLimit = winner.isScopeRoot() ? scopeDepth : scopeDepth - 1;
 				int priority = bestCandidate.precedence.priority();
 				boolean usedAsIs = state.scopes.isDefinedScopeJust(winner.declaredPath);
+				// A set Optional is kept as is: the value inside it shares the Optional's path, so it is not rebuilt
+				// and stays shared across samples.
+				boolean keptAsIs = usedAsIs
+					|| bestCandidate.value instanceof LazyValueHolder
+					|| (isCurrentTypeContainer
+					? !RESIZABLE_CONTAINER_DETECTOR.isContainer(setValue)
+					: state.assemblyTree.childrenOf(node).isEmpty() && !isConcreteValueOfAbstractNode(node, setValue));
 				boolean outrankedInside = winner.isFromDefinedScope()
 					&& (hasChildValues
+					|| !keptAsIs
 					|| !usedAsIs
 					&& (state.scopes.hasOutrankingDirectiveBelow(chain, bestCandidate.precedence, scopeDepth)
 					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit, priority)
-					|| (isCurrentTypeContainer
-					&& RESIZABLE_CONTAINER_DETECTOR.isContainer(setValue)
-					&& state.scopes.hasOutrankingSizeAt(chain, bestCandidate.precedence, scopeDepth))
 					|| mayHaveHigherPriorityDefinedScopeBelow(node, priority, state)));
 
 				if (!unusable && setValue != null && outrankedInside) {
@@ -254,6 +260,13 @@ public final class ValueProjectionAssembler {
 						resizeChildrenToValue(node, currentPath, setValue, bestCandidate.precedence, scopeDepth, state);
 					}
 					isValueSet = true;
+					decomposingValue = true;
+				} else if (!unusable && setValue != null && !keptAsIs) {
+					state.candidates.putDecomposedCandidates(
+						Collections.singletonMap(currentPath, bestCandidate.withValue(setValue))
+					);
+					isValueSet = true;
+					decomposingValue = true;
 				} else if (!hasChildValues) {
 					if (unusable) {
 						return assembleNodeDefault(node, state, parentContext, parentPath, currentPath, visitedTypes);
@@ -274,7 +287,7 @@ public final class ValueProjectionAssembler {
 
 			if (isValueSet) {
 				ValueCandidate currentCandidate = state.candidates.at(currentPath);
-				JvmNodeTree valueClassTree = hasChildValues && !isCurrentTypeContainer
+				JvmNodeTree valueClassTree = decomposingValue && !isCurrentTypeContainer
 					? treeOfValueClass(node, currentPath, currentCandidate, state)
 					: null;
 				if (valueClassTree != null) {
@@ -312,14 +325,6 @@ public final class ValueProjectionAssembler {
 					underDefinedScopeValue
 				);
 				applyDecomposeResult(decomposeResult, state);
-				if (decomposeResult.hasEarlyReturn()) {
-					return wrapValueWithFiltersAndCustomizers(
-						decomposeResult.getEarlyReturnValue(),
-						currentPath,
-						currentRawType,
-						state
-					);
-				}
 			}
 
 			if (node instanceof JvmMapNode) {
@@ -1621,6 +1626,17 @@ public final class ValueProjectionAssembler {
 		state.assemblyTree.resize(containerNode, merged);
 	}
 
+	private static boolean isConcreteValueOfAbstractNode(JvmNode node, @Nullable Object value) {
+		if (value == null || value instanceof LazyValueHolder) {
+			return false;
+		}
+		Class<?> nodeType = node.getConcreteType().getRawType();
+		Class<?> valueType = value.getClass();
+		boolean abstractNode =
+			Modifier.isInterface(nodeType.getModifiers()) || Modifier.isAbstract(nodeType.getModifiers());
+		return abstractNode && valueType != nodeType && nodeType.isAssignableFrom(valueType);
+	}
+
 	private @Nullable JvmNodeTree treeOfValueClass(
 		JvmNode node,
 		PathExpression currentPath,
@@ -1630,15 +1646,11 @@ public final class ValueProjectionAssembler {
 		if (candidate == null || candidate.value == null || candidate.value instanceof LazyValueHolder) {
 			return null;
 		}
-		Class<?> nodeType = node.getConcreteType().getRawType();
-		Class<?> valueType = candidate.value.getClass();
-		boolean abstractNode =
-			Modifier.isInterface(nodeType.getModifiers()) || Modifier.isAbstract(nodeType.getModifiers());
-		if (!abstractNode || valueType == nodeType || !nodeType.isAssignableFrom(valueType)) {
+		if (!isConcreteValueOfAbstractNode(node, candidate.value)) {
 			return null;
 		}
 		JvmNodeTree concreteTree = state.context.getPlan().getNodeTreeFactory().createConcreteNodeTree(
-			new ReflectiveJvmType(valueType),
+			new ReflectiveJvmType(candidate.value.getClass()),
 			node.getDeclaredType(),
 			currentPath,
 			state.assemblyTree.ancestorNodes(currentPath)
