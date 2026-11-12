@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs_docusaurus=self.webpackChunkdocs_docusaurus||[]).push([["6762"],{7089(s,c,e){e.d(c,{createArchitectureServices:()=>u.S});var u=e(5796);e(4954)}}]);
