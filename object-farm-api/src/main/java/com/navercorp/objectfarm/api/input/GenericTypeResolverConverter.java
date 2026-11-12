@@ -24,9 +24,10 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
@@ -161,58 +162,64 @@ public final class GenericTypeResolverConverter {
 	}
 
 	/**
-	 * Extracts type arguments from a Collection by examining its first element.
+	 * Extracts type arguments from a Collection by examining its elements.
+	 * <p>
+	 * When every non-null element has the same class, that class (with its own type arguments) is the element type.
+	 * When the elements are instances of different classes, no type argument is inferred and the declared
+	 * element type is kept so that each element can resolve to its own runtime type.
 	 *
 	 * @param collection the collection to examine
-	 * @return list containing the element type, or empty list if collection is empty
+	 * @return list containing the element type, or empty list if it cannot be inferred
 	 */
 	public static List<JvmType> extractCollectionTypeArguments(Collection<?> collection) {
-		if (collection.isEmpty()) {
+		JvmType elementType = inferElementType(collection);
+		if (elementType == null) {
 			return Collections.emptyList();
 		}
-
-		Iterator<?> iterator = collection.iterator();
-		Object firstElement = iterator.next();
-		if (firstElement == null) {
-			return Collections.emptyList();
-		}
-
-		List<JvmType> elementTypeArgs = extractTypeArgumentsFromValue(firstElement);
-		JvmType elementType = elementTypeArgs.isEmpty()
-			? new ReflectiveJvmType(firstElement.getClass())
-			: new ReflectiveJvmType(firstElement.getClass(), elementTypeArgs, Collections.emptyList());
 		return Collections.singletonList(elementType);
 	}
 
 	/**
-	 * Extracts type arguments from a Map by examining its first entry.
+	 * Extracts type arguments from a Map by examining its entries.
+	 * <p>
+	 * Key and value types are inferred the same way as collection element types.
 	 *
 	 * @param map the map to examine
-	 * @return list containing key and value types, or empty list if map is empty
+	 * @return list containing key and value types, or empty list if either cannot be inferred
 	 */
 	public static List<JvmType> extractMapTypeArguments(Map<?, ?> map) {
-		if (map.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
-		Object key = firstEntry.getKey();
-		Object entryValue = firstEntry.getValue();
-
-		if (key == null || entryValue == null) {
+		JvmType keyType = inferElementType(map.keySet());
+		JvmType valueType = inferElementType(map.values());
+		if (keyType == null || valueType == null) {
 			return Collections.emptyList();
 		}
 
 		List<JvmType> typeArguments = new ArrayList<>();
-		List<JvmType> keyTypeArgs = extractTypeArgumentsFromValue(key);
-		typeArguments.add(keyTypeArgs.isEmpty()
-			? new ReflectiveJvmType(key.getClass())
-			: new ReflectiveJvmType(key.getClass(), keyTypeArgs, Collections.emptyList()));
-		List<JvmType> valueTypeArgs = extractTypeArgumentsFromValue(entryValue);
-		typeArguments.add(valueTypeArgs.isEmpty()
-			? new ReflectiveJvmType(entryValue.getClass())
-			: new ReflectiveJvmType(entryValue.getClass(), valueTypeArgs, Collections.emptyList()));
+		typeArguments.add(keyType);
+		typeArguments.add(valueType);
 		return typeArguments;
+	}
+
+	@Nullable
+	private static JvmType inferElementType(Collection<?> elements) {
+		Optional<?> representative = elements.stream()
+			.filter(Objects::nonNull)
+			.findFirst();
+		if (!representative.isPresent()) {
+			return null;
+		}
+
+		Class<?> elementClass = representative.get().getClass();
+		boolean homogeneous = elements.stream()
+			.allMatch(element -> element == null || element.getClass() == elementClass);
+		if (!homogeneous) {
+			return null;
+		}
+
+		List<JvmType> elementTypeArgs = extractTypeArgumentsFromValue(representative.get());
+		return elementTypeArgs.isEmpty()
+			? new ReflectiveJvmType(elementClass)
+			: new ReflectiveJvmType(elementClass, elementTypeArgs, Collections.emptyList());
 	}
 
 	/**
