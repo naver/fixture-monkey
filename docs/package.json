@@ -35,7 +35,7 @@
   "overrides": {
     "body-parser": "^1.20.6",
     "dompurify": "^3.4.17",
-    "fast-uri": "^3.1.5",
+    "fast-uri": "^3.1.9",
     "follow-redirects": "^1.16.0",
     "http-proxy-middleware": "^2.0.10",
     "launch-editor": "^2.14.2",
