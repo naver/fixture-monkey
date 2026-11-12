@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 
@@ -36,6 +37,13 @@ import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
  * directives and instantiators of the scope. Where defined scopes conflict, a scope with a lower priority number
  * takes precedence wherever its node sits, then the one with the outer node (the inner node for a container size),
  * and otherwise the later declared one.
+ * <p>
+ * {@code registerByName(...)} declares a named scope. Named scopes with the same selector are alternatives: a sample
+ * applies only the ones the sampled builder selected by name, or one of them when it selected none, chosen by weight
+ * among the ones with the lowest priority number. A selected scope outranks every defined scope not selected,
+ * whatever their priorities and wherever their nodes sit, and among selected scopes the one selected later wins. The
+ * name is all a scope keeps of this: the weight given at registration and the selection each sample makes are looked
+ * up by the name.
  */
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public final class Scope {
@@ -54,6 +62,7 @@ public final class Scope {
 	private final int priority;
 	private final List<PathDirective> directives;
 	private final Map<Class<?>, InstantiatorProcessResult> instantiators;
+	private final @Nullable String name;
 
 	/**
 	 * Returns the root scope of what the sampled builder itself declared.
@@ -72,10 +81,21 @@ public final class Scope {
 		List<PathDirective> directives,
 		Map<Class<?>, InstantiatorProcessResult> instantiators
 	) {
+		this(selector, priority, directives, instantiators, null);
+	}
+
+	public Scope(
+		ScopeSelector selector,
+		int priority,
+		List<PathDirective> directives,
+		Map<Class<?>, InstantiatorProcessResult> instantiators,
+		@Nullable String name
+	) {
 		this.selector = selector;
 		this.priority = priority;
 		this.directives = directives;
 		this.instantiators = instantiators;
+		this.name = name;
 	}
 
 	/**
@@ -98,5 +118,12 @@ public final class Scope {
 
 	public Map<Class<?>, InstantiatorProcessResult> getInstantiators() {
 		return instantiators;
+	}
+
+	/**
+	 * The name this scope is registered with, or null when it is registered without one.
+	 */
+	public @Nullable String getName() {
+		return name;
 	}
 }

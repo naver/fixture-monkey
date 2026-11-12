@@ -203,6 +203,19 @@ public interface JavaTypeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 	@Override
 	JavaTypeArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator);
 
+	/**
+	 * Selects builders registered by {@code registerByName} to apply to the samples of this builder, as
+	 * {@link com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder#selectName(String...)} does.
+	 *
+	 * @param names the names to select, the later one taking precedence
+	 * @return this builder
+	 * @throws UnsupportedOperationException when this builder does not support selecting names
+	 */
+	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	default JavaTypeArbitraryBuilder<T> selectName(String... names) {
+		throw new UnsupportedOperationException("selectName is not supported by " + getClass().getName());
+	}
+
 	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
 		JavaGetterMethodReference<T, R> methodReference,
 		@Nullable Object value,

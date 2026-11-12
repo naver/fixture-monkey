@@ -18,12 +18,16 @@
 
 package com.navercorp.fixturemonkey.assembly;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -70,10 +74,13 @@ final class AssemblyState {
 
 	final ConcurrentHashMap<JvmType, CachedTypeMetadata> typeMetadataCache;
 
+	final Map<JvmType, @Nullable Set<Class<?>>> typesInsideElementsByContainerType = new HashMap<>();
+
 	AssemblyState(AssembleContext context) {
 		this.context = context;
 		AssemblyPlan plan = context.getPlan();
-		this.scopes = ScopeLookup.from(plan.getAnalysisResult(), plan.getAnalyzedDefinedScopes());
+		this.scopes =
+			ScopeLookup.from(plan.getAnalysisResult(), plan.getAnalyzedDefinedScopes(), plan.getScopeSet());
 		this.candidates = CandidateLookup.from(plan.getValues().getValuesByPath(), scopes);
 		this.limits = new LimitCounter(plan.getAnalyzedRootScope(), plan.getAnalyzedDefinedScopes());
 		this.assemblySeed = ThreadLocalRandom.current().nextLong();

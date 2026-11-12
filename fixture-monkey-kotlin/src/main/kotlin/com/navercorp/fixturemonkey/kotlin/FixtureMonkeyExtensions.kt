@@ -191,6 +191,9 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
 
     override fun fixed(): KotlinTypeDefaultArbitraryBuilder<T> = this.apply { delegate.fixed() }
 
+    fun selectName(vararg names: String): KotlinTypeDefaultArbitraryBuilder<T> =
+        this.apply { (delegate as ExperimentalArbitraryBuilder<*>).selectName(*names) }
+
     override fun <R> zipWith(
         others: List<ArbitraryBuilder<*>>,
         combinator: Function<List<*>, R>,

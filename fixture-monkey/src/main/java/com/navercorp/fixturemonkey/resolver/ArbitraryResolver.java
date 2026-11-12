@@ -68,6 +68,7 @@ public final class ArbitraryResolver {
 	private final AssemblyTracer tracer;
 	private final Map<Class<?>, Set<Property>> inferredPropertiesCache;
 	private final Supplier<List<Scope>> registeredScopes;
+	private final Map<String, Integer> weightsByName;
 	private final Map<JvmType, List<Scope>> definedScopesByRootType;
 
 	public ArbitraryResolver(
@@ -76,6 +77,7 @@ public final class ArbitraryResolver {
 		AssemblyTracer tracer,
 		@Nullable Map<Class<?>, Set<Property>> inferredPropertiesCache,
 		Supplier<List<Scope>> registeredScopes,
+		Map<String, Integer> weightsByName,
 		Map<JvmType, List<Scope>> definedScopesByRootType
 	) {
 		this.monkeyContext = monkeyContext;
@@ -84,6 +86,7 @@ public final class ArbitraryResolver {
 		this.inferredPropertiesCache =
 			inferredPropertiesCache != null ? inferredPropertiesCache : new ConcurrentHashMap<>();
 		this.registeredScopes = registeredScopes;
+		this.weightsByName = weightsByName;
 		this.definedScopesByRootType = definedScopesByRootType;
 	}
 
@@ -106,7 +109,12 @@ public final class ArbitraryResolver {
 	) {
 		long prepStart = System.nanoTime();
 		applyValidOnlyOption(rootProperty, activeContext, options);
-		ScopeSet scopeSet = new ScopeSet(activeContext.toRootScope(), definedScopesOf(rootProperty));
+		List<String> selectedNames = activeContext.getSelectedNames();
+		ScopeSet scopeSet = new ScopeSet(
+			activeContext.toRootScope(),
+			assemblyPlanner.resolveDefinedScopes(definedScopesOf(rootProperty), selectedNames, weightsByName),
+			selectedNames
+		);
 		long prepNanos = System.nanoTime() - prepStart;
 
 		return assemble(rootProperty, activeContext, options, scopeSet, prepNanos);
@@ -131,6 +139,21 @@ public final class ArbitraryResolver {
 			.findFirst()
 			.map(TreeMatcherOperator::getOperator)
 			.ifPresent(it -> activeContext.setOptionValidOnly(it.isValidOnly()));
+	}
+
+	/**
+	 * Checks that every name a builder selected is registered by {@code registerByName}.
+	 *
+	 * @param selectedNames the names the builder selected
+	 * @throws IllegalArgumentException when a name is not registered
+	 */
+	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	public void requireRegisteredNames(List<String> selectedNames) {
+		for (String selectedName : selectedNames) {
+			if (!weightsByName.containsKey(selectedName)) {
+				throw new IllegalArgumentException("Given name is not registered. name: " + selectedName);
+			}
+		}
 	}
 
 	/**
