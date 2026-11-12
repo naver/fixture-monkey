@@ -1,4 +1,9 @@
 version: 2
+# Version updates are turned off (open-pull-requests-limit: 0) so Dependabot
+# only opens PRs for security advisories. Security updates still honor the
+# ignore rules below, which keep the Java 8 baseline and the pinned majors.
+# Requires "Dependabot security updates" to be enabled in the repository
+# settings.
 updates:
   # Docs site (Docusaurus). Every one of the initial 69 Dependabot alerts came
   # from docs/package-lock.json, so this is the entry that matters most.
@@ -7,7 +12,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     # @docusaurus/tsconfig 3.x sets baseUrl, which TypeScript 6 deprecates
     # (TS5101) and TypeScript 7 removes (TS5102), so `npm run typecheck` fails
     # on anything above 5.x. Docusaurus drops baseUrl in v4
@@ -22,14 +27,9 @@ updates:
       # tsconfig and module-type-aliases are pinned to the exact same version
       # and a mismatch fails the build. Never let these split across PRs.
       docusaurus:
+        applies-to: security-updates
         patterns:
           - "@docusaurus/*"
-      npm-minor-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
 
   # Gradle. Almost every module resolves versions through
   # gradle/libs.versions.toml (covered by "/"), but buildSrc and
@@ -42,7 +42,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     # The published artifacts target Java 8 and CI runs tests on JDK 8, but
     # Dependabot has no notion of a bytecode baseline for Gradle - it only
     # compares semver. Versions that drop Java 8 arrive as minor updates
@@ -107,13 +107,6 @@ updates:
       # still class 52, yet it changed the ShrinkableString constructors and
       # added StringArbitrary.uniqueChars().
       - dependency-name: "net.jqwik:*"
-    groups:
-      gradle-minor-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
 
   # GitHub Actions. Every gradle/actions/setup-gradle step sets
   # cache-provider: basic on purpose: from v6 the default 'enhanced' provider
@@ -124,11 +117,4 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 5
-    groups:
-      actions-minor-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+    open-pull-requests-limit: 0
