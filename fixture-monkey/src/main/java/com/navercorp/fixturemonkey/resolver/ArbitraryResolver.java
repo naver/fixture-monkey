@@ -46,6 +46,7 @@ import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.assembly.AssembleContext;
 import com.navercorp.fixturemonkey.assembly.ValueProjectionAssembler;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
@@ -58,6 +59,7 @@ import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -287,13 +289,24 @@ public final class ArbitraryResolver {
 			Class<?> argType = typeArg.getRawType();
 			if (!visitedForFields.contains(argType)) {
 				collectRelevantTypesFromProperty(
-					new com.navercorp.fixturemonkey.api.property.TypeParameterProperty(typeArg),
+					new TypeParameterProperty(typeArg),
 					types,
 					visitedForFields
 				);
 			} else {
 				types.add(argType);
 			}
+		}
+
+		if (rawType.isArray()) {
+			JvmType componentType = jvmType.getComponentType();
+			collectRelevantTypesFromProperty(
+				new TypeParameterProperty(
+					componentType != null ? componentType : new ReflectiveJvmType(rawType.getComponentType())
+				),
+				types,
+				visitedForFields
+			);
 		}
 
 		// Recurse into fields of non-Java types to discover nested types
