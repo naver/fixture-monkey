@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
@@ -200,24 +202,21 @@ public final class GenericTypeResolverConverter {
 
 	@Nullable
 	private static JvmType inferElementType(Collection<?> elements) {
-		Object firstElement = null;
-		for (Object element : elements) {
-			if (element == null) {
-				continue;
-			}
-			if (firstElement == null) {
-				firstElement = element;
-			} else if (firstElement.getClass() != element.getClass()) {
-				return null;
-			}
-		}
-
-		if (firstElement == null) {
+		Optional<?> representative = elements.stream()
+			.filter(Objects::nonNull)
+			.findFirst();
+		if (!representative.isPresent()) {
 			return null;
 		}
 
-		Class<?> elementClass = firstElement.getClass();
-		List<JvmType> elementTypeArgs = extractTypeArgumentsFromValue(firstElement);
+		Class<?> elementClass = representative.get().getClass();
+		boolean homogeneous = elements.stream()
+			.allMatch(element -> element == null || element.getClass() == elementClass);
+		if (!homogeneous) {
+			return null;
+		}
+
+		List<JvmType> elementTypeArgs = extractTypeArgumentsFromValue(representative.get());
 		return elementTypeArgs.isEmpty()
 			? new ReflectiveJvmType(elementClass)
 			: new ReflectiveJvmType(elementClass, elementTypeArgs, Collections.emptyList());
