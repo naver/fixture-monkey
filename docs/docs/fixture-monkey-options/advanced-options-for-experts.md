@@ -183,9 +183,9 @@ Registered builders overlap when one is registered for an outer type and sets a 
 1. What the sampled builder itself declares always wins over every registered builder.
 2. The registered builder with the lower priority number wins, wherever the node it is registered for sits. `register(...)` without a priority has the lowest priority (`Integer.MAX_VALUE`).
 3. Among the same priority, the builder registered for the outer node wins. Container sizes are the exception: the builder registered for the inner node wins.
-4. Among the same priority and the same node, the builder registered last wins.
+4. Among the same priority and the same node, one of the builders is picked at random for that node, and only the picked one applies there. The same seed always picks the same one.
 
-A property only one of the builders sets keeps that builder's value.
+A property only one of the builders sets keeps that builder's value, unless that builder was not picked in 4.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()

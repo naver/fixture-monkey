@@ -26,8 +26,9 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * This resolver is used to determine the size of containers (arrays, lists, sets, maps, etc.)
  * when generating nodes. It allows users to control the size of generated containers.
  * <p>
- * For deterministic random size generation, implementations should store a seed in
- * their constructor and use it internally.
+ * For deterministic random size generation, draw from the scope given to
+ * {@link #resolveContainerSize(JvmType, SeedSnapshot)}, so the size depends only on where the container sits in the
+ * sample. An implementation used without a scope can keep a seed of its own.
  * <p>
  * Example implementations:
  * <pre>
@@ -59,5 +60,17 @@ public interface ContainerSizeResolver extends NodeCustomizer {
 	 * @return the resolved size of the container
 	 */
 	int resolveContainerSize(JvmType containerType);
+
+	/**
+	 * Resolves the size of a container drawing any randomness from the scope of the container's node, so the same
+	 * container in the same sample gets the same size however the tree was built.
+	 *
+	 * @param containerType the type of the container
+	 * @param scope         the seed scope of the container's node
+	 * @return the resolved size of the container
+	 */
+	default int resolveContainerSize(JvmType containerType, SeedSnapshot scope) {
+		return resolveContainerSize(containerType);
+	}
 }
 

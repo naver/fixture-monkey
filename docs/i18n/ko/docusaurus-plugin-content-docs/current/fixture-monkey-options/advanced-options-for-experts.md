@@ -206,9 +206,9 @@ fixtureMonkey.registerAssignableType(
 1. 샘플링하는 빌더에 직접 선언한 것은 등록한 어떤 빌더보다도 우선합니다.
 2. priority 숫자가 작은 빌더가 등록된 노드의 위치와 관계없이 우선합니다. priority 없이 호출한 `register(...)`는 가장 낮은 우선순위(`Integer.MAX_VALUE`)입니다.
 3. priority가 같으면 바깥 노드에 등록한 빌더가 우선합니다. 단, 컨테이너 크기는 안쪽 노드에 등록한 빌더가 우선합니다.
-4. priority와 노드가 모두 같으면 마지막에 등록한 빌더가 우선합니다.
+4. priority와 노드가 모두 같으면 그 노드마다 빌더 하나를 랜덤으로 고르고, 그 노드에는 고른 빌더만 적용합니다. seed가 같으면 항상 같은 빌더를 고릅니다.
 
-한 빌더만 설정한 프로퍼티는 그 빌더의 값이 유지됩니다.
+한 빌더만 설정한 프로퍼티는 그 빌더의 값이 유지됩니다. 단, 4에서 고르지 않은 빌더의 값은 적용되지 않습니다.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()

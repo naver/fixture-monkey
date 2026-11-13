@@ -25,7 +25,8 @@ import org.apiguardian.api.API.Status;
  * The precedence of a directive among the directives that reach the same node, the one rule every directive is
  * decided by: the one whose scope has the lower priority number wins, then the one whose scope node sits outer, then
  * the one declared later. A container size is the exception: among sizes of the same priority, the one whose scope
- * node sits inner wins.
+ * node sits inner wins. Of the scopes of the same priority selecting the same node only one applies there, so the
+ * declaration order decides only between directives of the same scope.
  * <p>
  * The root scope's priority is {@link Scope#ROOT_PRIORITY}, so it wins over every defined scope by the same rule. Where
  * a scope node sits differs from node to node, so its depth is given with each comparison.

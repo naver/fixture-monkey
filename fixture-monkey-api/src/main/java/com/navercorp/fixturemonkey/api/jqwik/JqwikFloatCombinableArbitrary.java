@@ -40,7 +40,7 @@ public final class JqwikFloatCombinableArbitrary implements FloatCombinableArbit
 
 	@Override
 	public Float rawValue() {
-		return this.floatArbitrary.sample();
+		return ArbitraryUtils.sample(this.floatArbitrary);
 	}
 
 	@Override
@@ -155,6 +155,6 @@ public final class JqwikFloatCombinableArbitrary implements FloatCombinableArbit
 
 	@Override
 	public Float combined() {
-		return this.floatArbitrary.sample();
+		return ArbitraryUtils.sample(this.floatArbitrary);
 	}
 }
