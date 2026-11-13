@@ -24,6 +24,7 @@ include(
         "fixture-monkey-jackson3",
         "fixture-monkey-autoparams",
         "fixture-monkey-mockito",
+        "fixture-monkey-mockk",
         "fixture-monkey-starter",
         "fixture-monkey-starter-kotlin",
         "fixture-monkey-junit-jupiter",

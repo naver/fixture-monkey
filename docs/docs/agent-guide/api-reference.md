@@ -252,6 +252,7 @@ Note the trade-off in `PrimaryConstructorArbitraryIntrospector`: it sees only pr
 | Jackson-annotated types | `JacksonObjectArbitraryIntrospector` | `new JacksonPlugin()` |
 | Interfaces, abstract classes, sealed types | — | `new InterfacePlugin()`; see [Interface plugin](../plugins/interface-plugin/features) |
 | Mockito mocks | `MockitoIntrospector.INSTANCE` | `fixture-monkey-mockito` |
+| MockK mocks (Kotlin) | `MockkIntrospector` | `MockkPlugin()` in `fixture-monkey-mockk`; see [MockK plugin](../plugins/mockk-plugin/features) |
 | Realistic names, addresses, and similar values | `DataFakerArbitraryIntrospector` | `new DataFakerPlugin()` |
 
 When no introspector matches, interfaces with no-argument methods fall back to `AnonymousArbitraryIntrospector`, which proxies them.
@@ -272,7 +273,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 | :--- | :--- |
 | **Selectable — object shape** | `BeanArbitraryIntrospector` (default), `ConstructorPropertiesArbitraryIntrospector`, `FieldReflectionArbitraryIntrospector`, `BuilderArbitraryIntrospector`, `PriorityConstructorArbitraryIntrospector`, `FailoverIntrospector` |
 | **Selectable — Kotlin** | `PrimaryConstructorArbitraryIntrospector` (KotlinPlugin default), `KotlinAndJavaCompositeArbitraryIntrospector`, `KotlinPropertyArbitraryIntrospector` |
-| **Selectable — from plugins** | `JacksonObjectArbitraryIntrospector`, `Jackson3ObjectArbitraryIntrospector`, `DataFakerArbitraryIntrospector`, `MockitoIntrospector` |
+| **Selectable — from plugins** | `JacksonObjectArbitraryIntrospector`, `Jackson3ObjectArbitraryIntrospector`, `DataFakerArbitraryIntrospector`, `MockitoIntrospector`, `MockkIntrospector` |
 | **Automatic — containers and built-ins** | `ArrayIntrospector`, `IterableIntrospector`, `IteratorIntrospector`, `SetIntrospector`, `QueueIntrospector`, `StreamIntrospector`, `OptionalIntrospector`, `SingleGenericCollectionIntrospector`, `MapIntrospector`, `MapEntryIntrospector`, `MapEntryElementIntrospector`, `EnumIntrospector`, `BooleanIntrospector`, `UuidIntrospector`, `JavaArbitraryIntrospector` (primitives, `String`), `JavaTimeArbitraryIntrospector`, `FunctionalInterfaceArbitraryIntrospector` |
 | **Automatic — Kotlin built-ins** (KotlinPlugin) | `PairIntrospector`, `TripleIntrospector`, `KotlinDurationIntrospector`, `CompanionObjectFactoryMethodIntrospector` |
 | **Automatic — Jackson containers** | `JacksonArrayArbitraryIntrospector`, `JacksonCollectionArbitraryIntrospector`, `JacksonMapArbitraryIntrospector`, `JsonNodeIntrospector`, and the Jackson 3 equivalents `Jackson3ArrayArbitraryIntrospector`, `Jackson3CollectionArbitraryIntrospector`, `Jackson3MapArbitraryIntrospector`, `Jackson3JsonNodeIntrospector` |
