@@ -31,6 +31,7 @@ include(
         "fixture-monkey-tests",
         "fixture-monkey-tests:java-17-tests",
         "fixture-monkey-tests:kotlin-tests",
+        "fixture-monkey-tests:kotlin-17-tests",
         "fixture-monkey-tests:java-tests",
         "fixture-monkey-tests:java-concurrent-tests",
         "fixture-monkey-tests:kotlin-concurrent-tests",
