@@ -52,10 +52,8 @@ import com.navercorp.fixturemonkey.assembly.ValueProjectionAssembler;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
-import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.type.JvmType;
@@ -174,18 +172,6 @@ public final class ArbitraryResolver {
 
 		AssemblyPlan assemblyPlan =
 			assemblyPlanner.plan(rootJvmType, scopeSet, activeContext.isFixed(), options, traceContext);
-
-		AnalysisResult analysisResult = assemblyPlan.getAnalysisResult();
-		ValueProjection values = assemblyPlan.getValues();
-
-		if (analysisResult.isStrictMode()) {
-			Set<String> invalidPaths = values.getUnresolvedNonWildcardPaths();
-			if (!invalidPaths.isEmpty()) {
-				throw new IllegalArgumentException(
-					"No matching results for given NodeResolvers. " + "Invalid paths: " + invalidPaths
-				);
-			}
-		}
 
 		traceContext.setRootType(rootJvmType.getRawType().getName());
 
