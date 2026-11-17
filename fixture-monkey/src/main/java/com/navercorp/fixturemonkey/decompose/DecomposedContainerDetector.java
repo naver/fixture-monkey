@@ -19,6 +19,8 @@
 package com.navercorp.fixturemonkey.decompose;
 
 import java.util.OptionalInt;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -31,10 +33,14 @@ import com.navercorp.objectfarm.api.input.ContainerDetector;
 /**
  * Tells container values apart and sizes them the way the options decompose containers, so a value expands the
  * same way during planning and during assembly.
+ * <p>
+ * Once the factory rejects a value of a type, this detector treats every later value of that type as a non-container
+ * without asking the factory again.
  */
 @API(since = "1.2.4", status = Status.EXPERIMENTAL)
 public final class DecomposedContainerDetector implements ContainerDetector {
 	private final DecomposedContainerValueFactory factory;
+	private final Set<Class<?>> unsupportedTypes = ConcurrentHashMap.newKeySet();
 
 	public DecomposedContainerDetector(DecomposedContainerValueFactory factory) {
 		this.factory = factory;
@@ -45,6 +51,10 @@ public final class DecomposedContainerDetector implements ContainerDetector {
 		if (value == null) {
 			return OptionalInt.empty();
 		}
+		Class<?> type = value.getClass();
+		if (unsupportedTypes.contains(type)) {
+			return OptionalInt.empty();
+		}
 		try {
 			DecomposableJavaContainer decomposed = factory.from(value);
 			if (decomposed != null) {
@@ -52,6 +62,7 @@ public final class DecomposedContainerDetector implements ContainerDetector {
 			}
 			return OptionalInt.empty();
 		} catch (IllegalArgumentException e) {
+			unsupportedTypes.add(type);
 			return OptionalInt.empty();
 		}
 	}
