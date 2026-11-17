@@ -67,6 +67,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{fixture
 | fixture-monkey-jakarta-validation | Jakarta Bean Validation (JSR 380) 어노테이션 지원                      |
 | fixture-monkey-javax-validation   | Javax Bean Validation (JSR 303/349) 어노테이션 지원                    |
 | fixture-monkey-mockito            | Mockito 모킹 프레임워크 지원                                           |
+| fixture-monkey-mockk              | MockK 모킹 프레임워크 지원 (Kotlin)                                    |
 | fixture-monkey-autoparams         | AutoParams 테스트 데이터 생성 지원                                      |
 | fixture-monkey-junit-jupiter      | JUnit Jupiter 테스트 프레임워크 지원                                    |
 | fixture-monkey-kotest             | Kotest 테스트 프레임워크 지원                                           |
