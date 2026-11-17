@@ -144,10 +144,12 @@ public final class ValueAnalyzer {
 
 		builder.putValue(pathExpression, value);
 
-		boolean isContainer = containerDetector.isContainer(value);
+		OptionalInt containerSize = containerDetector.getContainerSize(value);
+		boolean isContainer = containerSize.isPresent();
 
 		extractContainerSizeResolverInternal(
 			value,
+			containerSize,
 			pathExpression,
 			containerSizeResolvers,
 			interfaceResolvers,
@@ -238,10 +240,12 @@ public final class ValueAnalyzer {
 
 		builder.putValue(pathExpression, value);
 
-		boolean isContainer = containerDetector.isContainer(value);
+		OptionalInt containerSize = containerDetector.getContainerSize(value);
+		boolean isContainer = containerSize.isPresent();
 
 		extractContainerSizeResolverInternal(
 			value,
+			containerSize,
 			pathExpression,
 			containerSizeResolvers,
 			interfaceResolvers,
@@ -284,6 +288,7 @@ public final class ValueAnalyzer {
 
 	private void extractContainerSizeResolver(
 		Object value,
+		OptionalInt containerSize,
 		String pathExpression,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
@@ -292,6 +297,7 @@ public final class ValueAnalyzer {
 	) {
 		extractContainerSizeResolverInternal(
 			value,
+			containerSize,
 			pathExpression,
 			containerSizeResolvers,
 			interfaceResolvers,
@@ -303,6 +309,7 @@ public final class ValueAnalyzer {
 
 	private void extractContainerSizeResolverInternal(
 		Object value,
+		OptionalInt containerSize,
 		String pathExpression,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
@@ -310,7 +317,6 @@ public final class ValueAnalyzer {
 		ValueAnalysisResult.@Nullable Builder builder,
 		boolean storeContainerElements
 	) {
-		OptionalInt containerSize = containerDetector.getContainerSize(value);
 		if (!containerSize.isPresent()) {
 			return;
 		}
@@ -390,9 +396,11 @@ public final class ValueAnalyzer {
 					builder.putValue(elementPath, element);
 				}
 
+				OptionalInt containerSize = containerDetector.getContainerSize(element);
+
 				// Only create interface/generic resolvers for non-container elements
 				// Container elements are handled by extractContainerSizeResolver recursively
-				if (!containerDetector.isContainer(element)) {
+				if (!containerSize.isPresent()) {
 					if (requiresInterfaceResolver(element)) {
 						PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
 							elementPath,
@@ -428,6 +436,7 @@ public final class ValueAnalyzer {
 
 				extractContainerSizeResolver(
 					element,
+					containerSize,
 					elementPath,
 					containerSizeResolvers,
 					interfaceResolvers,
@@ -486,9 +495,11 @@ public final class ValueAnalyzer {
 			builder.putValue(elementPath, element);
 		}
 
+		OptionalInt containerSize = containerDetector.getContainerSize(element);
+
 		// Only create interface/generic resolvers for non-container elements
 		// Container elements are handled by extractContainerSizeResolver recursively
-		if (!containerDetector.isContainer(element)) {
+		if (!containerSize.isPresent()) {
 			if (requiresInterfaceResolver(element)) {
 				PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
 					elementPath,
@@ -504,6 +515,7 @@ public final class ValueAnalyzer {
 
 		extractContainerSizeResolver(
 			element,
+			containerSize,
 			elementPath,
 			containerSizeResolvers,
 			interfaceResolvers,
@@ -531,9 +543,11 @@ public final class ValueAnalyzer {
 					builder.putValue(elementPath, element);
 				}
 
+				OptionalInt containerSize = containerDetector.getContainerSize(element);
+
 				// Only create interface/generic resolvers for non-container elements
 				// Container elements are handled by extractContainerSizeResolver recursively
-				if (!containerDetector.isContainer(element)) {
+				if (!containerSize.isPresent()) {
 					if (requiresInterfaceResolver(element)) {
 						PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
 							elementPath,
@@ -556,6 +570,7 @@ public final class ValueAnalyzer {
 
 				extractContainerSizeResolver(
 					element,
+					containerSize,
 					elementPath,
 					containerSizeResolvers,
 					interfaceResolvers,
@@ -621,6 +636,7 @@ public final class ValueAnalyzer {
 			if (fieldValue != null) {
 				extractContainerSizeResolverInternal(
 					fieldValue,
+					containerDetector.getContainerSize(fieldValue),
 					fieldPath,
 					containerSizeResolvers,
 					interfaceResolvers,
