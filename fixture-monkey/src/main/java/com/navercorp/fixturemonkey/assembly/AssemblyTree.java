@@ -21,9 +21,11 @@ package com.navercorp.fixturemonkey.assembly;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -91,6 +93,22 @@ final class AssemblyTree {
 	@Nullable
 	JvmNode plannedNodeAt(PathExpression path) {
 		return plannedTree.resolve(path);
+	}
+
+	@Nullable
+	JvmNode placedNodeAt(PathExpression path) {
+		return nodeByPath.get(path.toExpression());
+	}
+
+	Set<PathExpression> descendedPaths() {
+		Set<PathExpression> descendedPaths = new HashSet<>();
+		for (String placedPath : nodeByPath.keySet()) {
+			PathExpression path = PathExpression.of(placedPath);
+			if (!path.isRoot()) {
+				descendedPaths.add(path.getParent());
+			}
+		}
+		return descendedPaths;
 	}
 
 	List<JvmNode> ancestorNodes(PathExpression path) {

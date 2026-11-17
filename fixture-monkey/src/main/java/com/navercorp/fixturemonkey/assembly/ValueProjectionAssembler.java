@@ -115,7 +115,76 @@ public final class ValueProjectionAssembler {
 			recordMergedCandidates(state);
 		}
 		JvmNode rootNode = context.getPlan().getNodeTree().getRootNode();
-		return assembleNode(rootNode, state, null, null, PathExpression.root(), new HashSet<>());
+		CombinableArbitrary<?> assembled =
+			assembleNode(rootNode, state, null, null, PathExpression.root(), new HashSet<>());
+		// Checked after assembly: the planned tree leaves interface and abstract types unexpanded, so a path
+		// beneath one can only be judged once assembly has chosen and attached an implementation for it.
+		if (context.getPlan().getAnalysisResult().isStrictMode()) {
+			verifyEveryValuePathApplied(state);
+		}
+		return assembled;
+	}
+
+	private void verifyEveryValuePathApplied(AssemblyState state) {
+		Set<String> unresolvedPaths = context.getPlan().getValues().getUnresolvedNonWildcardPaths();
+		if (unresolvedPaths.isEmpty()) {
+			return;
+		}
+		Set<PathExpression> descendedPaths = state.assemblyTree.descendedPaths();
+		Set<String> invalidPaths = new HashSet<>();
+		for (String unresolvedPath : unresolvedPaths) {
+			if (isMissingFromAssembledTree(PathExpression.of(unresolvedPath), descendedPaths, state)) {
+				invalidPaths.add(unresolvedPath);
+			}
+		}
+		if (!invalidPaths.isEmpty()) {
+			throw new IllegalArgumentException(
+				"No matching results for given NodeResolvers. " + "Invalid paths: " + invalidPaths
+			);
+		}
+	}
+
+	private boolean isMissingFromAssembledTree(
+		PathExpression path,
+		Set<PathExpression> descendedPaths,
+		AssemblyState state
+	) {
+		if (!selectsImplementationWhileAssembling(deepestPlannedNodeAlong(path, state), state)) {
+			return true;
+		}
+		if (state.assemblyTree.placedNodeAt(path) != null) {
+			return false;
+		}
+		for (int depth = path.depth() - 1; depth >= 0; depth--) {
+			PathExpression prefix = path.truncateTo(depth);
+			JvmNode placed = state.assemblyTree.placedNodeAt(prefix);
+			if (placed != null) {
+				boolean replacedByValue = !descendedPaths.contains(prefix)
+					&& (state.candidates.contains(prefix) || isUnexpandedAbstractNode(placed, state));
+				return !replacedByValue;
+			}
+		}
+		return true;
+	}
+
+	private static JvmNode deepestPlannedNodeAlong(PathExpression path, AssemblyState state) {
+		for (int depth = path.depth() - 1; depth > 0; depth--) {
+			JvmNode planned = state.assemblyTree.plannedNodeAt(path.truncateTo(depth));
+			if (planned != null) {
+				return planned;
+			}
+		}
+		return state.assemblyTree.getRootNode();
+	}
+
+	private boolean selectsImplementationWhileAssembling(JvmNode node, AssemblyState state) {
+		return needsImplementationSelection(node, state)
+			&& !TypeMetadataResolver.isContainerType(node.getConcreteType(), state);
+	}
+
+	private static boolean isUnexpandedAbstractNode(JvmNode node, AssemblyState state) {
+		return isInterfaceOrAbstract(node.getConcreteType().getRawType())
+			&& !TypeMetadataResolver.isContainerType(node.getConcreteType(), state);
 	}
 
 	private void recordMergedCandidates(AssemblyState state) {
@@ -345,12 +414,7 @@ public final class ValueProjectionAssembler {
 			// Container interfaces (List, Map, etc.) skip this — handled by ContainerIntrospector.
 			// Primitives also skip (abstract modifier but not truly abstract).
 			JvmType nodeType = currentType;
-			Class<?> rawType = nodeType.getRawType();
-			boolean isInterfaceOrAbstract = !rawType.isPrimitive()
-				&& (Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers()));
-			boolean needsImplementationSelection =
-				isInterfaceOrAbstract || hasCandidateConcretePropertyResolvers(node, state);
-			if (needsImplementationSelection && !isCurrentTypeContainer) {
+			if (needsImplementationSelection(node, state) && !isCurrentTypeContainer) {
 				if (isValueSet) {
 					Object setValue = state.candidates.at(currentPath).value;
 					if (state.context.getTraceContext().isEnabled()) {
@@ -646,6 +710,16 @@ public final class ValueProjectionAssembler {
 				visitedTypes.remove(currentRawType);
 			}
 		}
+	}
+
+	private boolean needsImplementationSelection(JvmNode node, AssemblyState state) {
+		return isInterfaceOrAbstract(node.getConcreteType().getRawType())
+			|| hasCandidateConcretePropertyResolvers(node, state);
+	}
+
+	private static boolean isInterfaceOrAbstract(Class<?> rawType) {
+		return !rawType.isPrimitive()
+			&& (Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers()));
 	}
 
 	@SuppressWarnings("deprecation")
