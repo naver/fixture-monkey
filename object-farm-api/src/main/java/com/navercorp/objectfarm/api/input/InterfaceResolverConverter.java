@@ -19,10 +19,13 @@
 package com.navercorp.objectfarm.api.input;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -73,14 +76,23 @@ public final class InterfaceResolverConverter {
 			// should be skipped only when a default resolver can handle the interface type.
 			// Collection/Map subtypes have default implementations (ArrayList, HashMap),
 			// but other interfaces (e.g., Iterable) do not.
-			if (!isInstantiable(concreteType) && hasDefaultContainerResolver(interfaceType.getRawType())) {
-				return null;
+			// Otherwise (e.g., Object), they are replaced with an instantiable implementation.
+			Class<?> resolvedType = concreteType;
+			if (!isInstantiable(concreteType)) {
+				if (hasDefaultContainerResolver(interfaceType.getRawType())) {
+					return null;
+				}
+
+				Class<?> instantiableType = toInstantiableContainerType(concreteType);
+				if (instantiableType != null && interfaceType.getRawType().isAssignableFrom(instantiableType)) {
+					resolvedType = instantiableType;
+				}
 			}
 
 			// Preserve type variables from the original interface type
 			// e.g., List<String> → ArrayList<String> (not raw ArrayList)
 			return new ReflectiveJvmType(
-				concreteType,
+				resolvedType,
 				interfaceType.getTypeVariables(),
 				interfaceType.getAnnotations()
 			);
@@ -162,6 +174,17 @@ public final class InterfaceResolverConverter {
 		return Iterable.class.isAssignableFrom(interfaceType)
 			|| Collection.class.isAssignableFrom(interfaceType)
 			|| Map.class.isAssignableFrom(interfaceType);
+	}
+
+	@Nullable
+	static Class<?> toInstantiableContainerType(Class<?> type) {
+		if (List.class.isAssignableFrom(type)) {
+			return ArrayList.class;
+		}
+		if (Set.class.isAssignableFrom(type)) {
+			return HashSet.class;
+		}
+		return null;
 	}
 
 	static boolean isInstantiable(Class<?> type) {
