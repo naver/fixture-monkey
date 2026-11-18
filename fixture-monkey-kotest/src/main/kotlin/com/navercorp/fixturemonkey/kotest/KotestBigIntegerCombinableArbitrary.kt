@@ -25,7 +25,6 @@ import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.filter
-import io.kotest.property.arbitrary.single
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.math.BigInteger
@@ -36,7 +35,7 @@ class KotestBigIntegerCombinableArbitrary(
     private val arb: Arb<BigInteger> = Arb.bigInt(maxNumBits = DEFAULT_MAX_NUM_BITS)
 ) : BigIntegerCombinableArbitrary {
 
-    override fun combined(): BigInteger = arb.single()
+    override fun combined(): BigInteger = arb.sampleInScope()
 
     override fun rawValue(): BigInteger = this.combined()
 

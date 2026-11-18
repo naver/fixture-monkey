@@ -30,12 +30,14 @@ import org.jspecify.annotations.Nullable;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.customizer.ScopeTies;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.tree.ContainerSizeResolverFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
+import com.navercorp.objectfarm.api.node.SeedSnapshot;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 import com.navercorp.objectfarm.api.tree.PathInterfaceResolver;
@@ -64,10 +66,13 @@ final class PathResolverContextFactory {
 		ResolutionListener resolutionListener,
 		boolean isFixed,
 		@Nullable FixtureMonkeyOptions options,
-		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver
+		@Nullable AncestorAwareResolver<List<JvmNodeCandidate>> ancestorAwareChildCandidateResolver,
+		SeedSnapshot sampleScope,
+		ScopeTies scopeTies
 	) {
 		PathResolverContext.Builder builder = PathResolverContext.builder()
-			.resolutionListener(resolutionListener);
+			.resolutionListener(resolutionListener)
+			.sampleScope(sampleScope);
 		if (ancestorAwareChildCandidateResolver != null) {
 			builder.ancestorAwareChildCandidateResolver(ancestorAwareChildCandidateResolver);
 		}
@@ -96,7 +101,7 @@ final class PathResolverContextFactory {
 			builder.addGenericTypeResolver(resolver);
 		}
 
-		addDefinedScopeContainerSizeResolver(builder, definedScopeContainerSizes);
+		addDefinedScopeContainerSizeResolver(builder, definedScopeContainerSizes, scopeTies);
 
 		if (isFixed) {
 			builder.defaultContainerSizeResolver(
@@ -150,7 +155,8 @@ final class PathResolverContextFactory {
 
 	private void addDefinedScopeContainerSizeResolver(
 		PathResolverContext.Builder builder,
-		List<Map.Entry<AnalyzedScope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes
+		List<Map.Entry<AnalyzedScope, Map<PathExpression, ArbitraryContainerInfo>>> definedScopeContainerSizes,
+		ScopeTies scopeTies
 	) {
 		if (definedScopeContainerSizes.isEmpty()) {
 			return;
@@ -163,6 +169,6 @@ final class PathResolverContextFactory {
 			);
 			resolversByScope.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), resolversByField));
 		}
-		builder.ancestorAwareContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope));
+		builder.ancestorAwareContainerSizeResolver(new DefinedScopeContainerSizeResolver(resolversByScope, scopeTies));
 	}
 }

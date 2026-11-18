@@ -32,6 +32,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
@@ -437,12 +438,18 @@ public final class JavaNodeContext implements JvmNodeContext {
 			if (interfaceResolver != null) {
 				InterfaceResolver userResolver = interfaceResolver;
 				InterfaceResolver defaultMapping = createDefaultInterfaceMapping();
-				baseResolver = jvmType -> {
-					JvmType resolved = userResolver.resolve(jvmType);
-					if (resolved == null) {
-						return defaultMapping.resolve(jvmType);
+				baseResolver = new InterfaceResolver() {
+					@Override
+					public @Nullable JvmType resolve(JvmType jvmType) {
+						JvmType resolved = userResolver.resolve(jvmType);
+						return resolved != null ? resolved : defaultMapping.resolve(jvmType);
 					}
-					return resolved;
+
+					@Override
+					public @Nullable JvmType resolve(JvmType jvmType, SeedSnapshot scope) {
+						JvmType resolved = userResolver.resolve(jvmType, scope);
+						return resolved != null ? resolved : defaultMapping.resolve(jvmType, scope);
+					}
 				};
 			} else {
 				baseResolver = createDefaultInterfaceMapping();
@@ -580,6 +587,17 @@ public final class JavaNodeContext implements JvmNodeContext {
 		@Override
 		@Nullable
 		public JvmType resolve(JvmType interfaceType) {
+			return resolveRecursively(interfaceType, delegate::resolve);
+		}
+
+		@Override
+		@Nullable
+		public JvmType resolve(JvmType interfaceType, SeedSnapshot scope) {
+			return resolveRecursively(interfaceType, type -> delegate.resolve(type, scope));
+		}
+
+		@Nullable
+		private JvmType resolveRecursively(JvmType interfaceType, Function<JvmType, @Nullable JvmType> resolveOnce) {
 			Set<JvmType> visited = new HashSet<>();
 			JvmType current = interfaceType;
 			int depth = 0;
@@ -593,7 +611,7 @@ public final class JavaNodeContext implements JvmNodeContext {
 				visited.add(current);
 
 				// Apply the delegate resolver
-				JvmType resolved = delegate.resolve(current);
+				JvmType resolved = resolveOnce.apply(current);
 
 				// If the resolver returned null, can't resolve further
 				if (resolved == null) {

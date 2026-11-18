@@ -121,9 +121,9 @@ public final class ScopeSet {
 
 	/**
 	 * Returns the instantiators an instance of {@code type} builds with when a defined scope selecting a node on its
-	 * chain declared one for it and outranks the others by {@link DirectivePrecedence}. A scope declaring one for
-	 * every node of {@code type} competes from the instance's own node. The same declaration always gives the same
-	 * instance.
+	 * chain declared one for it and outranks the others by {@link DirectivePrecedence}; of the scopes of the same
+	 * priority selecting the same node, only the one picked there applies. A scope declaring one for every node of
+	 * {@code type} competes from the instance's own node. The same declaration always gives the same instance.
 	 *
 	 * @param type  the type of the instance
 	 * @param chain the nodes from the outermost ancestor down to the instance's own node

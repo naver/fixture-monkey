@@ -43,7 +43,7 @@ public final class JqwikDoubleCombinableArbitrary implements DoubleCombinableArb
 
 	@Override
 	public Double rawValue() {
-		return this.doubleArbitrary.sample();
+		return ArbitraryUtils.sample(this.doubleArbitrary);
 	}
 
 	@Override
@@ -160,6 +160,6 @@ public final class JqwikDoubleCombinableArbitrary implements DoubleCombinableArb
 
 	@Override
 	public Double combined() {
-		return this.doubleArbitrary.sample();
+		return ArbitraryUtils.sample(this.doubleArbitrary);
 	}
 }
