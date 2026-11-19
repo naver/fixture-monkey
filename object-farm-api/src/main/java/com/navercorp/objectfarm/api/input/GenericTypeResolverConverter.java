@@ -144,7 +144,12 @@ public final class GenericTypeResolverConverter {
 	}
 
 	/**
-	 * Extracts type arguments from a value's generic superclass or interfaces.
+	 * Extracts type arguments from a value.
+	 * <p>
+	 * The type arguments of a Collection or Map are inferred from its contents.
+	 * JDK classes without type parameters and enums have none: the type arguments of their supertypes,
+	 * such as {@code Comparable<String>} or {@code Enum<E>}, are not theirs.
+	 * Other values use the type arguments of their generic superclass or interfaces.
 	 *
 	 * @param value the value to extract type arguments from
 	 * @return list of type arguments, or empty list if not found
@@ -158,7 +163,13 @@ public final class GenericTypeResolverConverter {
 			return extractCollectionTypeArguments((Collection<?>)value);
 		}
 
-		return extractCustomGenericTypeArguments(value.getClass());
+		Class<?> valueClass = value.getClass();
+		boolean isJdkNonGenericClass = Types.isJavaType(valueClass) && valueClass.getTypeParameters().length == 0;
+		if (isJdkNonGenericClass || Enum.class.isAssignableFrom(valueClass)) {
+			return Collections.emptyList();
+		}
+
+		return extractCustomGenericTypeArguments(valueClass);
 	}
 
 	/**
