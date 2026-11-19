@@ -59,7 +59,7 @@ final class ScopeLookup {
 	private final RootEntry root;
 	private final List<DefinedScopeEntry> definedScopes;
 	private final List<Map.Entry<ScopedPath, ValueCandidate>> definedScopeValues = new ArrayList<>();
-	private final Set<ScopedPath> definedScopeJustPaths = new HashSet<>();
+	private final Set<ScopedPath> declaredJustPaths = new HashSet<>();
 	private final boolean hasDefinedScopeNotNull;
 	private final boolean hasFilters;
 	private final boolean hasCustomizers;
@@ -73,8 +73,11 @@ final class ScopeLookup {
 		boolean notNull = false;
 		boolean filters = !root.analyzed.getFiltersByPath().isEmpty();
 		boolean customizers = !root.analyzed.getCustomizersByPath().isEmpty();
+		for (PathExpression justPath : root.justPaths) {
+			declaredJustPaths.add(ScopedPath.root(justPath));
+		}
 		for (DefinedScopeEntry entry : definedScopes) {
-			entry.collectValues(definedScopeValues, definedScopeJustPaths);
+			entry.collectValues(definedScopeValues, declaredJustPaths);
 			notNull |= !entry.analyzed.getNotNullPaths().isEmpty();
 			filters |= !entry.analyzed.getFiltersByPath().isEmpty();
 			customizers |= !entry.analyzed.getCustomizersByPath().isEmpty();
@@ -117,13 +120,6 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns whether a defined scope set a {@code Values.just} value at {@code path}, used as it is.
-	 */
-	boolean isDefinedScopeJust(ScopedPath path) {
-		return definedScopeJustPaths.contains(path);
-	}
-
-	/**
 	 * The paths the root scope declared a customizer, a filter or a not-null at.
 	 */
 	Set<PathExpression> getRootCustomizerFilterNotNullPaths() {
@@ -161,6 +157,14 @@ final class ScopeLookup {
 	 */
 	boolean isRootJust(PathExpression path) {
 		return root.justPaths.contains(path);
+	}
+
+	/**
+	 * Returns whether the value at {@code declaredPath} was declared with {@code Values.just}, in the root scope or a
+	 * defined scope, so planning already unwrapped it and only its path tells it is used as it is.
+	 */
+	boolean isJustPath(ScopedPath declaredPath) {
+		return declaredJustPaths.contains(declaredPath);
 	}
 
 	/**

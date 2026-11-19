@@ -38,7 +38,7 @@ public final class JavaNodeCandidateFactory implements JvmNodeCandidateFactory {
 	public static final JavaNodeCandidateFactory INSTANCE = new JavaNodeCandidateFactory();
 
 	@Override
-	public JvmNodeCandidate create(JvmType type, String name, @Nullable CreationMethod creationMethod) {
+	public JvmNodeCandidate create(JvmType type, @Nullable String name, @Nullable CreationMethod creationMethod) {
 		if (Map.Entry.class.isAssignableFrom(type.getRawType())) {
 			return createMapEntryCandidate(type, name, creationMethod);
 		}
@@ -47,7 +47,7 @@ public final class JavaNodeCandidateFactory implements JvmNodeCandidateFactory {
 
 	private JvmNodeCandidate createMapEntryCandidate(
 		JvmType type,
-		String name,
+		@Nullable String name,
 		@Nullable CreationMethod creationMethod
 	) {
 		List<? extends JvmType> typeVars = type.getTypeVariables();

@@ -25,11 +25,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.objectfarm.api.expression.PathExpression;
+import com.navercorp.objectfarm.api.input.ValueAnalysisResult;
+import com.navercorp.objectfarm.api.input.ValueAnalyzer;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.FixedContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.JavaMapNodePromoter;
@@ -386,12 +389,48 @@ class JvmNodeTreeTransformerTest {
 		then(recursive4Children).isEmpty();
 	}
 
+	@Test
+	void contentOfSetOptionalKeepsItsOwnType() {
+		// given
+		ValueAnalysisResult analysis = new ValueAnalyzer().analyzeDecomposed(Optional.of(new Child()), "$.child");
+		PathResolverContext.Builder resolverContext = PathResolverContext.builder();
+		analysis.getInterfaceResolvers().forEach(resolverContext::addInterfaceResolver);
+		analysis.getGenericTypeResolvers().forEach(resolverContext::addGenericTypeResolver);
+		analysis.getContainerSizeResolvers().forEach(resolverContext::addContainerSizeResolver);
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(
+			new ReflectiveJvmType(OptionalChildHolder.class),
+			CONTEXT
+		).build();
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(
+			CONTEXT,
+			new JvmNodeCandidateTreeContext(),
+			resolverContext.build()
+		);
+
+		// when
+		JvmNodeTree nodeTree = transformer.transform(candidateTree);
+
+		// then
+		JvmNode optionalNode = findNodeByName(nodeTree.getChildren(nodeTree.getRootNode()), "child");
+		JvmNode contentNode = nodeTree.getChildren(optionalNode).get(0);
+		then(contentNode.getConcreteType().getRawType()).isEqualTo(Child.class);
+		then(contentNode.getConcreteType().getTypeVariables()).isEmpty();
+	}
+
 	private JvmNode findNodeByName(List<JvmNode> nodes, String name) {
 		return nodes
 			.stream()
 			.filter(n -> name.equals(n.getNodeName()))
 			.findFirst()
 			.orElse(null);
+	}
+
+	public static class Child {
+		private String name;
+	}
+
+	public static class OptionalChildHolder {
+		private Optional<Child> child;
 	}
 
 	public static class SelfRecursive {

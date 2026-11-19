@@ -21,7 +21,10 @@ package com.navercorp.fixturemonkey.tests.java17;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
@@ -226,6 +229,111 @@ class SetJdkInternalContainerTest {
 
 		// then
 		then(actual.getValues()).isEqualTo(Map.of(List.of("a"), "v"));
+	}
+
+	@Test
+	void setEmptyListOfToObjectProperty() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", List.of())
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(List.of());
+	}
+
+	@Test
+	void setArraysAsListToObjectProperty() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", Arrays.asList("a", "b"))
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(List.of("a", "b"));
+	}
+
+	@Test
+	void setUnmodifiableListToObjectProperty() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", Collections.unmodifiableList(new ArrayList<>(List.of("a"))))
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(List.of("a"));
+	}
+
+	@Test
+	void setJdkInternalNavigableSetToObjectPropertyUsesSortedImplementation() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", Collections.unmodifiableNavigableSet(new TreeSet<>(List.of("b", "a"))))
+			.sample();
+
+		// then
+		then(actual.getValue())
+			.isInstanceOf(TreeSet.class)
+			.asInstanceOf(InstanceOfAssertFactories.ITERABLE)
+			.containsExactly("a", "b");
+	}
+
+	@Test
+	void setMapValuesToObjectProperty() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", new HashMap<>(Map.of("k", 1)).values())
+			.sample();
+
+		// then
+		then(actual.getValue())
+			.asInstanceOf(InstanceOfAssertFactories.ITERABLE)
+			.containsExactly(1);
+	}
+
+	@Test
+	void setListWithNullElementToObjectProperty() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", Arrays.asList("a", null))
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(Arrays.asList("a", null));
+	}
+
+	@Test
+	void setListOfToObjectPropertyThenSetElement() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", List.of("a", "b"))
+			.set("value[0]", "z")
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(List.of("z", "b"));
+	}
+
+	@Test
+	void setLazyListOfToObjectProperty() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.setLazy("value", () -> List.of("a"))
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(List.of("a"));
+	}
+
+	@Test
+	void setMapEntryToObjectProperty() {
+		// when
+		ObjectValue actual = SUT.giveMeBuilder(ObjectValue.class)
+			.set("value", Map.entry("k", "v"))
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(Map.entry("k", "v"));
 	}
 
 	public static class ObjectValue {

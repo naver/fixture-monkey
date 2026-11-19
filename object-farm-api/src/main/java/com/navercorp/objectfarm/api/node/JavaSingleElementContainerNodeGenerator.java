@@ -20,15 +20,13 @@ package com.navercorp.objectfarm.api.node;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
+import com.navercorp.objectfarm.api.type.Types;
 
 /**
  * A {@link JvmContainerNodeGenerator} implementation for generating element nodes
@@ -51,13 +49,7 @@ public final class JavaSingleElementContainerNodeGenerator implements JvmContain
 
 	@Override
 	public boolean isSupported(JvmType containerType) {
-		Class<?> rawType = containerType.getRawType();
-		return (Supplier.class.isAssignableFrom(rawType)
-			|| Function.class.isAssignableFrom(rawType)
-			|| Optional.class.isAssignableFrom(rawType)
-			|| OptionalInt.class.isAssignableFrom(rawType)
-			|| OptionalLong.class.isAssignableFrom(rawType)
-			|| OptionalDouble.class.isAssignableFrom(rawType));
+		return Types.isSingleElementWrapper(containerType.getRawType());
 	}
 
 	@Override
