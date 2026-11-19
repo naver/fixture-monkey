@@ -265,6 +265,34 @@ class GenericTypeResolverConverterTest {
 		then(actual.get(1).getRawType()).isEqualTo(Circle.class);
 	}
 
+	@Test
+	void collectionOfStringsResolvesStringWithoutTypeArguments() {
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(Arrays.asList("a", "b"));
+
+		// then
+		then(actual).hasSize(1);
+		then(actual.get(0).getRawType()).isEqualTo(String.class);
+		then(actual.get(0).getTypeVariables()).isEmpty();
+	}
+
+	@Test
+	void collectionOfEnumsResolvesEnumWithoutTypeArguments() {
+		// when
+		List<JvmType> actual = GenericTypeResolverConverter.extractCollectionTypeArguments(
+			Arrays.asList(Color.RED, Color.GREEN)
+		);
+
+		// then
+		then(actual).hasSize(1);
+		then(actual.get(0).getRawType()).isEqualTo(Color.class);
+		then(actual.get(0).getTypeVariables()).isEmpty();
+	}
+
+	enum Color {
+		RED, GREEN
+	}
+
 	abstract static class Shape {
 	}
 
