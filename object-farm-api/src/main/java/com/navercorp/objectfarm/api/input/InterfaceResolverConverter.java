@@ -18,7 +18,6 @@
 
 package com.navercorp.objectfarm.api.input;
 
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +31,7 @@ import com.navercorp.objectfarm.api.tree.PathInterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
+import com.navercorp.objectfarm.api.type.Types;
 
 /**
  * Converts value information to TransformPathResolver for interface resolution.
@@ -73,7 +73,7 @@ public final class InterfaceResolverConverter {
 			// should be skipped only when a default resolver can handle the interface type.
 			// Collection/Map subtypes have default implementations (ArrayList, HashMap),
 			// but other interfaces (e.g., Iterable) do not.
-			if (!isInstantiable(concreteType) && hasDefaultContainerResolver(interfaceType.getRawType())) {
+			if (Types.isJdkInternalType(concreteType) && hasDefaultContainerResolver(interfaceType.getRawType())) {
 				return null;
 			}
 
@@ -162,16 +162,5 @@ public final class InterfaceResolverConverter {
 		return Iterable.class.isAssignableFrom(interfaceType)
 			|| Collection.class.isAssignableFrom(interfaceType)
 			|| Map.class.isAssignableFrom(interfaceType);
-	}
-
-	static boolean isInstantiable(Class<?> type) {
-		if (Modifier.isPublic(type.getModifiers())) {
-			return true;
-		}
-
-		// Non-public JDK internal types (e.g., Arrays$ArrayList, Collections$SingletonList)
-		// cannot be instantiated by introspectors — skip them so the default resolver is used.
-		String name = type.getName();
-		return !name.startsWith("java.") && !name.startsWith("javax.") && !name.startsWith("sun.");
 	}
 }
