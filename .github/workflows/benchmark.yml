@@ -22,6 +22,13 @@ jobs:
           - 'fixture-monkey-benchmark-kotlin'
     steps:
       - uses: actions/checkout@v7
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: |
+            8
+            17
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
