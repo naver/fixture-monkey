@@ -390,6 +390,32 @@ class JvmNodeTreeTransformerTest {
 	}
 
 	@Test
+	void containerElementsArePromotedFromGeneratedCandidates() {
+		// given
+		ReflectiveJvmType listType = new ReflectiveJvmType(
+			List.class,
+			Collections.singletonList(new ReflectiveJvmType(String.class)),
+			Collections.emptyList()
+		);
+		JvmNodeCandidateTree candidateTree = new JvmNodeCandidateTree.Builder(listType, CONTEXT).build();
+		JvmNodeTreeTransformer transformer = new JvmNodeTreeTransformer(CONTEXT);
+
+		// when
+		JvmNodeTree nodeTree = transformer.transform(candidateTree);
+
+		// then
+		List<JvmNode> elements = nodeTree.getChildren(nodeTree.getRootNode());
+		then(elements).hasSize(2);
+		for (int index = 0; index < elements.size(); index++) {
+			JvmNode element = elements.get(index);
+			then(element.getIndex()).isEqualTo(index);
+			then(element.getNodeName()).isEqualTo("[" + index + "]");
+			then(nodeTree.getSourceCandidate(element)).isNotNull();
+			then(nodeTree.getSourceCandidate(element).getName()).isEqualTo("[" + index + "]");
+		}
+	}
+
+	@Test
 	void contentOfSetOptionalKeepsItsOwnType() {
 		// given
 		ValueAnalysisResult analysis = new ValueAnalyzer().analyzeDecomposed(Optional.of(new Child()), "$.child");

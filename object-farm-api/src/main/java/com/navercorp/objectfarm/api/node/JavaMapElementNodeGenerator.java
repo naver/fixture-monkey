@@ -24,19 +24,18 @@ import java.util.List;
 import java.util.Map;
 
 import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod;
-import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
+import com.navercorp.objectfarm.api.nodecandidate.JavaMapNodeCandidate;
+import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 /**
- * A {@link JvmContainerNodeGenerator} implementation for generating element nodes
+ * A {@link JvmContainerNodeGenerator} implementation for generating element candidates
  * for Map types.
  * <p>
- * This generator creates pairs of key and value nodes for each entry in a Map,
+ * This generator creates a map element candidate with a key and a value candidate for each entry in a Map,
  * using the ContainerSizeResolver from the context to determine the number of entries.
- * <p>
- * For each map entry, both a key node and a value node are generated and returned
- * in order (key1, value1, key2, value2, ...).
  */
 public final class JavaMapElementNodeGenerator implements JvmContainerNodeGenerator {
 
@@ -53,12 +52,12 @@ public final class JavaMapElementNodeGenerator implements JvmContainerNodeGenera
 	}
 
 	@Override
-	public List<JvmNode> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
+	public List<JvmNodeCandidate> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
 		return generateContainerElements(containerNode, context, context.getContainerSizeResolver());
 	}
 
 	@Override
-	public List<JvmNode> generateContainerElements(
+	public List<JvmNodeCandidate> generateContainerElements(
 		JvmNode containerNode,
 		JvmNodeContext context,
 		ContainerSizeResolver sizeResolver
@@ -70,20 +69,17 @@ public final class JavaMapElementNodeGenerator implements JvmContainerNodeGenera
 
 		int mapSize = sizeResolver.resolveContainerSize(containerType);
 
-		List<JvmNode> elementNodes = new ArrayList<>();
+		List<JvmNodeCandidate> elementCandidates = new ArrayList<>();
 		for (int i = 0; i < mapSize; i++) {
-			CreationMethod creationMethod = new ContainerElementCreationMethod(i);
-			elementNodes.add(new JavaMapNode(
-				containerType,
+			elementCandidates.add(new JavaMapNodeCandidate(
 				containerType,
 				"[" + i + "]",
-				i,
-				new JavaNode(keyType, "key"),
-				new JavaNode(valueType, "value"),
-				creationMethod
+				JavaNodeCandidateFactory.INSTANCE.create(keyType, "key", null),
+				JavaNodeCandidateFactory.INSTANCE.create(valueType, "value", null),
+				new ContainerElementCreationMethod(i)
 			));
 		}
 
-		return Collections.unmodifiableList(elementNodes);
+		return Collections.unmodifiableList(elementCandidates);
 	}
 }

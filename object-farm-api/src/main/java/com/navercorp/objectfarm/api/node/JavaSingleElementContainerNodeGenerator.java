@@ -24,13 +24,15 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 /**
- * A {@link JvmContainerNodeGenerator} implementation for generating element nodes
- * for single-element wrapper containers such as Supplier and Optional.
+ * A {@link JvmContainerNodeGenerator} implementation for generating the element candidate
+ * of single-element wrapper containers such as Supplier and Optional.
  * <p>
  * These types are treated as "transparent" wrappers, meaning:
  * <ul>
@@ -53,12 +55,12 @@ public final class JavaSingleElementContainerNodeGenerator implements JvmContain
 	}
 
 	@Override
-	public List<JvmNode> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
+	public List<JvmNodeCandidate> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
 		return generateContainerElements(containerNode, context, context.getContainerSizeResolver());
 	}
 
 	@Override
-	public List<JvmNode> generateContainerElements(
+	public List<JvmNodeCandidate> generateContainerElements(
 		JvmNode containerNode,
 		JvmNodeContext context,
 		ContainerSizeResolver sizeResolver
@@ -70,8 +72,7 @@ public final class JavaSingleElementContainerNodeGenerator implements JvmContain
 
 		// Single-element wrappers generate exactly one child with null name and null index
 		// This makes them "transparent" in path expressions
-		JvmNode elementNode = new JavaNode(elementType, null, null);
-		return Collections.singletonList(elementNode);
+		return Collections.singletonList(JavaNodeCandidateFactory.INSTANCE.create(elementType, null, null));
 	}
 
 	/**

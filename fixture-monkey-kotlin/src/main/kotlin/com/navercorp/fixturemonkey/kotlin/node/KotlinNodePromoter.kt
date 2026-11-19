@@ -25,6 +25,7 @@ import com.navercorp.objectfarm.api.node.JvmNode
 import com.navercorp.objectfarm.api.node.JvmNodeContext
 import com.navercorp.objectfarm.api.node.JvmNodePromoter
 import com.navercorp.objectfarm.api.nodecandidate.ConstructorParamCreationMethod
+import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod
 import com.navercorp.objectfarm.api.nodecandidate.FieldAccessCreationMethod
 import com.navercorp.objectfarm.api.nodecandidate.JavaMapNodeCandidate
 import com.navercorp.objectfarm.api.nodecandidate.JvmMapEntryNodeCandidate
@@ -52,6 +53,11 @@ class KotlinNodePromoter : JvmNodePromoter {
 
     override fun canPromote(node: JvmNodeCandidate): Boolean {
         if (node is JavaMapNodeCandidate || node is JvmMapEntryNodeCandidate) {
+            return false
+        }
+
+        val isContainerElement = node.creationMethod is ContainerElementCreationMethod
+        if (isContainerElement) {
             return false
         }
 

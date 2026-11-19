@@ -60,7 +60,7 @@ public final class JavaMapEntryNodePromoter implements JvmNodePromoter {
 			mapEntryCandidate.getType(),
 			mapEntryCandidate.getType(),
 			mapEntryCandidate.getName(),
-			null,
+			mapEntryCandidate.getIndex(),
 			keyNode,
 			valueNode,
 			mapEntryCandidate.getCreationMethod()
