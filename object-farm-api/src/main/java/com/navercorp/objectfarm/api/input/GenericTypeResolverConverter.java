@@ -38,6 +38,7 @@ import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
+import com.navercorp.objectfarm.api.type.WildcardRawType;
 
 /**
  * Converts type information to TransformPathResolver for generic type resolution.
@@ -92,9 +93,11 @@ public final class GenericTypeResolverConverter {
 			JvmType declaredType = declared.get(i);
 			Class<?> inferredRaw = inferredType.getRawType();
 			Class<?> declaredRaw = declaredType.getRawType();
-			boolean keepDeclared = !InterfaceResolverConverter.isInstantiable(inferredRaw)
-				&& InterfaceResolverConverter.hasDefaultContainerResolver(declaredRaw)
-				&& declaredRaw.isAssignableFrom(inferredRaw);
+			boolean inferredFitsDeclared = declaredRaw == WildcardRawType.class
+				|| Types.isAssignable(inferredRaw, declaredRaw);
+			boolean keepDeclared = !inferredFitsDeclared
+				|| Types.isJdkInternalType(inferredRaw)
+				&& InterfaceResolverConverter.hasDefaultContainerResolver(declaredRaw);
 			merged.add(keepDeclared ? declaredType : inferredType);
 		}
 		return merged;

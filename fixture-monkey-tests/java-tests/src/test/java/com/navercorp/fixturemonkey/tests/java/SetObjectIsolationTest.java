@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -263,6 +264,40 @@ class SetObjectIsolationTest {
 	}
 
 	@Test
+	void setObjectWithObjectSupplierFieldKeepsSuppliedInstance() {
+		// given
+		Supplier<Object> supplied = () -> "x";
+		SupplierHolder holder = new SupplierHolder();
+		holder.supplier = supplied;
+
+		// when
+		SupplierHolderParent actual = SUT.giveMeBuilder(SupplierHolderParent.class)
+			.set("holder", holder)
+			.sample();
+
+		// then
+		then(actual.holder.supplier).isSameAs(supplied);
+		then(actual.holder.supplier.get()).isEqualTo("x");
+	}
+
+	@Test
+	void setObjectWithNestedObjectSupplierFieldKeepsSuppliedInstance() {
+		// given
+		Supplier<Supplier<Object>> supplied = () -> () -> "x";
+		SupplierHolder holder = new SupplierHolder();
+		holder.nestedSupplier = supplied;
+
+		// when
+		SupplierHolderParent actual = SUT.giveMeBuilder(SupplierHolderParent.class)
+			.set("holder", holder)
+			.sample();
+
+		// then
+		then(actual.holder.nestedSupplier).isSameAs(supplied);
+		then(actual.holder.nestedSupplier.get().get()).isEqualTo("x");
+	}
+
+	@Test
 	void setJustObjectKeepsSuppliedInstance() {
 		// given
 		Child supplied = child("a");
@@ -316,6 +351,15 @@ class SetObjectIsolationTest {
 
 	public static class FunctionHolder {
 		private Function<String, String> function;
+	}
+
+	public static class SupplierHolder {
+		private Supplier<Object> supplier;
+		private Supplier<Supplier<Object>> nestedSupplier;
+	}
+
+	public static class SupplierHolderParent {
+		private SupplierHolder holder;
 	}
 
 	public static class AnimalHolder {

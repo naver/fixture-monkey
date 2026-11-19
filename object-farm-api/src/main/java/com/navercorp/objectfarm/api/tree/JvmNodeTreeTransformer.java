@@ -58,6 +58,7 @@ import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
+import com.navercorp.objectfarm.api.type.Types;
 
 /**
  * Transforms a JvmNodeCandidateTree into a JvmNodeTree.
@@ -441,10 +442,17 @@ public final class JvmNodeTreeTransformer {
 		List<JvmNode> resolved = new ArrayList<>(elements.size());
 		for (JvmNode element : elements) {
 			Integer index = element.getIndex();
-			PathExpression elementPath = index != null ? currentPath.index(index) : currentPath;
-			resolved.add(resolveNodeType(element, elementPath));
+			if (index == null) {
+				resolved.add(resolveElementSharingContainerPath(element, currentPath));
+			} else {
+				resolved.add(resolveNodeType(element, currentPath.index(index)));
+			}
 		}
 		return resolved;
+	}
+
+	private JvmNode resolveElementSharingContainerPath(JvmNode element, PathExpression containerPath) {
+		return resolveNodeType(element, containerPath, null);
 	}
 
 	private static final class SizeResolution {
@@ -465,13 +473,24 @@ public final class JvmNodeTreeTransformer {
 	}
 
 	private JvmNode resolveNodeType(JvmNode element, PathExpression elementPath) {
+		return resolveNodeType(element, elementPath, resolverContext.findInterfaceResolver(elementPath).orElse(null));
+	}
+
+	private JvmNode resolveNodeType(
+		JvmNode element,
+		PathExpression elementPath,
+		@Nullable InterfaceResolver pathBasedResolver
+	) {
 		JvmType originalType = element.getConcreteType();
 		Class<?> rawType = originalType.getRawType();
 		boolean isAbstractType =
 			Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers());
 		boolean isContainerType = context.isContainerType(originalType);
 
-		JvmType afterInterface = resolveInterfaceType(originalType, elementPath, isAbstractType, isContainerType);
+		JvmType afterInterface = resolveInterfaceType(originalType, pathBasedResolver, isAbstractType, isContainerType);
+		if (isInaccessibleContainerType(afterInterface)) {
+			afterInterface = resolveByNearestContainerSupertype(afterInterface);
+		}
 		JvmType resolvedType = resolveGenericType(afterInterface, elementPath);
 
 		if (resolvedType.equals(originalType)) {
@@ -480,7 +499,7 @@ public final class JvmNodeTreeTransformer {
 
 		JvmType finalType = mergeAnnotations(originalType, resolvedType);
 
-		boolean pathBasedResolution = resolverContext.findInterfaceResolver(elementPath).isPresent();
+		boolean pathBasedResolution = pathBasedResolver != null;
 		resolverContext
 			.getResolutionListener()
 			.onInterfaceResolved(
@@ -502,37 +521,78 @@ public final class JvmNodeTreeTransformer {
 	 */
 	private JvmType resolveInterfaceType(
 		JvmType originalType,
-		PathExpression path,
+		@Nullable InterfaceResolver pathBasedResolver,
 		boolean isAbstractType,
 		boolean isContainerType
 	) {
-		Optional<InterfaceResolver> pathBasedResolver = resolverContext.findInterfaceResolver(path);
-		if (pathBasedResolver.isPresent()) {
-			JvmType resolved = pathBasedResolver.get().resolve(originalType);
+		if (pathBasedResolver != null) {
+			JvmType resolved = pathBasedResolver.resolve(originalType);
 			if (resolved != null) {
 				return resolved;
 			}
 			// Path-based resolver skipped (e.g., non-instantiable JDK type).
 			// For container types, fall through to the default resolver.
-			if (isContainerType) {
-				InterfaceResolver defaultResolver = context.getInterfaceResolver();
-				if (defaultResolver != null) {
-					JvmType fallback = defaultResolver.resolve(originalType);
-					if (fallback != null) {
-						return fallback;
-					}
-				}
-			}
-		} else if (!isAbstractType || isContainerType) {
-			InterfaceResolver defaultResolver = context.getInterfaceResolver();
-			if (defaultResolver != null) {
-				JvmType resolved = defaultResolver.resolve(originalType);
-				if (resolved != null) {
-					return resolved;
-				}
-			}
+			return isContainerType ? resolveByDefault(originalType) : originalType;
+		}
+		if (!isAbstractType || isContainerType) {
+			return resolveByDefault(originalType);
 		}
 		return originalType;
+	}
+
+	private boolean isInaccessibleContainerType(JvmType type) {
+		return Types.isJdkInternalType(type.getRawType()) && context.isContainerType(type);
+	}
+
+	private JvmType resolveByNearestContainerSupertype(JvmType type) {
+		InterfaceResolver defaultResolver = context.getInterfaceResolver();
+		if (defaultResolver == null) {
+			return type;
+		}
+
+		Deque<Class<?>> supertypes = new ArrayDeque<>(getDirectSupertypes(type.getRawType()));
+		Set<Class<?>> visited = new HashSet<>();
+		while (!supertypes.isEmpty()) {
+			Class<?> supertype = supertypes.removeFirst();
+			if (!visited.add(supertype)) {
+				continue;
+			}
+			JvmType supertypeJvmType = new ReflectiveJvmType(
+				supertype,
+				supertype.getTypeParameters().length == type.getTypeVariables().size()
+					? type.getTypeVariables()
+					: Collections.emptyList(),
+				type.getAnnotations()
+			);
+			if (!context.isContainerType(supertypeJvmType)) {
+				continue;
+			}
+			JvmType resolved = defaultResolver.resolve(supertypeJvmType);
+			if (resolved != null && !Types.isJdkInternalType(resolved.getRawType())) {
+				return resolved;
+			}
+			supertypes.addAll(getDirectSupertypes(supertype));
+		}
+		return type;
+	}
+
+	private static List<Class<?>> getDirectSupertypes(Class<?> type) {
+		List<Class<?>> supertypes = new ArrayList<>();
+		Class<?> superclass = type.getSuperclass();
+		if (superclass != null) {
+			supertypes.add(superclass);
+		}
+		Collections.addAll(supertypes, type.getInterfaces());
+		return supertypes;
+	}
+
+	private JvmType resolveByDefault(JvmType type) {
+		InterfaceResolver defaultResolver = context.getInterfaceResolver();
+		if (defaultResolver == null) {
+			return type;
+		}
+		JvmType resolved = defaultResolver.resolve(type);
+		return resolved != null ? resolved : type;
 	}
 
 	/**

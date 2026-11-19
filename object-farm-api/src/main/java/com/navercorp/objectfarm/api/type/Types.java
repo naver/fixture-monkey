@@ -328,6 +328,22 @@ public abstract class Types {
 		};
 	}
 
+	/**
+	 * Checks if the class is a non-public JDK type, such as {@code Arrays$ArrayList} or
+	 * {@code ImmutableCollections$List12}, which cannot be instantiated by introspectors.
+	 *
+	 * @param type the class to check
+	 * @return true if the class is a non-public type in a JDK package
+	 */
+	public static boolean isJdkInternalType(Class<?> type) {
+		if (Modifier.isPublic(type.getModifiers())) {
+			return false;
+		}
+
+		String name = type.getName();
+		return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("sun.");
+	}
+
 	public static boolean isJavaType(Class<?> type) {
 		return type.isPrimitive() || isJavaPackage(type);
 	}
