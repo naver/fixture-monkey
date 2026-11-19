@@ -14,6 +14,10 @@ on:
 jobs:
   jmh:
     name: Run benchmark
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.stack == null
+      || github.event.pull_request.stack.base.ref == github.event.pull_request.base.ref
     runs-on: ubuntu-latest
     strategy:
       matrix:
