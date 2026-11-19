@@ -20,11 +20,6 @@ package com.navercorp.fixturemonkey.assembly;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
-import java.util.function.Supplier;
 import java.util.stream.BaseStream;
 
 import org.jspecify.annotations.Nullable;
@@ -38,6 +33,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.Types;
 
 /**
  * Stateless helpers around per-type assembly metadata: container detection, name resolver,
@@ -100,7 +96,7 @@ final class TypeMetadataResolver {
 				|| Map.Entry.class.isAssignableFrom(rawType)
 				|| Iterable.class.isAssignableFrom(rawType)
 				|| BaseStream.class.isAssignableFrom(rawType)
-				|| isSingleElementWrapper(jvmType)
+				|| Types.isSingleElementWrapper(rawType)
 		) {
 			return true;
 		}
@@ -115,14 +111,5 @@ final class TypeMetadataResolver {
 		}
 
 		return false;
-	}
-
-	static boolean isSingleElementWrapper(JvmType jvmType) {
-		Class<?> rawType = jvmType.getRawType();
-		return (Supplier.class.isAssignableFrom(rawType)
-			|| Optional.class.isAssignableFrom(rawType)
-			|| OptionalInt.class.isAssignableFrom(rawType)
-			|| OptionalLong.class.isAssignableFrom(rawType)
-			|| OptionalDouble.class.isAssignableFrom(rawType));
 	}
 }

@@ -24,16 +24,16 @@ import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
+import net.jqwik.api.Arbitrary;
+
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 
 /**
  * Helpers around {@link LazyValueHolder} resolution.
  *
- * <p>Stateless: every method takes the {@link AssemblyState} (which owns the per-call
- * {@code resolvedLazyCache}) explicitly so the assembler keeps tree-traversal as its sole
- * responsibility.</p>
+ * <p>A lazy value is evaluated each time it wins at a path, so a lazy value for a wildcard path is evaluated for
+ * each element.</p>
  */
 final class LazyResolver {
 	/**
@@ -54,28 +54,8 @@ final class LazyResolver {
 	private LazyResolver() {
 	}
 
-	static @Nullable Object resolveLazyValue(@Nullable Object value, DirectivePrecedence order, AssemblyState state) {
-		if (!(value instanceof LazyValueHolder)) {
-			return value;
-		}
-		return order.isRootScope()
-			? resolveLazyWithCache((LazyValueHolder)value, state)
-			: evaluate((LazyValueHolder)value);
-	}
-
-	static @Nullable Object resolveLazyValueWithCache(@Nullable Object value, AssemblyState state) {
-		return value instanceof LazyValueHolder ? resolveLazyWithCache((LazyValueHolder)value, state) : value;
-	}
-
-	static @Nullable Object resolveLazyWithCache(LazyValueHolder holder, AssemblyState state) {
-		if (state.resolvedLazyCache.containsKey(holder)) {
-			return state.resolvedLazyCache.get(holder);
-		}
-		Object resolved = evaluate(holder);
-		if (resolved != null && resolved != RECURSION_BLOCKED) {
-			state.resolvedLazyCache.put(holder, resolved);
-		}
-		return resolved;
+	static @Nullable Object resolveLazyValue(@Nullable Object value) {
+		return value instanceof LazyValueHolder ? evaluate((LazyValueHolder)value) : value;
 	}
 
 	/**
@@ -102,6 +82,9 @@ final class LazyResolver {
 		lazyArbitrary.clear();
 		Object value = lazyArbitrary.getValue();
 		lazyArbitrary.clear();
+		if (value instanceof Arbitrary) {
+			return ((Arbitrary<?>)value).sample();
+		}
 		return value;
 	}
 

@@ -149,7 +149,7 @@ public final class GenericTypeResolverConverter {
 	/**
 	 * Extracts type arguments from a value.
 	 * <p>
-	 * The type arguments of a Collection or Map are inferred from its contents.
+	 * The type arguments of a Collection, Map, {@link Map.Entry} or {@link Optional} are inferred from its contents.
 	 * JDK classes without type parameters and enums have none: the type arguments of their supertypes,
 	 * such as {@code Comparable<String>} or {@code Enum<E>}, are not theirs.
 	 * Other values use the type arguments of their generic superclass or interfaces.
@@ -164,6 +164,18 @@ public final class GenericTypeResolverConverter {
 
 		if (value instanceof Collection) {
 			return extractCollectionTypeArguments((Collection<?>)value);
+		}
+
+		if (value instanceof Map.Entry) {
+			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)value;
+			return extractMapTypeArguments(Collections.singletonMap(entry.getKey(), entry.getValue()));
+		}
+
+		if (value instanceof Optional) {
+			Optional<?> optional = (Optional<?>)value;
+			return optional.isPresent()
+				? extractCollectionTypeArguments(Collections.singletonList(optional.get()))
+				: Collections.emptyList();
 		}
 
 		Class<?> valueClass = value.getClass();

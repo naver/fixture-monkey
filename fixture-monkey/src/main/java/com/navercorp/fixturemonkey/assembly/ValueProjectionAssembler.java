@@ -18,6 +18,9 @@
 
 package com.navercorp.fixturemonkey.assembly;
 
+import static com.navercorp.objectfarm.api.type.Types.hasFixedChildren;
+import static com.navercorp.objectfarm.api.type.Types.isSingleElementWrapper;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -64,9 +68,9 @@ import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
-import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
@@ -284,18 +288,21 @@ public final class ValueProjectionAssembler {
 				state.scopes.markNotNullRequired(currentPath);
 			}
 			boolean decomposingValue = hasChildValues;
-			if (winner != null && (!hasChildValues || winner.isFromDefinedScope())) {
+			if (winner != null && (!hasChildValues || winner.isExpandedDuringAssembly())) {
 				ValueCandidate bestCandidate = winner.candidate;
 				int scopeDepth = winner.scopeDepth;
 				if (!winner.isDeclaredAt(currentPath)) {
 					state.limits.consume(winner.declaredPath, winner.scopeNode);
 				}
 
-				Object setValue = LazyResolver.resolveLazyValue(
-					bestCandidate.value,
-					bestCandidate.precedence,
-					state
-				);
+				Object resolvedValue = LazyResolver.resolveLazyValue(bestCandidate.value);
+				boolean isJustValue = resolvedValue instanceof Values.Just;
+				Object setValue = isJustValue ? ((Values.Just)resolvedValue).getValue() : resolvedValue;
+				boolean declaredAtJustPath = state.scopes.isJustPath(winner.declaredPath);
+				boolean usedAsIs = isJustValue || declaredAtJustPath;
+				if (!usedAsIs) {
+					DeclaredTypeVerifier.verifyAssignable(setValue, node.getDeclaredType(), currentPath);
+				}
 				boolean unusable = setValue == LazyResolver.RECURSION_BLOCKED
 					|| (setValue == null
 					&& winner.isFromDefinedScope()
@@ -303,15 +310,11 @@ public final class ValueProjectionAssembler {
 
 				int outerLimit = winner.isScopeRoot() ? scopeDepth : scopeDepth - 1;
 				int priority = bestCandidate.precedence.priority();
-				boolean usedAsIs = state.scopes.isDefinedScopeJust(winner.declaredPath);
-				// A set Optional is kept as is: the value inside it shares the Optional's path, so it is not rebuilt
-				// and stays shared across samples.
 				boolean keptAsIs = usedAsIs
-					|| bestCandidate.value instanceof LazyValueHolder
 					|| (isCurrentTypeContainer
-					? !RESIZABLE_CONTAINER_DETECTOR.isContainer(setValue)
+					? !isDecomposedIntoChildren(setValue)
 					: state.assemblyTree.childrenOf(node).isEmpty() && !isConcreteValueOfAbstractNode(node, setValue));
-				boolean outrankedInside = winner.isFromDefinedScope()
+				boolean outrankedInside = winner.isExpandedDuringAssembly()
 					&& (hasChildValues
 					|| !keptAsIs
 					|| !usedAsIs
@@ -320,7 +323,7 @@ public final class ValueProjectionAssembler {
 					|| mayHaveHigherPriorityDefinedScopeBelow(node, priority, state)));
 
 				if (!unusable && setValue != null && outrankedInside) {
-					state.candidates.replaceWithDefinedScopeValue(
+					state.candidates.replaceWithValueExpandedDuringAssembly(
 						currentPath,
 						bestCandidate.withValue(setValue),
 						scopeDepth
@@ -372,8 +375,8 @@ public final class ValueProjectionAssembler {
 				DirectivePrecedence parentPrecedence = currentCandidate != null
 					? currentCandidate.precedence
 					: DirectivePrecedence.rootScope(0);
-				boolean underDefinedScopeValue = state.candidates.decomposedScopeDepthAt(currentPath) >= 0;
-				if (underDefinedScopeValue
+				boolean underValueExpandedDuringAssembly = state.candidates.decomposedScopeDepthAt(currentPath) >= 0;
+				if (underValueExpandedDuringAssembly
 					&& isCurrentTypeContainer
 					&& currentCandidate != null
 					&& currentCandidate.value != null) {
@@ -387,11 +390,12 @@ public final class ValueProjectionAssembler {
 					);
 				}
 				DecomposeResult decomposeResult = state.valueDecomposer.decompose(
+					node,
 					currentPath,
 					currentRawType,
 					isCurrentTypeContainer,
 					parentPrecedence,
-					underDefinedScopeValue
+					underValueExpandedDuringAssembly
 				);
 				applyDecomposeResult(decomposeResult, state);
 			}
@@ -710,6 +714,12 @@ public final class ValueProjectionAssembler {
 				visitedTypes.remove(currentRawType);
 			}
 		}
+	}
+
+	private static boolean isDecomposedIntoChildren(@Nullable Object value) {
+		return RESIZABLE_CONTAINER_DETECTOR.isContainer(value)
+			|| value instanceof Optional && ((Optional<?>)value).isPresent()
+			|| value instanceof Map.Entry;
 	}
 
 	private boolean needsImplementationSelection(JvmNode node, AssemblyState state) {
@@ -1609,7 +1619,8 @@ public final class ValueProjectionAssembler {
 		int valueScopeDepth,
 		AssemblyState state
 	) {
-		if (state.scopes.hasOutrankingSizeAt(state.chainOf(containerPath), valuePrecedence, valueScopeDepth)) {
+		if (hasFixedChildren(containerNode.getConcreteType().getRawType())
+			|| state.scopes.hasOutrankingSizeAt(state.chainOf(containerPath), valuePrecedence, valueScopeDepth)) {
 			return;
 		}
 		int valueSize = state.valueDecomposer.containerSize(containerValue);
@@ -1701,7 +1712,7 @@ public final class ValueProjectionAssembler {
 	}
 
 	private static boolean isConcreteValueOfAbstractNode(JvmNode node, @Nullable Object value) {
-		if (value == null || value instanceof LazyValueHolder) {
+		if (value == null) {
 			return false;
 		}
 		Class<?> nodeType = node.getConcreteType().getRawType();
@@ -1717,7 +1728,7 @@ public final class ValueProjectionAssembler {
 		@Nullable ValueCandidate candidate,
 		AssemblyState state
 	) {
-		if (candidate == null || candidate.value == null || candidate.value instanceof LazyValueHolder) {
+		if (candidate == null || candidate.value == null) {
 			return null;
 		}
 		if (!isConcreteValueOfAbstractNode(node, candidate.value)) {
@@ -1801,7 +1812,7 @@ public final class ValueProjectionAssembler {
 		JvmNode parentNode,
 		AssemblyState state
 	) {
-		if (TypeMetadataResolver.isSingleElementWrapper(parentNode.getConcreteType())) {
+		if (isSingleElementWrapper(parentNode.getConcreteType().getRawType())) {
 			String nodeName = childNode.getNodeName();
 			Integer index = childNode.getIndex();
 
@@ -1885,11 +1896,6 @@ public final class ValueProjectionAssembler {
 		state.candidates.putDecomposedCandidates(result.getValuesToPut());
 		for (PathExpression decomposedPath : result.getValuesToPut().keySet()) {
 			state.context.getTraceContext().markDecomposedPath(decomposedPath.toExpression());
-		}
-
-		PathExpression limitPath = result.getLimitPath();
-		if (limitPath != null) {
-			state.limits.limitChildren(limitPath, result.getLimitValue());
 		}
 	}
 

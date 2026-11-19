@@ -230,7 +230,7 @@ public final class ManipulatorAnalyzer {
 			declared.putValue(path, directive.sequence(), directive.value());
 			ContainerDetector containerDetector =
 				new DecomposedContainerDetector(directive.decomposedContainerValueFactory());
-			OptionalInt containerSize = containerDetector.getContainerSize(directive.value());
+			OptionalInt containerSize = containerDetector.getResizableContainerSizeAtPath(directive.value());
 			if (containerSize.isPresent()) {
 				int size = containerSize.getAsInt();
 				declared.putValueContainerSize(path, directive.sequence(), new ArbitraryContainerInfo(size, size));
@@ -608,6 +608,18 @@ public final class ManipulatorAnalyzer {
 	 * This follows the same flow as decomposed value directives, ensuring consistent
 	 * value ordering and priority handling.
 	 */
+	private static void removeOlderValuesBelow(
+		PathExpression path,
+		int sequence,
+		Map<PathExpression, @Nullable Object> valuesByPath,
+		Map<PathExpression, Integer> valueOrderByPath
+	) {
+		valuesByPath
+			.keySet()
+			.removeIf(key -> key.isChildOf(path) && valueOrderByPath.getOrDefault(key, Integer.MIN_VALUE) < sequence);
+		valueOrderByPath.keySet().removeIf(key -> key.isChildOf(path) && !valuesByPath.containsKey(key));
+	}
+
 	private static void analyzeLazyDirective(
 		LazyDirective directive,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
@@ -623,6 +635,23 @@ public final class ManipulatorAnalyzer {
 	) {
 		PathExpression pathExpression = directive.path();
 		LazyArbitrary<?> lazyArbitrary = directive.lazyArbitrary();
+
+		if (pathExpression.hasWildcard()) {
+			LazyValueHolder holder = new LazyValueHolder(lazyArbitrary, pathExpression, false);
+			removeOlderValuesBelow(pathExpression, directive.sequence(), valuesByPath, valueOrderByPath);
+			recordCollisionIfExists(
+				pathExpression,
+				directive.sequence(),
+				holder,
+				valuesByPath,
+				valueOrderByPath,
+				nodeCollisions
+			);
+			valuesByPath.put(pathExpression, holder);
+			valueOrderByPath.put(pathExpression, directive.sequence());
+			return;
+		}
+
 		Object value = lazyArbitrary.getValue();
 
 		if (value == null) {
@@ -683,16 +712,7 @@ public final class ManipulatorAnalyzer {
 
 		int factorySequence = directive.sequence();
 
-		// Remove existing child paths under this path before adding new values
-		// Only remove child paths with lower sequence (older values)
-		valuesByPath
-			.keySet()
-			.removeIf(
-				key ->
-					key.isChildOf(pathExpression)
-						&& valueOrderByPath.getOrDefault(key, Integer.MIN_VALUE) < factorySequence
-			);
-		valueOrderByPath.keySet().removeIf(key -> key.isChildOf(pathExpression) && !valuesByPath.containsKey(key));
+		removeOlderValuesBelow(pathExpression, factorySequence, valuesByPath, valueOrderByPath);
 
 		ContainerDetector containerDetector =
 			new DecomposedContainerDetector(directive.decomposedContainerValueFactory());

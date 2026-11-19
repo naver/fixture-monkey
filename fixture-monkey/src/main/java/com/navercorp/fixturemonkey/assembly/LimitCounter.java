@@ -32,13 +32,11 @@ import com.navercorp.objectfarm.api.node.JvmNode;
 /**
  * Counts what is left of the limits directives were declared with during one assembly. A limit is counted within
  * its scope: the node a sample starts from for the root scope's paths, each selected node for a defined scope's. A
- * limit on a container's own path caps how many elements it gets, as does the size of a container value decomposed
- * into it.
+ * limit on a container's own path caps how many elements it gets.
  */
 final class LimitCounter {
 	private final Map<ScopedPath, Integer> declaredLimitByPath = new HashMap<>();
 	private final Map<ScopedPath, Map<JvmNode, Integer>> remainingByPathAndScope = new HashMap<>();
-	private final Map<PathExpression, Integer> decomposedSizeByPath = new HashMap<>();
 
 	LimitCounter(AnalyzedScope analyzedRootScope, List<AnalyzedScope> analyzedDefinedScopes) {
 		analyzedRootScope.getLimitsByPath().forEach((path, limit) ->
@@ -79,15 +77,6 @@ final class LimitCounter {
 
 	@Nullable
 	Integer childLimit(PathExpression containerPath) {
-		Integer decomposedSize = decomposedSizeByPath.get(containerPath);
-		return decomposedSize != null ? decomposedSize : declaredLimitByPath.get(ScopedPath.root(containerPath));
-	}
-
-	boolean hasChildLimit(PathExpression containerPath) {
-		return childLimit(containerPath) != null;
-	}
-
-	void limitChildren(PathExpression containerPath, int size) {
-		decomposedSizeByPath.put(containerPath, size);
+		return declaredLimitByPath.get(ScopedPath.root(containerPath));
 	}
 }

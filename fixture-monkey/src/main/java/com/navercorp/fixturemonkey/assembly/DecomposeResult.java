@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.jspecify.annotations.Nullable;
-
 import com.navercorp.objectfarm.api.expression.PathExpression;
 
 /**
@@ -34,41 +32,22 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
  * the result via explicit merge.
  */
 final class DecomposeResult {
-	private static final DecomposeResult NONE = new DecomposeResult(
-		Collections.emptyMap(),
-		Collections.emptySet(),
-		null,
-		-1
-	);
+	private static final DecomposeResult NONE = new DecomposeResult(Collections.emptyMap(), Collections.emptySet());
 
 	private final Map<PathExpression, ValueCandidate> valuesToPut;
 	private final Set<PathExpression> subtreesToRemove;
-	private final @Nullable PathExpression limitPath;
-	private final int limitValue;
 
-	private DecomposeResult(
-		Map<PathExpression, ValueCandidate> valuesToPut,
-		Set<PathExpression> subtreesToRemove,
-		@Nullable PathExpression limitPath,
-		int limitValue
-	) {
+	private DecomposeResult(Map<PathExpression, ValueCandidate> valuesToPut, Set<PathExpression> subtreesToRemove) {
 		this.valuesToPut = valuesToPut;
 		this.subtreesToRemove = subtreesToRemove;
-		this.limitPath = limitPath;
-		this.limitValue = limitValue;
 	}
 
 	static DecomposeResult none() {
 		return NONE;
 	}
 
-	static DecomposeResult of(
-		Map<PathExpression, ValueCandidate> valuesToPut,
-		Set<PathExpression> subtreesToRemove,
-		@Nullable PathExpression limitPath,
-		int limitValue
-	) {
-		return new DecomposeResult(valuesToPut, subtreesToRemove, limitPath, limitValue);
+	static DecomposeResult of(Map<PathExpression, ValueCandidate> valuesToPut, Set<PathExpression> subtreesToRemove) {
+		return new DecomposeResult(valuesToPut, subtreesToRemove);
 	}
 
 	Map<PathExpression, ValueCandidate> getValuesToPut() {
@@ -77,14 +56,5 @@ final class DecomposeResult {
 
 	Set<PathExpression> getSubtreesToRemove() {
 		return subtreesToRemove;
-	}
-
-	@Nullable
-	PathExpression getLimitPath() {
-		return limitPath;
-	}
-
-	int getLimitValue() {
-		return limitValue;
 	}
 }

@@ -32,10 +32,11 @@ import com.navercorp.objectfarm.api.expression.PathExpression;
 
 /**
  * Looks up the value candidate of each path during one assembly, as {@link ScopeLookup} looks up what the scopes
- * declared. It starts with the root scope's values, which planning expanded to their paths, and only
- * decomposing a value changes it afterwards: a candidate replaced by a defined scope's value, or the candidates a
- * container or an object value is decomposed into. Wildcard candidates come only from the root scope, since
- * assembly adds and removes candidates at concrete paths only.
+ * declared. It starts with the root scope's values, which planning expanded to their paths except a lazy value for a
+ * wildcard path, evaluated for each element, and only decomposing a value changes it afterwards: a candidate replaced
+ * by a value expanded during assembly, or the candidates a container or an object value is decomposed into.
+ * Wildcard candidates come only from the root scope, since assembly adds and removes candidates at concrete paths
+ * only.
  */
 final class CandidateLookup {
 	private final Map<PathExpression, ValueCandidate> candidatesByPath;
@@ -137,7 +138,7 @@ final class CandidateLookup {
 
 	/**
 	 * Returns the depth of the scope node whose value was decomposed into the candidate at {@code path} or at one of
-	 * its ancestors, or -1 when no defined scope's value was decomposed there.
+	 * its ancestors, or -1 when no value expanded during assembly was decomposed there.
 	 */
 	int decomposedScopeDepthAt(PathExpression path) {
 		if (decomposedScopeDepthByPath.isEmpty()) {
@@ -158,10 +159,10 @@ final class CandidateLookup {
 	}
 
 	/**
-	 * Replaces the candidate at {@code path} with a defined scope's value, decomposed from the scope node at
-	 * {@code scopeDepth}.
+	 * Replaces the candidate at {@code path} with a value expanded during assembly, a defined scope's value or a lazy
+	 * value evaluated there, decomposed from the scope node at {@code scopeDepth}.
 	 */
-	void replaceWithDefinedScopeValue(PathExpression path, ValueCandidate candidate, int scopeDepth) {
+	void replaceWithValueExpandedDuringAssembly(PathExpression path, ValueCandidate candidate, int scopeDepth) {
 		decomposedScopeDepthByPath.put(path, scopeDepth);
 		candidatesByPath.put(path, candidate);
 	}

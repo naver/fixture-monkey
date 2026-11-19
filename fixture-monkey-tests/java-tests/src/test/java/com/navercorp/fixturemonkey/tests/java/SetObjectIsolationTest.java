@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -229,6 +230,57 @@ class SetObjectIsolationTest {
 	}
 
 	@Test
+	void registeredLazyObjectReturningSameInstanceIsNotSharedAcrossSamples() {
+		// given
+		Child supplied = child("a");
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true)
+			.register(Parent.class, fm -> fm.giveMeBuilder(Parent.class).setLazy("child", () -> supplied))
+			.build();
+
+		// when
+		Parent first = sut.giveMeOne(Parent.class);
+		Parent second = sut.giveMeOne(Parent.class);
+		first.child.name = "changed";
+
+		// then
+		then(second.child.name).isEqualTo("a");
+		then(supplied.name).isEqualTo("a");
+	}
+
+	@Test
+	void setLazyJustKeepsSuppliedInstance() {
+		// given
+		Child supplied = child("a");
+
+		// when
+		Parent actual = SUT.giveMeBuilder(Parent.class)
+			.setLazy("child", () -> Values.just(supplied))
+			.sample();
+
+		// then
+		then(actual.child).isSameAs(supplied);
+	}
+
+	@Test
+	void registeredLazyJustKeepsSuppliedInstance() {
+		// given
+		Child supplied = child("a");
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true)
+			.register(Parent.class, fm -> fm.giveMeBuilder(Parent.class).setLazy("child", () -> Values.just(supplied)))
+			.build();
+
+		// when
+		Parent actual = sut.giveMeOne(Parent.class);
+
+		// then
+		then(actual.child).isSameAs(supplied);
+	}
+
+	@Test
 	void setLambdaKeepsSuppliedInstance() {
 		// given
 		Function<String, String> supplied = value -> value + "!";
@@ -298,6 +350,21 @@ class SetObjectIsolationTest {
 	}
 
 	@Test
+	void setOptionalObjectIsNotSharedAcrossSamples() {
+		// given
+		ArbitraryBuilder<OptionalChildHolder> builder = SUT.giveMeBuilder(OptionalChildHolder.class)
+			.set("child", Optional.of(child("a")));
+
+		// when
+		OptionalChildHolder first = builder.sample();
+		OptionalChildHolder second = builder.sample();
+		first.child.get().name = "changed";
+
+		// then
+		then(second.child.get().name).isEqualTo("a");
+	}
+
+	@Test
 	void setJustObjectKeepsSuppliedInstance() {
 		// given
 		Child supplied = child("a");
@@ -309,6 +376,21 @@ class SetObjectIsolationTest {
 
 		// then
 		then(actual.child).isSameAs(supplied);
+	}
+
+	@Test
+	void setJustObjectToEveryElementKeepsSuppliedInstance() {
+		// given
+		Child supplied = child("a");
+
+		// when
+		Parent actual = SUT.giveMeBuilder(Parent.class)
+			.size("children", 2)
+			.set("children[*]", Values.just(supplied))
+			.sample();
+
+		// then
+		then(actual.children).hasSize(2).allSatisfy(it -> then(it).isSameAs(supplied));
 	}
 
 	private static Child child(String name) {
@@ -351,6 +433,10 @@ class SetObjectIsolationTest {
 
 	public static class FunctionHolder {
 		private Function<String, String> function;
+	}
+
+	public static class OptionalChildHolder {
+		private Optional<Child> child;
 	}
 
 	public static class SupplierHolder {

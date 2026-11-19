@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
@@ -44,20 +45,17 @@ import com.navercorp.objectfarm.api.node.JvmNode;
  */
 final class ValueDecomposer {
 	private final CandidateLookup candidates;
-	private final LimitCounter limits;
 	private final ObjectValueExtractor valueExtractor;
 	private final ContainerDetector containerDetector;
 	private final AssemblyTree assemblyTree;
 
 	ValueDecomposer(
 		CandidateLookup candidates,
-		LimitCounter limits,
 		ObjectValueExtractor valueExtractor,
 		ContainerDetector containerDetector,
 		AssemblyTree assemblyTree
 	) {
 		this.candidates = candidates;
-		this.limits = limits;
 		this.valueExtractor = valueExtractor;
 		this.assemblyTree = assemblyTree;
 		this.containerDetector = containerDetector;
@@ -69,10 +67,12 @@ final class ValueDecomposer {
 	 * The value's fields are extracted and placed at child paths as a {@link DecomposeResult},
 	 * allowing child-level overrides to take precedence.
 	 *
-	 * @param overriddenInside true when the value lies inside a defined scope's value decomposed for a directive inside
+	 * @param overriddenInside true when the value lies inside a value expanded during assembly and decomposed for a
+	 *                         directive inside
 	 * @return a {@link DecomposeResult} describing the decomposition outcome
 	 */
 	DecomposeResult decompose(
+		JvmNode currentNode,
 		PathExpression currentPath,
 		Class<?> currentRawType,
 		boolean isCurrentTypeContainer,
@@ -91,59 +91,51 @@ final class ValueDecomposer {
 		if (!isCurrentTypeContainer) {
 			Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
 			decomposeObjectFields(baseValue, currentPath, valuesToPut, parentPrecedence, overriddenInside);
-			return DecomposeResult.of(valuesToPut, new HashSet<>(), null, -1);
+			return DecomposeResult.of(valuesToPut, new HashSet<>());
+		}
+
+		if (baseValue instanceof Optional) {
+			Optional<?> optional = (Optional<?>)baseValue;
+			if (!optional.isPresent()) {
+				return DecomposeResult.none();
+			}
+			Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
+			valuesToPut.put(currentPath, new ValueCandidate(optional.get(), parentPrecedence));
+			return DecomposeResult.of(valuesToPut, new HashSet<>());
+		}
+
+		if (baseValue instanceof Map.Entry) {
+			Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
+			decomposeContainerElementFields(baseValue, currentPath, valuesToPut, parentPrecedence, overriddenInside);
+			return DecomposeResult.of(valuesToPut, new HashSet<>());
 		}
 
 		// For container types: if the generated tree has a different size than the decomposed value,
 		// handle the mismatch based on direction.
-		JvmNode treeNode = assemblyTree.plannedNodeAt(currentPath);
-		if (treeNode != null) {
-			int generatedTreeChildCount = assemblyTree.childrenOf(treeNode).size();
-			int containerSize = containerDetector.getContainerSize(baseValue).orElse(0);
-			if (generatedTreeChildCount != containerSize) {
-				if (generatedTreeChildCount > containerSize) {
-					// Tree is larger than decomposed value (e.g., set({a=1,b=2}).size(4))
-					// Decompose existing elements and let extra tree entries generate random values
-					Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
-					decomposeContainerElementFields(
-						baseValue,
-						currentPath,
-						valuesToPut,
-						parentPrecedence,
-						overriddenInside
-					);
-					return DecomposeResult.of(valuesToPut, new HashSet<>(), null, -1);
-				} else {
-					// Tree is smaller (e.g., size() truncated) → truncate and decompose
-					// Keep elements up to generatedTreeChildCount, remove excess
-					Set<PathExpression> subtreesToRemove = new HashSet<>();
-					for (int i = generatedTreeChildCount; i < containerSize; i++) {
-						subtreesToRemove.add(currentPath.index(i));
-					}
-					Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
-					decomposeContainerElementFields(
-						truncateContainer(baseValue, generatedTreeChildCount),
-						currentPath,
-						valuesToPut,
-						parentPrecedence,
-						overriddenInside
-					);
-					return DecomposeResult.of(valuesToPut, subtreesToRemove, currentPath, generatedTreeChildCount);
-				}
+		int generatedTreeChildCount = assemblyTree.childrenOf(currentNode).size();
+		int containerSize = containerDetector.getContainerSize(baseValue).orElse(0);
+		if (generatedTreeChildCount < containerSize) {
+			// Tree is smaller (e.g., size() truncated) → truncate and decompose
+			// Keep elements up to generatedTreeChildCount, remove excess
+			Set<PathExpression> subtreesToRemove = new HashSet<>();
+			for (int i = generatedTreeChildCount; i < containerSize; i++) {
+				subtreesToRemove.add(currentPath.index(i));
 			}
+			Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
+			decomposeContainerElementFields(
+				truncateContainer(baseValue, generatedTreeChildCount),
+				currentPath,
+				valuesToPut,
+				parentPrecedence,
+				overriddenInside
+			);
+			return DecomposeResult.of(valuesToPut, subtreesToRemove);
 		}
 
 		// Otherwise, decompose element fields for external overrides.
-		// Also set the container's size as a limit to prevent extra elements from being generated.
-		int containerSize = containerDetector.getContainerSize(baseValue).orElse(0);
 		Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
 		decomposeContainerElementFields(baseValue, currentPath, valuesToPut, parentPrecedence, overriddenInside);
-
-		@Nullable
-		PathExpression limitPath = !limits.hasChildLimit(currentPath) ? currentPath : null;
-		int limitValue = limitPath != null ? containerSize : -1;
-
-		return DecomposeResult.of(valuesToPut, new HashSet<>(), limitPath, limitValue);
+		return DecomposeResult.of(valuesToPut, new HashSet<>());
 	}
 
 	int containerSize(@Nullable Object value) {

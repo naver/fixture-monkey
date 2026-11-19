@@ -226,4 +226,20 @@ class ContainerTypeTest {
 			})
 		);
 	}
+
+	@Test
+	void sampleListOfEntries() {
+		// when
+		List<Map.Entry<String, Integer>> actual = SUT.giveMeBuilder(
+				new TypeReference<List<Map.Entry<String, Integer>>>() {
+				})
+			.size("$", 2)
+			.sample();
+
+		// then
+		then(actual).hasSize(2).allSatisfy(it -> {
+			then(it.getKey()).isInstanceOf(String.class);
+			then(it.getValue()).isInstanceOf(Integer.class);
+		});
+	}
 }

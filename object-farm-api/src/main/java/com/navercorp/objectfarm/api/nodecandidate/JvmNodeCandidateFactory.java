@@ -31,5 +31,5 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * @since 1.1.17
  */
 public interface JvmNodeCandidateFactory {
-	JvmNodeCandidate create(JvmType type, String name, @Nullable CreationMethod creationMethod);
+	JvmNodeCandidate create(JvmType type, @Nullable String name, @Nullable CreationMethod creationMethod);
 }
