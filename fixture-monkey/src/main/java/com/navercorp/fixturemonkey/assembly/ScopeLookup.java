@@ -137,15 +137,18 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns whether the root scope declared a size for the container at {@code path}, at that path or through a
-	 * wildcard reaching it.
+	 * Returns whether a root scope directive declared after a value of {@code valuePrecedence}, a size or a value
+	 * holding the container, fixed the size of the container at {@code path}, at that path or through a wildcard
+	 * reaching it.
 	 */
-	boolean isRootSizedContainer(PathExpression path) {
-		if (root.containerSizePaths.contains(path)) {
+	boolean hasRootSizeOutranking(PathExpression path, DirectivePrecedence valuePrecedence) {
+		Integer sequence = root.containerSizeSequenceByPath.get(path);
+		if (sequence != null && DirectivePrecedence.rootScope(sequence).compareTo(valuePrecedence) > 0) {
 			return true;
 		}
-		for (PathExpression sizePath : root.containerSizePaths) {
-			if (sizePath.hasWildcard() && sizePath.matches(path)) {
+		for (Map.Entry<PathExpression, Integer> entry : root.wildcardContainerSizeSequences) {
+			if (entry.getKey().matches(path)
+				&& DirectivePrecedence.rootScope(entry.getValue()).compareTo(valuePrecedence) > 0) {
 				return true;
 			}
 		}
@@ -531,6 +534,8 @@ final class ScopeLookup {
 		private final AnalyzedScope analyzed;
 		private final Set<PathExpression> justPaths;
 		private final Set<PathExpression> containerSizePaths;
+		private final Map<PathExpression, Integer> containerSizeSequenceByPath;
+		private final List<Map.Entry<PathExpression, Integer>> wildcardContainerSizeSequences;
 		private final Map<PathExpression, Integer> valueOrderByPath;
 		private final boolean notNullHasPatterns;
 		private final boolean filtersHavePatterns;
@@ -541,6 +546,13 @@ final class ScopeLookup {
 			this.justPaths = Collections.unmodifiableSet(new HashSet<>(analysisResult.getJustPaths()));
 			this.containerSizePaths =
 				Collections.unmodifiableSet(analysisResult.getLatestSizeDirectiveByPath().keySet());
+			this.containerSizeSequenceByPath = analysisResult.getContainerSizeSequenceByPath();
+			this.wildcardContainerSizeSequences = new ArrayList<>();
+			for (Map.Entry<PathExpression, Integer> entry : containerSizeSequenceByPath.entrySet()) {
+				if (entry.getKey().hasWildcard()) {
+					wildcardContainerSizeSequences.add(entry);
+				}
+			}
 			this.valueOrderByPath = analysisResult.getValueOrderByPath();
 			this.notNullHasPatterns = hasPatterns(analyzed.getNotNullPaths());
 			this.filtersHavePatterns = hasPatterns(analyzed.getFiltersByPath().keySet());

@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 
@@ -38,6 +39,12 @@ class StrictModeTest {
 		.plugin(new InterfacePlugin()
 			.abstractClassExtends(Shape.class, Collections.singletonList(Circle.class))
 			.interfaceImplements(Animal.class, Collections.singletonList(Dog.class)))
+		.useExpressionStrictMode()
+		.build();
+
+	private static final FixtureMonkey EMPTY_CONTAINER_SUT = FixtureMonkey.builder()
+		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+		.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 0))
 		.useExpressionStrictMode()
 		.build();
 
@@ -269,6 +276,95 @@ class StrictModeTest {
 		then(actual.getValues().get(1)).isEmpty();
 	}
 
+	@Test
+	void setListWithNestedContainerThenSetElementInside() {
+		// given
+		Note note = new Note();
+		note.tags = new Tags();
+		note.tags.values = Arrays.asList("a", "b");
+
+		// when
+		Feed actual = EMPTY_CONTAINER_SUT.giveMeBuilder(Feed.class)
+			.set("notes", Collections.singletonList(note))
+			.set("notes[0].tags.values[1]", "z")
+			.sample();
+
+		// then
+		then(actual.getNotes().get(0).getTags().getValues()).containsExactly("a", "z");
+	}
+
+	@Test
+	void setListThenShrinkIt() {
+		// given
+		Named first = new Named();
+		first.name = "a";
+		Named second = new Named();
+		second.name = "b";
+
+		// when
+		NamedListHolder actual = SUT.giveMeBuilder(NamedListHolder.class)
+			.set("values", Arrays.asList(first, second))
+			.size("values", 1)
+			.sample();
+
+		// then
+		then(actual.getValues()).hasSize(1);
+		then(actual.getValues().get(0).getName()).isEqualTo("a");
+	}
+
+	@Test
+	void setElementThenShrinkListBelowIt() {
+		// given
+		Named second = new Named();
+		second.name = "b";
+
+		// when
+		NamedListHolder actual = SUT.giveMeBuilder(NamedListHolder.class)
+			.set("values[1]", second)
+			.size("values", 1)
+			.sample();
+
+		// then
+		then(actual.getValues()).hasSize(1);
+	}
+
+	@Test
+	void setElementFieldThenShrinkListBelowIt() {
+		// when
+		NamedListHolder actual = SUT.giveMeBuilder(NamedListHolder.class)
+			.set("values[1].name", "b")
+			.size("values", 1)
+			.sample();
+
+		// then
+		then(actual.getValues()).hasSize(1);
+	}
+
+	@Test
+	void setNestedListThenSizeInnerListThenShrinkOuterList() {
+		// when
+		NestedStringListHolder actual = SUT.giveMeBuilder(NestedStringListHolder.class)
+			.set("values", Arrays.asList(Arrays.asList("a", "b"), Collections.singletonList("c")))
+			.size("values[1]", 3)
+			.size("values", 1)
+			.sample();
+
+		// then
+		then(actual.getValues()).hasSize(1);
+		then(actual.getValues().get(0)).containsExactly("a", "b");
+	}
+
+	@Test
+	void shrinkListThenSetFieldOfRemovedElementThrows() {
+		thenThrownBy(() -> SUT.giveMeBuilder(NamedListHolder.class)
+			.size("values", 1)
+			.set("values[1].name", "b")
+			.sample()
+		)
+			.isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given NodeResolvers");
+	}
+
 	public abstract static class Shape {
 		private String id;
 
@@ -352,6 +448,14 @@ class StrictModeTest {
 		}
 	}
 
+	public static class NamedListHolder {
+		private List<Named> values;
+
+		public List<Named> getValues() {
+			return values;
+		}
+	}
+
 	public static class NamedChild extends Named {
 		private String nickname;
 
@@ -392,6 +496,30 @@ class StrictModeTest {
 
 		public List<List<String>> getValues() {
 			return values;
+		}
+	}
+
+	public static class Tags {
+		private List<String> values;
+
+		public List<String> getValues() {
+			return values;
+		}
+	}
+
+	public static class Note {
+		private Tags tags;
+
+		public Tags getTags() {
+			return tags;
+		}
+	}
+
+	public static class Feed {
+		private List<Note> notes;
+
+		public List<Note> getNotes() {
+			return notes;
 		}
 	}
 }

@@ -67,8 +67,6 @@ final class ValueDecomposer {
 	 * The value's fields are extracted and placed at child paths as a {@link DecomposeResult},
 	 * allowing child-level overrides to take precedence.
 	 *
-	 * @param overriddenInside true when the value lies inside a value expanded during assembly and decomposed for a
-	 *                         directive inside
 	 * @return a {@link DecomposeResult} describing the decomposition outcome
 	 */
 	DecomposeResult decompose(
@@ -76,8 +74,7 @@ final class ValueDecomposer {
 		PathExpression currentPath,
 		Class<?> currentRawType,
 		boolean isCurrentTypeContainer,
-		DirectivePrecedence parentPrecedence,
-		boolean overriddenInside
+		DirectivePrecedence parentPrecedence
 	) {
 		ValueCandidate candidate = candidates.at(currentPath);
 		if (candidate == null) {
@@ -90,7 +87,7 @@ final class ValueDecomposer {
 
 		if (!isCurrentTypeContainer) {
 			Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
-			decomposeObjectFields(baseValue, currentPath, valuesToPut, parentPrecedence, overriddenInside);
+			decomposeObjectFields(baseValue, currentPath, valuesToPut, parentPrecedence);
 			return DecomposeResult.of(valuesToPut, new HashSet<>());
 		}
 
@@ -106,7 +103,7 @@ final class ValueDecomposer {
 
 		if (baseValue instanceof Map.Entry) {
 			Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
-			decomposeContainerElementFields(baseValue, currentPath, valuesToPut, parentPrecedence, overriddenInside);
+			decomposeContainerElementFields(baseValue, currentPath, valuesToPut, parentPrecedence);
 			return DecomposeResult.of(valuesToPut, new HashSet<>());
 		}
 
@@ -126,15 +123,14 @@ final class ValueDecomposer {
 				truncateContainer(baseValue, generatedTreeChildCount),
 				currentPath,
 				valuesToPut,
-				parentPrecedence,
-				overriddenInside
+				parentPrecedence
 			);
 			return DecomposeResult.of(valuesToPut, subtreesToRemove);
 		}
 
 		// Otherwise, decompose element fields for external overrides.
 		Map<PathExpression, ValueCandidate> valuesToPut = new HashMap<>();
-		decomposeContainerElementFields(baseValue, currentPath, valuesToPut, parentPrecedence, overriddenInside);
+		decomposeContainerElementFields(baseValue, currentPath, valuesToPut, parentPrecedence);
 		return DecomposeResult.of(valuesToPut, new HashSet<>());
 	}
 
@@ -151,26 +147,13 @@ final class ValueDecomposer {
 		Object value,
 		PathExpression basePath,
 		Map<PathExpression, ValueCandidate> valuesToPut,
-		DirectivePrecedence parentPrecedence,
-		boolean keepExpandedContainers
+		DirectivePrecedence parentPrecedence
 	) {
 		Map<PathExpression, @Nullable Object> extracted = valueExtractor.extract(value, basePath);
 
 		for (Map.Entry<PathExpression, @Nullable Object> entry : extracted.entrySet()) {
 			PathExpression fieldPath = entry.getKey();
 			Object fieldValue = entry.getValue();
-
-			// Skip container fields if the tree already expanded them to a larger size.
-			if (!keepExpandedContainers && fieldValue != null && containerDetector.isContainer(fieldValue)) {
-				JvmNode treeNode = assemblyTree.plannedNodeAt(fieldPath);
-				if (treeNode != null) {
-					int generatedTreeChildCount = assemblyTree.childrenOf(treeNode).size();
-					int decomposedSize = containerDetector.getContainerSize(fieldValue).orElse(0);
-					if (generatedTreeChildCount > decomposedSize) {
-						continue;
-					}
-				}
-			}
 
 			// Skip if a higher-order value already exists for this field path
 			ValueCandidate existing = candidates.at(fieldPath);
@@ -214,8 +197,7 @@ final class ValueDecomposer {
 		Object container,
 		PathExpression basePath,
 		Map<PathExpression, ValueCandidate> valuesToPut,
-		DirectivePrecedence parentPrecedence,
-		boolean keepExpandedContainers
+		DirectivePrecedence parentPrecedence
 	) {
 		if (container == null) {
 			return;
@@ -242,18 +224,7 @@ final class ValueDecomposer {
 					continue;
 				}
 			} else {
-				// For field-level paths ($[i].field): container tree-size skip + order comparison
-				if (!keepExpandedContainers && value != null && containerDetector.isContainer(value)) {
-					JvmNode treeNode = assemblyTree.plannedNodeAt(path);
-					if (treeNode != null) {
-						int generatedTreeChildCount = assemblyTree.childrenOf(treeNode).size();
-						int decomposedSize = containerDetector.getContainerSize(value).orElse(0);
-						if (generatedTreeChildCount > decomposedSize) {
-							continue;
-						}
-					}
-				}
-
+				// For field-level paths ($[i].field): order comparison
 				ValueCandidate existing = candidates.at(path);
 				if (existing != null && existing.precedence.compareTo(parentPrecedence) > 0) {
 					continue;
