@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -200,6 +201,55 @@ class SetOptionalAndEntryDecompositionTest {
 
 		// then
 		then(actual.values).isEqualTo(Collections.singletonMap(new SimpleEntry<>("k", "v"), "a"));
+	}
+
+	@Test
+	void setMixedTypeListToObjectProperty() {
+		// when
+		ObjectHolder actual = SUT.giveMeBuilder(ObjectHolder.class)
+			.set("value", new ArrayList<>(Arrays.asList("a", 1)))
+			.sample();
+
+		// then
+		then(actual.value).isEqualTo(Arrays.asList("a", 1));
+	}
+
+	@Test
+	void setNestedMixedTypeListToObjectProperty() {
+		// when
+		ObjectHolder actual = SUT.giveMeBuilder(ObjectHolder.class)
+			.set("value", new ArrayList<List<Object>>(Arrays.asList(
+				new ArrayList<>(Collections.singletonList("a")),
+				new ArrayList<>(Collections.singletonList(1))
+			)))
+			.sample();
+
+		// then
+		then(actual.value).isEqualTo(Arrays.asList(Collections.singletonList("a"), Collections.singletonList(1)));
+	}
+
+	@Test
+	void setEmptyListToObjectPropertyThenGrowIt() {
+		// when
+		ObjectHolder actual = SUT.giveMeBuilder(ObjectHolder.class)
+			.set("value", new ArrayList<>())
+			.size("value", 2)
+			.sample();
+
+		// then
+		then(actual.value).isInstanceOfSatisfying(List.class, it -> then(it).hasSize(2));
+	}
+
+	@Test
+	void setLinkedListToListPropertyThenGrowIt() {
+		// when
+		ObjectListHolder actual = SUT.giveMeBuilder(ObjectListHolder.class)
+			.set("values", new LinkedList<>(Arrays.asList("a", "b")))
+			.size("values", 3)
+			.sample();
+
+		// then
+		then(actual.values).isInstanceOf(LinkedList.class).hasSize(3).startsWith("a", "b");
 	}
 
 	@Test

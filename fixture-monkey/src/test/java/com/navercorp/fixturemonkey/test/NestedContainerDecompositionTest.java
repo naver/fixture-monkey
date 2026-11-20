@@ -38,6 +38,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListListStringObj
 import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.AbstractValue;
 import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.ConcreteIntValue;
 import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.ConcreteStringValue;
+import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.NestedListHolder;
 
 class NestedContainerDecompositionTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -295,6 +296,53 @@ class NestedContainerDecompositionTest {
 			Collections.singletonList(stringValue("s")),
 			Collections.singletonList(intValue(7))
 		);
+	}
+
+	@Test
+	void setNestedEmptyListPropertyThenGrowInnerList() {
+		// when
+		NestedListHolder actual = SUT.giveMeBuilder(NestedListHolder.class)
+			.set("nestedValues", Arrays.asList(new ArrayList<String>(), new ArrayList<String>()))
+			.size("nestedValues[0]", 2)
+			.sample();
+
+		// then
+		then(actual.getNestedValues()).hasSize(2);
+		then(actual.getNestedValues().get(0)).hasSize(2).allMatch(String.class::isInstance);
+		then(actual.getNestedValues().get(1)).isEmpty();
+	}
+
+	@Test
+	void setNestedMixedImplementationListPropertyThenSetInnerElementProperty() {
+		// given
+		List<List<AbstractValue>> values = Arrays.asList(
+			new ArrayList<>(Collections.singletonList(stringValue("s"))),
+			new ArrayList<>(Collections.singletonList(intValue(1)))
+		);
+
+		// when
+		NestedAbstractValueListObject actual = ABSTRACT_VALUE_SUT.giveMeBuilder(NestedAbstractValueListObject.class)
+			.set("values", values)
+			.set("values[1][0].intValue", 7)
+			.sample();
+
+		// then
+		then(actual.getValues()).containsExactly(
+			Collections.singletonList(stringValue("s")),
+			Collections.singletonList(intValue(7))
+		);
+	}
+
+	public static class NestedAbstractValueListObject {
+		private List<List<AbstractValue>> values;
+
+		public List<List<AbstractValue>> getValues() {
+			return values;
+		}
+
+		public void setValues(List<List<AbstractValue>> values) {
+			this.values = values;
+		}
 	}
 
 	public static class NestedArrayObject {

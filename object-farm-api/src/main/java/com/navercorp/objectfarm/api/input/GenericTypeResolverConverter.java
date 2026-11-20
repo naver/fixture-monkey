@@ -55,6 +55,8 @@ import com.navercorp.objectfarm.api.type.WildcardRawType;
  * </pre>
  */
 public final class GenericTypeResolverConverter {
+	private static final JvmType UNINFERRED = new ReflectiveJvmType(Object.class);
+
 	private GenericTypeResolverConverter() {
 	}
 
@@ -73,34 +75,103 @@ public final class GenericTypeResolverConverter {
 
 		GenericTypeResolver genericTypeResolver = jvmType -> new ReflectiveJvmType(
 			jvmType.getRawType(),
-			preferDeclaredContainerTypes(jvmType.getTypeVariables(), typeVariables),
+			selectTypeArguments(jvmType.getTypeVariables(), typeVariables),
 			jvmType.getAnnotations()
 		);
 
 		return new PathGenericTypeResolver(pattern, genericTypeResolver);
 	}
 
-	private static List<? extends JvmType> preferDeclaredContainerTypes(
+	private static List<? extends JvmType> selectTypeArguments(
 		List<? extends JvmType> declared,
 		List<? extends JvmType> inferred
 	) {
+		// Type arguments are matched by position, so their counts must be the same.
+		// A container set into an Object, Serializable or type variable property becomes
+		// an implementation without type arguments, such as a raw ArrayList, so only inferred ones exist.
 		if (declared.size() != inferred.size()) {
 			return inferred;
 		}
 		List<JvmType> merged = new ArrayList<>(inferred.size());
 		for (int i = 0; i < inferred.size(); i++) {
-			JvmType inferredType = inferred.get(i);
-			JvmType declaredType = declared.get(i);
-			Class<?> inferredRaw = inferredType.getRawType();
-			Class<?> declaredRaw = declaredType.getRawType();
-			boolean inferredFitsDeclared = declaredRaw == WildcardRawType.class
-				|| Types.isAssignable(inferredRaw, declaredRaw);
-			boolean keepDeclared = !inferredFitsDeclared
-				|| Types.isJdkInternalType(inferredRaw)
-				&& InterfaceResolverConverter.hasDefaultContainerResolver(declaredRaw);
-			merged.add(keepDeclared ? declaredType : inferredType);
+			merged.add(selectTypeArgument(declared.get(i), inferred.get(i)));
 		}
 		return merged;
+	}
+
+	private static JvmType selectTypeArgument(JvmType declaredType, JvmType inferredType) {
+		if (shouldKeepDeclared(declaredType, inferredType)) {
+			return declaredType;
+		}
+		if (!isJdkTypeOfDeclaredArity(declaredType, inferredType)) {
+			return inferredType;
+		}
+		return new ReflectiveJvmType(
+			inferredType.getRawType(),
+			selectNestedTypeArguments(declaredType, inferredType),
+			inferredType.getAnnotations()
+		);
+	}
+
+	private static boolean shouldKeepDeclared(JvmType declaredType, JvmType inferredType) {
+		Class<?> declaredRaw = declaredType.getRawType();
+		Class<?> inferredRaw = inferredType.getRawType();
+		if (isUninferred(inferredType)) {
+			return true;
+		}
+		boolean inferredFitsDeclared = declaredRaw == WildcardRawType.class
+			|| Types.isAssignable(inferredRaw, declaredRaw);
+		if (!inferredFitsDeclared) {
+			return true;
+		}
+		return Types.isJdkInternalType(inferredRaw)
+			&& InterfaceResolverConverter.hasDefaultContainerResolver(declaredRaw);
+	}
+
+	private static boolean isUninferred(JvmType type) {
+		return type.getRawType() == Object.class;
+	}
+
+	private static boolean isJdkTypeOfDeclaredArity(JvmType declaredType, JvmType inferredType) {
+		Class<?> inferredRaw = inferredType.getRawType();
+		int declaredArity = declaredType.getTypeVariables().size();
+		return Types.isJavaType(inferredRaw)
+			&& declaredArity > 0
+			&& inferredRaw.getTypeParameters().length == declaredArity;
+	}
+
+	private static List<? extends JvmType> selectNestedTypeArguments(JvmType declaredType, JvmType inferredType) {
+		List<? extends JvmType> declaredTypeArguments = declaredType.getTypeVariables();
+		List<? extends JvmType> inferredTypeArguments = inferredType.getTypeVariables();
+		if (inferredTypeArguments.isEmpty()) {
+			return declaredTypeArguments;
+		}
+		return selectTypeArguments(declaredTypeArguments, inferredTypeArguments);
+	}
+
+	/**
+	 * Creates a GenericTypeResolver that gives {@code Object} type arguments to a raw generic type,
+	 * for a value whose type arguments cannot be inferred, such as a list of elements of different classes.
+	 * <p>
+	 * A type that has type arguments, such as one declared as {@code List<String>}, is left as it is,
+	 * so that its declared element type is kept.
+	 *
+	 * @param pathExpression the path expression where the value is set
+	 * @return a TransformPathResolver for generic type resolution
+	 */
+	public static PathResolver<GenericTypeResolver> createObjectTypeArgumentsResolver(String pathExpression) {
+		GenericTypeResolver genericTypeResolver = jvmType -> {
+			int typeParameterCount = jvmType.getRawType().getTypeParameters().length;
+			if (!jvmType.getTypeVariables().isEmpty() || typeParameterCount == 0) {
+				return null;
+			}
+			return new ReflectiveJvmType(
+				jvmType.getRawType(),
+				Collections.nCopies(typeParameterCount, UNINFERRED),
+				jvmType.getAnnotations()
+			);
+		};
+		return new PathGenericTypeResolver(PathExpression.of(pathExpression), genericTypeResolver);
 	}
 
 	/**
@@ -193,6 +264,8 @@ public final class GenericTypeResolverConverter {
 	 * When every non-null element has the same class, that class (with its own type arguments) is the element type.
 	 * When the elements are instances of different classes, no type argument is inferred and the declared
 	 * element type is kept so that each element can resolve to its own runtime type.
+	 * When the elements have the same class but different type arguments, such as lists of different element types,
+	 * the type arguments they disagree on are {@code Object}, and declared type arguments are kept over them.
 	 *
 	 * @param collection the collection to examine
 	 * @return list containing the element type, or empty list if it cannot be inferred
@@ -243,9 +316,53 @@ public final class GenericTypeResolverConverter {
 		}
 
 		List<JvmType> elementTypeArgs = extractTypeArgumentsFromValue(representative.get());
+		if (hasTypeArgumentsOfItsOwn(elementClass)) {
+			for (Object element : elements) {
+				if (element != null && element != representative.get()) {
+					elementTypeArgs = mergeTypeArguments(elementTypeArgs, extractTypeArgumentsFromValue(element));
+				}
+			}
+		}
 		return elementTypeArgs.isEmpty()
 			? new ReflectiveJvmType(elementClass)
 			: new ReflectiveJvmType(elementClass, elementTypeArgs, Collections.emptyList());
+	}
+
+	private static boolean hasTypeArgumentsOfItsOwn(Class<?> valueClass) {
+		return Collection.class.isAssignableFrom(valueClass)
+			|| Map.class.isAssignableFrom(valueClass)
+			|| Map.Entry.class.isAssignableFrom(valueClass)
+			|| Optional.class.isAssignableFrom(valueClass);
+	}
+
+	private static List<JvmType> mergeTypeArguments(List<JvmType> left, List<JvmType> right) {
+		if (left.isEmpty() || left.equals(right)) {
+			return right.isEmpty() ? left : right;
+		}
+		if (right.isEmpty() || left.size() != right.size()) {
+			return left;
+		}
+		List<JvmType> merged = new ArrayList<>(left.size());
+		for (int i = 0; i < left.size(); i++) {
+			merged.add(mergeType(left.get(i), right.get(i)));
+		}
+		return merged;
+	}
+
+	private static JvmType mergeType(JvmType left, JvmType right) {
+		if (left.equals(right)) {
+			return left;
+		}
+		if (left.getRawType() != right.getRawType()) {
+			return UNINFERRED;
+		}
+		List<JvmType> typeArguments = mergeTypeArguments(
+			new ArrayList<>(left.getTypeVariables()),
+			new ArrayList<>(right.getTypeVariables())
+		);
+		return typeArguments.isEmpty()
+			? new ReflectiveJvmType(left.getRawType())
+			: new ReflectiveJvmType(left.getRawType(), typeArguments, Collections.emptyList());
 	}
 
 	/**
