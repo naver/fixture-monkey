@@ -18,9 +18,7 @@
 
 package com.navercorp.fixturemonkey.planner;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -38,7 +36,6 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -58,10 +55,14 @@ import com.navercorp.fixturemonkey.tree.TreeContextCache;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.InlinedValueResolver;
+import com.navercorp.objectfarm.api.node.ConcreteTypeResolver;
+import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.node.JvmNode;
+import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
 import com.navercorp.objectfarm.api.node.LeafTypeResolver;
+import com.navercorp.objectfarm.api.node.NodeCustomizer;
 import com.navercorp.objectfarm.api.node.SeedState;
 import com.navercorp.objectfarm.api.nodecandidate.FirstMatchNodeCandidateGenerator;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
@@ -70,7 +71,6 @@ import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
 import com.navercorp.objectfarm.api.tree.ExpansionContext;
 import com.navercorp.objectfarm.api.tree.JvmNodeCandidateTreeContext;
 import com.navercorp.objectfarm.api.tree.JvmNodeTree;
-import com.navercorp.objectfarm.api.tree.JvmNodeTreeTransformer;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.tree.ResolutionListener;
@@ -124,7 +124,6 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 
 	private final ContainerSizeResolverFactory containerSizeResolverFactory;
 	private final ContainerValuePruner containerValuePruner;
-	private final AbstractTypeResolver abstractTypeResolver;
 	private final PathResolverContextFactory pathResolverContextFactory;
 
 	/**
@@ -172,7 +171,6 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 			candidateGeneratorWrapper
 		);
 		this.treeCache = new TreeContextCache(new JvmNodeCandidateTreeContext(), nodeContextFactory);
-		this.abstractTypeResolver = new AbstractTypeResolver(seedState);
 		this.pathResolverContextFactory = new PathResolverContextFactory(containerSizeResolverFactory);
 	}
 
@@ -306,55 +304,35 @@ public final class AssemblyPlanner implements LeafTypeRegistry {
 	}
 
 	/**
-	 * Resolves the planning-phase root type.
+	 * Resolves the planning-phase root type by the same rule as the nodes below it, {@link ConcreteTypeResolver},
+	 * with the {@code $}-path {@link InterfaceResolver} and {@link GenericTypeResolver} declared latest, such as
+	 * the ones from {@code set(concreteValue)}.
 	 * <p>
-	 * For non-container abstract/interface roots, an explicit {@code $}-path
-	 * {@link InterfaceResolver} from {@code set(concreteValue)} takes precedence (last-wins).
-	 * Otherwise — including for {@link Collection}/{@link Map} roots whose element types are
-	 * resolved later by {@link JvmNodeTreeTransformer} — delegates to
-	 * {@link AbstractTypeResolver#resolve}.
+	 * An interface or abstract type left by the rule, such as one that is not a container, is kept, so that its
+	 * implementation is chosen at assembly time for each sample, as for a property.
 	 */
 	private JvmType resolveRootType(
 		JvmType rootType,
 		AnalysisResult analysisResult,
 		@Nullable FixtureMonkeyOptions options
 	) {
-		Class<?> rawType = rootType.getRawType();
-		boolean abstractOrInterface =
-			Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers());
-		if (!abstractOrInterface
-			|| Collection.class.isAssignableFrom(rawType)
-			|| Map.class.isAssignableFrom(rawType)) {
-			return walkCandidateChain(rootType, options);
-		}
-
-		PathExpression rootPath = PathExpression.of("$");
-		List<PathResolver<InterfaceResolver>> resolvers = analysisResult.getInterfaceResolvers();
-		for (int i = resolvers.size() - 1; i >= 0; i--) {
-			PathResolver<InterfaceResolver> resolver = resolvers.get(i);
-			if (resolver.matches(rootPath)) {
-				JvmType resolved = resolver.getCustomizer().resolve(rootType);
-				if (resolved != null) {
-					return resolved;
-				}
-			}
-		}
-
-		return walkCandidateChain(rootType, options);
+		JvmNodeContext context = treeCache.getOrBuildNodeContext(rootType, options, Collections.emptyMap());
+		return new ConcreteTypeResolver(context).resolve(
+			rootType,
+			findLatestAtRoot(analysisResult.getInterfaceResolvers()),
+			findLatestAtRoot(analysisResult.getGenericTypeResolvers())
+		);
 	}
 
-	/**
-	 * Adapts {@link FixtureMonkeyOptions} to {@link AbstractTypeResolver#resolve} inputs and
-	 * passes through the input type when {@code options} is null.
-	 */
-	private JvmType walkCandidateChain(JvmType type, @Nullable FixtureMonkeyOptions options) {
-		if (options == null) {
-			return type;
+	private static <T extends NodeCustomizer> @Nullable T findLatestAtRoot(List<PathResolver<T>> resolvers) {
+		PathExpression rootPath = PathExpression.root();
+		T last = null;
+		for (PathResolver<T> resolver : resolvers) {
+			if (resolver.matches(rootPath)) {
+				last = resolver.getCustomizer();
+			}
 		}
-		@SuppressWarnings("deprecation")
-		Function<Property, @Nullable CandidateConcretePropertyResolver> resolverLookup =
-			options::getCandidateConcretePropertyResolver;
-		return abstractTypeResolver.resolve(type, resolverLookup, options.getMaxRecursionDepth());
+		return last;
 	}
 
 	@Override
