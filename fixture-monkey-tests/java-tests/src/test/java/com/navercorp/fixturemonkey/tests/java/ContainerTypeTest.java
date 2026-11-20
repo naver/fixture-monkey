@@ -21,16 +21,24 @@ package com.navercorp.fixturemonkey.tests.java;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
+
+import lombok.Value;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
@@ -228,6 +236,34 @@ class ContainerTypeTest {
 	}
 
 	@Test
+	void sampleQueueRoot() {
+		// when
+		Queue<String> actual = SUT.giveMeOne(new TypeReference<Queue<String>>() {
+		});
+
+		// then
+		then(actual).isInstanceOf(LinkedList.class);
+	}
+
+	@Test
+	void sampleQueueProperty() {
+		// when
+		QueueObject actual = SUT.giveMeOne(QueueObject.class);
+
+		// then
+		then(actual.getQueue()).isInstanceOf(LinkedList.class);
+	}
+
+	@Test
+	void sampleDequeProperty() {
+		// when
+		QueueObject actual = SUT.giveMeOne(QueueObject.class);
+
+		// then
+		then(actual.getDeque()).isInstanceOf(LinkedList.class);
+	}
+
+	@Test
 	void sampleListOfEntries() {
 		// when
 		List<Map.Entry<String, Integer>> actual = SUT.giveMeBuilder(
@@ -256,6 +292,26 @@ class ContainerTypeTest {
 			then(it.getKey()).isInstanceOf(String.class);
 			then(it.getValue()).isInstanceOf(Integer.class);
 		});
+	}
+
+	@Test
+	void sampleSortedSetRoot() {
+		// when
+		SortedSet<String> actual = SUT.giveMeOne(new TypeReference<SortedSet<String>>() {
+		});
+
+		// then
+		then(actual).isInstanceOf(TreeSet.class);
+	}
+
+	@Test
+	void sampleCollectionRoot() {
+		// when
+		Collection<String> actual = SUT.giveMeOne(new TypeReference<Collection<String>>() {
+		});
+
+		// then
+		then(actual).isInstanceOf(ArrayList.class);
 	}
 
 	@Test
@@ -290,5 +346,11 @@ class ContainerTypeTest {
 			then(it.getKey()).isInstanceOf(String.class);
 			then(it.getValue()).isInstanceOf(Integer.class);
 		});
+	}
+
+	@Value
+	public static class QueueObject {
+		Queue<String> queue;
+		Deque<String> deque;
 	}
 }
