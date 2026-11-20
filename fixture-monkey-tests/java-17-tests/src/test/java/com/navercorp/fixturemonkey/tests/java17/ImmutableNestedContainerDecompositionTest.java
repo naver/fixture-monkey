@@ -28,6 +28,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
@@ -35,6 +36,10 @@ class ImmutableNestedContainerDecompositionTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
+		.build();
+	private static final FixtureMonkey FIXED_CONTAINER_SIZE_SUT = FixtureMonkey.builder()
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
 		.build();
 
 	@Test
@@ -91,9 +96,97 @@ class ImmutableNestedContainerDecompositionTest {
 		then(actual.get("k")).containsExactly(entry("ik", "x"));
 	}
 
+	@Test
+	void setImmutableListKeepsContainerTwoLevelsInsideRecordElement() {
+		// when
+		Feed actual = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(Feed.class)
+			.set("notes", List.of(new Note(new Tags(List.of("a", "b")))))
+			.sample();
+
+		// then
+		then(actual.notes()).hasSize(1);
+		then(actual.notes().get(0).tags().values()).containsExactly("a", "b");
+	}
+
+	@Test
+	void setImmutableListKeepsEmptyContainerTwoLevelsInsideRecordElement() {
+		// when
+		Feed actual = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(Feed.class)
+			.set("notes", List.of(new Note(new Tags(List.of()))))
+			.sample();
+
+		// then
+		then(actual.notes().get(0).tags().values()).isEmpty();
+	}
+
+	@Test
+	void setImmutableSetKeepsContainerTwoLevelsInsideRecordElement() {
+		// when
+		SetFeed actual = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(SetFeed.class)
+			.set("notes", Set.of(new Note(new Tags(List.of("a", "b")))))
+			.sample();
+
+		// then
+		then(actual.notes()).hasSize(1);
+		then(actual.notes().iterator().next().tags().values()).containsExactly("a", "b");
+	}
+
+	@Test
+	void setImmutableMapKeepsContainerTwoLevelsInsideRecordValue() {
+		// when
+		MapFeed actual = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(MapFeed.class)
+			.set("notes", Map.of("key", new Note(new Tags(List.of("a", "b")))))
+			.sample();
+
+		// then
+		then(actual.notes().get("key").tags().values()).containsExactly("a", "b");
+	}
+
+	@Test
+	void setListKeepsSealedImplementationInsideRecordElement() {
+		// when
+		PostFeed actual = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(PostFeed.class)
+			.set("posts", List.of(new Post(new TextContent(List.of("a", "b")))))
+			.sample();
+
+		// then
+		then(actual.posts().get(0).content()).isExactlyInstanceOf(TextContent.class);
+		then(((TextContent)actual.posts().get(0).content()).lines()).containsExactly("a", "b");
+	}
+
 	public record NestedLists(List<List<String>> values) {
 	}
 
 	public record NestedSets(Set<Set<String>> values) {
+	}
+
+	public record Tags(List<String> values) {
+	}
+
+	public record Note(Tags tags) {
+	}
+
+	public record Feed(List<Note> notes) {
+	}
+
+	public record SetFeed(Set<Note> notes) {
+	}
+
+	public record MapFeed(Map<String, Note> notes) {
+	}
+
+	public sealed interface Content permits TextContent, ImageContent {
+	}
+
+	public record TextContent(List<String> lines) implements Content {
+	}
+
+	public record ImageContent(String url) implements Content {
+	}
+
+	public record Post(Content content) {
+	}
+
+	public record PostFeed(List<Post> posts) {
 	}
 }
