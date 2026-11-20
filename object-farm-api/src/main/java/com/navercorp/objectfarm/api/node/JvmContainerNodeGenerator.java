@@ -20,20 +20,22 @@ package com.navercorp.objectfarm.api.node;
 
 import java.util.List;
 
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
- * A generator interface for creating container element nodes (JvmNode instances)
- * for container types such as arrays, collections, and maps.
+ * A generator interface for creating the element candidates of container types
+ * such as arrays, collections, and maps.
  * <p>
- * This interface generates actual JvmNode instances dynamically at the JvmNode level,
+ * The candidates are generated dynamically while transforming the node tree,
  * enabling different container sizes based on runtime customization.
+ * They are promoted to element nodes by the {@link JvmNodePromoter}s, the same way as object property candidates.
  * <p>
  * Implementations of this interface are responsible for:
  * <ul>
- *   <li>Generating element nodes for their respective container types</li>
+ *   <li>Generating element candidates for their respective container types</li>
  *   <li>Determining the number of elements based on the ContainerSizeResolver from context</li>
- *   <li>Creating properly typed element nodes</li>
+ *   <li>Creating properly typed element candidates</li>
  * </ul>
  *
  * @see JvmNodeContext#getContainerNodeGenerators()
@@ -48,7 +50,7 @@ public interface JvmContainerNodeGenerator {
 	boolean isSupported(JvmType containerType);
 
 	/**
-	 * Generates container element nodes for the given container node.
+	 * Generates container element candidates for the given container node.
 	 * <p>
 	 * The number of elements generated is typically determined by the
 	 * {@link ContainerSizeResolver}
@@ -56,12 +58,12 @@ public interface JvmContainerNodeGenerator {
 	 *
 	 * @param containerNode the container node to generate elements for
 	 * @param context the node context containing resolvers and generators
-	 * @return a list of generated element nodes
+	 * @return a list of generated element candidates
 	 */
-	List<JvmNode> generateContainerElements(JvmNode containerNode, JvmNodeContext context);
+	List<JvmNodeCandidate> generateContainerElements(JvmNode containerNode, JvmNodeContext context);
 
 	/**
-	 * Generates container element nodes for the given container node using the specified size resolver.
+	 * Generates container element candidates for the given container node using the specified size resolver.
 	 * <p>
 	 * This method allows explicit control over the container size resolver, enabling
 	 * path-based customization of container sizes during tree transformation.
@@ -69,9 +71,9 @@ public interface JvmContainerNodeGenerator {
 	 * @param containerNode the container node to generate elements for
 	 * @param context the node context containing generators and other resolvers
 	 * @param sizeResolver the container size resolver to use
-	 * @return a list of generated element nodes
+	 * @return a list of generated element candidates
 	 */
-	default List<JvmNode> generateContainerElements(
+	default List<JvmNodeCandidate> generateContainerElements(
 		JvmNode containerNode,
 		JvmNodeContext context,
 		ContainerSizeResolver sizeResolver

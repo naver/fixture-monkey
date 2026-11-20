@@ -38,7 +38,7 @@ public final class JavaObjectNodePromoter implements JvmNodePromoter {
 	@Override
 	public List<JvmNode> promote(JvmNodeCandidate node, JvmNodeContext context) {
 		return Collections.singletonList(
-			new JavaNode(node.getType(), node.getType(), node.getName(), null, node.getCreationMethod())
+			new JavaNode(node.getType(), node.getType(), node.getName(), node.getIndex(), node.getCreationMethod())
 		);
 	}
 }

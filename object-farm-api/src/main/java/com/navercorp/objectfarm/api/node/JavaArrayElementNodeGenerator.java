@@ -24,15 +24,16 @@ import java.util.List;
 import java.util.Objects;
 
 import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod;
-import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
+import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
- * A {@link JvmContainerNodeGenerator} implementation for generating element nodes
+ * A {@link JvmContainerNodeGenerator} implementation for generating element candidates
  * for array types.
  * <p>
- * This generator creates child nodes for each element in an array,
+ * This generator creates a candidate for each element in an array,
  * using the ContainerSizeResolver from the context to determine the array length.
  */
 public final class JavaArrayElementNodeGenerator implements JvmContainerNodeGenerator {
@@ -49,13 +50,13 @@ public final class JavaArrayElementNodeGenerator implements JvmContainerNodeGene
 	}
 
 	@Override
-	public List<JvmNode> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
+	public List<JvmNodeCandidate> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
 		return generateContainerElements(containerNode, context, context.getContainerSizeResolver());
 	}
 
 	@Override
 	@SuppressWarnings("argument")
-	public List<JvmNode> generateContainerElements(
+	public List<JvmNodeCandidate> generateContainerElements(
 		JvmNode containerNode,
 		JvmNodeContext context,
 		ContainerSizeResolver sizeResolver
@@ -73,12 +74,15 @@ public final class JavaArrayElementNodeGenerator implements JvmContainerNodeGene
 
 		int arraySize = sizeResolver.resolveContainerSize(containerType);
 
-		List<JvmNode> elementNodes = new ArrayList<>();
+		List<JvmNodeCandidate> elementCandidates = new ArrayList<>();
 		for (int i = 0; i < arraySize; i++) {
-			CreationMethod creationMethod = new ContainerElementCreationMethod(i);
-			elementNodes.add(new JavaNode(elementType, elementType, "[" + i + "]", i, creationMethod));
+			elementCandidates.add(JavaNodeCandidateFactory.INSTANCE.create(
+				elementType,
+				"[" + i + "]",
+				new ContainerElementCreationMethod(i)
+			));
 		}
 
-		return Collections.unmodifiableList(elementNodes);
+		return Collections.unmodifiableList(elementCandidates);
 	}
 }

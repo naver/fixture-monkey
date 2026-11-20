@@ -242,4 +242,53 @@ class ContainerTypeTest {
 			then(it.getValue()).isInstanceOf(Integer.class);
 		});
 	}
+
+	@Test
+	void sampleOptionalOfEntry() {
+		// when
+		Optional<Map.Entry<String, Integer>> actual = SUT.giveMeOne(
+			new TypeReference<Optional<Map.Entry<String, Integer>>>() {
+			}
+		);
+
+		// then
+		then(actual).hasValueSatisfying(it -> {
+			then(it.getKey()).isInstanceOf(String.class);
+			then(it.getValue()).isInstanceOf(Integer.class);
+		});
+	}
+
+	@Test
+	void sampleMapOfEntryValues() {
+		// when
+		Map<String, Map.Entry<String, Integer>> actual = SUT.giveMeBuilder(
+				new TypeReference<Map<String, Map.Entry<String, Integer>>>() {
+				})
+			.size("$", 2)
+			.sample();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.values()).allSatisfy(it -> {
+			then(it.getKey()).isInstanceOf(String.class);
+			then(it.getValue()).isInstanceOf(Integer.class);
+		});
+	}
+
+	@Test
+	void sampleMapOfEntryKeys() {
+		// when
+		Map<Map.Entry<String, Integer>, String> actual = SUT.giveMeBuilder(
+				new TypeReference<Map<Map.Entry<String, Integer>, String>>() {
+				})
+			.size("$", 2)
+			.sample();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.keySet()).allSatisfy(it -> {
+			then(it.getKey()).isInstanceOf(String.class);
+			then(it.getValue()).isInstanceOf(Integer.class);
+		});
+	}
 }

@@ -222,9 +222,9 @@ public final class JvmNodeTreeTransformer {
 	/**
 	 * Creates the path for a child node based on the candidate's name or index.
 	 */
-	private PathExpression createChildPath(PathExpression parentPath, JvmNodeCandidate candidate, JvmNode childNode) {
+	private static PathExpression createChildPath(PathExpression parentPath, JvmNodeCandidate candidate) {
 		String name = candidate.getName();
-		Integer index = childNode.getIndex();
+		Integer index = candidate.getIndex();
 
 		if (index != null) {
 			return parentPath.index(index);
@@ -338,8 +338,8 @@ public final class JvmNodeTreeTransformer {
 	/**
 	 * Generates and expands container elements.
 	 * <p>
-	 * After generating elements, applies path-based type resolution
-	 * and recursively expands each element's children.
+	 * The element candidates the container generator creates are promoted and resolved
+	 * the same way as object property candidates, and each element's children are expanded recursively.
 	 */
 	private void expandContainerElements(
 		JvmNode containerNode,
@@ -348,23 +348,27 @@ public final class JvmNodeTreeTransformer {
 		PathExpression currentPath
 	) {
 		SizeResolution sizeResolution = resolveContainerSize(containerNode, ctx, currentPath);
-		List<JvmNode> elements = generateContainerElements(containerNode, sizeResolution.resolver);
+		List<JvmNodeCandidate> elementCandidates = generateContainerElements(containerNode, sizeResolution.resolver);
 
 		resolverContext
 			.getResolutionListener()
 			.onContainerSizeResolved(
 				currentPath.toString(),
 				containerNode.getConcreteType().getRawType().getSimpleName(),
-				elements.size(),
+				elementCandidates.size(),
 				sizeResolution.source,
 				sizeResolution.metadata
 			);
 
-		if (elements.isEmpty()) {
+		if (elementCandidates.isEmpty()) {
 			return;
 		}
 
-		List<JvmNode> resolvedElements = resolveContainerElementTypes(elements, currentPath);
+		List<JvmNode> resolvedElements = new ArrayList<>(elementCandidates.size());
+		for (JvmNodeCandidate elementCandidate : elementCandidates) {
+			PathExpression elementPath = createChildPath(currentPath, elementCandidate);
+			resolvedElements.addAll(promoteAndResolveCandidate(elementCandidate, elementPath, ctx));
+		}
 
 		// Drop elements whose type would form a cycle (e.g. List<Self> nested inside Self).
 		// Without this, each element becomes an unexpanded recursion-break leaf and the assembler
@@ -435,26 +439,6 @@ public final class JvmNodeTreeTransformer {
 			return new SizeResolution(overrideResolver, "DEFAULT", "fixed");
 		}
 		return new SizeResolution(context.getContainerSizeResolver(), "DEFAULT");
-	}
-
-	/**
-	 * Resolves element types for all container elements using path-based resolvers.
-	 */
-	private List<JvmNode> resolveContainerElementTypes(List<JvmNode> elements, PathExpression currentPath) {
-		List<JvmNode> resolved = new ArrayList<>(elements.size());
-		for (JvmNode element : elements) {
-			Integer index = element.getIndex();
-			resolved.add(
-				index == null
-					? resolveElementSharingContainerPath(element, currentPath)
-					: resolveNodeType(element, currentPath.index(index))
-			);
-		}
-		return resolved;
-	}
-
-	private JvmNode resolveElementSharingContainerPath(JvmNode element, PathExpression containerPath) {
-		return resolveNodeType(element, containerPath, null, null);
 	}
 
 	private static final class SizeResolution {
@@ -1165,17 +1149,10 @@ public final class JvmNodeTreeTransformer {
 		PathExpression currentPath
 	) {
 		List<JvmNode> result = new ArrayList<>();
-		List<JvmNode> promotedNodes = promoteCandidate(childCandidate, ctx);
+		PathExpression childPath = createChildPath(currentPath, childCandidate);
+		List<JvmNode> resolvedChildren = promoteAndResolveCandidate(childCandidate, childPath, ctx);
 
-		for (JvmNode childNode : promotedNodes) {
-			PathExpression childPath = createChildPath(currentPath, childCandidate, childNode);
-
-			JvmNode resolvedChild = resolveNodeType(childNode, childPath);
-
-			if (resolvedChild != childNode) {
-				updateNodeMappings(ctx, childCandidate, childNode, resolvedChild);
-			}
-
+		for (JvmNode resolvedChild : resolvedChildren) {
 			ctx.allNodes.add(resolvedChild);
 			if (parentNodeForMapping != null) {
 				ctx.nodeToParent.put(resolvedChild, parentNodeForMapping);
@@ -1196,10 +1173,39 @@ public final class JvmNodeTreeTransformer {
 		return result;
 	}
 
+	private List<JvmNode> promoteAndResolveCandidate(
+		JvmNodeCandidate candidate,
+		PathExpression path,
+		TransformContext ctx
+	) {
+		boolean sharesParentPath = candidate.getIndex() == null && candidate.getName() == null;
+		InterfaceResolver pathInterfaceResolver = sharesParentPath
+			? null
+			: resolverContext.findInterfaceResolver(path).orElse(null);
+		GenericTypeResolver pathGenericTypeResolver = sharesParentPath
+			? null
+			: resolverContext.findGenericTypeResolver(path).orElse(null);
+
+		List<JvmNode> promotedNodes = promoteCandidate(candidate, ctx);
+
+		List<JvmNode> resolvedNodes = new ArrayList<>(promotedNodes.size());
+		for (JvmNode promotedNode : promotedNodes) {
+			JvmNode resolvedNode = resolveNodeType(promotedNode, path, pathInterfaceResolver, pathGenericTypeResolver);
+			if (resolvedNode != promotedNode) {
+				updateNodeMappings(ctx, candidate, promotedNode, resolvedNode);
+			}
+			resolvedNodes.add(resolvedNode);
+		}
+		return resolvedNodes;
+	}
+
 	/**
-	 * Generates container element nodes using the specified size resolver.
+	 * Generates container element candidates using the specified size resolver.
 	 */
-	private List<JvmNode> generateContainerElements(JvmNode containerNode, ContainerSizeResolver sizeResolver) {
+	private List<JvmNodeCandidate> generateContainerElements(
+		JvmNode containerNode,
+		ContainerSizeResolver sizeResolver
+	) {
 		for (JvmContainerNodeGenerator generator : context.getContainerNodeGenerators()) {
 			if (generator.isSupported(containerNode.getConcreteType())) {
 				return generator.generateContainerElements(containerNode, context, sizeResolver);

@@ -43,12 +43,12 @@ import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
-import com.navercorp.objectfarm.api.node.JavaNode;
 import com.navercorp.objectfarm.api.node.JvmContainerNodeGenerator;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.nodecandidate.ContainerElementCreationMethod;
-import com.navercorp.objectfarm.api.nodecandidate.CreationMethod;
+import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
+import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
 
 /**
@@ -81,12 +81,12 @@ public final class ContainerPropertyGeneratorNodeGenerator implements JvmContain
 	}
 
 	@Override
-	public List<JvmNode> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
+	public List<JvmNodeCandidate> generateContainerElements(JvmNode containerNode, JvmNodeContext context) {
 		return generateContainerElements(containerNode, context, context.getContainerSizeResolver());
 	}
 
 	@Override
-	public List<JvmNode> generateContainerElements(
+	public List<JvmNodeCandidate> generateContainerElements(
 		JvmNode containerNode,
 		JvmNodeContext context,
 		ContainerSizeResolver sizeResolver
@@ -102,7 +102,7 @@ public final class ContainerPropertyGeneratorNodeGenerator implements JvmContain
 		ContainerProperty containerProperty = generator.generate(genContext);
 
 		List<Property> childProperties = containerProperty.getElementProperties();
-		List<JvmNode> elements = new ArrayList<>(childProperties.size());
+		List<JvmNodeCandidate> elements = new ArrayList<>(childProperties.size());
 		for (int i = 0; i < childProperties.size(); i++) {
 			Property childProperty = childProperties.get(i);
 			JvmType elementType = childProperty.getJvmType();
@@ -113,8 +113,11 @@ public final class ContainerPropertyGeneratorNodeGenerator implements JvmContain
 					index = propIndex;
 				}
 			}
-			CreationMethod creationMethod = new ContainerElementCreationMethod(index);
-			elements.add(new JavaNode(elementType, elementType, "[" + index + "]", index, creationMethod));
+			elements.add(JavaNodeCandidateFactory.INSTANCE.create(
+				elementType,
+				"[" + index + "]",
+				new ContainerElementCreationMethod(index)
+			));
 		}
 		return elements;
 	}

@@ -66,4 +66,20 @@ public interface JvmNodeCandidate {
 	 */
 	@Nullable
 	CreationMethod getCreationMethod();
+
+	/**
+	 * Returns the index of this candidate within its container.
+	 * <p>
+	 * Only a candidate created as a container element, by a {@link ContainerElementCreationMethod}, has an index.
+	 *
+	 * @return the index (0-based), or null if this candidate is not a container element
+	 * @see ContainerElementCreationMethod#getIndex()
+	 */
+	default @Nullable Integer getIndex() {
+		CreationMethod creationMethod = getCreationMethod();
+		if (creationMethod instanceof ContainerElementCreationMethod) {
+			return ((ContainerElementCreationMethod)creationMethod).getIndex();
+		}
+		return null;
+	}
 }
