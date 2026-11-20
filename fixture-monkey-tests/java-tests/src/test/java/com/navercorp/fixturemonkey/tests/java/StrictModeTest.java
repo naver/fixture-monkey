@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.tests.java;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,6 +38,14 @@ class StrictModeTest {
 		.plugin(new InterfacePlugin()
 			.abstractClassExtends(Shape.class, Collections.singletonList(Circle.class))
 			.interfaceImplements(Animal.class, Collections.singletonList(Dog.class)))
+		.useExpressionStrictMode()
+		.build();
+
+	private static final FixtureMonkey SET_VALUE_SUT = FixtureMonkey.builder()
+		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+		.defaultNotNull(true)
+		.plugin(new InterfacePlugin()
+			.abstractClassExtends(Value.class, Arrays.asList(StringValue.class, IntValue.class)))
 		.useExpressionStrictMode()
 		.build();
 
@@ -142,6 +152,65 @@ class StrictModeTest {
 			.hasMessageContaining("No matching results for given NodeResolvers");
 	}
 
+	@Test
+	void setMixedTypeListToObjectPropertyThenSetElement() {
+		// when
+		ObjectHolder actual = SET_VALUE_SUT.giveMeBuilder(ObjectHolder.class)
+			.set("value", new ArrayList<>(Arrays.asList("a", 1)))
+			.set("value[1]", 2)
+			.sample();
+
+		// then
+		then(actual.getValue()).isEqualTo(Arrays.asList("a", 2));
+	}
+
+	@Test
+	void setEmptyListToObjectPropertyThenGrowIt() {
+		// when
+		ObjectHolder actual = SET_VALUE_SUT.giveMeBuilder(ObjectHolder.class)
+			.set("value", new ArrayList<>())
+			.size("value", 2)
+			.sample();
+
+		// then
+		then(actual.getValue()).isInstanceOfSatisfying(List.class, it -> then(it).hasSize(2));
+	}
+
+	@Test
+	void setNestedMixedImplementationListPropertyThenSetInnerField() {
+		// given
+		List<List<Value>> values = Arrays.asList(
+			new ArrayList<>(Collections.singletonList(new StringValue())),
+			new ArrayList<>(Collections.singletonList(new IntValue()))
+		);
+
+		// when
+		NestedValueListHolder actual = SET_VALUE_SUT.giveMeBuilder(NestedValueListHolder.class)
+			.set("values", values)
+			.set("values[1][0].number", 7)
+			.sample();
+
+		// then
+		then(actual.getValues().get(0).get(0)).isInstanceOf(StringValue.class);
+		then(actual.getValues().get(1).get(0)).isInstanceOfSatisfying(
+			IntValue.class,
+			it -> then(it.getNumber()).isEqualTo(7)
+		);
+	}
+
+	@Test
+	void setNestedEmptyListPropertyThenGrowInnerList() {
+		// when
+		NestedStringListHolder actual = SET_VALUE_SUT.giveMeBuilder(NestedStringListHolder.class)
+			.set("values", Arrays.asList(new ArrayList<String>(), new ArrayList<String>()))
+			.size("values[0]", 2)
+			.sample();
+
+		// then
+		then(actual.getValues().get(0)).hasSize(2);
+		then(actual.getValues().get(1)).isEmpty();
+	}
+
 	public abstract static class Shape {
 		private String id;
 
@@ -206,6 +275,49 @@ class StrictModeTest {
 
 		public Animal getPet() {
 			return pet;
+		}
+	}
+
+	public static class ObjectHolder {
+		private Object value;
+
+		public Object getValue() {
+			return value;
+		}
+	}
+
+	public abstract static class Value {
+	}
+
+	public static class StringValue extends Value {
+		private String text;
+
+		public String getText() {
+			return text;
+		}
+	}
+
+	public static class IntValue extends Value {
+		private int number;
+
+		public int getNumber() {
+			return number;
+		}
+	}
+
+	public static class NestedValueListHolder {
+		private List<List<Value>> values;
+
+		public List<List<Value>> getValues() {
+			return values;
+		}
+	}
+
+	public static class NestedStringListHolder {
+		private List<List<String>> values;
+
+		public List<List<String>> getValues() {
+			return values;
 		}
 	}
 }

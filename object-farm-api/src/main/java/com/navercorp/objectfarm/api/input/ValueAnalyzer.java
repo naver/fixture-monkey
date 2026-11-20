@@ -616,6 +616,11 @@ public final class ValueAnalyzer {
 
 		List<JvmType> typeArguments = GenericTypeResolverConverter.extractTypeArgumentsFromValue(value);
 		if (typeArguments.isEmpty()) {
+			if (!isNonGenericClass) {
+				genericTypeResolvers.add(
+					GenericTypeResolverConverter.createObjectTypeArgumentsResolver(pathExpression)
+				);
+			}
 			return;
 		}
 
