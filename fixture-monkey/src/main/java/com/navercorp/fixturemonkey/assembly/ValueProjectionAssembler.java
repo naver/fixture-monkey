@@ -121,8 +121,9 @@ public final class ValueProjectionAssembler {
 		JvmNode rootNode = context.getPlan().getNodeTree().getRootNode();
 		CombinableArbitrary<?> assembled =
 			assembleNode(rootNode, state, null, null, PathExpression.root(), new HashSet<>());
-		// Checked after assembly: the planned tree leaves interface and abstract types unexpanded, so a path
-		// beneath one can only be judged once assembly has chosen and attached an implementation for it.
+		// Checked after assembly: the planned tree leaves interface and abstract types unexpanded, and sizes a
+		// container inside a set value before the value is known, so a path beneath one can only be judged once
+		// assembly has attached its nodes.
 		if (context.getPlan().getAnalysisResult().isStrictMode()) {
 			verifyEveryValuePathApplied(state);
 		}
@@ -153,11 +154,11 @@ public final class ValueProjectionAssembler {
 		Set<PathExpression> descendedPaths,
 		AssemblyState state
 	) {
-		if (!selectsImplementationWhileAssembling(deepestPlannedNodeAlong(path, state), state)) {
-			return true;
-		}
 		if (state.assemblyTree.placedNodeAt(path) != null) {
 			return false;
+		}
+		if (!selectsImplementationWhileAssembling(deepestPlannedNodeAlong(path, state), state)) {
+			return true;
 		}
 		for (int depth = path.depth() - 1; depth >= 0; depth--) {
 			PathExpression prefix = path.truncateTo(depth);
@@ -375,17 +376,13 @@ public final class ValueProjectionAssembler {
 				DirectivePrecedence parentPrecedence = currentCandidate != null
 					? currentCandidate.precedence
 					: DirectivePrecedence.rootScope(0);
-				boolean underValueExpandedDuringAssembly = state.candidates.decomposedScopeDepthAt(currentPath) >= 0;
-				if (underValueExpandedDuringAssembly
-					&& isCurrentTypeContainer
-					&& currentCandidate != null
-					&& currentCandidate.value != null) {
+				if (isCurrentTypeContainer && currentCandidate != null && currentCandidate.value != null) {
 					resizeChildrenToValue(
 						node,
 						currentPath,
 						currentCandidate.value,
 						currentCandidate.precedence,
-						state.candidates.decomposedScopeDepthAt(currentPath),
+						Math.max(state.candidates.decomposedScopeDepthAt(currentPath), 0),
 						state
 					);
 				}
@@ -394,8 +391,7 @@ public final class ValueProjectionAssembler {
 					currentPath,
 					currentRawType,
 					isCurrentTypeContainer,
-					parentPrecedence,
-					underValueExpandedDuringAssembly
+					parentPrecedence
 				);
 				applyDecomposeResult(decomposeResult, state);
 			}
@@ -1624,7 +1620,7 @@ public final class ValueProjectionAssembler {
 			return;
 		}
 		int valueSize = state.valueDecomposer.containerSize(containerValue);
-		if (valueSize >= 0) {
+		if (valueSize >= 0 && !state.scopes.hasRootSizeOutranking(containerPath, valuePrecedence)) {
 			resizeChildren(containerNode, containerPath, valueSize, state);
 		}
 	}
@@ -1680,9 +1676,6 @@ public final class ValueProjectionAssembler {
 		int valueSize,
 		AssemblyState state
 	) {
-		if (state.scopes.isRootSizedContainer(containerPath)) {
-			return;
-		}
 		List<JvmNode> planned = state.assemblyTree.childrenOf(containerNode);
 		if (planned.size() == valueSize) {
 			return;

@@ -74,6 +74,13 @@ final class ContainerValuePruner {
 			if (justPaths.contains(path)) {
 				continue;
 			}
+
+			// Case 0: At or inside an indexed element exceeding container size
+			if (isWithinOutOfRangeElement(path, sizeConstraintByPath, wildcardSizeEntries, valueOrderByPath)) {
+				keysToRemove.add(path);
+				continue;
+			}
+
 			@Nullable Object value = valuesByPath.get(path);
 			ContainerSizeConstraint sizeConstraint =
 				resolveEffectiveConstraint(path, sizeConstraintByPath.get(path), wildcardSizeEntries);
@@ -113,13 +120,7 @@ final class ContainerValuePruner {
 				int effectiveOrder = valueOrderByPath.getOrDefault(path, Integer.MIN_VALUE);
 				if (hasChildManipulatorWithHigherSequence(path, effectiveOrder, sizeConstraintByPath)) {
 					keysToRemove.add(path);
-					continue;
 				}
-			}
-
-			// Case 4: Indexed element exceeding container size
-			if (isIndexedElementOutOfRange(path, sizeConstraintByPath, wildcardSizeEntries, valueOrderByPath)) {
-				keysToRemove.add(path);
 			}
 		}
 
@@ -199,30 +200,31 @@ final class ContainerValuePruner {
 		return effective;
 	}
 
-	private static boolean isIndexedElementOutOfRange(
+	private static boolean isWithinOutOfRangeElement(
 		PathExpression path,
 		Map<PathExpression, ContainerSizeConstraint> sizeConstraintByPath,
 		List<Map.Entry<PathExpression, ContainerSizeConstraint>> wildcardSizeEntries,
 		Map<PathExpression, Integer> valueOrderByPath
 	) {
 		List<Segment> segments = path.getSegments();
-		if (segments.isEmpty()) {
-			return false;
-		}
-
-		Segment lastSegment = segments.get(segments.size() - 1);
-		if (lastSegment.isSingleSelector() && lastSegment.getFirstSelector() instanceof IndexSelector) {
-			int index = ((IndexSelector)lastSegment.getFirstSelector()).getIndex();
-			PathExpression containerPath = path.getParent();
+		Integer valueOrder = valueOrderByPath.get(path);
+		for (int depth = segments.size(); depth > 0; depth--) {
+			Segment segment = segments.get(depth - 1);
+			if (!segment.isSingleSelector() || !(segment.getFirstSelector() instanceof IndexSelector)) {
+				continue;
+			}
+			int index = ((IndexSelector)segment.getFirstSelector()).getIndex();
+			PathExpression containerPath = path.truncateTo(depth - 1);
 			ContainerSizeConstraint containerSizeConstraint = resolveEffectiveConstraint(
 				containerPath,
 				sizeConstraintByPath.get(containerPath),
 				wildcardSizeEntries
 			);
-			if (containerSizeConstraint != null && index >= containerSizeConstraint.size) {
-				// Only prune if the size constraint has higher sequence than this element's value
-				Integer elementOrder = valueOrderByPath.get(path);
-				return elementOrder == null || containerSizeConstraint.sequence > elementOrder;
+			// Only prune if the size constraint has higher sequence than this value
+			if (containerSizeConstraint != null
+				&& index >= containerSizeConstraint.size
+				&& (valueOrder == null || containerSizeConstraint.sequence > valueOrder)) {
+				return true;
 			}
 		}
 		return false;

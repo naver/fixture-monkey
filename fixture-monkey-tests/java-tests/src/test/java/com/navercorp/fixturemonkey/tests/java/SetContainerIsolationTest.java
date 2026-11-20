@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.Values;
@@ -42,6 +43,10 @@ class SetContainerIsolationTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
+		.build();
+	private static final FixtureMonkey FIXED_CONTAINER_SIZE_SUT = FixtureMonkey.builder()
+		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+		.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
 		.build();
 
 	@Test
@@ -326,6 +331,82 @@ class SetContainerIsolationTest {
 		then(actual.list).isSameAs(supplied);
 	}
 
+	@Test
+	void setListContainerTwoLevelsInsideElementIsNotSharedAcrossSamples() {
+		// given
+		Note supplied = note("a", "b");
+		ArbitraryBuilder<Feed> builder = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(Feed.class)
+			.set("notes", Collections.singletonList(supplied));
+
+		// when
+		Feed first = builder.sample();
+		Feed second = builder.sample();
+		first.notes.get(0).tags.values.add("c");
+
+		// then
+		then(first.notes.get(0).tags.values).isNotSameAs(supplied.tags.values);
+		then(second.notes.get(0).tags.values).containsExactly("a", "b");
+		then(supplied.tags.values).containsExactly("a", "b");
+	}
+
+	@Test
+	void setArrayContainerTwoLevelsInsideElementIsNotSharedAcrossSamples() {
+		// given
+		Note supplied = note("a", "b");
+		ArbitraryBuilder<NoteArrayFeed> builder = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(NoteArrayFeed.class)
+			.set("notes", new Note[] {supplied});
+
+		// when
+		NoteArrayFeed first = builder.sample();
+		NoteArrayFeed second = builder.sample();
+		first.notes[0].tags.values.add("c");
+
+		// then
+		then(first.notes[0].tags.values).isNotSameAs(supplied.tags.values);
+		then(second.notes[0].tags.values).containsExactly("a", "b");
+		then(supplied.tags.values).containsExactly("a", "b");
+	}
+
+	@Test
+	void setMapContainerTwoLevelsInsideValueIsNotSharedAcrossSamples() {
+		// given
+		Note supplied = note("a", "b");
+		ArbitraryBuilder<NoteMapFeed> builder = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(NoteMapFeed.class)
+			.set("notes", Collections.singletonMap("key", supplied));
+
+		// when
+		NoteMapFeed first = builder.sample();
+		NoteMapFeed second = builder.sample();
+		first.notes.get("key").tags.values.add("c");
+
+		// then
+		then(first.notes.get("key").tags.values).isNotSameAs(supplied.tags.values);
+		then(second.notes.get("key").tags.values).containsExactly("a", "b");
+		then(supplied.tags.values).containsExactly("a", "b");
+	}
+
+	@Test
+	void setListContainerThreeLevelsInsideElementIsNotSharedAcrossSamples() {
+		// given
+		Item supplied = new Item(note("a", "b"));
+		ArbitraryBuilder<ItemFeed> builder = FIXED_CONTAINER_SIZE_SUT.giveMeBuilder(ItemFeed.class)
+			.set("items", Collections.singletonList(supplied));
+
+		// when
+		ItemFeed first = builder.sample();
+		ItemFeed second = builder.sample();
+		first.items.get(0).note.tags.values.add("c");
+
+		// then
+		then(first.items.get(0).note.tags.values).isNotSameAs(supplied.note.tags.values);
+		then(second.items.get(0).note.tags.values).containsExactly("a", "b");
+		then(supplied.note.tags.values).containsExactly("a", "b");
+	}
+
+	private static Note note(String... values) {
+		return new Note(new Tags(new ArrayList<>(Arrays.asList(values))));
+	}
+
 	public static class Holder {
 		private List<String> list;
 		private Set<String> set;
@@ -335,5 +416,54 @@ class SetContainerIsolationTest {
 
 	public static class NestedHolder {
 		private List<List<String>> lists;
+	}
+
+	public static class Tags {
+		private List<String> values;
+
+		public Tags() {
+		}
+
+		public Tags(List<String> values) {
+			this.values = values;
+		}
+	}
+
+	public static class Note {
+		private Tags tags;
+
+		public Note() {
+		}
+
+		public Note(Tags tags) {
+			this.tags = tags;
+		}
+	}
+
+	public static class Item {
+		private Note note;
+
+		public Item() {
+		}
+
+		public Item(Note note) {
+			this.note = note;
+		}
+	}
+
+	public static class Feed {
+		private List<Note> notes;
+	}
+
+	public static class NoteArrayFeed {
+		private Note[] notes;
+	}
+
+	public static class NoteMapFeed {
+		private Map<String, Note> notes;
+	}
+
+	public static class ItemFeed {
+		private List<Item> items;
 	}
 }

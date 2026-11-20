@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import org.assertj.core.api.BDDAssertions.then
@@ -52,9 +53,109 @@ class ContainerTest {
         then(actual).isEqualTo(expected)
     }
 
+    @Test
+    fun setListKeepsContainerTwoLevelsInsideElement() {
+        // when
+        val actual = FIXED_CONTAINER_SIZE_SUT.giveMeKotlinBuilder<Feed>()
+            .set("notes", listOf(Note(Tags(listOf("a", "b")))))
+            .sample()
+
+        // then
+        then(actual.notes).hasSize(1)
+        then(actual.notes[0].tags.values).containsExactly("a", "b")
+    }
+
+    @Test
+    fun setListKeepsEmptyContainerTwoLevelsInsideElement() {
+        // when
+        val actual = FIXED_CONTAINER_SIZE_SUT.giveMeKotlinBuilder<Feed>()
+            .set("notes", listOf(Note(Tags(emptyList()))))
+            .sample()
+
+        // then
+        then(actual.notes[0].tags.values).isEmpty()
+    }
+
+    @Test
+    fun setListKeepsEachElementsOwnContainerSize() {
+        // when
+        val actual = FIXED_CONTAINER_SIZE_SUT.giveMeKotlinBuilder<Feed>()
+            .set("notes", listOf(Note(Tags(listOf("a", "b"))), Note(Tags(listOf("c", "d", "e", "f")))))
+            .sample()
+
+        // then
+        then(actual.notes).hasSize(2)
+        then(actual.notes[0].tags.values).containsExactly("a", "b")
+        then(actual.notes[1].tags.values).containsExactly("c", "d", "e", "f")
+    }
+
+    @Test
+    fun setListKeepsNullableObjectInsideElement() {
+        // when
+        val actual = FIXED_CONTAINER_SIZE_SUT.giveMeKotlinBuilder<NullableFeed>()
+            .set("notes", listOf(NullableNote(Tags(listOf("a", "b"))), NullableNote(null)))
+            .sample()
+
+        // then
+        then(actual.notes[0].tags!!.values).containsExactly("a", "b")
+        then(actual.notes[1].tags).isNull()
+    }
+
+    @Test
+    fun setArrayKeepsContainerTwoLevelsInsideElement() {
+        // when
+        val actual = FIXED_CONTAINER_SIZE_SUT.giveMeKotlinBuilder<ArrayFeed>()
+            .set("notes", arrayOf(Note(Tags(listOf("a", "b")))))
+            .sample()
+
+        // then
+        then(actual.notes[0].tags.values).containsExactly("a", "b")
+    }
+
+    @Test
+    fun setMapKeepsContainerTwoLevelsInsideValue() {
+        // when
+        val actual = FIXED_CONTAINER_SIZE_SUT.giveMeKotlinBuilder<MapFeed>()
+            .set("notes", mapOf("key" to Note(Tags(listOf("a", "b")))))
+            .sample()
+
+        // then
+        then(actual.notes["key"]!!.tags.values).containsExactly("a", "b")
+    }
+
+    @Test
+    fun setRootKeepsContainerTwoLevelsInsideListElement() {
+        // when
+        val actual = FIXED_CONTAINER_SIZE_SUT.giveMeKotlinBuilder<Feed>()
+            .set("$", Feed(listOf(Note(Tags(listOf("a", "b"))))))
+            .sample()
+
+        // then
+        then(actual.notes[0].tags.values).containsExactly("a", "b")
+    }
+
+    data class Tags(val values: List<String>)
+
+    data class Note(val tags: Tags)
+
+    data class Feed(val notes: List<Note>)
+
+    data class NullableNote(val tags: Tags?)
+
+    data class NullableFeed(val notes: List<NullableNote>)
+
+    data class MapFeed(val notes: Map<String, Note>)
+
+    class ArrayFeed(val notes: Array<Note>)
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
+            .build()
+
+        private val FIXED_CONTAINER_SIZE_SUT: FixtureMonkey = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .defaultArbitraryContainerInfoGenerator { ArbitraryContainerInfo(3, 3) }
             .build()
     }
 } 
