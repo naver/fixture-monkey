@@ -38,7 +38,6 @@ import com.navercorp.objectfarm.api.node.GenericTypeResolver;
 import com.navercorp.objectfarm.api.node.InterfaceResolver;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.tree.AncestorAwareResolver;
-import com.navercorp.objectfarm.api.tree.PathInterfaceResolver;
 import com.navercorp.objectfarm.api.tree.PathResolver;
 import com.navercorp.objectfarm.api.tree.PathResolverContext;
 import com.navercorp.objectfarm.api.tree.ResolutionListener;
@@ -72,23 +71,9 @@ final class PathResolverContextFactory {
 			builder.ancestorAwareChildCandidateResolver(ancestorAwareChildCandidateResolver);
 		}
 
-		Map<PathExpression, Integer> sizeSequenceByPath = analysisResult.getContainerSizeSequenceByPath();
-
 		addRootScopeContainerSizeResolvers(builder, analysisResult);
 
-		Map<PathExpression, Integer> valueOrderByPath = analysisResult.getValueOrderByPath();
 		for (PathResolver<InterfaceResolver> resolver : analysisResult.getInterfaceResolvers()) {
-			// Skip interface resolvers for container paths where a later size() constraint exists.
-			// When set("values", singletonList(X)) creates a List → SingletonList resolver,
-			// but size("values", 1, 10) comes later, the concrete type should not be locked.
-			if (resolver instanceof PathInterfaceResolver) {
-				PathExpression resolverPath = ((PathInterfaceResolver)resolver).getPattern();
-				Integer sizeSeq = latestRootSizeSequenceAt(sizeSequenceByPath, resolverPath);
-				Integer valueSeq = valueOrderByPath.get(resolverPath);
-				if (sizeSeq != null && valueSeq != null && sizeSeq > valueSeq) {
-					continue;
-				}
-			}
 			builder.addInterfaceResolver(resolver);
 		}
 
@@ -127,25 +112,6 @@ final class PathResolverContextFactory {
 		for (PathResolver<ContainerSizeResolver> resolver : analysisResult.getContainerSizeResolvers()) {
 			builder.addContainerSizeResolver(resolver);
 		}
-	}
-
-	/**
-	 * Returns the sequence of the latest size the root scope declared for the container at {@code path}, at that path
-	 * or through a wildcard reaching it, or null when it declared none.
-	 */
-	private static @Nullable Integer latestRootSizeSequenceAt(
-		Map<PathExpression, Integer> sizeSequenceByPath,
-		PathExpression path
-	) {
-		Integer latest = null;
-		for (Map.Entry<PathExpression, Integer> entry : sizeSequenceByPath.entrySet()) {
-			PathExpression sizePath = entry.getKey();
-			boolean reaches = sizePath.equals(path) || sizePath.hasWildcard() && sizePath.matches(path);
-			if (reaches && (latest == null || entry.getValue() > latest)) {
-				latest = entry.getValue();
-			}
-		}
-		return latest;
 	}
 
 	private void addDefinedScopeContainerSizeResolver(

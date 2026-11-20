@@ -616,6 +616,14 @@ public final class ValueAnalyzer {
 
 		List<JvmType> typeArguments = GenericTypeResolverConverter.extractTypeArgumentsFromValue(value);
 		if (typeArguments.isEmpty()) {
+			// The type arguments of an empty list or a list of mixed classes cannot be inferred.
+			// When it is set into an Object property, its node is a raw ArrayList without an element type,
+			// so Object type arguments are given to create its elements, each with its own type.
+			if (!isNonGenericClass) {
+				genericTypeResolvers.add(
+					GenericTypeResolverConverter.createObjectTypeArgumentsResolver(pathExpression)
+				);
+			}
 			return;
 		}
 
