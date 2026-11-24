@@ -26,6 +26,13 @@ import com.navercorp.fixturemonkey.tests.TestEnvironment.ADAPTER_TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
+abstract class NullableBase(open val path: String? = null)
+
+data class NarrowedNonNullChild(
+	val expected: String,
+	override val path: String,
+) : NullableBase(path)
+
 /**
  * Basic Kotlin adapter tests - starting with the simplest cases.
  */
@@ -39,6 +46,11 @@ class BasicKotlinTest {
 	companion object {
 		private val SUT = FixtureMonkey.builder()
 			.plugin(KotlinPlugin())
+			.build()
+
+		private val NULL_INJECTING_SUT = FixtureMonkey.builder()
+			.plugin(KotlinPlugin())
+			.defaultNullInjectGenerator { 1.0 }
 			.build()
 	}
 
@@ -162,5 +174,17 @@ class BasicKotlinTest {
 
 		// then
 		then(actual.items[0]).isEqualTo(expected)
+	}
+
+	// ==================== Inherited Class Tests ====================
+
+	@Test
+	fun inheritedNullablePropertyNarrowedToNonNullIsNeverNull() {
+		// when
+		val actual = NULL_INJECTING_SUT.giveMeOne<NarrowedNonNullChild>()
+
+		// then
+		then(actual.expected).isNotNull
+		then(actual.path).isNotNull
 	}
 }

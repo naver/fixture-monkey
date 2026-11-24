@@ -26,11 +26,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
@@ -147,14 +145,11 @@ public abstract class Reflections {
 	}
 
 	private static List<Field> toUniqueFieldNameList(List<Field> fields) {
-		return fields.stream()
-			.filter(distinctByKey(Field::getName))
-			.collect(toList());
-	}
-
-	private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-		Set<@Nullable Object> seen = ConcurrentHashMap.newKeySet();
-		return t -> seen.add(keyExtractor.apply(t));
+		Map<String, Field> uniqueFields = new LinkedHashMap<>();
+		for (Field field : fields) {
+			uniqueFields.put(field.getName(), field); // the most derived declaration wins
+		}
+		return new ArrayList<>(uniqueFields.values());
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
