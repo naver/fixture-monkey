@@ -83,8 +83,8 @@ public final class PathResolverContext {
 	);
 
 	private final List<PathResolver<ContainerSizeResolver>> containerSizeResolvers;
-	private final List<PathResolver<InterfaceResolver>> interfaceResolvers;
-	private final List<PathResolver<GenericTypeResolver>> genericTypeResolvers;
+	private final PathResolverIndex<InterfaceResolver> interfaceResolverIndex;
+	private final PathResolverIndex<GenericTypeResolver> genericTypeResolverIndex;
 
 	/**
 	 * Listener for tracking resolution decisions.
@@ -114,8 +114,8 @@ public final class PathResolverContext {
 		@Nullable AncestorAwareResolver<ContainerSizeResolver> ancestorAwareContainerSizeResolver
 	) {
 		this.containerSizeResolvers = containerSizeResolvers;
-		this.interfaceResolvers = interfaceResolvers;
-		this.genericTypeResolvers = genericTypeResolvers;
+		this.interfaceResolverIndex = new PathResolverIndex<>(interfaceResolvers);
+		this.genericTypeResolverIndex = new PathResolverIndex<>(genericTypeResolvers);
 		this.resolutionListener = resolutionListener;
 		this.defaultContainerSizeResolver = defaultContainerSizeResolver;
 		this.ancestorAwareChildCandidateResolver = ancestorAwareChildCandidateResolver;
@@ -199,13 +199,7 @@ public final class PathResolverContext {
 	 * @return an Optional containing the matching resolver, or empty if none match
 	 */
 	public Optional<InterfaceResolver> findInterfaceResolver(PathExpression path) {
-		InterfaceResolver last = null;
-		for (PathResolver<InterfaceResolver> r : interfaceResolvers) {
-			if (r.matches(path)) {
-				last = r.getCustomizer();
-			}
-		}
-		return Optional.ofNullable(last);
+		return Optional.ofNullable(interfaceResolverIndex.findLastMatching(path));
 	}
 
 	/**
@@ -215,13 +209,7 @@ public final class PathResolverContext {
 	 * @return an Optional containing the matching resolver, or empty if none match
 	 */
 	public Optional<GenericTypeResolver> findGenericTypeResolver(PathExpression path) {
-		GenericTypeResolver last = null;
-		for (PathResolver<GenericTypeResolver> r : genericTypeResolvers) {
-			if (r.matches(path)) {
-				last = r.getCustomizer();
-			}
-		}
-		return Optional.ofNullable(last);
+		return Optional.ofNullable(genericTypeResolverIndex.findLastMatching(path));
 	}
 
 	/**
@@ -289,8 +277,8 @@ public final class PathResolverContext {
 	 * @return true if path-specific resolvers exist
 	 */
 	public boolean hasPathSpecificResolvers() {
-		return !interfaceResolvers.isEmpty()
-			|| !genericTypeResolvers.isEmpty()
+		return !interfaceResolverIndex.isEmpty()
+			|| !genericTypeResolverIndex.isEmpty()
 			|| (ancestorAwareChildCandidateResolver != null && ancestorAwareChildCandidateResolver.dependsOnAncestors())
 			|| (ancestorAwareContainerSizeResolver != null
 			&& ancestorAwareContainerSizeResolver.dependsOnAncestors());

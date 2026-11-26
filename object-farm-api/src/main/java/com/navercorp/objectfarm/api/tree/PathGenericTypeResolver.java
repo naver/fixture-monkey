@@ -69,4 +69,10 @@ public final class PathGenericTypeResolver implements PathResolver<GenericTypeRe
 	public GenericTypeResolver getCustomizer() {
 		return customizer;
 	}
+
+	// PathResolverIndex reads the pattern to look up a resolver of a concrete pattern by its path
+	// instead of calling matches on every resolver for every node
+	PathExpression getPattern() {
+		return pattern;
+	}
 }
