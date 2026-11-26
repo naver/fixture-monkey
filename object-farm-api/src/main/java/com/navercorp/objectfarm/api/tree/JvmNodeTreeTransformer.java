@@ -18,7 +18,6 @@
 
 package com.navercorp.objectfarm.api.tree;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
@@ -42,6 +40,7 @@ import com.navercorp.objectfarm.api.expression.NameSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.expression.Selector;
+import com.navercorp.objectfarm.api.node.ConcreteTypeResolver;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.FixedContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
@@ -59,8 +58,6 @@ import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
 import com.navercorp.objectfarm.api.nodecandidate.JvmMapEntryNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
-import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
-import com.navercorp.objectfarm.api.type.Types;
 
 /**
  * Transforms a JvmNodeCandidateTree into a JvmNodeTree.
@@ -96,6 +93,7 @@ public final class JvmNodeTreeTransformer {
 	private final PathResolverContext resolverContext;
 	private final @Nullable ExpansionContext expansionContext;
 	private final @Nullable JvmNodeSubtreeContext subtreeContext;
+	private final ConcreteTypeResolver concreteTypeResolver;
 
 	public JvmNodeTreeTransformer(JvmNodeContext context) {
 		this(context, new JvmNodeCandidateTreeContext(), PathResolverContext.empty(), null, null);
@@ -121,6 +119,7 @@ public final class JvmNodeTreeTransformer {
 		this.resolverContext = resolverContext;
 		this.expansionContext = expansionContext;
 		this.subtreeContext = subtreeContext;
+		this.concreteTypeResolver = new ConcreteTypeResolver(context);
 	}
 
 	/**
@@ -474,15 +473,18 @@ public final class JvmNodeTreeTransformer {
 		@Nullable GenericTypeResolver pathGenericTypeResolver
 	) {
 		JvmType originalType = element.getConcreteType();
-		JvmType resolvedType = resolveType(originalType, pathInterfaceResolver, pathGenericTypeResolver);
+		JvmType resolvedType = concreteTypeResolver.resolve(
+			originalType,
+			pathInterfaceResolver,
+			pathGenericTypeResolver
+		);
 
-		if (resolvedType.equals(originalType)) {
+		if (resolvedType == originalType) {
 			return promoteToMapEntryIfNeeded(element);
 		}
 
-		JvmType finalType = mergeAnnotations(originalType, resolvedType);
-		notifyResolved(elementPath, originalType, finalType, pathInterfaceResolver != null);
-		return promoteToMapEntryIfNeeded(createResolvedNode(element, finalType));
+		notifyResolved(elementPath, originalType, resolvedType, pathInterfaceResolver != null);
+		return promoteToMapEntryIfNeeded(createResolvedNode(element, resolvedType));
 	}
 
 	// Temporary workaround: Map.Entry is the only type whose children come from its node class, not its type,
@@ -512,28 +514,6 @@ public final class JvmNodeTreeTransformer {
 		);
 	}
 
-	private JvmType resolveType(
-		JvmType originalType,
-		@Nullable InterfaceResolver pathInterfaceResolver,
-		@Nullable GenericTypeResolver pathGenericTypeResolver
-	) {
-		Class<?> rawType = originalType.getRawType();
-		boolean isAbstractType =
-			Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers());
-		boolean isContainerType = context.isContainerType(originalType);
-
-		JvmType afterInterface = resolveInterfaceType(
-			originalType,
-			pathInterfaceResolver,
-			isAbstractType,
-			isContainerType
-		);
-		if (isInaccessibleContainerType(afterInterface)) {
-			afterInterface = resolveByNearestContainerSupertype(afterInterface);
-		}
-		return resolveGenericType(afterInterface, pathGenericTypeResolver);
-	}
-
 	private void notifyResolved(
 		PathExpression path,
 		JvmType originalType,
@@ -548,138 +528,6 @@ public final class JvmNodeTreeTransformer {
 				finalType.getRawType().getSimpleName(),
 				pathBasedResolution ? "PATH_BASED" : "DEFAULT"
 			);
-	}
-
-	/**
-	 * Resolves interface/abstract types using path-based or default resolver.
-	 * <p>
-	 * For non-container abstract types without an explicit path-based resolver,
-	 * resolution is skipped — they will be resolved at assembly time to allow
-	 * per-sample selection of different implementations.
-	 */
-	private JvmType resolveInterfaceType(
-		JvmType originalType,
-		@Nullable InterfaceResolver pathBasedResolver,
-		boolean isAbstractType,
-		boolean isContainerType
-	) {
-		if (pathBasedResolver != null) {
-			JvmType resolved = pathBasedResolver.resolve(originalType);
-			if (resolved != null) {
-				return resolved;
-			}
-			// Path-based resolver skipped (e.g., non-instantiable JDK type).
-			// For container types, fall through to the default resolver.
-			return isContainerType ? resolveByDefault(originalType) : originalType;
-		}
-		if (!isAbstractType || isContainerType) {
-			return resolveByDefault(originalType);
-		}
-		return originalType;
-	}
-
-	private boolean isInaccessibleContainerType(JvmType type) {
-		return Types.isJdkInternalType(type.getRawType()) && context.isContainerType(type);
-	}
-
-	private JvmType resolveByNearestContainerSupertype(JvmType type) {
-		InterfaceResolver defaultResolver = context.getInterfaceResolver();
-		if (defaultResolver == null) {
-			return type;
-		}
-
-		Deque<Class<?>> supertypes = new ArrayDeque<>(getDirectSupertypes(type.getRawType()));
-		Set<Class<?>> visited = new HashSet<>();
-		while (!supertypes.isEmpty()) {
-			Class<?> supertype = supertypes.removeFirst();
-			if (!visited.add(supertype)) {
-				continue;
-			}
-			JvmType supertypeJvmType = new ReflectiveJvmType(
-				supertype,
-				supertype.getTypeParameters().length == type.getTypeVariables().size()
-					? type.getTypeVariables()
-					: Collections.emptyList(),
-				type.getAnnotations()
-			);
-			if (!context.isContainerType(supertypeJvmType)) {
-				continue;
-			}
-			JvmType resolved = defaultResolver.resolve(supertypeJvmType);
-			if (resolved != null && !Types.isJdkInternalType(resolved.getRawType())) {
-				return resolved;
-			}
-			supertypes.addAll(getDirectSupertypes(supertype));
-		}
-		return type;
-	}
-
-	private static List<Class<?>> getDirectSupertypes(Class<?> type) {
-		List<Class<?>> supertypes = new ArrayList<>();
-		Class<?> superclass = type.getSuperclass();
-		if (superclass != null) {
-			supertypes.add(superclass);
-		}
-		Collections.addAll(supertypes, type.getInterfaces());
-		return supertypes;
-	}
-
-	private JvmType resolveByDefault(JvmType type) {
-		InterfaceResolver defaultResolver = context.getInterfaceResolver();
-		if (defaultResolver == null) {
-			return type;
-		}
-		JvmType resolved = defaultResolver.resolve(type);
-		return resolved != null ? resolved : type;
-	}
-
-	/**
-	 * Resolves generic types using path-based or default resolver.
-	 */
-	private JvmType resolveGenericType(JvmType inputType, @Nullable GenericTypeResolver pathBasedResolver) {
-		if (pathBasedResolver != null) {
-			JvmType resolved = pathBasedResolver.resolve(inputType);
-			if (resolved != null) {
-				return resolved;
-			}
-		} else {
-			GenericTypeResolver defaultResolver = context.getGenericTypeResolver();
-			if (defaultResolver != null) {
-				JvmType resolved = defaultResolver.resolve(inputType);
-				if (resolved != null) {
-					return resolved;
-				}
-			}
-		}
-		return inputType;
-	}
-
-	/**
-	 * Preserves original annotations on the resolved type.
-	 * <p>
-	 * When a container type is resolved (e.g., List → ArrayList), the resolved type
-	 * loses field-level annotations (e.g., {@literal @}JsonTypeInfo, {@literal @}JsonSubTypes).
-	 * Merging them ensures downstream consumers can still find these annotations.
-	 */
-	private JvmType mergeAnnotations(JvmType originalType, JvmType resolvedType) {
-		List<Annotation> originalAnnotations = originalType.getAnnotations();
-		if (originalAnnotations.isEmpty()) {
-			return resolvedType;
-		}
-
-		Set<Class<? extends Annotation>> resolvedAnnotationTypes = resolvedType
-			.getAnnotations()
-			.stream()
-			.map(Annotation::annotationType)
-			.collect(Collectors.toSet());
-
-		List<Annotation> merged = new ArrayList<>(resolvedType.getAnnotations());
-		for (Annotation ann : originalAnnotations) {
-			if (!resolvedAnnotationTypes.contains(ann.annotationType())) {
-				merged.add(ann);
-			}
-		}
-		return new ReflectiveJvmType(resolvedType.getRawType(), resolvedType.getTypeVariables(), merged);
 	}
 
 	/**

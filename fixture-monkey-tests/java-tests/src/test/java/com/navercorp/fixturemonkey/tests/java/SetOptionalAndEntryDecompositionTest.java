@@ -204,6 +204,17 @@ class SetOptionalAndEntryDecompositionTest {
 	}
 
 	@Test
+	void setListToObjectRoot() {
+		// when
+		Object actual = SUT.giveMeBuilder(Object.class)
+			.set("$", new ArrayList<>(Arrays.asList(1, 2)))
+			.sample();
+
+		// then
+		then(actual).isEqualTo(Arrays.asList(1, 2));
+	}
+
+	@Test
 	void setMixedTypeListToObjectProperty() {
 		// when
 		ObjectHolder actual = SUT.giveMeBuilder(ObjectHolder.class)
@@ -212,6 +223,17 @@ class SetOptionalAndEntryDecompositionTest {
 
 		// then
 		then(actual.value).isEqualTo(Arrays.asList("a", 1));
+	}
+
+	@Test
+	void setMixedTypeListToObjectRoot() {
+		// when
+		Object actual = SUT.giveMeBuilder(Object.class)
+			.set("$", new ArrayList<>(Arrays.asList("a", 1)))
+			.sample();
+
+		// then
+		then(actual).isEqualTo(Arrays.asList("a", 1));
 	}
 
 	@Test
@@ -226,6 +248,20 @@ class SetOptionalAndEntryDecompositionTest {
 
 		// then
 		then(actual.value).isEqualTo(Arrays.asList(Collections.singletonList("a"), Collections.singletonList(1)));
+	}
+
+	@Test
+	void setNestedMixedTypeListToObjectRoot() {
+		// when
+		Object actual = SUT.giveMeBuilder(Object.class)
+			.set("$", new ArrayList<List<Object>>(Arrays.asList(
+				new ArrayList<>(Collections.singletonList("a")),
+				new ArrayList<>(Collections.singletonList(1))
+			)))
+			.sample();
+
+		// then
+		then(actual).isEqualTo(Arrays.asList(Collections.singletonList("a"), Collections.singletonList(1)));
 	}
 
 	@Test

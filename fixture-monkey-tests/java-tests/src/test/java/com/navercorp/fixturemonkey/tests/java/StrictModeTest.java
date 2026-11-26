@@ -153,6 +153,45 @@ class StrictModeTest {
 	}
 
 	@Test
+	void setListToObjectRoot() {
+		// when
+		Object actual = SET_VALUE_SUT.giveMeBuilder(Object.class)
+			.set("$", new ArrayList<>(Arrays.asList(1, 2)))
+			.sample();
+
+		// then
+		then(actual).isEqualTo(Arrays.asList(1, 2));
+	}
+
+	@Test
+	void setMixedTypeListToObjectRoot() {
+		// when
+		Object actual = SET_VALUE_SUT.giveMeBuilder(Object.class)
+			.set("$", new ArrayList<>(Arrays.asList("a", 1)))
+			.sample();
+
+		// then
+		then(actual).isEqualTo(Arrays.asList("a", 1));
+	}
+
+	@Test
+	void setNestedMixedTypeListToObjectRoot() {
+		// given
+		List<List<Object>> value = new ArrayList<>(Arrays.asList(
+			new ArrayList<>(Collections.singletonList("a")),
+			new ArrayList<>(Collections.singletonList(1))
+		));
+
+		// when
+		Object actual = SET_VALUE_SUT.giveMeBuilder(Object.class)
+			.set("$", value)
+			.sample();
+
+		// then
+		then(actual).isEqualTo(Arrays.asList(Collections.singletonList("a"), Collections.singletonList(1)));
+	}
+
+	@Test
 	void setMixedTypeListToObjectPropertyThenSetElement() {
 		// when
 		ObjectHolder actual = SET_VALUE_SUT.giveMeBuilder(ObjectHolder.class)
@@ -174,6 +213,25 @@ class StrictModeTest {
 
 		// then
 		then(actual.getValue()).isInstanceOfSatisfying(List.class, it -> then(it).hasSize(2));
+	}
+
+	@Test
+	void setSubclassToObjectRootThenSetItsField() {
+		// given
+		NamedChild value = new NamedChild();
+		value.nickname = "nick";
+
+		// when
+		Object actual = SET_VALUE_SUT.giveMeBuilder(Object.class)
+			.set("$", value)
+			.set("name", "x")
+			.sample();
+
+		// then
+		then(actual).isInstanceOfSatisfying(NamedChild.class, it -> {
+			then(it.getName()).isEqualTo("x");
+			then(it.getNickname()).isEqualTo("nick");
+		});
 	}
 
 	@Test
@@ -283,6 +341,22 @@ class StrictModeTest {
 
 		public Object getValue() {
 			return value;
+		}
+	}
+
+	public static class Named {
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+	}
+
+	public static class NamedChild extends Named {
+		private String nickname;
+
+		public String getNickname() {
+			return nickname;
 		}
 	}
 

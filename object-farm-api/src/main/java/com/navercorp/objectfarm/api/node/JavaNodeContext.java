@@ -25,8 +25,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -543,6 +545,10 @@ public final class JavaNodeContext implements JvmNodeContext {
 		}
 		if (Map.class.isAssignableFrom(interfaceType)) {
 			return HashMap.class;
+		}
+
+		if (Queue.class.isAssignableFrom(interfaceType) && interfaceType.isAssignableFrom(LinkedList.class)) {
+			return LinkedList.class;
 		}
 
 		// Collection (fallback for other Collection types)
