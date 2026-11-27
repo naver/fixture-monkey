@@ -35,7 +35,8 @@ import com.navercorp.objectfarm.api.node.JvmNode;
  * that node and what is inside it.
  * <p>
  * Every selected node is a scope of its own, at whatever depth it sits. Where scopes nest and both direct the
- * same path, the outer scope wins, since it describes its whole object including what is inside.
+ * same path, the outer scope wins, since it describes its whole object including what is inside, unless the sampled
+ * builder selected one of them by name; see {@link Scope}.
  *
  * @see TypeScopeSelector
  * @see MatcherScopeSelector

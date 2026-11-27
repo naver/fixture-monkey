@@ -44,6 +44,7 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
+import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 
 @API(since = "1.1.0", status = Status.EXPERIMENTAL)
 public final class JavaTypeDefaultTypeArbitraryBuilder<T>
@@ -249,6 +250,12 @@ public final class JavaTypeDefaultTypeArbitraryBuilder<T>
 	@Override
 	public JavaTypeArbitraryBuilder<T> fixed() {
 		delegate.fixed();
+		return this;
+	}
+
+	@Override
+	public JavaTypeArbitraryBuilder<T> selectName(String... names) {
+		((ExperimentalArbitraryBuilder<T>)delegate).selectName(names);
 		return this;
 	}
 

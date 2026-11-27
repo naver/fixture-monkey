@@ -34,6 +34,7 @@ import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PostConditionFilter;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
@@ -63,8 +64,9 @@ final class ScopeLookup {
 	private final boolean hasDefinedScopeNotNull;
 	private final boolean hasFilters;
 	private final boolean hasCustomizers;
+	private final int highestSelectionOrderDeclaringInside;
 	private final Set<PathExpression> notNullRequiredPaths = new HashSet<>();
-	private final Map<Integer, List<ScopeSelector>> higherPriorityDefinedScopesDeclaringInsideByPriority =
+	private final Map<Integer, Map<Integer, List<ScopeSelector>>> outrankingDefinedScopesDeclaringInsideByRank =
 		new HashMap<>();
 
 	private ScopeLookup(RootEntry root, List<DefinedScopeEntry> definedScopes) {
@@ -73,6 +75,7 @@ final class ScopeLookup {
 		boolean notNull = false;
 		boolean filters = !root.analyzed.getFiltersByPath().isEmpty();
 		boolean customizers = !root.analyzed.getCustomizersByPath().isEmpty();
+		int highestSelectionOrder = 0;
 		for (PathExpression justPath : root.justPaths) {
 			declaredJustPaths.add(ScopedPath.root(justPath));
 		}
@@ -81,10 +84,14 @@ final class ScopeLookup {
 			notNull |= !entry.analyzed.getNotNullPaths().isEmpty();
 			filters |= !entry.analyzed.getFiltersByPath().isEmpty();
 			customizers |= !entry.analyzed.getCustomizersByPath().isEmpty();
+			if (declaresInside(entry.analyzed)) {
+				highestSelectionOrder = Math.max(highestSelectionOrder, entry.selectionOrder);
+			}
 		}
 		this.hasDefinedScopeNotNull = notNull;
 		this.hasFilters = filters;
 		this.hasCustomizers = customizers;
+		this.highestSelectionOrderDeclaringInside = highestSelectionOrder;
 	}
 
 	/**
@@ -96,9 +103,14 @@ final class ScopeLookup {
 	 * @param analysisResult        what the root scope declared and what planning expanded it into, by path from the
 	 *                              node a sample starts from
 	 * @param analyzedDefinedScopes the defined scopes, the one with the lowest precedence first
+	 * @param scopeSet              the scopes of the sample, which tell the selection order of each defined scope
 	 * @return the lookup
 	 */
-	static ScopeLookup from(AnalysisResult analysisResult, List<AnalyzedScope> analyzedDefinedScopes) {
+	static ScopeLookup from(
+		AnalysisResult analysisResult,
+		List<AnalyzedScope> analyzedDefinedScopes,
+		ScopeSet scopeSet
+	) {
 		RootEntry root = new RootEntry(analysisResult);
 		if (analyzedDefinedScopes.isEmpty()) {
 			return new ScopeLookup(root, Collections.emptyList());
@@ -106,7 +118,7 @@ final class ScopeLookup {
 		List<DefinedScopeEntry> entries = new ArrayList<>(analyzedDefinedScopes.size());
 		int sequenceBase = 0;
 		for (AnalyzedScope analyzed : analyzedDefinedScopes) {
-			entries.add(new DefinedScopeEntry(analyzed, sequenceBase));
+			entries.add(new DefinedScopeEntry(analyzed, scopeSet.getSelectionOrder(analyzed.getScope()), sequenceBase));
 			sequenceBase += 2 + analyzed.getLatestSequence();
 		}
 		return new ScopeLookup(root, entries);
@@ -369,24 +381,30 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns the selectors of the defined scopes of a lower priority number than {@code priority} that declared a
-	 * value, a not-null path, a filter, a customizer or a container size. Such a scope may select a node below a node
-	 * whose value comes from a scope of {@code priority}, so such a value is taken apart for what the scope declared
-	 * inside it to win.
+	 * Returns the selectors of the defined scopes outranking {@code precedence} at any depth that declared a value, a
+	 * not-null path, a filter, a customizer or a container size. Such a scope may select a node below a node whose
+	 * value is of {@code precedence}, so such a value is taken apart for what the scope declared inside it to win.
 	 */
-	List<ScopeSelector> higherPriorityDefinedScopesDeclaringInside(int priority) {
-		return higherPriorityDefinedScopesDeclaringInsideByPriority.computeIfAbsent(priority, valuePriority -> {
-			List<ScopeSelector> scopes = new ArrayList<>();
-			for (DefinedScopeEntry entry : definedScopes) {
-				AnalyzedScope analyzed = entry.analyzed;
-				boolean declaresInside =
-					declaresValueDirectives(analyzed) || !analyzed.getContainerSizesByPath().isEmpty();
-				if (analyzed.getPriority() < valuePriority && declaresInside) {
-					scopes.add(entry.selector());
+	List<ScopeSelector> outrankingDefinedScopesDeclaringInside(DirectivePrecedence precedence) {
+		return outrankingDefinedScopesDeclaringInsideByRank
+			.computeIfAbsent(precedence.selectionOrder(), selectionOrder -> new HashMap<>())
+			.computeIfAbsent(precedence.priority(), priority -> {
+				List<ScopeSelector> scopes = new ArrayList<>();
+				for (DefinedScopeEntry entry : definedScopes) {
+					if (entry.scopePrecedence().outranksAtAnyDepth(precedence) && declaresInside(entry.analyzed)) {
+						scopes.add(entry.selector());
+					}
 				}
-			}
-			return scopes.isEmpty() ? Collections.emptyList() : scopes;
-		});
+				return scopes.isEmpty() ? Collections.emptyList() : scopes;
+			});
+	}
+
+	boolean isOutrankedInsideBySelection(DirectivePrecedence precedence) {
+		return highestSelectionOrderDeclaringInside > precedence.selectionOrder();
+	}
+
+	private static boolean declaresInside(AnalyzedScope analyzed) {
+		return declaresValueDirectives(analyzed) || !analyzed.getContainerSizesByPath().isEmpty();
 	}
 
 	private static boolean declaresValueDirectives(AnalyzedScope analyzed) {
@@ -503,16 +521,16 @@ final class ScopeLookup {
 
 	/**
 	 * Returns whether a defined scope's filter reaches below the node at the end of {@code chain} from a scope node
-	 * at most {@code scopeDepthLimit} deep, or from any scope node for a scope of a lower priority number than
-	 * {@code priority}. A filter checks every value it reaches, wherever it was declared; the root scope's filters are
-	 * found through {@link #getRootCustomizerFilterNotNullPaths()}.
+	 * at most {@code scopeDepthLimit} deep, or from any scope node for a scope outranking {@code precedence} at any
+	 * depth. A filter checks every value it reaches, wherever it was declared; the root scope's filters are found
+	 * through {@link #getRootCustomizerFilterNotNullPaths()}.
 	 */
-	boolean hasDefinedScopeFilterBelow(ScopeChain chain, int scopeDepthLimit, int priority) {
+	boolean hasDefinedScopeFilterBelow(ScopeChain chain, int scopeDepthLimit, DirectivePrecedence precedence) {
 		if (!hasFilters) {
 			return false;
 		}
 		for (DefinedScopeEntry entry : definedScopes) {
-			int limit = entry.analyzed.getPriority() < priority ? ANY_SCOPE_DEPTH : scopeDepthLimit;
+			int limit = entry.scopePrecedence().outranksAtAnyDepth(precedence) ? ANY_SCOPE_DEPTH : scopeDepthLimit;
 			for (PathExpression filterPath : entry.analyzed.getFiltersByPath().keySet()) {
 				if (chain.scopeDepthBelow(entry.selector(), filterPath, limit) >= 0) {
 					return true;
@@ -594,10 +612,12 @@ final class ScopeLookup {
 
 	private static final class DefinedScopeEntry {
 		private final AnalyzedScope analyzed;
+		private final int selectionOrder;
 		private final int sequenceBase;
 
-		private DefinedScopeEntry(AnalyzedScope analyzed, int sequenceBase) {
+		private DefinedScopeEntry(AnalyzedScope analyzed, int selectionOrder, int sequenceBase) {
 			this.analyzed = analyzed;
+			this.selectionOrder = selectionOrder;
 			this.sequenceBase = sequenceBase;
 		}
 
@@ -606,7 +626,7 @@ final class ScopeLookup {
 		}
 
 		private DirectivePrecedence precedence(int sequence) {
-			return DirectivePrecedence.definedScope(analyzed.getPriority(), sequence);
+			return DirectivePrecedence.definedScope(selectionOrder, analyzed.getPriority(), sequence);
 		}
 
 		/**

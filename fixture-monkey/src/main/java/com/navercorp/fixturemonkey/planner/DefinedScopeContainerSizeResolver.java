@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
+import com.navercorp.fixturemonkey.customizer.ScopeSet;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
@@ -45,19 +46,21 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 	private final boolean dependsOnAncestors;
 
 	DefinedScopeContainerSizeResolver(
-		List<Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>>> resolversLowestPrecedenceFirst
+		List<Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>>> resolversLowestPrecedenceFirst,
+		ScopeSet scopeSet
 	) {
 		this.scopedSizes = new ArrayList<>();
 		int sequenceBase = 0;
 		for (Map.Entry<AnalyzedScope, Map<PathExpression, ContainerSizeResolver>> entry
 			: resolversLowestPrecedenceFirst) {
 			AnalyzedScope scope = entry.getKey();
+			int selectionOrder = scopeSet.getSelectionOrder(scope.getScope());
 			for (Map.Entry<PathExpression, ContainerSizeResolver> size : entry.getValue().entrySet()) {
 				PathExpression path = size.getKey();
 				int sequence = sequenceBase + 1 + scope.getContainerSizeSequence(path);
 				scopedSizes.add(new ScopedSize(
 					scope.getSelector(),
-					DirectivePrecedence.definedScope(scope.getPriority(), sequence),
+					DirectivePrecedence.definedScope(selectionOrder, scope.getPriority(), sequence),
 					path,
 					size.getValue()
 				));
