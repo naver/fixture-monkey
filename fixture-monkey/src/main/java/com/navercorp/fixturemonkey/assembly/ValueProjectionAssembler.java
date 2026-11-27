@@ -19,6 +19,8 @@
 package com.navercorp.fixturemonkey.assembly;
 
 import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
+import static com.navercorp.objectfarm.api.type.Types.hasFixedChildren;
+import static com.navercorp.objectfarm.api.type.Types.isSingleElementWrapper;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
@@ -31,6 +33,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -67,9 +70,9 @@ import com.navercorp.fixturemonkey.customizer.DirectivePrecedence;
 import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.customizer.ScopeSelector;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AnalysisResult.PropertyCustomizer;
-import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.property.JvmNodePropertyFactory;
 import com.navercorp.objectfarm.api.expression.PathExpression;
@@ -118,7 +121,77 @@ public final class ValueProjectionAssembler {
 			recordMergedCandidates(state);
 		}
 		JvmNode rootNode = context.getPlan().getNodeTree().getRootNode();
-		return assembleNode(rootNode, state, null, null, PathExpression.root(), new HashSet<>());
+		CombinableArbitrary<?> assembled =
+			assembleNode(rootNode, state, null, null, PathExpression.root(), new HashSet<>());
+		// Checked after assembly: the planned tree leaves interface and abstract types unexpanded, and sizes a
+		// container inside a set value before the value is known, so a path beneath one can only be judged once
+		// assembly has attached its nodes.
+		if (context.getPlan().getAnalysisResult().isStrictMode()) {
+			verifyEveryValuePathApplied(state);
+		}
+		return assembled;
+	}
+
+	private void verifyEveryValuePathApplied(AssemblyState state) {
+		Set<String> unresolvedPaths = context.getPlan().getValues().getUnresolvedNonWildcardPaths();
+		if (unresolvedPaths.isEmpty()) {
+			return;
+		}
+		Set<PathExpression> descendedPaths = state.assemblyTree.descendedPaths();
+		Set<String> invalidPaths = new HashSet<>();
+		for (String unresolvedPath : unresolvedPaths) {
+			if (isMissingFromAssembledTree(PathExpression.of(unresolvedPath), descendedPaths, state)) {
+				invalidPaths.add(unresolvedPath);
+			}
+		}
+		if (!invalidPaths.isEmpty()) {
+			throw new IllegalArgumentException(
+				"No matching results for given NodeResolvers. " + "Invalid paths: " + invalidPaths
+			);
+		}
+	}
+
+	private boolean isMissingFromAssembledTree(
+		PathExpression path,
+		Set<PathExpression> descendedPaths,
+		AssemblyState state
+	) {
+		if (state.assemblyTree.placedNodeAt(path) != null) {
+			return false;
+		}
+		if (!selectsImplementationWhileAssembling(deepestPlannedNodeAlong(path, state), state)) {
+			return true;
+		}
+		for (int depth = path.depth() - 1; depth >= 0; depth--) {
+			PathExpression prefix = path.truncateTo(depth);
+			JvmNode placed = state.assemblyTree.placedNodeAt(prefix);
+			if (placed != null) {
+				boolean replacedByValue = !descendedPaths.contains(prefix)
+					&& (state.candidates.contains(prefix) || isUnexpandedAbstractNode(placed, state));
+				return !replacedByValue;
+			}
+		}
+		return true;
+	}
+
+	private static JvmNode deepestPlannedNodeAlong(PathExpression path, AssemblyState state) {
+		for (int depth = path.depth() - 1; depth > 0; depth--) {
+			JvmNode planned = state.assemblyTree.plannedNodeAt(path.truncateTo(depth));
+			if (planned != null) {
+				return planned;
+			}
+		}
+		return state.assemblyTree.getRootNode();
+	}
+
+	private boolean selectsImplementationWhileAssembling(JvmNode node, AssemblyState state) {
+		return needsImplementationSelection(node, state)
+			&& !TypeMetadataResolver.isContainerType(node.getConcreteType(), state);
+	}
+
+	private static boolean isUnexpandedAbstractNode(JvmNode node, AssemblyState state) {
+		return isInterfaceOrAbstract(node.getConcreteType().getRawType())
+			&& !TypeMetadataResolver.isContainerType(node.getConcreteType(), state);
 	}
 
 	private void recordMergedCandidates(AssemblyState state) {
@@ -217,37 +290,42 @@ public final class ValueProjectionAssembler {
 				|| state.scopes.hasDefinedScopeDirectiveBelow(chain))) {
 				state.scopes.markNotNullRequired(currentPath);
 			}
-			if (winner != null && (!hasChildValues || winner.isFromDefinedScope())) {
+			boolean decomposingValue = hasChildValues;
+			if (winner != null && (!hasChildValues || winner.isExpandedDuringAssembly())) {
 				ValueCandidate bestCandidate = winner.candidate;
 				int scopeDepth = winner.scopeDepth;
 				if (!winner.isDeclaredAt(currentPath)) {
 					state.limits.consume(winner.declaredPath, winner.scopeNode);
 				}
 
-				Object setValue = LazyResolver.resolveLazyValue(
-					bestCandidate.value,
-					bestCandidate.precedence,
-					state
-				);
+				Object resolvedValue = LazyResolver.resolveLazyValue(bestCandidate.value);
+				boolean isJustValue = resolvedValue instanceof Values.Just;
+				Object setValue = isJustValue ? ((Values.Just)resolvedValue).getValue() : resolvedValue;
+				boolean declaredAtJustPath = state.scopes.isJustPath(winner.declaredPath);
+				boolean usedAsIs = isJustValue || declaredAtJustPath;
+				if (!usedAsIs) {
+					DeclaredTypeVerifier.verifyAssignable(setValue, node.getDeclaredType(), currentPath);
+				}
 				boolean unusable = setValue == LazyResolver.RECURSION_BLOCKED
 					|| (setValue == null
 					&& winner.isFromDefinedScope()
 					&& state.scopes.isNotNullRequired(currentPath));
 
 				int outerLimit = winner.isScopeRoot() ? scopeDepth : scopeDepth - 1;
-				boolean usedAsIs = state.scopes.isDefinedScopeJust(winner.declaredPath);
-				boolean outrankedInside = winner.isFromDefinedScope()
+				boolean keptAsIs = usedAsIs
+					|| (isCurrentTypeContainer
+					? !isDecomposedIntoChildren(setValue)
+					: state.assemblyTree.childrenOf(node).isEmpty() && !isConcreteValueOfAbstractNode(node, setValue));
+				boolean outrankedInside = winner.isExpandedDuringAssembly()
 					&& (hasChildValues
+					|| !keptAsIs
 					|| !usedAsIs
 					&& (state.scopes.hasOutrankingDirectiveBelow(chain, bestCandidate.precedence, scopeDepth)
 					|| state.scopes.hasDefinedScopeFilterBelow(chain, outerLimit, bestCandidate.precedence)
-					|| (isCurrentTypeContainer
-					&& RESIZABLE_CONTAINER_DETECTOR.isContainer(setValue)
-					&& state.scopes.hasOutrankingSizeAt(chain, bestCandidate.precedence, scopeDepth))
 					|| mayHaveOutrankingDefinedScopeBelow(node, bestCandidate.precedence, state)));
 
 				if (!unusable && setValue != null && outrankedInside) {
-					state.candidates.replaceWithDefinedScopeValue(
+					state.candidates.replaceWithValueExpandedDuringAssembly(
 						currentPath,
 						bestCandidate.withValue(setValue),
 						scopeDepth
@@ -256,6 +334,13 @@ public final class ValueProjectionAssembler {
 						resizeChildrenToValue(node, currentPath, setValue, bestCandidate.precedence, scopeDepth, state);
 					}
 					isValueSet = true;
+					decomposingValue = true;
+				} else if (!unusable && setValue != null && !keptAsIs) {
+					state.candidates.putDecomposedCandidates(
+						Collections.singletonMap(currentPath, bestCandidate.withValue(setValue))
+					);
+					isValueSet = true;
+					decomposingValue = true;
 				} else if (!hasChildValues) {
 					if (unusable) {
 						return assembleNodeDefault(node, state, parentContext, parentPath, currentPath, visitedTypes);
@@ -276,7 +361,7 @@ public final class ValueProjectionAssembler {
 
 			if (isValueSet) {
 				ValueCandidate currentCandidate = state.candidates.at(currentPath);
-				JvmNodeTree valueClassTree = hasChildValues && !isCurrentTypeContainer
+				JvmNodeTree valueClassTree = decomposingValue && !isCurrentTypeContainer
 					? treeOfValueClass(node, currentPath, currentCandidate, state)
 					: null;
 				if (valueClassTree != null) {
@@ -292,36 +377,24 @@ public final class ValueProjectionAssembler {
 				DirectivePrecedence parentPrecedence = currentCandidate != null
 					? currentCandidate.precedence
 					: DirectivePrecedence.rootScope(0);
-				boolean underDefinedScopeValue = state.candidates.decomposedScopeDepthAt(currentPath) >= 0;
-				if (underDefinedScopeValue
-					&& isCurrentTypeContainer
-					&& currentCandidate != null
-					&& currentCandidate.value != null) {
+				if (isCurrentTypeContainer && currentCandidate != null && currentCandidate.value != null) {
 					resizeChildrenToValue(
 						node,
 						currentPath,
 						currentCandidate.value,
 						currentCandidate.precedence,
-						state.candidates.decomposedScopeDepthAt(currentPath),
+						Math.max(state.candidates.decomposedScopeDepthAt(currentPath), 0),
 						state
 					);
 				}
 				DecomposeResult decomposeResult = state.valueDecomposer.decompose(
+					node,
 					currentPath,
 					currentRawType,
 					isCurrentTypeContainer,
-					parentPrecedence,
-					underDefinedScopeValue
+					parentPrecedence
 				);
 				applyDecomposeResult(decomposeResult, state);
-				if (decomposeResult.hasEarlyReturn()) {
-					return wrapValueWithFiltersAndCustomizers(
-						decomposeResult.getEarlyReturnValue(),
-						currentPath,
-						currentRawType,
-						state
-					);
-				}
 			}
 
 			if (node instanceof JvmMapNode) {
@@ -342,12 +415,7 @@ public final class ValueProjectionAssembler {
 			// Container interfaces (List, Map, etc.) skip this — handled by ContainerIntrospector.
 			// Primitives also skip (abstract modifier but not truly abstract).
 			JvmType nodeType = currentType;
-			Class<?> rawType = nodeType.getRawType();
-			boolean isInterfaceOrAbstract = !rawType.isPrimitive()
-				&& (Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers()));
-			boolean needsImplementationSelection =
-				isInterfaceOrAbstract || hasCandidateConcretePropertyResolvers(node, state);
-			if (needsImplementationSelection && !isCurrentTypeContainer) {
+			if (needsImplementationSelection(node, state) && !isCurrentTypeContainer) {
 				if (isValueSet) {
 					Object setValue = state.candidates.at(currentPath).value;
 					if (state.context.getTraceContext().isEnabled()) {
@@ -643,6 +711,22 @@ public final class ValueProjectionAssembler {
 				visitedTypes.remove(currentRawType);
 			}
 		}
+	}
+
+	private static boolean isDecomposedIntoChildren(@Nullable Object value) {
+		return RESIZABLE_CONTAINER_DETECTOR.isContainer(value)
+			|| value instanceof Optional && ((Optional<?>)value).isPresent()
+			|| value instanceof Map.Entry;
+	}
+
+	private boolean needsImplementationSelection(JvmNode node, AssemblyState state) {
+		return isInterfaceOrAbstract(node.getConcreteType().getRawType())
+			|| hasCandidateConcretePropertyResolvers(node, state);
+	}
+
+	private static boolean isInterfaceOrAbstract(Class<?> rawType) {
+		return !rawType.isPrimitive()
+			&& (Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers()));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -1532,7 +1616,13 @@ public final class ValueProjectionAssembler {
 		int valueScopeDepth,
 		AssemblyState state
 	) {
-		if (state.scopes.hasOutrankingSizeAt(state.chainOf(containerPath), valuePrecedence, valueScopeDepth)) {
+		if (hasFixedChildren(containerNode.getConcreteType().getRawType())
+			|| state.scopes.hasOutrankingSizeAt(
+				state.chainOf(containerPath),
+				containerPath,
+				valuePrecedence,
+				valueScopeDepth
+			)) {
 			return;
 		}
 		int valueSize = state.valueDecomposer.containerSize(containerValue);
@@ -1669,9 +1759,6 @@ public final class ValueProjectionAssembler {
 		int valueSize,
 		AssemblyState state
 	) {
-		if (state.scopes.isRootSizedContainer(containerPath)) {
-			return;
-		}
 		List<JvmNode> planned = state.assemblyTree.childrenOf(containerNode);
 		if (planned.size() == valueSize) {
 			return;
@@ -1700,24 +1787,31 @@ public final class ValueProjectionAssembler {
 		state.assemblyTree.resize(containerNode, merged);
 	}
 
+	private static boolean isConcreteValueOfAbstractNode(JvmNode node, @Nullable Object value) {
+		if (value == null) {
+			return false;
+		}
+		Class<?> nodeType = node.getConcreteType().getRawType();
+		Class<?> valueType = value.getClass();
+		boolean abstractNode =
+			Modifier.isInterface(nodeType.getModifiers()) || Modifier.isAbstract(nodeType.getModifiers());
+		return abstractNode && valueType != nodeType && nodeType.isAssignableFrom(valueType);
+	}
+
 	private @Nullable JvmNodeTree treeOfValueClass(
 		JvmNode node,
 		PathExpression currentPath,
 		@Nullable ValueCandidate candidate,
 		AssemblyState state
 	) {
-		if (candidate == null || candidate.value == null || candidate.value instanceof LazyValueHolder) {
+		if (candidate == null || candidate.value == null) {
 			return null;
 		}
-		Class<?> nodeType = node.getConcreteType().getRawType();
-		Class<?> valueType = candidate.value.getClass();
-		boolean abstractNode =
-			Modifier.isInterface(nodeType.getModifiers()) || Modifier.isAbstract(nodeType.getModifiers());
-		if (!abstractNode || valueType == nodeType || !nodeType.isAssignableFrom(valueType)) {
+		if (!isConcreteValueOfAbstractNode(node, candidate.value)) {
 			return null;
 		}
 		JvmNodeTree concreteTree = state.context.getPlan().getNodeTreeFactory().createConcreteNodeTree(
-			new ReflectiveJvmType(valueType),
+			new ReflectiveJvmType(candidate.value.getClass()),
 			node.getDeclaredType(),
 			currentPath,
 			state.assemblyTree.ancestorNodes(currentPath)
@@ -1794,7 +1888,7 @@ public final class ValueProjectionAssembler {
 		JvmNode parentNode,
 		AssemblyState state
 	) {
-		if (TypeMetadataResolver.isSingleElementWrapper(parentNode.getConcreteType())) {
+		if (isSingleElementWrapper(parentNode.getConcreteType().getRawType())) {
 			String nodeName = childNode.getNodeName();
 			Integer index = childNode.getIndex();
 
@@ -1878,11 +1972,6 @@ public final class ValueProjectionAssembler {
 		state.candidates.putDecomposedCandidates(result.getValuesToPut());
 		for (PathExpression decomposedPath : result.getValuesToPut().keySet()) {
 			state.context.getTraceContext().markDecomposedPath(decomposedPath.toExpression());
-		}
-
-		PathExpression limitPath = result.getLimitPath();
-		if (limitPath != null) {
-			state.limits.limitChildren(limitPath, result.getLimitValue());
 		}
 	}
 

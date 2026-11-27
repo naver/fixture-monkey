@@ -43,6 +43,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.AbstractMap.SimpleEntry
 
 class CustomizationTest {
     @Test
@@ -135,6 +136,23 @@ class CustomizationTest {
         class Object(val obj: Any?)
 
         val expected = "test"
+
+        // when
+        val actual = SUT.giveMeBuilder<Object>()
+            .setExp(Object::obj, expected)
+            .sample()
+            .obj
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setMapEntryToObject() {
+        // given
+        class Object(val obj: Any?)
+
+        val expected = SimpleEntry("k", "v")
 
         // when
         val actual = SUT.giveMeBuilder<Object>()

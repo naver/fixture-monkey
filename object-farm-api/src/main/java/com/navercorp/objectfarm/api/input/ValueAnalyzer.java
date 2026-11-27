@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
@@ -47,7 +48,8 @@ import com.navercorp.objectfarm.api.type.Types;
  * <ul>
  *   <li>Interface resolvers for concrete types</li>
  *   <li>Generic type resolvers for parameterized types</li>
- *   <li>Container size resolvers for collections, maps, and arrays</li>
+ *   <li>Container size resolvers for collections, maps, and arrays, including the ones inside
+ *   a {@link Map.Entry} or an {@link Optional}</li>
  *   <li>Values by path for object fields</li>
  * </ul>
  * <p>
@@ -102,7 +104,7 @@ public final class ValueAnalyzer {
 	 * @return the analysis result containing resolvers and values by path
 	 */
 	public ValueAnalysisResult analyze(@Nullable Object value, String pathExpression) {
-		return analyzeInternal(value, pathExpression, false);
+		return analyzeInternal(value, pathExpression);
 	}
 
 	/**
@@ -116,15 +118,15 @@ public final class ValueAnalyzer {
 	 * @return the analysis result containing resolvers and values by path
 	 */
 	public ValueAnalysisResult analyzeDecomposed(@Nullable Object value, String pathExpression) {
-		return analyzeInternalDeep(value, pathExpression, true, 0);
+		return analyzeInternalDeep(value, pathExpression, START_DEPTH);
 	}
 
+	private static final int START_DEPTH = 0;
 	private static final int MAX_DEEP_DEPTH = 5;
 
 	private ValueAnalysisResult analyzeInternalDeep(
 		@Nullable Object value,
 		String pathExpression,
-		boolean storeContainerElements,
 		int depth
 	) {
 		if (value == null || depth > MAX_DEEP_DEPTH) {
@@ -144,70 +146,49 @@ public final class ValueAnalyzer {
 
 		builder.putValue(pathExpression, value);
 
-		boolean isContainer = containerDetector.isContainer(value);
+		OptionalInt containerSize = containerDetector.getContainerSize(value);
+		boolean isContainer = containerSize.isPresent();
 
-		extractContainerSizeResolverInternal(
+		analyzeContainer(
 			value,
+			containerSize,
 			pathExpression,
 			containerSizeResolvers,
 			interfaceResolvers,
 			genericTypeResolvers,
-			builder,
-			storeContainerElements
+			builder
 		);
 
 		if (!isContainer) {
 			extractFieldValues(value, pathExpression, builder);
-			extractFieldContainerSizeResolversInternal(
+			analyzeContainerFields(
 				value,
 				pathExpression,
 				containerSizeResolvers,
 				interfaceResolvers,
 				genericTypeResolvers,
-				builder,
-				storeContainerElements
+				builder
 			);
 
 			// Recursively analyze non-container object fields for nested container CSRs
 			Map<String, ExtractedField> extractedFields = fieldExtractor.extractFields(value, pathExpression);
 			for (Map.Entry<String, ExtractedField> entry : extractedFields.entrySet()) {
 				String fieldPath = entry.getKey();
-				ExtractedField extracted = entry.getValue();
-				Object fieldValue = extracted.getValue();
+				Object fieldValue = entry.getValue().getValue();
 				if (fieldValue != null && !containerDetector.isContainer(fieldValue)) {
 					ValueAnalysisResult nestedResult = analyzeInternalDeep(
 						fieldValue,
 						fieldPath,
-						storeContainerElements,
 						depth + 1
 					);
 					containerSizeResolvers.addAll(nestedResult.getContainerSizeResolvers());
 					interfaceResolvers.addAll(nestedResult.getInterfaceResolvers());
 					genericTypeResolvers.addAll(nestedResult.getGenericTypeResolvers());
-				} else if (fieldValue != null
-					&& isDeclaredAsInterfaceOrAbstract(extracted.getDeclaredType())) {
-					PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
-						fieldPath,
-						fieldValue
-					);
-					if (interfaceResolver != null) {
-						interfaceResolvers.add(interfaceResolver);
-					}
 				}
 			}
 		}
 
-		extractGenericTypeResolver(value, pathExpression, genericTypeResolvers);
-
-		if (requiresInterfaceResolver(value)) {
-			PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
-				pathExpression,
-				value
-			);
-			if (interfaceResolver != null) {
-				interfaceResolvers.add(interfaceResolver);
-			}
-		}
+		addTypeResolvers(value, pathExpression, interfaceResolvers, genericTypeResolvers);
 
 		return builder
 			.addAllInterfaceResolvers(interfaceResolvers)
@@ -218,8 +199,7 @@ public final class ValueAnalyzer {
 
 	private ValueAnalysisResult analyzeInternal(
 		@Nullable Object value,
-		String pathExpression,
-		boolean storeContainerElements
+		String pathExpression
 	) {
 		if (value == null) {
 			return ValueAnalysisResult.empty();
@@ -238,42 +218,32 @@ public final class ValueAnalyzer {
 
 		builder.putValue(pathExpression, value);
 
-		boolean isContainer = containerDetector.isContainer(value);
+		OptionalInt containerSize = containerDetector.getContainerSize(value);
+		boolean isContainer = containerSize.isPresent();
 
-		extractContainerSizeResolverInternal(
+		analyzeContainer(
 			value,
+			containerSize,
 			pathExpression,
 			containerSizeResolvers,
 			interfaceResolvers,
 			genericTypeResolvers,
-			builder,
-			storeContainerElements
+			null
 		);
 
 		if (!isContainer) {
 			extractFieldValues(value, pathExpression, builder);
-			extractFieldContainerSizeResolversInternal(
+			analyzeContainerFields(
 				value,
 				pathExpression,
 				containerSizeResolvers,
 				interfaceResolvers,
 				genericTypeResolvers,
-				builder,
-				storeContainerElements
+				null
 			);
 		}
 
-		extractGenericTypeResolver(value, pathExpression, genericTypeResolvers);
-
-		if (requiresInterfaceResolver(value)) {
-			PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
-				pathExpression,
-				value
-			);
-			if (interfaceResolver != null) {
-				interfaceResolvers.add(interfaceResolver);
-			}
-		}
+		addTypeResolvers(value, pathExpression, interfaceResolvers, genericTypeResolvers);
 
 		return builder
 			.addAllInterfaceResolvers(interfaceResolvers)
@@ -282,55 +252,45 @@ public final class ValueAnalyzer {
 			.build();
 	}
 
-	private void extractContainerSizeResolver(
+	private void analyzeContainer(
 		Object value,
+		OptionalInt containerSize,
 		String pathExpression,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
 		ValueAnalysisResult.@Nullable Builder builder
 	) {
-		extractContainerSizeResolverInternal(
-			value,
-			pathExpression,
-			containerSizeResolvers,
-			interfaceResolvers,
-			genericTypeResolvers,
-			builder,
-			false
-		);
-	}
-
-	private void extractContainerSizeResolverInternal(
-		Object value,
-		String pathExpression,
-		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
-		List<PathResolver<InterfaceResolver>> interfaceResolvers,
-		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.@Nullable Builder builder,
-		boolean storeContainerElements
-	) {
-		OptionalInt containerSize = containerDetector.getContainerSize(value);
-		if (!containerSize.isPresent()) {
+		boolean hasFixedChildren = Types.hasFixedChildren(value.getClass());
+		if (!containerSize.isPresent() && !hasFixedChildren) {
 			return;
 		}
 
-		int size = containerSize.getAsInt();
-		PathExpression pattern = PathExpression.of(pathExpression);
-		ContainerSizeResolver sizeResolver = new FixedContainerSizeResolver(size);
-		containerSizeResolvers.add(
-			new PathContainerSizeResolver(pattern, PathContainerSizeResolver.NO_SEQUENCE, sizeResolver)
-		);
-
-		// For nested containers, store values only if storeContainerElements is true
-		// This allows decomposed values to preserve container elements while letting container info override sizes
+		addContainerSizeResolver(value, pathExpression, containerSizeResolvers);
 		analyzeNestedContainers(
 			value,
 			pathExpression,
 			containerSizeResolvers,
 			interfaceResolvers,
 			genericTypeResolvers,
-			storeContainerElements ? builder : null
+			builder
+		);
+	}
+
+	private void addContainerSizeResolver(
+		Object value,
+		String pathExpression,
+		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers
+	) {
+		OptionalInt sizeAtPath = containerDetector.getResizableContainerSizeAtPath(value);
+		if (!sizeAtPath.isPresent()) {
+			return;
+		}
+
+		PathExpression pattern = PathExpression.of(pathExpression);
+		ContainerSizeResolver sizeResolver = new FixedContainerSizeResolver(sizeAtPath.getAsInt());
+		containerSizeResolvers.add(
+			new PathContainerSizeResolver(pattern, PathContainerSizeResolver.NO_SEQUENCE, sizeResolver)
 		);
 	}
 
@@ -369,6 +329,33 @@ public final class ValueAnalyzer {
 				genericTypeResolvers,
 				builder
 			);
+		} else if (value instanceof Map.Entry) {
+			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)value;
+			analyzeElement(
+				entry.getKey(),
+				pathExpression + "[key]",
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
+			analyzeElement(
+				entry.getValue(),
+				pathExpression + "[value]",
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
+		} else if (value instanceof Optional && ((Optional<?>)value).isPresent()) {
+			analyzeElementSharingContainerPath(
+				((Optional<?>)value).get(),
+				pathExpression,
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
 		}
 	}
 
@@ -382,85 +369,9 @@ public final class ValueAnalyzer {
 	) {
 		int index = 0;
 		for (Object element : collection) {
-			if (element != null) {
-				String elementPath = pathExpression + "[" + index + "]";
-
-				// Store all elements (both container and non-container) if builder is provided
-				if (builder != null) {
-					builder.putValue(elementPath, element);
-				}
-
-				// Only create interface/generic resolvers for non-container elements
-				// Container elements are handled by extractContainerSizeResolver recursively
-				if (!containerDetector.isContainer(element)) {
-					if (requiresInterfaceResolver(element)) {
-						PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
-							elementPath,
-							element
-						);
-						if (interfaceResolver != null) {
-							interfaceResolvers.add(interfaceResolver);
-						}
-					}
-
-					extractGenericTypeResolver(element, elementPath, genericTypeResolvers);
-
-					// Extract field values for non-container elements
-					// This ensures that when a child path is set (e.g., "$[0].str"),
-					// other fields (e.g., "$[0].integer") are preserved from the original object
-					if (builder != null) {
-						extractFieldValues(element, elementPath, builder);
-					}
-
-					// Extract container size resolvers from element's fields
-					// This ensures nested container sizes are preserved during decomposition
-					// (e.g., $.values[0].values size is captured when decomposing $.values)
-					extractFieldContainerSizeResolversInternal(
-						element,
-						elementPath,
-						containerSizeResolvers,
-						interfaceResolvers,
-						genericTypeResolvers,
-						builder,
-						builder != null
-					);
-				}
-
-				extractContainerSizeResolver(
-					element,
-					elementPath,
-					containerSizeResolvers,
-					interfaceResolvers,
-					genericTypeResolvers,
-					builder
-				);
-			}
-			index++;
-		}
-	}
-
-	private void analyzeMapValues(
-		Map<?, ?> map,
-		String pathExpression,
-		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
-		List<PathResolver<InterfaceResolver>> interfaceResolvers,
-		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.@Nullable Builder builder
-	) {
-		int index = 0;
-		for (Map.Entry<?, ?> entry : map.entrySet()) {
-			String entryPath = pathExpression + "[" + index + "]";
-			analyzeMapEntryElement(
-				entry.getKey(),
-				entryPath + "[key]",
-				containerSizeResolvers,
-				interfaceResolvers,
-				genericTypeResolvers,
-				builder
-			);
-			analyzeMapEntryElement(
-				entry.getValue(),
-				entryPath + "[value]",
+			analyzeElement(
+				element,
+				pathExpression + "[" + index + "]",
 				containerSizeResolvers,
 				interfaceResolvers,
 				genericTypeResolvers,
@@ -470,7 +381,7 @@ public final class ValueAnalyzer {
 		}
 	}
 
-	private void analyzeMapEntryElement(
+	private void analyzeElement(
 		@Nullable Object element,
 		String elementPath,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
@@ -486,30 +397,118 @@ public final class ValueAnalyzer {
 			builder.putValue(elementPath, element);
 		}
 
-		// Only create interface/generic resolvers for non-container elements
-		// Container elements are handled by extractContainerSizeResolver recursively
-		if (!containerDetector.isContainer(element)) {
-			if (requiresInterfaceResolver(element)) {
-				PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
-					elementPath,
-					element
-				);
-				if (interfaceResolver != null) {
-					interfaceResolvers.add(interfaceResolver);
-				}
-			}
+		OptionalInt containerSize = containerDetector.getContainerSize(element);
+		addTypeResolvers(element, elementPath, interfaceResolvers, genericTypeResolvers);
 
-			extractGenericTypeResolver(element, elementPath, genericTypeResolvers);
-		}
-
-		extractContainerSizeResolver(
+		analyzeElementContents(
 			element,
+			containerSize,
 			elementPath,
 			containerSizeResolvers,
 			interfaceResolvers,
 			genericTypeResolvers,
 			builder
 		);
+	}
+
+	private void analyzeElementSharingContainerPath(
+		Object element,
+		String containerPath,
+		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
+		List<PathResolver<InterfaceResolver>> interfaceResolvers,
+		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
+		ValueAnalysisResult.@Nullable Builder builder
+	) {
+		if (Types.hasFixedChildren(element.getClass()) || containerDetector.isContainer(element)) {
+			analyzeNestedContainers(
+				element,
+				containerPath,
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
+			return;
+		}
+
+		if (builder != null) {
+			extractFieldValues(element, containerPath, builder);
+		}
+
+		analyzeContainerFields(
+			element,
+			containerPath,
+			containerSizeResolvers,
+			interfaceResolvers,
+			genericTypeResolvers,
+			builder
+		);
+	}
+
+	private void analyzeElementContents(
+		Object element,
+		OptionalInt containerSize,
+		String elementPath,
+		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
+		List<PathResolver<InterfaceResolver>> interfaceResolvers,
+		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
+		ValueAnalysisResult.@Nullable Builder builder
+	) {
+		if (!containerSize.isPresent()) {
+			if (builder != null) {
+				extractFieldValues(element, elementPath, builder);
+			}
+
+			analyzeContainerFields(
+				element,
+				elementPath,
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
+		}
+
+		analyzeContainer(
+			element,
+			containerSize,
+			elementPath,
+			containerSizeResolvers,
+			interfaceResolvers,
+			genericTypeResolvers,
+			null
+		);
+	}
+
+	private void analyzeMapValues(
+		Map<?, ?> map,
+		String pathExpression,
+		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
+		List<PathResolver<InterfaceResolver>> interfaceResolvers,
+		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
+		ValueAnalysisResult.@Nullable Builder builder
+	) {
+		int index = 0;
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
+			String entryPath = pathExpression + "[" + index + "]";
+			analyzeElement(
+				entry.getKey(),
+				entryPath + "[key]",
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
+			analyzeElement(
+				entry.getValue(),
+				entryPath + "[value]",
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
+			index++;
+		}
 	}
 
 	private void analyzeArrayElements(
@@ -522,59 +521,54 @@ public final class ValueAnalyzer {
 	) {
 		int length = Array.getLength(array);
 		for (int i = 0; i < length; i++) {
-			Object element = Array.get(array, i);
-			if (element != null) {
-				String elementPath = pathExpression + "[" + i + "]";
-
-				// Store all elements (both container and non-container) if builder is provided
-				if (builder != null) {
-					builder.putValue(elementPath, element);
-				}
-
-				// Only create interface/generic resolvers for non-container elements
-				// Container elements are handled by extractContainerSizeResolver recursively
-				if (!containerDetector.isContainer(element)) {
-					if (requiresInterfaceResolver(element)) {
-						PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
-							elementPath,
-							element
-						);
-						if (interfaceResolver != null) {
-							interfaceResolvers.add(interfaceResolver);
-						}
-					}
-
-					extractGenericTypeResolver(element, elementPath, genericTypeResolvers);
-
-					// Extract field values for non-container elements
-					// This ensures that when a child path is set (e.g., "$[0].str"),
-					// other fields (e.g., "$[0].integer") are preserved from the original object
-					if (builder != null) {
-						extractFieldValues(element, elementPath, builder);
-					}
-				}
-
-				extractContainerSizeResolver(
-					element,
-					elementPath,
-					containerSizeResolvers,
-					interfaceResolvers,
-					genericTypeResolvers,
-					builder
-				);
-			}
+			analyzeElement(
+				Array.get(array, i),
+				pathExpression + "[" + i + "]",
+				containerSizeResolvers,
+				interfaceResolvers,
+				genericTypeResolvers,
+				builder
+			);
 		}
 	}
 
-	private void extractGenericTypeResolver(
+	private void addTypeResolvers(
+		Object value,
+		String pathExpression,
+		List<PathResolver<InterfaceResolver>> interfaceResolvers,
+		List<PathResolver<GenericTypeResolver>> genericTypeResolvers
+	) {
+		addInterfaceResolver(value, pathExpression, interfaceResolvers);
+		addGenericTypeResolver(value, pathExpression, genericTypeResolvers);
+	}
+
+	private void addInterfaceResolver(
+		Object value,
+		String pathExpression,
+		List<PathResolver<InterfaceResolver>> interfaceResolvers
+	) {
+		if (!requiresInterfaceResolver(value)) {
+			return;
+		}
+
+		PathResolver<InterfaceResolver> interfaceResolver = InterfaceResolverConverter.fromValue(
+			pathExpression,
+			value
+		);
+		if (interfaceResolver != null) {
+			interfaceResolvers.add(interfaceResolver);
+		}
+	}
+
+	private void addGenericTypeResolver(
 		Object value,
 		String pathExpression,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers
 	) {
 		Class<?> valueClass = value.getClass();
 
-		// Terminal types don't need generic type resolution
-		if (Types.isTerminalType(valueClass)) {
+		boolean isNonGenericClass = valueClass.getTypeParameters().length == 0;
+		if (Types.isTerminalType(valueClass) && isNonGenericClass) {
 			return;
 		}
 
@@ -585,6 +579,14 @@ public final class ValueAnalyzer {
 
 		List<JvmType> typeArguments = GenericTypeResolverConverter.extractTypeArgumentsFromValue(value);
 		if (typeArguments.isEmpty()) {
+			// The type arguments of an empty list or a list of mixed classes cannot be inferred.
+			// When it is set into an Object property, its node is a raw ArrayList without an element type,
+			// so Object type arguments are given to create its elements, each with its own type.
+			if (!isNonGenericClass) {
+				genericTypeResolvers.add(
+					GenericTypeResolverConverter.createObjectTypeArgumentsResolver(pathExpression)
+				);
+			}
 			return;
 		}
 
@@ -604,39 +606,42 @@ public final class ValueAnalyzer {
 		builder.putAllValues(fieldValues);
 	}
 
-	private void extractFieldContainerSizeResolversInternal(
+	private void analyzeContainerFields(
 		Object value,
 		String basePath,
 		List<PathResolver<ContainerSizeResolver>> containerSizeResolvers,
 		List<PathResolver<InterfaceResolver>> interfaceResolvers,
 		List<PathResolver<GenericTypeResolver>> genericTypeResolvers,
-		ValueAnalysisResult.@Nullable Builder builder,
-		boolean storeContainerElements
+		ValueAnalysisResult.@Nullable Builder builder
 	) {
 		Map<String, ExtractedField> extractedFields = fieldExtractor.extractFields(value, basePath);
 
 		for (Map.Entry<String, ExtractedField> entry : extractedFields.entrySet()) {
 			String fieldPath = entry.getKey();
-			Object fieldValue = entry.getValue().getValue();
+			ExtractedField extracted = entry.getValue();
+			Object fieldValue = extracted.getValue();
 			if (fieldValue != null) {
-				extractContainerSizeResolverInternal(
+				if (containerDetector.isContainer(fieldValue) && fieldValue.getClass() != extracted.getDeclaredType()) {
+					addTypeResolvers(fieldValue, fieldPath, interfaceResolvers, genericTypeResolvers);
+				}
+				analyzeContainer(
 					fieldValue,
+					containerDetector.getContainerSize(fieldValue),
 					fieldPath,
 					containerSizeResolvers,
 					interfaceResolvers,
 					genericTypeResolvers,
-					builder,
-					storeContainerElements
+					builder
 				);
 			}
 		}
 	}
 
-	private static boolean isDeclaredAsInterfaceOrAbstract(Class<?> declaredType) {
-		return declaredType.isInterface() || java.lang.reflect.Modifier.isAbstract(declaredType.getModifiers());
-	}
-
 	private static boolean requiresInterfaceResolver(Object value) {
+		if (value instanceof Map.Entry) {
+			return true;
+		}
+
 		Class<?> valueClass = value.getClass();
 
 		// Terminal types don't need interface resolution

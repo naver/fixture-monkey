@@ -60,6 +60,7 @@ public final class ObjectValueExtractor {
 	 * For POJOs, extracts fields and recurses into non-primitive field values.
 	 * For Collections/Arrays, extracts elements by index and recurses into each element.
 	 * For Maps, extracts key/value pairs by entry index.
+	 * For a {@link Map.Entry}, extracts its key and value.
 	 * <p>
 	 * Circular references are detected via identity comparison and silently skipped.
 	 *
@@ -126,6 +127,8 @@ public final class ObjectValueExtractor {
 	) {
 		if (container instanceof Map) {
 			extractMap((Map<?, ?>) container, basePath, result);
+		} else if (container instanceof Map.Entry) {
+			extractEntry((Map.Entry<?, ?>) container, basePath, result);
 		} else if (container instanceof Collection) {
 			extractCollection((Collection<?>) container, basePath, result, visited);
 		} else if (container.getClass().isArray()) {
@@ -141,11 +144,7 @@ public final class ObjectValueExtractor {
 	) {
 		int index = 0;
 		for (Object element : collection) {
-			if (element != null) {
-				PathExpression elementPath = basePath.index(index);
-				result.put(elementPath, element);
-				extractInternal(element, elementPath, result, visited);
-			}
+			extractElement(element, basePath.index(index), result, visited);
 			index++;
 		}
 	}
@@ -158,28 +157,42 @@ public final class ObjectValueExtractor {
 	) {
 		int length = Array.getLength(array);
 		for (int i = 0; i < length; i++) {
-			Object element = Array.get(array, i);
-			if (element != null) {
-				PathExpression elementPath = basePath.index(i);
-				result.put(elementPath, element);
-				extractInternal(element, elementPath, result, visited);
-			}
+			extractElement(Array.get(array, i), basePath.index(i), result, visited);
+		}
+	}
+
+	private void extractElement(
+		@Nullable Object element,
+		PathExpression elementPath,
+		Map<PathExpression, @Nullable Object> result,
+		Set<Object> visited
+	) {
+		result.put(elementPath, element);
+		if (element != null) {
+			extractInternal(element, elementPath, result, visited);
 		}
 	}
 
 	private void extractMap(Map<?, ?> map, PathExpression basePath, Map<PathExpression, @Nullable Object> result) {
 		int index = 0;
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
-			PathExpression entryPath = basePath.index(index);
-			Object key = entry.getKey();
-			Object value = entry.getValue();
-			if (key != null) {
-				result.put(entryPath.key(), key);
-			}
-			if (value != null) {
-				result.put(entryPath.value(), value);
-			}
+			extractEntry(entry, basePath.index(index), result);
 			index++;
+		}
+	}
+
+	private void extractEntry(
+		Map.Entry<?, ?> entry,
+		PathExpression entryPath,
+		Map<PathExpression, @Nullable Object> result
+	) {
+		Object key = entry.getKey();
+		Object value = entry.getValue();
+		if (key != null) {
+			result.put(entryPath.key(), key);
+		}
+		if (value != null) {
+			result.put(entryPath.value(), value);
 		}
 	}
 }

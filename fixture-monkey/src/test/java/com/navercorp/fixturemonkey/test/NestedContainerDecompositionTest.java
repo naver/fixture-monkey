@@ -23,10 +23,13 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +41,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListListStringObj
 import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.AbstractValue;
 import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.ConcreteIntValue;
 import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.ConcreteStringValue;
+import com.navercorp.fixturemonkey.test.ValueProjectionAssembleSpecs.NestedListHolder;
 
 class NestedContainerDecompositionTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -70,6 +74,26 @@ class NestedContainerDecompositionTest {
 
 	private static final TypeReference<List<List<AbstractValue>>> NESTED_ABSTRACT_VALUE_LIST_TYPE =
 		new TypeReference<List<List<AbstractValue>>>() {
+		};
+
+	private static final TypeReference<List<Collection<String>>> COLLECTION_LIST_TYPE =
+		new TypeReference<List<Collection<String>>>() {
+		};
+
+	private static final TypeReference<List<List<Collection<String>>>> NESTED_COLLECTION_LIST_TYPE =
+		new TypeReference<List<List<Collection<String>>>>() {
+		};
+
+	private static final TypeReference<Map<String, Collection<String>>> COLLECTION_MAP_TYPE =
+		new TypeReference<Map<String, Collection<String>>>() {
+		};
+
+	private static final TypeReference<List<ObjectValueObject>> OBJECT_VALUE_OBJECT_LIST_TYPE =
+		new TypeReference<List<ObjectValueObject>>() {
+		};
+
+	private static final TypeReference<Map<String, ObjectValueObject>> OBJECT_VALUE_OBJECT_MAP_TYPE =
+		new TypeReference<Map<String, ObjectValueObject>>() {
 		};
 
 	@Test
@@ -297,6 +321,207 @@ class NestedContainerDecompositionTest {
 		);
 	}
 
+	@Test
+	void setNestedEmptyListPropertyThenGrowInnerList() {
+		// when
+		NestedListHolder actual = SUT.giveMeBuilder(NestedListHolder.class)
+			.set("nestedValues", Arrays.asList(new ArrayList<String>(), new ArrayList<String>()))
+			.size("nestedValues[0]", 2)
+			.sample();
+
+		// then
+		then(actual.getNestedValues()).hasSize(2);
+		then(actual.getNestedValues().get(0)).hasSize(2).allMatch(String.class::isInstance);
+		then(actual.getNestedValues().get(1)).isEmpty();
+	}
+
+	@Test
+	void setNestedMixedImplementationListPropertyThenSetInnerElementProperty() {
+		// given
+		List<List<AbstractValue>> values = Arrays.asList(
+			new ArrayList<>(Collections.singletonList(stringValue("s"))),
+			new ArrayList<>(Collections.singletonList(intValue(1)))
+		);
+
+		// when
+		NestedAbstractValueListObject actual = ABSTRACT_VALUE_SUT.giveMeBuilder(NestedAbstractValueListObject.class)
+			.set("values", values)
+			.set("values[1][0].intValue", 7)
+			.sample();
+
+		// then
+		then(actual.getValues()).containsExactly(
+			Collections.singletonList(stringValue("s")),
+			Collections.singletonList(intValue(7))
+		);
+	}
+
+	@Test
+	void setMixedImplementationCollectionsKeepsEachImplementation() {
+		// given
+		List<Collection<String>> values = Arrays.asList(arrayList("a"), hashSet("b"));
+
+		// when
+		List<Collection<String>> actual = SUT.giveMeBuilder(COLLECTION_LIST_TYPE)
+			.set("$", values)
+			.sample();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0)).isExactlyInstanceOf(ArrayList.class).containsExactly("a");
+		then(actual.get(1)).isExactlyInstanceOf(HashSet.class).containsExactly("b");
+	}
+
+	@Test
+	void setNestedMixedImplementationCollectionsKeepsEachImplementation() {
+		// given
+		List<List<Collection<String>>> values = Arrays.asList(
+			new ArrayList<>(Collections.singletonList(arrayList("a"))),
+			new ArrayList<>(Collections.singletonList(hashSet("b")))
+		);
+
+		// when
+		List<List<Collection<String>>> actual = SUT.giveMeBuilder(NESTED_COLLECTION_LIST_TYPE)
+			.set("$", values)
+			.sample();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0).get(0)).isExactlyInstanceOf(ArrayList.class).containsExactly("a");
+		then(actual.get(1).get(0)).isExactlyInstanceOf(HashSet.class).containsExactly("b");
+	}
+
+	@Test
+	void setMixedImplementationCollectionMapValuesKeepsEachImplementation() {
+		// given
+		Map<String, Collection<String>> values = new HashMap<>();
+		values.put("a", arrayList("a"));
+		values.put("b", hashSet("b"));
+
+		// when
+		Map<String, Collection<String>> actual = SUT.giveMeBuilder(COLLECTION_MAP_TYPE)
+			.set("$", values)
+			.sample();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get("a")).isExactlyInstanceOf(ArrayList.class).containsExactly("a");
+		then(actual.get("b")).isExactlyInstanceOf(HashSet.class).containsExactly("b");
+	}
+
+	@Test
+	void setMixedImplementationCollectionsThenGrowOneKeepsItsImplementation() {
+		// given
+		List<Collection<String>> values = Arrays.asList(arrayList("a"), hashSet("b"));
+
+		// when
+		List<Collection<String>> actual = SUT.giveMeBuilder(COLLECTION_LIST_TYPE)
+			.set("$", values)
+			.size("$[1]", 3)
+			.sample();
+
+		// then
+		then(actual.get(1)).isExactlyInstanceOf(HashSet.class).hasSize(3).contains("b");
+	}
+
+	@Test
+	void setObjectWithCollectionInObjectFieldKeepsImplementation() {
+		// given
+		ObjectValueObject value = new ObjectValueObject();
+		value.setValue(hashSet("a"));
+
+		// when
+		ObjectValueObject actual = SUT.giveMeBuilder(ObjectValueObject.class)
+			.set("$", value)
+			.sample();
+
+		// then
+		then(actual.getValue()).isExactlyInstanceOf(HashSet.class).isEqualTo(hashSet("a"));
+	}
+
+	@Test
+	void setObjectWithCollectionInCollectionFieldKeepsImplementation() {
+		// given
+		CollectionValueObject value = new CollectionValueObject();
+		value.setValue(hashSet("a"));
+
+		// when
+		CollectionValueObject actual = SUT.giveMeBuilder(CollectionValueObject.class)
+			.set("$", value)
+			.sample();
+
+		// then
+		then(actual.getValue()).isExactlyInstanceOf(HashSet.class).containsExactly("a");
+	}
+
+	@Test
+	void setListOfObjectsWithCollectionInObjectFieldKeepsImplementation() {
+		// given
+		ObjectValueObject element = new ObjectValueObject();
+		element.setValue(hashSet("a"));
+
+		// when
+		List<ObjectValueObject> actual = SUT.giveMeBuilder(OBJECT_VALUE_OBJECT_LIST_TYPE)
+			.set("$", Collections.singletonList(element))
+			.sample();
+
+		// then
+		then(actual).hasSize(1);
+		then(actual.get(0).getValue()).isExactlyInstanceOf(HashSet.class).isEqualTo(hashSet("a"));
+	}
+
+	@Test
+	void setMapOfObjectsWithCollectionInObjectFieldKeepsImplementation() {
+		// given
+		ObjectValueObject value = new ObjectValueObject();
+		value.setValue(hashSet("a"));
+
+		// when
+		Map<String, ObjectValueObject> actual = SUT.giveMeBuilder(OBJECT_VALUE_OBJECT_MAP_TYPE)
+			.set("$", Collections.singletonMap("k", value))
+			.sample();
+
+		// then
+		then(actual).hasSize(1);
+		then(actual.get("k").getValue()).isExactlyInstanceOf(HashSet.class).isEqualTo(hashSet("a"));
+	}
+
+	public static class ObjectValueObject {
+		private Object value;
+
+		public Object getValue() {
+			return value;
+		}
+
+		public void setValue(Object value) {
+			this.value = value;
+		}
+	}
+
+	public static class CollectionValueObject {
+		private Collection<String> value;
+
+		public Collection<String> getValue() {
+			return value;
+		}
+
+		public void setValue(Collection<String> value) {
+			this.value = value;
+		}
+	}
+
+	public static class NestedAbstractValueListObject {
+		private List<List<AbstractValue>> values;
+
+		public List<List<AbstractValue>> getValues() {
+			return values;
+		}
+
+		public void setValues(List<List<AbstractValue>> values) {
+			this.values = values;
+		}
+	}
+
 	public static class NestedArrayObject {
 		private String[][] values;
 
@@ -319,6 +544,14 @@ class NestedContainerDecompositionTest {
 		Map<String, Map<String, String>> map = new HashMap<>();
 		map.put("k", inner);
 		return map;
+	}
+
+	private static List<String> arrayList(String value) {
+		return new ArrayList<>(Collections.singletonList(value));
+	}
+
+	private static Set<String> hashSet(String value) {
+		return new HashSet<>(Collections.singletonList(value));
 	}
 
 	private static ConcreteStringValue stringValue(String stringValue) {

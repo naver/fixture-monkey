@@ -390,7 +390,7 @@ public final class FixtureMonkeyBuilder {
 	 *
 	 * @see #registerByName(String, Class, Function, int, int)
 	 */
-	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	@API(since = "1.2.5", status = Status.EXPERIMENTAL)
 	public FixtureMonkeyBuilder registerByName(
 		String registeredName,
 		Class<?> type,
@@ -404,7 +404,7 @@ public final class FixtureMonkeyBuilder {
 	 *
 	 * @see #registerByName(String, Class, Function, int, int)
 	 */
-	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	@API(since = "1.2.5", status = Status.EXPERIMENTAL)
 	public FixtureMonkeyBuilder registerByName(
 		String registeredName,
 		Class<?> type,
@@ -438,7 +438,7 @@ public final class FixtureMonkeyBuilder {
 	 * @throws IllegalArgumentException when the weight is not positive, or from {@link #build()} when the name is
 	 *                                  registered more than once
 	 */
-	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	@API(since = "1.2.5", status = Status.EXPERIMENTAL)
 	public FixtureMonkeyBuilder registerByName(
 		String registeredName,
 		Class<?> type,

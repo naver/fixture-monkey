@@ -21,9 +21,12 @@ package com.navercorp.objectfarm.api.input;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 import org.jspecify.annotations.Nullable;
+
+import com.navercorp.objectfarm.api.type.Types;
 
 /**
  * Detects whether a value is a container type and extracts its size.
@@ -59,6 +62,33 @@ public interface ContainerDetector {
 	 */
 	default boolean isContainer(@Nullable Object value) {
 		return getContainerSize(value).isPresent();
+	}
+
+	/**
+	 * Returns the size of the resizable container the given value puts at its path.
+	 * <p>
+	 * A present {@link Optional} shares its path with its content, so the container is its content.
+	 * A container whose children do not depend on its value, such as a single-element wrapper or a
+	 * {@link Map.Entry}, is not resizable.
+	 *
+	 * @param value the value set at a path
+	 * @return the size of the resizable container at the value's path, empty if there is none
+	 */
+	default OptionalInt getResizableContainerSizeAtPath(@Nullable Object value) {
+		Object valueAtPath = value;
+		// The content of an Optional shares the Optional's path, so the size at this path sizes the content.
+		// The Optional's own size, always 1, would cut a container inside it down to one element.
+		while (valueAtPath instanceof Optional) {
+			Optional<?> optional = (Optional<?>)valueAtPath;
+			if (!optional.isPresent()) {
+				return OptionalInt.empty();
+			}
+			valueAtPath = optional.get();
+		}
+		if (valueAtPath == null || Types.hasFixedChildren(valueAtPath.getClass())) {
+			return OptionalInt.empty();
+		}
+		return getContainerSize(valueAtPath);
 	}
 
 	/**

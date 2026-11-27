@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.assembly;
 
+import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.JvmNode;
 
@@ -49,10 +50,14 @@ final class WinningValueCandidate {
 	}
 
 	/**
-	 * Returns whether the value came from a defined scope, so it is expanded during assembly rather than planning.
+	 * Returns whether the value came from a defined scope.
 	 */
 	boolean isFromDefinedScope() {
 		return !candidate.precedence.isRootScope();
+	}
+
+	boolean isExpandedDuringAssembly() {
+		return isFromDefinedScope() || candidate.value instanceof LazyValueHolder;
 	}
 
 	boolean isScopeRoot() {

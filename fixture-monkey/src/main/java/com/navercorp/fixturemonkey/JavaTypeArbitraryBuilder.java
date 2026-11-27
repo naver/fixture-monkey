@@ -211,7 +211,7 @@ public interface JavaTypeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 	 * @return this builder
 	 * @throws UnsupportedOperationException when this builder does not support selecting names
 	 */
-	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	@API(since = "1.2.5", status = Status.EXPERIMENTAL)
 	default JavaTypeArbitraryBuilder<T> selectName(String... names) {
 		throw new UnsupportedOperationException("selectName is not supported by " + getClass().getName());
 	}

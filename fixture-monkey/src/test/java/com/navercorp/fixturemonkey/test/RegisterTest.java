@@ -1684,6 +1684,34 @@ class RegisterTest {
 	}
 
 	@RepeatedTest(10)
+	void registerAppliesToArrayElements() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "registered"))
+			.build();
+
+		// when
+		Order[] actual = sut.giveMeBuilder(OrderArray.class).size("orders", 2).sample().getOrders();
+
+		// then
+		then(actual).hasSize(2).allSatisfy(order -> then(order.getName()).isEqualTo("registered"));
+	}
+
+	@RepeatedTest(10)
+	void registerAppliesToElementsOfRootArray() {
+		// given
+		FixtureMonkey sut = fixtureMonkey()
+			.register(Order.class, fm -> fm.giveMeBuilder(Order.class).set("name", "registered"))
+			.build();
+
+		// when
+		Order[] actual = sut.giveMeBuilder(Order[].class).size("$", 2).sample();
+
+		// then
+		then(actual).hasSize(2).allSatisfy(order -> then(order.getName()).isEqualTo("registered"));
+	}
+
+	@RepeatedTest(10)
 	void rootWildcardSizeWinsOverInnerRegisterSize() {
 		// given
 		FixtureMonkey sut = fixtureMonkey()
@@ -1757,7 +1785,7 @@ class RegisterTest {
 			.collect(Collectors.toList());
 
 		// then
-		then(actual).allSatisfy(it -> then(it).isSameAs(registered));
+		then(actual).allSatisfy(it -> then(it).isEqualTo(registered));
 	}
 
 	@RepeatedTest(10)
@@ -2344,6 +2372,11 @@ class RegisterTest {
 	public static class OrderListHolder {
 		private OrderList orderList;
 		private UUID id;
+	}
+
+	@Data
+	public static class OrderArray {
+		private Order[] orders;
 	}
 
 	@Data

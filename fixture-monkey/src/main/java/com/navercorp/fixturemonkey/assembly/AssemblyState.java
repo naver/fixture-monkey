@@ -35,7 +35,6 @@ import com.navercorp.fixturemonkey.customizer.ScopeChain;
 import com.navercorp.fixturemonkey.decompose.DecomposedContainerDetector;
 import com.navercorp.fixturemonkey.decompose.PropertyFieldExtractor;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
-import com.navercorp.fixturemonkey.planner.LazyValueHolder;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.input.ContainerDetector;
 import com.navercorp.objectfarm.api.input.ObjectValueExtractor;
@@ -47,7 +46,7 @@ import com.navercorp.objectfarm.api.type.JvmType;
  * {@link ValueProjectionAssembler#assemble} pass.
  *
  * <p>Package-private and split out from {@link ValueProjectionAssembler} so that helpers
- * (path matching, lazy resolution, type metadata, map/interface assembly) can read the same
+ * (path matching, type metadata, map/interface assembly) can read the same
  * state without duplicating the parameter list.</p>
  */
 final class AssemblyState {
@@ -65,8 +64,6 @@ final class AssemblyState {
 	final NodePropertyLookup properties;
 
 	final Map<JvmNode, Property> propertyPathPropertyByNode;
-
-	final Map<LazyValueHolder, Object> resolvedLazyCache;
 
 	final ScopeLookup scopes;
 
@@ -88,13 +85,11 @@ final class AssemblyState {
 
 		this.assemblyTree = new AssemblyTree(context.getPlan().getNodeTree());
 		this.propertyPathPropertyByNode = new IdentityHashMap<>();
-		this.resolvedLazyCache = new IdentityHashMap<>();
 		FixtureMonkeyOptions options = context.getOptions();
 		ContainerDetector containerDetector =
 			new DecomposedContainerDetector(options.getDecomposedContainerValueFactory());
 		this.valueDecomposer = new ValueDecomposer(
 			candidates,
-			limits,
 			new ObjectValueExtractor(
 				new PropertyFieldExtractor(
 					property -> options.getPropertyNameResolver(property).resolve(property),

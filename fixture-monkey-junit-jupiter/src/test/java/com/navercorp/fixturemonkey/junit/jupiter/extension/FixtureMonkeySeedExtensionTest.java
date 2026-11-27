@@ -221,6 +221,13 @@ class FixtureMonkeySeedExtensionTest {
 		Map<String, Integer> expected = new HashMap<>();
 		expected.put("⽒竻·俌欕悳잸횑ٻ킐結㗗蜵", 286);
 		expected.put("㼌✠섨ꝓ仛禦催ᘓ蓊類౺阹瞻", 29413);
+		expected.put(
+			"뵥刲禮ᣮ鎊熇捺셾壍Ꜻꌩ垅凗❉償粐믩࠱哠횛䄻㹦䤔\u1aff琬梅䨊麅䤺ꁝోᏣ喵鐞唆鳏Սᖠ嫧椃恶凳줦ꢴ繪朕焟ළ莭튒㤰ꋒ疊쯝폍"
+				+ "풎⩤몰烰❫㼜땊㏗箙檉⑰ᾏధ첑㶮縶縍ᣠ퐏퓇굃胀팠铖仺첈╦䒆⧧\u0adc宇໒뢦⦡溸脌簡夣勒婽谞軱䎭ⅽ䈢꼎篃桞\u1afbꏼ"
+				+ "糧ힻꯏ陜锏ꤽى脱䎃퇏筼䴄㕁扥黱넪᠉ῠ畻瓎垮翏ꉙ낧덏슊碑몯⸾漳쮊不ﱞ驇㥷证䏬䥊홌㟪ᅕ减佯媢繳眩ჶ쳿郗᮲షⶨ忉쟂ᡅ褟슰쀾醯廏"
+				+ "鎋痾鄜韞䚘҆醽꼮इ\u0b7c儂钪鋐怰ၤ鰁뎖㨭芣쬋瑅肽躣鮡臮祡눻촯⿅䕗ﵢ洞꙱ζ",
+			-1
+		);
 
 		Map<String, Integer> actual = SUT.giveMeOne(new TypeReference<Map<String, Integer>>() {
 		});

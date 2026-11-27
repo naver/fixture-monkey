@@ -43,14 +43,20 @@ import com.navercorp.objectfarm.api.type.JvmType;
  */
 public interface JvmNode {
 	/**
-	 * Returns the concrete JVM type that this node represents.
+	 * Returns the type the node is built with: its children are expanded from this type,
+	 * and the object is created as this type.
 	 * <p>
-	 * Unlike NodeCandidate which may contain abstract types (e.g., List interface),
-	 * JvmNode must always return a concrete, instantiable type (e.g., ArrayList class).
-	 * This ensures that the node represents a specific implementation that can be
-	 * directly instantiated during object creation.
-	 * 
-	 * @return the concrete JvmType associated with this node
+	 * It is not always instantiable:
+	 * <ul>
+	 *   <li>The root node has the type the tree is built for, as it is given. Choosing an implementation
+	 *   for it is up to the one that builds the tree.</li>
+	 *   <li>A child node has the type resolved for its path, such as an implementation of a container
+	 *   interface (e.g., ArrayList for List).</li>
+	 *   <li>An interface or abstract type that is not a container is kept as it is declared,
+	 *   until an implementation is chosen at assembly time.</li>
+	 * </ul>
+	 *
+	 * @return the type the node is built with
 	 */
 	JvmType getConcreteType();
 

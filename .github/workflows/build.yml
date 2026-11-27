@@ -14,6 +14,10 @@ on:
 jobs:
   static-analysis:
     name: Static analysis
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.stack == null
+      || github.event.pull_request.stack.base.ref == github.event.pull_request.base.ref
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -31,6 +35,10 @@ jobs:
         run: ./gradlew check -x test
   test:
     name: Testing on JDK ${{ matrix.java }}
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.stack == null
+      || github.event.pull_request.stack.base.ref == github.event.pull_request.base.ref
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -41,7 +49,9 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.Java }}
+          java-version: |
+            8
+            ${{ matrix.java }}
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:

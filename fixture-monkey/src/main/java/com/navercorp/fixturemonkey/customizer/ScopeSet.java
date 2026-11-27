@@ -59,6 +59,16 @@ public final class ScopeSet {
 		new IdentityHashMap<>();
 
 	/**
+	 * Creates the scopes that apply to one sample of a builder that selected no name.
+	 *
+	 * @param rootScope     what the sampled builder declared
+	 * @param definedScopes the defined scopes that apply, in declared order
+	 */
+	public ScopeSet(Scope rootScope, List<Scope> definedScopes) {
+		this(rootScope, definedScopes, Collections.emptyList());
+	}
+
+	/**
 	 * Creates the scopes that apply to one sample.
 	 *
 	 * @param rootScope     what the sampled builder declared

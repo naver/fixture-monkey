@@ -18,7 +18,6 @@
 
 package com.navercorp.objectfarm.api.tree;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
@@ -42,6 +40,7 @@ import com.navercorp.objectfarm.api.expression.NameSelector;
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.expression.Segment;
 import com.navercorp.objectfarm.api.expression.Selector;
+import com.navercorp.objectfarm.api.node.ConcreteTypeResolver;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.FixedContainerSizeResolver;
 import com.navercorp.objectfarm.api.node.GenericTypeResolver;
@@ -55,9 +54,10 @@ import com.navercorp.objectfarm.api.node.JvmMapNode;
 import com.navercorp.objectfarm.api.node.JvmNode;
 import com.navercorp.objectfarm.api.node.JvmNodeContext;
 import com.navercorp.objectfarm.api.node.JvmNodePromoter;
+import com.navercorp.objectfarm.api.nodecandidate.JavaNodeCandidateFactory;
+import com.navercorp.objectfarm.api.nodecandidate.JvmMapEntryNodeCandidate;
 import com.navercorp.objectfarm.api.nodecandidate.JvmNodeCandidate;
 import com.navercorp.objectfarm.api.type.JvmType;
-import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 
 /**
  * Transforms a JvmNodeCandidateTree into a JvmNodeTree.
@@ -93,6 +93,7 @@ public final class JvmNodeTreeTransformer {
 	private final PathResolverContext resolverContext;
 	private final @Nullable ExpansionContext expansionContext;
 	private final @Nullable JvmNodeSubtreeContext subtreeContext;
+	private final ConcreteTypeResolver concreteTypeResolver;
 
 	public JvmNodeTreeTransformer(JvmNodeContext context) {
 		this(context, new JvmNodeCandidateTreeContext(), PathResolverContext.empty(), null, null);
@@ -118,6 +119,7 @@ public final class JvmNodeTreeTransformer {
 		this.resolverContext = resolverContext;
 		this.expansionContext = expansionContext;
 		this.subtreeContext = subtreeContext;
+		this.concreteTypeResolver = new ConcreteTypeResolver(context);
 	}
 
 	/**
@@ -219,9 +221,9 @@ public final class JvmNodeTreeTransformer {
 	/**
 	 * Creates the path for a child node based on the candidate's name or index.
 	 */
-	private PathExpression createChildPath(PathExpression parentPath, JvmNodeCandidate candidate, JvmNode childNode) {
+	private static PathExpression createChildPath(PathExpression parentPath, JvmNodeCandidate candidate) {
 		String name = candidate.getName();
-		Integer index = childNode.getIndex();
+		Integer index = candidate.getIndex();
 
 		if (index != null) {
 			return parentPath.index(index);
@@ -335,8 +337,8 @@ public final class JvmNodeTreeTransformer {
 	/**
 	 * Generates and expands container elements.
 	 * <p>
-	 * After generating elements, applies path-based type resolution
-	 * and recursively expands each element's children.
+	 * The element candidates the container generator creates are promoted and resolved
+	 * the same way as object property candidates, and each element's children are expanded recursively.
 	 */
 	private void expandContainerElements(
 		JvmNode containerNode,
@@ -345,23 +347,27 @@ public final class JvmNodeTreeTransformer {
 		PathExpression currentPath
 	) {
 		SizeResolution sizeResolution = resolveContainerSize(containerNode, ctx, currentPath);
-		List<JvmNode> elements = generateContainerElements(containerNode, sizeResolution.resolver);
+		List<JvmNodeCandidate> elementCandidates = generateContainerElements(containerNode, sizeResolution.resolver);
 
 		resolverContext
 			.getResolutionListener()
 			.onContainerSizeResolved(
 				currentPath.toString(),
 				containerNode.getConcreteType().getRawType().getSimpleName(),
-				elements.size(),
+				elementCandidates.size(),
 				sizeResolution.source,
 				sizeResolution.metadata
 			);
 
-		if (elements.isEmpty()) {
+		if (elementCandidates.isEmpty()) {
 			return;
 		}
 
-		List<JvmNode> resolvedElements = resolveContainerElementTypes(elements, currentPath);
+		List<JvmNode> resolvedElements = new ArrayList<>(elementCandidates.size());
+		for (JvmNodeCandidate elementCandidate : elementCandidates) {
+			PathExpression elementPath = createChildPath(currentPath, elementCandidate);
+			resolvedElements.addAll(promoteAndResolveCandidate(elementCandidate, elementPath, ctx));
+		}
 
 		// Drop elements whose type would form a cycle (e.g. List<Self> nested inside Self).
 		// Without this, each element becomes an unexpanded recursion-break leaf and the assembler
@@ -434,19 +440,6 @@ public final class JvmNodeTreeTransformer {
 		return new SizeResolution(context.getContainerSizeResolver(), "DEFAULT");
 	}
 
-	/**
-	 * Resolves element types for all container elements using path-based resolvers.
-	 */
-	private List<JvmNode> resolveContainerElementTypes(List<JvmNode> elements, PathExpression currentPath) {
-		List<JvmNode> resolved = new ArrayList<>(elements.size());
-		for (JvmNode element : elements) {
-			Integer index = element.getIndex();
-			PathExpression elementPath = index != null ? currentPath.index(index) : currentPath;
-			resolved.add(resolveNodeType(element, elementPath));
-		}
-		return resolved;
-	}
-
 	private static final class SizeResolution {
 
 		final ContainerSizeResolver resolver;
@@ -465,124 +458,76 @@ public final class JvmNodeTreeTransformer {
 	}
 
 	private JvmNode resolveNodeType(JvmNode element, PathExpression elementPath) {
+		return resolveNodeType(
+			element,
+			elementPath,
+			resolverContext.findInterfaceResolver(elementPath).orElse(null),
+			resolverContext.findGenericTypeResolver(elementPath).orElse(null)
+		);
+	}
+
+	private JvmNode resolveNodeType(
+		JvmNode element,
+		PathExpression elementPath,
+		@Nullable InterfaceResolver pathInterfaceResolver,
+		@Nullable GenericTypeResolver pathGenericTypeResolver
+	) {
 		JvmType originalType = element.getConcreteType();
-		Class<?> rawType = originalType.getRawType();
-		boolean isAbstractType =
-			Modifier.isInterface(rawType.getModifiers()) || Modifier.isAbstract(rawType.getModifiers());
-		boolean isContainerType = context.isContainerType(originalType);
+		JvmType resolvedType = concreteTypeResolver.resolve(
+			originalType,
+			pathInterfaceResolver,
+			pathGenericTypeResolver
+		);
 
-		JvmType afterInterface = resolveInterfaceType(originalType, elementPath, isAbstractType, isContainerType);
-		JvmType resolvedType = resolveGenericType(afterInterface, elementPath);
-
-		if (resolvedType.equals(originalType)) {
-			return element;
+		if (resolvedType == originalType) {
+			return promoteToMapEntryIfNeeded(element);
 		}
 
-		JvmType finalType = mergeAnnotations(originalType, resolvedType);
+		notifyResolved(elementPath, originalType, resolvedType, pathInterfaceResolver != null);
+		return promoteToMapEntryIfNeeded(createResolvedNode(element, resolvedType));
+	}
 
-		boolean pathBasedResolution = resolverContext.findInterfaceResolver(elementPath).isPresent();
+	// Temporary workaround: Map.Entry is the only type whose children come from its node class, not its type,
+	// so a node whose type becomes Map.Entry is rebuilt as a map entry node. Remove it once Map.Entry is expanded
+	// by its type like other containers.
+	private JvmNode promoteToMapEntryIfNeeded(JvmNode node) {
+		if (node instanceof JvmMapNode || node instanceof JvmMapEntryNode) {
+			return node;
+		}
+
+		JvmNodeCandidate candidate = JavaNodeCandidateFactory.INSTANCE.create(
+			node.getConcreteType(),
+			node.getNodeName(),
+			node.getCreationMethod()
+		);
+		if (!(candidate instanceof JvmMapEntryNodeCandidate)) {
+			return node;
+		}
+
+		JvmNode mapEntryNode = findPromoter(candidate).promote(candidate, context).get(0);
+		return copyNode(
+			mapEntryNode,
+			node.getConcreteType(),
+			node.getDeclaredType(),
+			node.getNodeName(),
+			node.getIndex()
+		);
+	}
+
+	private void notifyResolved(
+		PathExpression path,
+		JvmType originalType,
+		JvmType finalType,
+		boolean pathBasedResolution
+	) {
 		resolverContext
 			.getResolutionListener()
 			.onInterfaceResolved(
-				elementPath.toString(),
+				path.toString(),
 				originalType.getRawType().getSimpleName(),
 				finalType.getRawType().getSimpleName(),
 				pathBasedResolution ? "PATH_BASED" : "DEFAULT"
 			);
-
-		return createResolvedNode(element, finalType);
-	}
-
-	/**
-	 * Resolves interface/abstract types using path-based or default resolver.
-	 * <p>
-	 * For non-container abstract types without an explicit path-based resolver,
-	 * resolution is skipped — they will be resolved at assembly time to allow
-	 * per-sample selection of different implementations.
-	 */
-	private JvmType resolveInterfaceType(
-		JvmType originalType,
-		PathExpression path,
-		boolean isAbstractType,
-		boolean isContainerType
-	) {
-		Optional<InterfaceResolver> pathBasedResolver = resolverContext.findInterfaceResolver(path);
-		if (pathBasedResolver.isPresent()) {
-			JvmType resolved = pathBasedResolver.get().resolve(originalType);
-			if (resolved != null) {
-				return resolved;
-			}
-			// Path-based resolver skipped (e.g., non-instantiable JDK type).
-			// For container types, fall through to the default resolver.
-			if (isContainerType) {
-				InterfaceResolver defaultResolver = context.getInterfaceResolver();
-				if (defaultResolver != null) {
-					JvmType fallback = defaultResolver.resolve(originalType);
-					if (fallback != null) {
-						return fallback;
-					}
-				}
-			}
-		} else if (!isAbstractType || isContainerType) {
-			InterfaceResolver defaultResolver = context.getInterfaceResolver();
-			if (defaultResolver != null) {
-				JvmType resolved = defaultResolver.resolve(originalType);
-				if (resolved != null) {
-					return resolved;
-				}
-			}
-		}
-		return originalType;
-	}
-
-	/**
-	 * Resolves generic types using path-based or default resolver.
-	 */
-	private JvmType resolveGenericType(JvmType inputType, PathExpression path) {
-		Optional<GenericTypeResolver> pathBasedResolver = resolverContext.findGenericTypeResolver(path);
-		if (pathBasedResolver.isPresent()) {
-			JvmType resolved = pathBasedResolver.get().resolve(inputType);
-			if (resolved != null) {
-				return resolved;
-			}
-		} else {
-			GenericTypeResolver defaultResolver = context.getGenericTypeResolver();
-			if (defaultResolver != null) {
-				JvmType resolved = defaultResolver.resolve(inputType);
-				if (resolved != null) {
-					return resolved;
-				}
-			}
-		}
-		return inputType;
-	}
-
-	/**
-	 * Preserves original annotations on the resolved type.
-	 * <p>
-	 * When a container type is resolved (e.g., List → ArrayList), the resolved type
-	 * loses field-level annotations (e.g., {@literal @}JsonTypeInfo, {@literal @}JsonSubTypes).
-	 * Merging them ensures downstream consumers can still find these annotations.
-	 */
-	private JvmType mergeAnnotations(JvmType originalType, JvmType resolvedType) {
-		List<Annotation> originalAnnotations = originalType.getAnnotations();
-		if (originalAnnotations.isEmpty()) {
-			return resolvedType;
-		}
-
-		Set<Class<? extends Annotation>> resolvedAnnotationTypes = resolvedType
-			.getAnnotations()
-			.stream()
-			.map(Annotation::annotationType)
-			.collect(Collectors.toSet());
-
-		List<Annotation> merged = new ArrayList<>(resolvedType.getAnnotations());
-		for (Annotation ann : originalAnnotations) {
-			if (!resolvedAnnotationTypes.contains(ann.annotationType())) {
-				merged.add(ann);
-			}
-		}
-		return new ReflectiveJvmType(resolvedType.getRawType(), resolvedType.getTypeVariables(), merged);
 	}
 
 	/**
@@ -1052,17 +997,10 @@ public final class JvmNodeTreeTransformer {
 		PathExpression currentPath
 	) {
 		List<JvmNode> result = new ArrayList<>();
-		List<JvmNode> promotedNodes = promoteCandidate(childCandidate, ctx);
+		PathExpression childPath = createChildPath(currentPath, childCandidate);
+		List<JvmNode> resolvedChildren = promoteAndResolveCandidate(childCandidate, childPath, ctx);
 
-		for (JvmNode childNode : promotedNodes) {
-			PathExpression childPath = createChildPath(currentPath, childCandidate, childNode);
-
-			JvmNode resolvedChild = resolveNodeType(childNode, childPath);
-
-			if (resolvedChild != childNode) {
-				updateNodeMappings(ctx, childCandidate, childNode, resolvedChild);
-			}
-
+		for (JvmNode resolvedChild : resolvedChildren) {
 			ctx.allNodes.add(resolvedChild);
 			if (parentNodeForMapping != null) {
 				ctx.nodeToParent.put(resolvedChild, parentNodeForMapping);
@@ -1083,10 +1021,39 @@ public final class JvmNodeTreeTransformer {
 		return result;
 	}
 
+	private List<JvmNode> promoteAndResolveCandidate(
+		JvmNodeCandidate candidate,
+		PathExpression path,
+		TransformContext ctx
+	) {
+		boolean sharesParentPath = candidate.getIndex() == null && candidate.getName() == null;
+		InterfaceResolver pathInterfaceResolver = sharesParentPath
+			? null
+			: resolverContext.findInterfaceResolver(path).orElse(null);
+		GenericTypeResolver pathGenericTypeResolver = sharesParentPath
+			? null
+			: resolverContext.findGenericTypeResolver(path).orElse(null);
+
+		List<JvmNode> promotedNodes = promoteCandidate(candidate, ctx);
+
+		List<JvmNode> resolvedNodes = new ArrayList<>(promotedNodes.size());
+		for (JvmNode promotedNode : promotedNodes) {
+			JvmNode resolvedNode = resolveNodeType(promotedNode, path, pathInterfaceResolver, pathGenericTypeResolver);
+			if (resolvedNode != promotedNode) {
+				updateNodeMappings(ctx, candidate, promotedNode, resolvedNode);
+			}
+			resolvedNodes.add(resolvedNode);
+		}
+		return resolvedNodes;
+	}
+
 	/**
-	 * Generates container element nodes using the specified size resolver.
+	 * Generates container element candidates using the specified size resolver.
 	 */
-	private List<JvmNode> generateContainerElements(JvmNode containerNode, ContainerSizeResolver sizeResolver) {
+	private List<JvmNodeCandidate> generateContainerElements(
+		JvmNode containerNode,
+		ContainerSizeResolver sizeResolver
+	) {
 		for (JvmContainerNodeGenerator generator : context.getContainerNodeGenerators()) {
 			if (generator.isSupported(containerNode.getConcreteType())) {
 				return generator.generateContainerElements(containerNode, context, sizeResolver);

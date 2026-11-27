@@ -60,7 +60,7 @@ final class ScopeLookup {
 	private final RootEntry root;
 	private final List<DefinedScopeEntry> definedScopes;
 	private final List<Map.Entry<ScopedPath, ValueCandidate>> definedScopeValues = new ArrayList<>();
-	private final Set<ScopedPath> definedScopeJustPaths = new HashSet<>();
+	private final Set<ScopedPath> declaredJustPaths = new HashSet<>();
 	private final boolean hasDefinedScopeNotNull;
 	private final boolean hasFilters;
 	private final boolean hasCustomizers;
@@ -76,8 +76,11 @@ final class ScopeLookup {
 		boolean filters = !root.analyzed.getFiltersByPath().isEmpty();
 		boolean customizers = !root.analyzed.getCustomizersByPath().isEmpty();
 		int highestSelectionOrder = 0;
+		for (PathExpression justPath : root.justPaths) {
+			declaredJustPaths.add(ScopedPath.root(justPath));
+		}
 		for (DefinedScopeEntry entry : definedScopes) {
-			entry.collectValues(definedScopeValues, definedScopeJustPaths);
+			entry.collectValues(definedScopeValues, declaredJustPaths);
 			notNull |= !entry.analyzed.getNotNullPaths().isEmpty();
 			filters |= !entry.analyzed.getFiltersByPath().isEmpty();
 			customizers |= !entry.analyzed.getCustomizersByPath().isEmpty();
@@ -129,13 +132,6 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns whether a defined scope set a {@code Values.just} value at {@code path}, used as it is.
-	 */
-	boolean isDefinedScopeJust(ScopedPath path) {
-		return definedScopeJustPaths.contains(path);
-	}
-
-	/**
 	 * The paths the root scope declared a customizer, a filter or a not-null at.
 	 */
 	Set<PathExpression> getRootCustomizerFilterNotNullPaths() {
@@ -153,26 +149,18 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns whether the root scope declared a size for the container at {@code path}, at that path or through a
-	 * wildcard reaching it.
-	 */
-	boolean isRootSizedContainer(PathExpression path) {
-		if (root.containerSizePaths.contains(path)) {
-			return true;
-		}
-		for (PathExpression sizePath : root.containerSizePaths) {
-			if (sizePath.hasWildcard() && sizePath.matches(path)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Returns whether the root scope set a {@code Values.just} value at {@code path}.
 	 */
 	boolean isRootJust(PathExpression path) {
 		return root.justPaths.contains(path);
+	}
+
+	/**
+	 * Returns whether the value at {@code declaredPath} was declared with {@code Values.just}, in the root scope or a
+	 * defined scope, so planning already unwrapped it and only its path tells it is used as it is.
+	 */
+	boolean isJustPath(ScopedPath declaredPath) {
+		return declaredJustPaths.contains(declaredPath);
 	}
 
 	/**
@@ -258,9 +246,8 @@ final class ScopeLookup {
 			return true;
 		}
 		for (PathExpression notNullPath : root.analyzed.getNotNullPaths()) {
-			DirectivePrecedence notNull = DirectivePrecedence.rootScope(root.analyzed.getNotNullSequence(notNullPath));
 			if (RootEntry.reachesFrom(notNullPath, path)
-				&& notNull.outranks(Scope.ROOT_DEPTH, precedence, scopeDepth)) {
+				&& root.notNullPrecedence(notNullPath).outranks(Scope.ROOT_DEPTH, precedence, scopeDepth)) {
 				return true;
 			}
 		}
@@ -365,11 +352,23 @@ final class ScopeLookup {
 	}
 
 	/**
-	 * Returns whether a defined scope's size of the container at the end of {@code chain} outranks a value of
+	 * Returns whether a size of the container at {@code path}, the end of {@code chain}, outranks a value of
 	 * {@code precedence} whose scope node sits {@code scopeDepth} deep, so the container keeps that size over the
-	 * element count of the value.
+	 * element count of the value: one the root scope or a defined scope declared, by a size or by a value holding the
+	 * container, compared by {@link DirectivePrecedence}.
 	 */
-	boolean hasOutrankingSizeAt(ScopeChain chain, DirectivePrecedence precedence, int scopeDepth) {
+	boolean hasOutrankingSizeAt(
+		ScopeChain chain,
+		PathExpression path,
+		DirectivePrecedence precedence,
+		int scopeDepth
+	) {
+		for (PathExpression sizePath : root.containerSizeSequenceByPath.keySet()) {
+			if (RootEntry.reachesFrom(sizePath, path)
+				&& root.sizePrecedence(sizePath).outranks(Scope.ROOT_DEPTH, precedence, scopeDepth)) {
+				return true;
+			}
+		}
 		for (DefinedScopeEntry entry : definedScopes) {
 			for (PathExpression sizePath : entry.analyzed.getContainerSizesByPath().keySet()) {
 				int sizeDepth = chain.scopeDepthOf(entry.selector(), sizePath);
@@ -545,6 +544,7 @@ final class ScopeLookup {
 		private final AnalyzedScope analyzed;
 		private final Set<PathExpression> justPaths;
 		private final Set<PathExpression> containerSizePaths;
+		private final Map<PathExpression, Integer> containerSizeSequenceByPath;
 		private final Map<PathExpression, Integer> valueOrderByPath;
 		private final boolean notNullHasPatterns;
 		private final boolean filtersHavePatterns;
@@ -555,10 +555,19 @@ final class ScopeLookup {
 			this.justPaths = Collections.unmodifiableSet(new HashSet<>(analysisResult.getJustPaths()));
 			this.containerSizePaths =
 				Collections.unmodifiableSet(analysisResult.getLatestSizeDirectiveByPath().keySet());
+			this.containerSizeSequenceByPath = analysisResult.getContainerSizeSequenceByPath();
 			this.valueOrderByPath = analysisResult.getValueOrderByPath();
 			this.notNullHasPatterns = hasPatterns(analyzed.getNotNullPaths());
 			this.filtersHavePatterns = hasPatterns(analyzed.getFiltersByPath().keySet());
 			this.customizersHavePatterns = hasPatterns(analyzed.getCustomizersByPath().keySet());
+		}
+
+		private DirectivePrecedence notNullPrecedence(PathExpression path) {
+			return DirectivePrecedence.rootScope(analyzed.getNotNullSequence(path));
+		}
+
+		private DirectivePrecedence sizePrecedence(PathExpression path) {
+			return DirectivePrecedence.rootScope(containerSizeSequenceByPath.getOrDefault(path, -1));
 		}
 
 		private <V> List<V> at(Map<PathExpression, V> byPath, boolean hasPatterns, PathExpression path) {

@@ -46,18 +46,18 @@ import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.assembly.AssembleContext;
 import com.navercorp.fixturemonkey.assembly.ValueProjectionAssembler;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.customizer.Scope;
 import com.navercorp.fixturemonkey.customizer.ScopeSet;
-import com.navercorp.fixturemonkey.planner.AnalysisResult;
 import com.navercorp.fixturemonkey.planner.AssemblyPlan;
 import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
-import com.navercorp.fixturemonkey.planner.ValueProjection;
 import com.navercorp.fixturemonkey.tracing.AssemblyTracer;
 import com.navercorp.fixturemonkey.tracing.TraceContext;
 import com.navercorp.objectfarm.api.type.JvmType;
+import com.navercorp.objectfarm.api.type.ReflectiveJvmType;
 import com.navercorp.objectfarm.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -147,7 +147,7 @@ public final class ArbitraryResolver {
 	 * @param selectedNames the names the builder selected
 	 * @throws IllegalArgumentException when a name is not registered
 	 */
-	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	@API(since = "1.2.5", status = Status.EXPERIMENTAL)
 	public void requireRegisteredNames(List<String> selectedNames) {
 		for (String selectedName : selectedNames) {
 			if (!weightsByName.containsKey(selectedName)) {
@@ -195,18 +195,6 @@ public final class ArbitraryResolver {
 
 		AssemblyPlan assemblyPlan =
 			assemblyPlanner.plan(rootJvmType, scopeSet, activeContext.isFixed(), options, traceContext);
-
-		AnalysisResult analysisResult = assemblyPlan.getAnalysisResult();
-		ValueProjection values = assemblyPlan.getValues();
-
-		if (analysisResult.isStrictMode()) {
-			Set<String> invalidPaths = values.getUnresolvedNonWildcardPaths();
-			if (!invalidPaths.isEmpty()) {
-				throw new IllegalArgumentException(
-					"No matching results for given NodeResolvers. " + "Invalid paths: " + invalidPaths
-				);
-			}
-		}
 
 		traceContext.setRootType(rootJvmType.getRawType().getName());
 
@@ -310,13 +298,24 @@ public final class ArbitraryResolver {
 			Class<?> argType = typeArg.getRawType();
 			if (!visitedForFields.contains(argType)) {
 				collectRelevantTypesFromProperty(
-					new com.navercorp.fixturemonkey.api.property.TypeParameterProperty(typeArg),
+					new TypeParameterProperty(typeArg),
 					types,
 					visitedForFields
 				);
 			} else {
 				types.add(argType);
 			}
+		}
+
+		if (rawType.isArray()) {
+			JvmType componentType = jvmType.getComponentType();
+			collectRelevantTypesFromProperty(
+				new TypeParameterProperty(
+					componentType != null ? componentType : new ReflectiveJvmType(rawType.getComponentType())
+				),
+				types,
+				visitedForFields
+			);
 		}
 
 		// Recurse into fields of non-Java types to discover nested types

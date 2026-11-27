@@ -514,6 +514,13 @@ public final class JvmNodeTree {
 		if (children == null) {
 			return null;
 		}
+		if (index >= 0 && index < children.size()) {
+			JvmNode candidate = children.get(index);
+			Integer candidateIndex = candidate.getIndex();
+			if (candidateIndex != null && candidateIndex == index) {
+				return candidate;
+			}
+		}
 		for (JvmNode child : children) {
 			Integer childIndex = child.getIndex();
 			if (childIndex != null && childIndex == index) {

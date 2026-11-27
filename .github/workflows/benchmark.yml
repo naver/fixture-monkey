@@ -14,6 +14,10 @@ on:
 jobs:
   jmh:
     name: Run benchmark
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.stack == null
+      || github.event.pull_request.stack.base.ref == github.event.pull_request.base.ref
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,6 +26,13 @@ jobs:
           - 'fixture-monkey-benchmark-kotlin'
     steps:
       - uses: actions/checkout@v7
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: |
+            8
+            17
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:

@@ -967,7 +967,7 @@ class RegisterByNameTest {
 			.sample();
 
 		// then
-		then(actual.getSimpleObject()).isSameAs(registered);
+		then(actual.getSimpleObject()).isEqualTo(registered);
 		then(actual.getOrder().getStatus()).isEqualTo(CANCELLED);
 	}
 
@@ -1009,7 +1009,7 @@ class RegisterByNameTest {
 			.collect(Collectors.toList());
 
 		// then
-		then(actual).allSatisfy(it -> then(it).isSameAs(registered));
+		then(actual).allSatisfy(it -> then(it.getBlobs()).containsExactly(new byte[] {1}, new byte[] {2}));
 	}
 
 	@Test
@@ -1030,7 +1030,7 @@ class RegisterByNameTest {
 			.collect(Collectors.toList());
 
 		// then
-		then(actual).allSatisfy(it -> then(it).isSameAs(registered));
+		then(actual).allSatisfy(it -> then(it).isEqualTo(registered));
 	}
 
 	@Test

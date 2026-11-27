@@ -35,6 +35,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
@@ -326,6 +332,48 @@ public abstract class Types {
 				return annotatedType;
 			}
 		};
+	}
+
+	/**
+	 * Checks if the type is a single-element wrapper whose one element shares the wrapper's path.
+	 *
+	 * @param type the type to check
+	 * @return true for Supplier, Function, Optional, OptionalInt, OptionalLong and OptionalDouble types
+	 */
+	public static boolean isSingleElementWrapper(Class<?> type) {
+		return Supplier.class.isAssignableFrom(type)
+			|| Function.class.isAssignableFrom(type)
+			|| Optional.class.isAssignableFrom(type)
+			|| OptionalInt.class.isAssignableFrom(type)
+			|| OptionalLong.class.isAssignableFrom(type)
+			|| OptionalDouble.class.isAssignableFrom(type);
+	}
+
+	/**
+	 * Checks if the type is a container whose children do not depend on its value: a single-element wrapper,
+	 * or a {@link Map.Entry} with its key and value.
+	 *
+	 * @param type the type to check
+	 * @return true if the container always has the same children
+	 */
+	public static boolean hasFixedChildren(Class<?> type) {
+		return Map.Entry.class.isAssignableFrom(type) || isSingleElementWrapper(type);
+	}
+
+	/**
+	 * Checks if the class is a non-public JDK type, such as {@code Arrays$ArrayList} or
+	 * {@code ImmutableCollections$List12}, which cannot be instantiated by introspectors.
+	 *
+	 * @param type the class to check
+	 * @return true if the class is a non-public type in a JDK package
+	 */
+	public static boolean isJdkInternalType(Class<?> type) {
+		if (Modifier.isPublic(type.getModifiers())) {
+			return false;
+		}
+
+		String name = type.getName();
+		return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("sun.");
 	}
 
 	public static boolean isJavaType(Class<?> type) {

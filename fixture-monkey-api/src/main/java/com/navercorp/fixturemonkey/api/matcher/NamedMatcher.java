@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
  */
 @API(since = "1.1.15", status = EXPERIMENTAL)
 public final class NamedMatcher implements Matcher {
-	@API(since = "1.2.4", status = EXPERIMENTAL)
+	@API(since = "1.2.5", status = EXPERIMENTAL)
 	public static final int DEFAULT_WEIGHT = 1;
 
 	private final Matcher matcher;
@@ -56,7 +56,7 @@ public final class NamedMatcher implements Matcher {
 	 * @param weight         how likely the builder is chosen among its alternatives, a positive number
 	 * @throws IllegalArgumentException when the weight is not positive
 	 */
-	@API(since = "1.2.4", status = EXPERIMENTAL)
+	@API(since = "1.2.5", status = EXPERIMENTAL)
 	public NamedMatcher(Matcher matcher, String registeredName, int weight) {
 		if (weight <= 0) {
 			throw new IllegalArgumentException("weight must be positive. weight: " + weight);
@@ -81,7 +81,7 @@ public final class NamedMatcher implements Matcher {
 	/**
 	 * Returns the matcher this one matches with.
 	 */
-	@API(since = "1.2.4", status = EXPERIMENTAL)
+	@API(since = "1.2.5", status = EXPERIMENTAL)
 	public Matcher getMatcher() {
 		return matcher;
 	}
@@ -89,7 +89,7 @@ public final class NamedMatcher implements Matcher {
 	/**
 	 * Returns the name the builder is registered with.
 	 */
-	@API(since = "1.2.4", status = EXPERIMENTAL)
+	@API(since = "1.2.5", status = EXPERIMENTAL)
 	public String getRegisteredName() {
 		return registeredName;
 	}
@@ -97,7 +97,7 @@ public final class NamedMatcher implements Matcher {
 	/**
 	 * Returns how likely the builder is chosen among its alternatives.
 	 */
-	@API(since = "1.2.4", status = EXPERIMENTAL)
+	@API(since = "1.2.5", status = EXPERIMENTAL)
 	public int getWeight() {
 		return weight;
 	}

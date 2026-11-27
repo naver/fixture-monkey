@@ -44,6 +44,6 @@ public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 	 * @throws IllegalStateException    when this builder already sets a value to the whole object
 	 * @throws IllegalArgumentException on sampling, when a name is not registered
 	 */
-	@API(since = "1.2.4", status = Status.EXPERIMENTAL)
+	@API(since = "1.2.5", status = Status.EXPERIMENTAL)
 	ExperimentalArbitraryBuilder<T> selectName(String... names);
 }
