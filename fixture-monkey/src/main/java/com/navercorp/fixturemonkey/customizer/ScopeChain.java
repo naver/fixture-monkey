@@ -129,10 +129,9 @@ public abstract class ScopeChain {
 	 * @return true when the pattern matches the whole path below the scope node
 	 */
 	public boolean matchesBelow(int depth, PathExpression pattern) {
-		List<Segment> patternSegments = pattern.getSegments();
 		return depth >= 0
-			&& patternSegments.size() == depth() - depth
-			&& matchesFrom(depth, patternSegments, patternSegments.size());
+			&& pattern.depth() == depth() - depth
+			&& matchesFrom(depth, pattern, pattern.depth());
 	}
 
 	/**
@@ -144,12 +143,11 @@ public abstract class ScopeChain {
 	 * @return the segment of the pattern below the node, or null when the pattern does not reach past it
 	 */
 	public @Nullable Segment patternSegmentBelow(int depth, PathExpression pattern) {
-		List<Segment> patternSegments = pattern.getSegments();
 		int covered = depth() - depth;
-		if (depth < 0 || covered >= patternSegments.size() || !matchesFrom(depth, patternSegments, covered)) {
+		if (depth < 0 || covered >= pattern.depth() || !matchesFrom(depth, pattern, covered)) {
 			return null;
 		}
-		return patternSegments.get(covered);
+		return pattern.getSegment(covered);
 	}
 
 	/**
@@ -160,10 +158,9 @@ public abstract class ScopeChain {
 	 * @return true when the beginning of the path below the scope node matches the whole pattern
 	 */
 	public boolean coversFrom(int depth, PathExpression pattern) {
-		List<Segment> patternSegments = pattern.getSegments();
 		return depth >= 0
-			&& patternSegments.size() <= depth() - depth
-			&& matchesFrom(depth, patternSegments, patternSegments.size());
+			&& pattern.depth() <= depth() - depth
+			&& matchesFrom(depth, pattern, pattern.depth());
 	}
 
 	/**
@@ -174,7 +171,7 @@ public abstract class ScopeChain {
 	 * @return the scope depth, or -1 when the path does not reach the node from a node the scope selects
 	 */
 	public int scopeDepthOf(ScopeSelector scope, PathExpression relativePath) {
-		int scopeDepth = depth() - relativePath.getSegments().size();
+		int scopeDepth = depth() - relativePath.depth();
 		return matchesBelow(scopeDepth, relativePath) && selects(scope, scopeDepth) ? scopeDepth : -1;
 	}
 
@@ -211,10 +208,10 @@ public abstract class ScopeChain {
 		return scopeDepth >= 0 ? patternSegmentBelow(scopeDepth, relativePath) : null;
 	}
 
-	private boolean matchesFrom(int depth, List<Segment> patternSegments, int count) {
+	private boolean matchesFrom(int depth, PathExpression pattern, int count) {
 		for (int i = 0; i < count; i++) {
 			Segment segment = segmentAt(depth + i);
-			if (segment == null || !patternSegments.get(i).matches(segment)) {
+			if (segment == null || !pattern.getSegment(i).matches(segment)) {
 				return false;
 			}
 		}
@@ -253,7 +250,6 @@ public abstract class ScopeChain {
 
 	private static final class PathScopeChain extends ScopeChain {
 		private final PathExpression path;
-		private final List<Segment> segments;
 		private final Function<PathExpression, @Nullable JvmNode> nodeAt;
 
 		private PathScopeChain(
@@ -263,13 +259,12 @@ public abstract class ScopeChain {
 		) {
 			super(propertyOf);
 			this.path = path;
-			this.segments = path.getSegments();
 			this.nodeAt = nodeAt;
 		}
 
 		@Override
 		public int depth() {
-			return segments.size();
+			return path.depth();
 		}
 
 		@Override
@@ -279,7 +274,7 @@ public abstract class ScopeChain {
 
 		@Override
 		public Segment segmentAt(int depth) {
-			return segments.get(depth);
+			return path.getSegment(depth);
 		}
 	}
 }

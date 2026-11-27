@@ -21,6 +21,12 @@ package com.navercorp.objectfarm.api.expression;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.junit.jupiter.api.Test;
 
 class PathExpressionTest {
@@ -47,8 +53,8 @@ class PathExpressionTest {
 
 		// then
 		then(path.toExpression()).isEqualTo("$.items");
-		then(path.getSegments()).hasSize(1);
-		then(path.getSegments().get(0).getFirstSelector()).isInstanceOf(NameSelector.class);
+		then(path.depth()).isEqualTo(1);
+		then(path.getSegment(0).getFirstSelector()).isInstanceOf(NameSelector.class);
 	}
 
 	@Test
@@ -61,8 +67,8 @@ class PathExpressionTest {
 
 		// then
 		then(indexedPath.toExpression()).isEqualTo("$.items[0]");
-		then(indexedPath.getSegments()).hasSize(2);
-		then(indexedPath.getSegments().get(1).getFirstSelector()).isInstanceOf(IndexSelector.class);
+		then(indexedPath.depth()).isEqualTo(2);
+		then(indexedPath.getSegment(1).getFirstSelector()).isInstanceOf(IndexSelector.class);
 	}
 
 	@Test
@@ -79,7 +85,7 @@ class PathExpressionTest {
 
 		// then
 		then(path.toExpression()).isEqualTo("$.items[0][2].name");
-		then(path.getSegments()).hasSize(4);
+		then(path.depth()).isEqualTo(4);
 	}
 
 	@Test
@@ -160,8 +166,8 @@ class PathExpressionTest {
 
 		// then
 		then(keyPath.toExpression()).isEqualTo("$.map[0][key]");
-		then(keyPath.getSegments()).hasSize(3);
-		then(keyPath.getSegments().get(2).getFirstSelector()).isInstanceOf(KeySelector.class);
+		then(keyPath.depth()).isEqualTo(3);
+		then(keyPath.getSegment(2).getFirstSelector()).isInstanceOf(KeySelector.class);
 	}
 
 	@Test
@@ -174,8 +180,8 @@ class PathExpressionTest {
 
 		// then
 		then(valuePath.toExpression()).isEqualTo("$.map[0][value]");
-		then(valuePath.getSegments()).hasSize(3);
-		then(valuePath.getSegments().get(2).getFirstSelector()).isInstanceOf(ValueSelector.class);
+		then(valuePath.depth()).isEqualTo(3);
+		then(valuePath.getSegment(2).getFirstSelector()).isInstanceOf(ValueSelector.class);
 	}
 
 	@Test
@@ -258,8 +264,8 @@ class PathExpressionTest {
 
 		// then
 		then(path.toExpression()).isEqualTo(expression);
-		then(path.getSegments()).hasSize(1);
-		then(path.getSegments().get(0).getFirstSelector()).isInstanceOf(NameSelector.class);
+		then(path.depth()).isEqualTo(1);
+		then(path.getSegment(0).getFirstSelector()).isInstanceOf(NameSelector.class);
 	}
 
 	@Test
@@ -272,7 +278,7 @@ class PathExpressionTest {
 
 		// then
 		then(path.toExpression()).isEqualTo(expression);
-		then(path.getSegments()).hasSize(2);
+		then(path.depth()).isEqualTo(2);
 	}
 
 	@Test
@@ -285,8 +291,8 @@ class PathExpressionTest {
 
 		// then
 		then(path.toExpression()).isEqualTo(expression);
-		then(path.getSegments()).hasSize(3);
-		then(path.getSegments().get(2).getFirstSelector()).isInstanceOf(KeySelector.class);
+		then(path.depth()).isEqualTo(3);
+		then(path.getSegment(2).getFirstSelector()).isInstanceOf(KeySelector.class);
 	}
 
 	@Test
@@ -299,8 +305,8 @@ class PathExpressionTest {
 
 		// then
 		then(path.toExpression()).isEqualTo(expression);
-		then(path.getSegments()).hasSize(3);
-		then(path.getSegments().get(2).getFirstSelector()).isInstanceOf(ValueSelector.class);
+		then(path.depth()).isEqualTo(3);
+		then(path.getSegment(2).getFirstSelector()).isInstanceOf(ValueSelector.class);
 	}
 
 	// Wildcard and Pattern Matching tests
@@ -314,9 +320,9 @@ class PathExpressionTest {
 		PathExpression pattern = PathExpression.of(expression);
 
 		// then
-		then(pattern.getSegments()).hasSize(2);
-		then(pattern.getSegments().get(0).getFirstSelector()).isInstanceOf(NameSelector.class);
-		then(pattern.getSegments().get(1).getFirstSelector()).isInstanceOf(WildcardSelector.class);
+		then(pattern.depth()).isEqualTo(2);
+		then(pattern.getSegment(0).getFirstSelector()).isInstanceOf(NameSelector.class);
+		then(pattern.getSegment(1).getFirstSelector()).isInstanceOf(WildcardSelector.class);
 	}
 
 	@Test
@@ -328,10 +334,10 @@ class PathExpressionTest {
 		PathExpression pattern = PathExpression.of(expression);
 
 		// then
-		then(pattern.getSegments()).hasSize(3);
-		then(pattern.getSegments().get(0).getFirstSelector()).isInstanceOf(NameSelector.class);
-		then(pattern.getSegments().get(1).getFirstSelector()).isInstanceOf(WildcardSelector.class);
-		then(pattern.getSegments().get(2).getFirstSelector()).isInstanceOf(WildcardSelector.class);
+		then(pattern.depth()).isEqualTo(3);
+		then(pattern.getSegment(0).getFirstSelector()).isInstanceOf(NameSelector.class);
+		then(pattern.getSegment(1).getFirstSelector()).isInstanceOf(WildcardSelector.class);
+		then(pattern.getSegment(2).getFirstSelector()).isInstanceOf(WildcardSelector.class);
 	}
 
 	@Test
@@ -343,8 +349,8 @@ class PathExpressionTest {
 		PathExpression pattern = PathExpression.of(expression);
 
 		// then
-		then(pattern.getSegments()).hasSize(1);
-		then(pattern.getSegments().get(0).getFirstSelector()).isInstanceOf(WildcardSelector.class);
+		then(pattern.depth()).isEqualTo(1);
+		then(pattern.getSegment(0).getFirstSelector()).isInstanceOf(WildcardSelector.class);
 	}
 
 	@Test
@@ -515,11 +521,11 @@ class PathExpressionTest {
 		PathExpression pattern = PathExpression.of(expression);
 
 		// then
-		then(pattern.getSegments()).hasSize(2);
-		then(pattern.getSegments().get(1).getSelectors()).hasSize(3);
-		then(pattern.getSegments().get(1).getSelectors().get(0)).isInstanceOf(IndexSelector.class);
-		then(pattern.getSegments().get(1).getSelectors().get(1)).isInstanceOf(IndexSelector.class);
-		then(pattern.getSegments().get(1).getSelectors().get(2)).isInstanceOf(IndexSelector.class);
+		then(pattern.depth()).isEqualTo(2);
+		then(pattern.getSegment(1).getSelectors()).hasSize(3);
+		then(pattern.getSegment(1).getSelectors().get(0)).isInstanceOf(IndexSelector.class);
+		then(pattern.getSegment(1).getSelectors().get(1)).isInstanceOf(IndexSelector.class);
+		then(pattern.getSegment(1).getSelectors().get(2)).isInstanceOf(IndexSelector.class);
 	}
 
 	@Test
@@ -531,8 +537,8 @@ class PathExpressionTest {
 		PathExpression pattern = PathExpression.of(expression);
 
 		// then
-		then(pattern.getSegments()).hasSize(3);
-		Segment last = pattern.getSegments().get(2);
+		then(pattern.depth()).isEqualTo(3);
+		Segment last = pattern.getSegment(2);
 		then(last.getSelectors()).hasSize(2);
 		then(last.getSelectors().get(0)).isInstanceOf(KeySelector.class);
 		then(last.getSelectors().get(1)).isInstanceOf(ValueSelector.class);
@@ -722,5 +728,136 @@ class PathExpressionTest {
 
 		// then
 		then(actual).isFalse();
+	}
+
+	@Test
+	void pathBuiltFromParentReturnsThatParent() {
+		// given
+		PathExpression parent = PathExpression.of("$.items");
+
+		// when
+		List<PathExpression> children = Arrays.asList(
+			parent.child("name"),
+			parent.index(0),
+			parent.key(),
+			parent.value(),
+			parent.type(String.class),
+			parent.type(String.class, true),
+			parent.wildcard()
+		);
+
+		// then
+		for (PathExpression child : children) {
+			then(child.getParent()).isSameAs(parent);
+		}
+	}
+
+	@Test
+	void hashCodeIsHashOfSegmentList() {
+		// given
+		List<PathExpression> paths = Arrays.asList(
+			PathExpression.of("$.items"),
+			PathExpression.of("$.items[0].name"),
+			PathExpression.of("$.map[key]"),
+			PathExpression.of("$.map[value]"),
+			PathExpression.of("$.items[*]"),
+			PathExpression.of("$.items[0,1]"),
+			PathExpression.of("$.map[key,value]"),
+			PathExpression.root().child("items").type(String.class)
+		);
+
+		// when, then
+		for (PathExpression path : paths) {
+			List<Segment> segments = new ArrayList<>();
+			for (int i = 0; i < path.depth(); i++) {
+				segments.add(path.getSegment(i));
+			}
+			then(path.hashCode()).isEqualTo(Objects.hash(segments));
+		}
+	}
+
+	@Test
+	void rootHashCodeIsZero() {
+		// given
+		PathExpression root = PathExpression.root();
+
+		// when
+		int actual = root.hashCode();
+
+		// then
+		then(actual).isZero();
+	}
+
+	@Test
+	void segmentHashCodeIsHashOfSelectorList() {
+		// given
+		List<Segment> segments = Arrays.asList(
+			Segment.ofName("items"),
+			Segment.ofIndex(0),
+			Segment.ofKey(),
+			Segment.ofValue(),
+			Segment.ofWildcard(),
+			Segment.ofType(String.class),
+			Segment.ofIndices(0, 1)
+		);
+
+		// when, then
+		for (Segment segment : segments) {
+			then(segment.hashCode()).isEqualTo(Objects.hash(segment.getSelectors()));
+		}
+	}
+
+	@Test
+	void segmentOfOneSelectorListEqualsSegmentOfThatSelector() {
+		// given
+		Segment fromList = Segment.of(Collections.singletonList(new IndexSelector(0)));
+
+		// when
+		Segment fromSelector = Segment.ofIndex(0);
+
+		// then
+		then(fromList).isEqualTo(fromSelector);
+		then(fromList.hashCode()).isEqualTo(fromSelector.hashCode());
+		then(fromList.isSingleSelector()).isTrue();
+	}
+
+	@Test
+	void getSegmentReturnsSegmentAtPositionFromRoot() {
+		// given
+		PathExpression path = PathExpression.of("$.items[0].name");
+
+		// when
+		Segment first = path.getSegment(0);
+		Segment second = path.getSegment(1);
+		Segment third = path.getSegment(2);
+
+		// then
+		then(first).isEqualTo(Segment.ofName("items"));
+		then(second).isEqualTo(Segment.ofIndex(0));
+		then(third).isEqualTo(Segment.ofName("name"));
+	}
+
+	@Test
+	void getSegmentAtDepthThrows() {
+		// given
+		PathExpression path = PathExpression.of("$.items[0]");
+
+		// when, then
+		thenThrownBy(() -> path.getSegment(path.depth())).isInstanceOf(IndexOutOfBoundsException.class);
+		thenThrownBy(() -> path.getSegment(-1)).isInstanceOf(IndexOutOfBoundsException.class);
+	}
+
+	@Test
+	void pathsParsedAndBuiltAreEqual() {
+		// given
+		PathExpression parsed = PathExpression.of("$.items[0].tags[key]");
+
+		// when
+		PathExpression built = PathExpression.root().child("items").index(0).child("tags").key();
+
+		// then
+		then(parsed).isEqualTo(built);
+		then(parsed.hashCode()).isEqualTo(built.hashCode());
+		then(parsed.getParent()).isEqualTo(built.getParent());
 	}
 }

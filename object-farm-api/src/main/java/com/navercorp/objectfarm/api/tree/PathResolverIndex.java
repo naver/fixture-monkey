@@ -77,7 +77,8 @@ final class PathResolverIndex<T extends NodeCustomizer> {
 	}
 
 	static boolean isConcrete(PathExpression path) {
-		for (Segment segment : path.getSegments()) {
+		for (int i = 0; i < path.depth(); i++) {
+			Segment segment = path.getSegment(i);
 			if (!segment.isSingleSelector() || !matchesOnlyItself(segment.getFirstSelector())) {
 				return false;
 			}

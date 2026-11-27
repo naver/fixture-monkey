@@ -112,7 +112,7 @@ final class AssemblyTree {
 	}
 
 	List<JvmNode> ancestorNodes(PathExpression path) {
-		int segmentCount = path.getSegments().size();
+		int segmentCount = path.depth();
 		List<JvmNode> nodes = new ArrayList<>(segmentCount);
 		for (int depth = 0; depth < segmentCount; depth++) {
 			PathExpression ancestor = path.truncateTo(depth);

@@ -19,7 +19,7 @@
 package com.navercorp.objectfarm.api.expression;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,23 +38,22 @@ import org.jspecify.annotations.Nullable;
  */
 public final class PathExpression implements Comparable<PathExpression> {
 
-	private static final PathExpression ROOT = new PathExpression(Collections.emptyList());
+	private static final PathExpression ROOT = new PathExpression(new Segment[0]);
 
 	public static final String ROOT_EXPRESSION = "$";
 
-	private final List<Segment> segments;
+	// A bare array rather than a List: a path is created for every node and every element of a set value, and a
+	// list would add a wrapper and a backing array to each of them. The array never leaves this class, so the path
+	// stays immutable.
+	private final Segment[] segments;
 	private volatile int cachedHashCode;
 	private volatile String cachedExpression;
 	private volatile PathExpression cachedParent;
-	private final ConcurrentMap<String, PathExpression> cachedChildren = new ConcurrentHashMap<>(16);
+	private volatile ConcurrentMap<String, PathExpression> cachedChildren;
 	private volatile byte cachedHasWildcard; // 0=not computed, 1=false, 2=true
 
-	private PathExpression(List<Segment> segments) {
-		this.segments = Collections.unmodifiableList(new ArrayList<>(segments));
-	}
-
-	private PathExpression(List<Segment> segments, boolean trusted) {
-		this.segments = Collections.unmodifiableList(segments);
+	private PathExpression(Segment[] segments) {
+		this.segments = segments;
 	}
 
 	public static PathExpression root() {
@@ -70,7 +69,11 @@ public final class PathExpression implements Comparable<PathExpression> {
 		}
 
 		List<Segment> segments = parseExpression(expression);
-		return new PathExpression(segments);
+		Segment[] parsed = new Segment[segments.size()];
+		for (int i = 0; i < parsed.length; i++) {
+			parsed[i] = segments.get(i);
+		}
+		return new PathExpression(parsed);
 	}
 
 	private static List<Segment> parseExpression(String expression) {
@@ -203,70 +206,89 @@ public final class PathExpression implements Comparable<PathExpression> {
 	public PathExpression child(String propertyName) {
 		Objects.requireNonNull(propertyName, "propertyName must not be null");
 
-		PathExpression cached = cachedChildren.get(propertyName);
+		ConcurrentMap<String, PathExpression> children = childrenCache();
+		PathExpression cached = children.get(propertyName);
 		if (cached != null) {
 			return cached;
 		}
 
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(Segment.ofName(propertyName));
-		PathExpression result = new PathExpression(newSegments, true);
+		PathExpression result = withLastSegment(Segment.ofName(propertyName));
 
-		PathExpression existing = cachedChildren.putIfAbsent(propertyName, result);
+		PathExpression existing = children.putIfAbsent(propertyName, result);
 		return existing != null ? existing : result;
 	}
 
 	public PathExpression index(int index) {
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(Segment.ofIndex(index));
-		return new PathExpression(newSegments, true);
+		return withLastSegment(Segment.ofIndex(index));
 	}
 
 	public PathExpression key() {
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(Segment.ofKey());
-		return new PathExpression(newSegments, true);
+		return withLastSegment(Segment.ofKey());
 	}
 
 	public PathExpression value() {
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(Segment.ofValue());
-		return new PathExpression(newSegments, true);
+		return withLastSegment(Segment.ofValue());
 	}
 
 	public PathExpression type(Class<?> type) {
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(Segment.ofType(type));
-		return new PathExpression(newSegments, true);
+		return withLastSegment(Segment.ofType(type));
 	}
 
 	/**
 	 * @param exact if true, only exact type matches; if false, subtypes also match
 	 */
 	public PathExpression type(Class<?> type, boolean exact) {
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(Segment.ofType(type, exact));
-		return new PathExpression(newSegments, true);
+		return withLastSegment(Segment.ofType(type, exact));
 	}
 
 	public PathExpression append(PathExpression other) {
 		if (other.isRoot()) {
 			return this;
 		}
-		List<Segment> newSegments = new ArrayList<>(segments.size() + other.segments.size());
-		newSegments.addAll(segments);
-		newSegments.addAll(other.segments);
-		return new PathExpression(newSegments, true);
+		Segment[] joined = new Segment[segments.length + other.segments.length];
+		System.arraycopy(segments, 0, joined, 0, segments.length);
+		System.arraycopy(other.segments, 0, joined, segments.length, other.segments.length);
+		return new PathExpression(joined);
 	}
 
-	public List<Segment> getSegments() {
-		return segments;
+	/**
+	 * Returns the segment at {@code index}, counted from the root.
+	 *
+	 * @param index the position of the segment, from 0 to {@link #depth()} - 1
+	 * @return the segment at the position
+	 * @throws IndexOutOfBoundsException when {@code index} is negative or not less than {@link #depth()}
+	 */
+	public Segment getSegment(int index) {
+		return segments[index];
+	}
+
+	private PathExpression withLastSegment(Segment segment) {
+		Segment[] extended = new Segment[segments.length + 1];
+		System.arraycopy(segments, 0, extended, 0, segments.length);
+		extended[segments.length] = segment;
+		PathExpression path = new PathExpression(extended);
+		path.cachedParent = this;
+		return path;
+	}
+
+	private Segment[] leadingSegments(int count) {
+		Segment[] leading = new Segment[count];
+		System.arraycopy(segments, 0, leading, 0, count);
+		return leading;
+	}
+
+	private ConcurrentMap<String, PathExpression> childrenCache() {
+		ConcurrentMap<String, PathExpression> children = cachedChildren;
+		if (children == null) {
+			synchronized (this) {
+				children = cachedChildren;
+				if (children == null) {
+					children = new ConcurrentHashMap<>(4);
+					cachedChildren = children;
+				}
+			}
+		}
+		return children;
 	}
 
 	public String toExpression() {
@@ -274,7 +296,7 @@ public final class PathExpression implements Comparable<PathExpression> {
 		if (cached != null) {
 			return cached;
 		}
-		if (segments.isEmpty()) {
+		if (segments.length == 0) {
 			cachedExpression = "$";
 			return "$";
 		}
@@ -288,11 +310,11 @@ public final class PathExpression implements Comparable<PathExpression> {
 	}
 
 	public boolean startsWith(PathExpression prefix) {
-		if (prefix.segments.size() > segments.size()) {
+		if (prefix.segments.length > segments.length) {
 			return false;
 		}
-		for (int i = 0; i < prefix.segments.size(); i++) {
-			if (!prefix.segments.get(i).equals(segments.get(i))) {
+		for (int i = 0; i < prefix.segments.length; i++) {
+			if (!prefix.segments[i].equals(segments[i])) {
 				return false;
 			}
 		}
@@ -300,26 +322,26 @@ public final class PathExpression implements Comparable<PathExpression> {
 	}
 
 	public boolean isChildOf(PathExpression parent) {
-		return startsWith(parent) && segments.size() > parent.segments.size();
+		return startsWith(parent) && segments.length > parent.segments.length;
 	}
 
 	public boolean isRoot() {
-		return segments.isEmpty();
+		return segments.length == 0;
 	}
 
 	public int depth() {
-		return segments.size();
+		return segments.length;
 	}
 
 	public PathExpression getParent() {
-		if (segments.isEmpty() || segments.size() == 1) {
+		if (segments.length <= 1) {
 			return ROOT;
 		}
 		PathExpression cached = cachedParent;
 		if (cached != null) {
 			return cached;
 		}
-		cached = new PathExpression(new ArrayList<>(segments.subList(0, segments.size() - 1)));
+		cached = new PathExpression(leadingSegments(segments.length - 1));
 		cachedParent = cached;
 		return cached;
 	}
@@ -334,33 +356,33 @@ public final class PathExpression implements Comparable<PathExpression> {
 		if (depth <= 0) {
 			return ROOT;
 		}
-		if (depth >= segments.size()) {
+		if (depth >= segments.length) {
 			return this;
 		}
-		return new PathExpression(new ArrayList<>(segments.subList(0, depth)), true);
+		return new PathExpression(leadingSegments(depth));
 	}
 
 	@Nullable
 	public Segment getLastSegment() {
-		if (segments.isEmpty()) {
+		if (segments.length == 0) {
 			return null;
 		}
-		return segments.get(segments.size() - 1);
+		return segments[segments.length - 1];
 	}
 
 	/**
 	 * Checks if this pattern matches the given path, segment by segment as {@link Segment#matches(Segment)} does.
 	 */
 	public boolean matches(PathExpression path) {
-		List<Segment> pathSegments = path.getSegments();
+		Segment[] pathSegments = path.segments;
 
-		if (segments.size() != pathSegments.size()) {
+		if (segments.length != pathSegments.length) {
 			return false;
 		}
 
-		for (int i = 0; i < segments.size(); i++) {
-			Segment patternSegment = segments.get(i);
-			Segment pathSegment = pathSegments.get(i);
+		for (int i = 0; i < segments.length; i++) {
+			Segment patternSegment = segments[i];
+			Segment pathSegment = pathSegments[i];
 
 			if (!patternSegment.matches(pathSegment)) {
 				return false;
@@ -385,15 +407,14 @@ public final class PathExpression implements Comparable<PathExpression> {
 				cachedHasWildcard = 2;
 				return true;
 			}
-			for (Selector selector : segment.getSelectors()) {
-				if (selector instanceof WildcardSelector) {
-					cachedHasWildcard = 2;
-					return true;
-				}
-				if (selector instanceof NameSelector && "*".equals(((NameSelector)selector).getName())) {
-					cachedHasWildcard = 2;
-					return true;
-				}
+			Selector selector = segment.getFirstSelector();
+			if (selector instanceof WildcardSelector) {
+				cachedHasWildcard = 2;
+				return true;
+			}
+			if (selector instanceof NameSelector && "*".equals(((NameSelector)selector).getName())) {
+				cachedHasWildcard = 2;
+				return true;
 			}
 		}
 		cachedHasWildcard = 1;
@@ -401,10 +422,7 @@ public final class PathExpression implements Comparable<PathExpression> {
 	}
 
 	public PathExpression wildcard() {
-		List<Segment> newSegments = new ArrayList<>(segments.size() + 1);
-		newSegments.addAll(segments);
-		newSegments.add(Segment.ofWildcard());
-		return new PathExpression(newSegments, true);
+		return withLastSegment(Segment.ofWildcard());
 	}
 
 	@Override
@@ -419,14 +437,14 @@ public final class PathExpression implements Comparable<PathExpression> {
 		if (cachedHashCode != 0 && that.cachedHashCode != 0 && cachedHashCode != that.cachedHashCode) {
 			return false;
 		}
-		return Objects.equals(segments, that.segments);
+		return Arrays.equals(segments, that.segments);
 	}
 
 	@Override
 	public int hashCode() {
 		int hashCode = cachedHashCode;
-		if (hashCode == 0 && !segments.isEmpty()) {
-			hashCode = Objects.hash(segments);
+		if (hashCode == 0 && segments.length != 0) {
+			hashCode = 31 + Arrays.hashCode(segments);
 			cachedHashCode = hashCode;
 		}
 		return hashCode;

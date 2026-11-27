@@ -210,12 +210,12 @@ public final class JvmNodeTree {
 		}
 
 		JvmNode current = rootNode;
-		for (Segment segment : path.getSegments()) {
+		for (int i = 0; i < path.depth(); i++) {
 			if (current == null) {
 				return null;
 			}
 
-			Selector selector = segment.getFirstSelector();
+			Selector selector = path.getSegment(i).getFirstSelector();
 			current = resolveSelector(current, selector);
 		}
 
@@ -455,7 +455,8 @@ public final class JvmNodeTree {
 		JvmNode current = rootNode;
 		StringBuilder resolvedPrefix = new StringBuilder("$");
 
-		for (Segment segment : path.getSegments()) {
+		for (int i = 0; i < path.depth(); i++) {
+			Segment segment = path.getSegment(i);
 			if (current == null) {
 				return new ResolutionDiagnostic(
 					segment.toExpression(),

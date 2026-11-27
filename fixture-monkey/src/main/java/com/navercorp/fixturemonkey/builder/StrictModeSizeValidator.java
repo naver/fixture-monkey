@@ -53,7 +53,8 @@ final class StrictModeSizeValidator {
 	static boolean validate(JvmType rootType, PathExpression path) {
 		JvmType current = rootType;
 
-		for (Segment segment : path.getSegments()) {
+		for (int i = 0; i < path.depth(); i++) {
+			Segment segment = path.getSegment(i);
 			Selector selector = segment.isSingleSelector() ? segment.getFirstSelector() : null;
 			if (selector == null) {
 				return true;

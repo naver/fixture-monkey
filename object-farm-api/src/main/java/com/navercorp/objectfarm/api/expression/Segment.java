@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
@@ -57,13 +59,28 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://datatracker.ietf.org/doc/rfc9535/">RFC 9535 - JSONPath</a>
  */
 public final class Segment {
-	private final List<Selector> selectors;
+	private static final Segment WILDCARD = new Segment(new WildcardSelector());
+	private static final Segment KEY = new Segment(new KeySelector());
+	private static final Segment VALUE = new Segment(new ValueSelector());
+	private static final int MAX_CACHED_NAMES = 4096;
+	private static final ConcurrentMap<String, Segment> SEGMENTS_BY_NAME = new ConcurrentHashMap<>();
+
+	private final Selector firstSelector;
+	private final List<Selector> unionSelectors;
+
+	private Segment(Selector selector) {
+		this.firstSelector = selector;
+		this.unionSelectors = Collections.emptyList();
+	}
 
 	private Segment(List<Selector> selectors) {
 		if (selectors == null || selectors.isEmpty()) {
 			throw new IllegalArgumentException("Segment must contain at least one selector");
 		}
-		this.selectors = Collections.unmodifiableList(new ArrayList<>(selectors));
+		this.firstSelector = selectors.get(0);
+		this.unionSelectors = selectors.size() == 1
+			? Collections.emptyList()
+			: Collections.unmodifiableList(new ArrayList<>(selectors));
 	}
 
 	/**
@@ -74,7 +91,7 @@ public final class Segment {
 	 */
 	public static Segment of(Selector selector) {
 		Objects.requireNonNull(selector, "selector must not be null");
-		return new Segment(Collections.singletonList(selector));
+		return new Segment(selector);
 	}
 
 	/**
@@ -88,13 +105,23 @@ public final class Segment {
 	}
 
 	/**
-	 * Creates a name segment.
+	 * Creates a name segment. Segments of the same name may be shared, since a segment is immutable.
 	 *
 	 * @param name the property name
-	 * @return a new segment with a NameSelector
+	 * @return a segment with a NameSelector
 	 */
 	public static Segment ofName(String name) {
-		return of(new NameSelector(name));
+		Objects.requireNonNull(name, "name must not be null");
+		Segment cached = SEGMENTS_BY_NAME.get(name);
+		if (cached != null) {
+			return cached;
+		}
+		Segment segment = of(new NameSelector(name));
+		if (SEGMENTS_BY_NAME.size() >= MAX_CACHED_NAMES) {
+			return segment;
+		}
+		Segment existing = SEGMENTS_BY_NAME.putIfAbsent(name, segment);
+		return existing != null ? existing : segment;
 	}
 
 	/**
@@ -122,30 +149,30 @@ public final class Segment {
 	}
 
 	/**
-	 * Creates a wildcard segment.
+	 * Returns the wildcard segment.
 	 *
-	 * @return a new segment with a WildcardSelector
+	 * @return the segment with a WildcardSelector
 	 */
 	public static Segment ofWildcard() {
-		return of(new WildcardSelector());
+		return WILDCARD;
 	}
 
 	/**
-	 * Creates a key segment for Map entry keys.
+	 * Returns the key segment for Map entry keys.
 	 *
-	 * @return a new segment with a KeySelector
+	 * @return the segment with a KeySelector
 	 */
 	public static Segment ofKey() {
-		return of(new KeySelector());
+		return KEY;
 	}
 
 	/**
-	 * Creates a value segment for Map entry values.
+	 * Returns the value segment for Map entry values.
 	 *
-	 * @return a new segment with a ValueSelector
+	 * @return the segment with a ValueSelector
 	 */
 	public static Segment ofValue() {
-		return of(new ValueSelector());
+		return VALUE;
 	}
 
 	/**
@@ -179,7 +206,7 @@ public final class Segment {
 	 */
 	public boolean matches(Segment pathSegment) {
 		if (!isSingleSelector() || !pathSegment.isSingleSelector()) {
-			for (Selector patternSelector : selectors) {
+			for (Selector patternSelector : getSelectors()) {
 				for (Selector pathSelector : pathSegment.getSelectors()) {
 					if (selectorMatches(patternSelector, pathSelector)) {
 						return true;
@@ -239,7 +266,7 @@ public final class Segment {
 	 * @return unmodifiable list of selectors
 	 */
 	public List<Selector> getSelectors() {
-		return selectors;
+		return isSingleSelector() ? Collections.singletonList(firstSelector) : unionSelectors;
 	}
 
 	/**
@@ -248,7 +275,7 @@ public final class Segment {
 	 * @return true if this segment has exactly one selector
 	 */
 	public boolean isSingleSelector() {
-		return selectors.size() == 1;
+		return unionSelectors.isEmpty();
 	}
 
 	/**
@@ -257,7 +284,7 @@ public final class Segment {
 	 * @return the first selector
 	 */
 	public Selector getFirstSelector() {
-		return selectors.get(0);
+		return firstSelector;
 	}
 
 	/**
@@ -276,17 +303,16 @@ public final class Segment {
 	 * @return segment as string expression
 	 */
 	public String toExpression() {
-		if (selectors.size() == 1) {
-			Selector selector = selectors.get(0);
-			if (selector instanceof NameSelector) {
-				return "." + selector.toExpression();
+		if (isSingleSelector()) {
+			if (firstSelector instanceof NameSelector) {
+				return "." + firstSelector.toExpression();
 			} else {
-				return "[" + selector.toExpression() + "]";
+				return "[" + firstSelector.toExpression() + "]";
 			}
 		}
 
 		// Multiple selectors (union)
-		String joined = selectors.stream()
+		String joined = unionSelectors.stream()
 			.map(Selector::toExpression)
 			.collect(Collectors.joining(","));
 		return "[" + joined + "]";
@@ -301,16 +327,17 @@ public final class Segment {
 			return false;
 		}
 		Segment segment = (Segment)obj;
-		return Objects.equals(selectors, segment.selectors);
+		return firstSelector.equals(segment.firstSelector) && unionSelectors.equals(segment.unionSelectors);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(selectors);
+		int selectorsHashCode = isSingleSelector() ? 31 + firstSelector.hashCode() : unionSelectors.hashCode();
+		return 31 + selectorsHashCode;
 	}
 
 	@Override
 	public String toString() {
-		return "Segment{selectors=" + selectors + "}";
+		return "Segment{selectors=" + getSelectors() + "}";
 	}
 }
