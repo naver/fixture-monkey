@@ -206,10 +206,9 @@ final class ContainerValuePruner {
 		List<Map.Entry<PathExpression, ContainerSizeConstraint>> wildcardSizeEntries,
 		Map<PathExpression, Integer> valueOrderByPath
 	) {
-		List<Segment> segments = path.getSegments();
 		Integer valueOrder = valueOrderByPath.get(path);
-		for (int depth = segments.size(); depth > 0; depth--) {
-			Segment segment = segments.get(depth - 1);
+		for (int depth = path.depth(); depth > 0; depth--) {
+			Segment segment = path.getSegment(depth - 1);
 			if (!segment.isSingleSelector() || !(segment.getFirstSelector() instanceof IndexSelector)) {
 				continue;
 			}

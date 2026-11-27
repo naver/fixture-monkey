@@ -60,7 +60,7 @@ jobs:
       - name: Build
         run: ./gradlew build -x test
       - name: Execute tests
-        run: ./gradlew test -x :fixture-monkey-tests:doc-examples:java-examples:test -x :fixture-monkey-tests:doc-examples:kotlin-examples:test
+        run: ./gradlew test -x :fixture-monkey-tests:doc-examples:java-examples:test -x :fixture-monkey-tests:doc-examples:kotlin-examples:test -x :fixture-monkey-tests:java-memory-tests:test -x :fixture-monkey-tests:kotlin-memory-tests:test
         env:
           CI: Github Action
 

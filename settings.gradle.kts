@@ -35,6 +35,8 @@ include(
         "fixture-monkey-tests:java-tests",
         "fixture-monkey-tests:java-concurrent-tests",
         "fixture-monkey-tests:kotlin-concurrent-tests",
+        "fixture-monkey-tests:java-memory-tests",
+        "fixture-monkey-tests:kotlin-memory-tests",
         "fixture-monkey-kotest",
         "fixture-monkey-benchmarks",
         "fixture-monkey-benchmarks:fixture-monkey-benchmark",

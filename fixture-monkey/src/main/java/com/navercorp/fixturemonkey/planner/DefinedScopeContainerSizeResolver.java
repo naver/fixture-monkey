@@ -66,7 +66,7 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 		}
 		this.dependsOnAncestors = scopedSizes
 			.stream()
-			.anyMatch(it -> it.scope.dependsOnAncestors() || it.path.getSegments().size() > 1);
+			.anyMatch(it -> it.scope.dependsOnAncestors() || it.path.depth() > 1);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ final class DefinedScopeContainerSizeResolver implements AncestorAwareResolver<C
 		ScopedSize best = null;
 		int bestDepth = -1;
 		for (ScopedSize scopedSize : scopedSizes) {
-			int scopeDepth = chain.depth() - scopedSize.path.getSegments().size();
+			int scopeDepth = chain.depth() - scopedSize.path.depth();
 			if (scopeDepth < 0) {
 				continue;
 			}
