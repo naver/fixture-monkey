@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.objectfarm.api.expression.PathExpression;
 import com.navercorp.objectfarm.api.node.ContainerSizeResolver;
+import com.navercorp.objectfarm.api.node.GenericTypeResolver;
+import com.navercorp.objectfarm.api.node.InterfaceResolver;
 
 class PathResolverContextTest {
 	@Test
@@ -196,5 +198,123 @@ class PathResolverContextTest {
 		// then
 		then(resolver).isPresent();
 		then(resolver.get().resolveContainerSize(null)).isEqualTo(42);
+	}
+
+	@Test
+	void findInterfaceResolverReturnsLaterWildcardOverEarlierExactPattern() {
+		// given
+		InterfaceResolver exact = interfaceType -> null;
+		InterfaceResolver wildcard = interfaceType -> null;
+		PathResolverContext context = PathResolverContext.builder()
+			.addInterfaceResolver("$.items[0]", exact)
+			.addInterfaceResolver("$.items[*]", wildcard)
+			.build();
+
+		// when
+		Optional<InterfaceResolver> actual = context.findInterfaceResolver(PathExpression.of("$.items[0]"));
+
+		// then
+		then(actual).containsSame(wildcard);
+	}
+
+	@Test
+	void findInterfaceResolverReturnsLaterExactOverEarlierWildcardPattern() {
+		// given
+		InterfaceResolver wildcard = interfaceType -> null;
+		InterfaceResolver exact = interfaceType -> null;
+		PathResolverContext context = PathResolverContext.builder()
+			.addInterfaceResolver("$.items[*]", wildcard)
+			.addInterfaceResolver("$.items[0]", exact)
+			.build();
+
+		// when
+		Optional<InterfaceResolver> matchedExactly = context.findInterfaceResolver(PathExpression.of("$.items[0]"));
+		Optional<InterfaceResolver> matchedByWildcard = context.findInterfaceResolver(
+			PathExpression.of("$.items[1]")
+		);
+
+		// then
+		then(matchedExactly).containsSame(exact);
+		then(matchedByWildcard).containsSame(wildcard);
+	}
+
+	@Test
+	void findGenericTypeResolverReturnsLastOfSameExactPattern() {
+		// given
+		GenericTypeResolver first = jvmType -> null;
+		GenericTypeResolver last = jvmType -> null;
+		PathResolverContext context = PathResolverContext.builder()
+			.addGenericTypeResolver("$.data", first)
+			.addGenericTypeResolver("$.data", last)
+			.build();
+
+		// when
+		Optional<GenericTypeResolver> actual = context.findGenericTypeResolver(PathExpression.of("$.data"));
+
+		// then
+		then(actual).containsSame(last);
+	}
+
+	@Test
+	void findGenericTypeResolverMatchesTypeSelectorPatternWithSubtype() {
+		// given
+		GenericTypeResolver exact = jvmType -> null;
+		GenericTypeResolver typed = jvmType -> null;
+		PathResolverContext context = PathResolverContext.builder()
+			.addGenericTypeResolver("$.data", exact)
+			.addGenericTypeResolver(
+				new PathGenericTypeResolver(PathExpression.root().child("data").type(CharSequence.class, false), typed)
+			)
+			.build();
+
+		// when
+		Optional<GenericTypeResolver> actual = context.findGenericTypeResolver(
+			PathExpression.root().child("data").type(String.class)
+		);
+
+		// then
+		then(actual).containsSame(typed);
+	}
+
+	@Test
+	void contextWithInterfaceResolverHasPathSpecificResolvers() {
+		// given
+		PathResolverContext context = PathResolverContext.builder()
+			.addInterfaceResolver("$.items", interfaceType -> null)
+			.build();
+
+		// when
+		boolean actual = context.hasPathSpecificResolvers();
+
+		// then
+		then(actual).isTrue();
+	}
+
+	@Test
+	void contextWithGenericTypeResolverHasPathSpecificResolvers() {
+		// given
+		PathResolverContext context = PathResolverContext.builder()
+			.addGenericTypeResolver("$.data", jvmType -> null)
+			.build();
+
+		// when
+		boolean actual = context.hasPathSpecificResolvers();
+
+		// then
+		then(actual).isTrue();
+	}
+
+	@Test
+	void contextWithOnlyContainerSizeResolverHasNoPathSpecificResolvers() {
+		// given
+		PathResolverContext context = PathResolverContext.builder()
+			.addContainerSizeResolver("$.items", 1)
+			.build();
+
+		// when
+		boolean actual = context.hasPathSpecificResolvers();
+
+		// then
+		then(actual).isFalse();
 	}
 }
