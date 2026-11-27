@@ -40,7 +40,7 @@ public final class JqwikShortCombinableArbitrary implements ShortCombinableArbit
 
 	@Override
 	public Short combined() {
-		return this.shortArbitrary.sample();
+		return ArbitraryUtils.sample(this.shortArbitrary);
 	}
 
 	@Override

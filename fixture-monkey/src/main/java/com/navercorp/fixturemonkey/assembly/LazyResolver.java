@@ -26,8 +26,11 @@ import org.jspecify.annotations.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.planner.AssemblyPlanner;
 import com.navercorp.fixturemonkey.planner.LazyValueHolder;
+import com.navercorp.objectfarm.api.expression.PathExpression;
 
 /**
  * Helpers around {@link LazyValueHolder} resolution.
@@ -54,8 +57,12 @@ final class LazyResolver {
 	private LazyResolver() {
 	}
 
-	static @Nullable Object resolveLazyValue(@Nullable Object value) {
-		return value instanceof LazyValueHolder ? evaluate((LazyValueHolder)value) : value;
+	static @Nullable Object resolveLazyValue(@Nullable Object value, PathExpression path, AssemblyState state) {
+		if (!(value instanceof LazyValueHolder)) {
+			return value;
+		}
+		LazyValueHolder holder = (LazyValueHolder)value;
+		return AssemblyPlanner.evaluateInScope(state.assemblyTree.nextLazyScope(path), () -> evaluate(holder));
 	}
 
 	/**
@@ -70,7 +77,7 @@ final class LazyResolver {
 	 * @return the evaluated value (may be null if supplier returns null),
 	 *         or {@link #RECURSION_BLOCKED} if evaluation would cause recursion for the same scope
 	 */
-	static @Nullable Object evaluate(LazyValueHolder holder) {
+	private static @Nullable Object evaluate(LazyValueHolder holder) {
 		LazyArbitrary<?> lazyArbitrary = holder.getLazyArbitrary();
 		if (!holder.isRootLevel()) {
 			return evaluateFresh(lazyArbitrary);
@@ -83,7 +90,7 @@ final class LazyResolver {
 		Object value = lazyArbitrary.getValue();
 		lazyArbitrary.clear();
 		if (value instanceof Arbitrary) {
-			return ((Arbitrary<?>)value).sample();
+			return ArbitraryUtils.sample((Arbitrary<?>)value);
 		}
 		return value;
 	}
